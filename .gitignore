@@ -1,0 +1,13 @@
+# Node
+node_modules
+npm-debug.log
+yarn-error.log
+package-lock.json
+
+# Output
+dist
+
+# Keep environment variables out of version control
+.env
+
+
