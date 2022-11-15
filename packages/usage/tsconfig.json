@@ -1,15 +1,13 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": "src",
-    "lib": ["DOM", "ESNext", "DOM.Iterable"],
+    "outDir": "./dist",
+    "rootDir": ".",
+    "lib": ["ESNext"],
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "composite": true,
-
-    "module": "ESNext",
+    "module": "CommonJS",
     "target": "ESNext",
     "moduleResolution": "node",
     "isolatedModules": false,
@@ -21,7 +19,7 @@
     "forceConsistentCasingInFileNames": true,
     "inlineSources": false,
     "allowSyntheticDefaultImports": true,
-     "strict": true,
+    "strict": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "noImplicitAny": true,
@@ -32,6 +30,5 @@
     "noUnusedParameters": true,
     "useDefineForClassFields": true,
     "useUnknownInCatchVariables": true
-  },
-  "include": ["src"]
+  }
 }

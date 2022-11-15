@@ -3,6 +3,7 @@ node_modules
 npm-debug.log
 yarn-error.log
 package-lock.json
+pnpm-debug.log
 
 # Output
 dist

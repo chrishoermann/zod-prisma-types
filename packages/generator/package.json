@@ -1,0 +1,48 @@
+{
+  "name": "zod-prisma-types",
+  "version": "0.0.1",
+  "description": "Generates Zod schemas from Prisma models",
+  "author": "Chris Hörmann",
+  "license": "ISC",
+  "main": ".",
+  "types": "dist",
+  "keywords": [
+    "zod",
+    "prisma",
+    "typescript",
+    "schema",
+    "types"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chrishoermann/zod-prisma-types.git"
+  },
+  "bin": {
+    "zod-prisma-types": "dist/bin.js"
+  },
+  "scripts": {
+    "lint": "eslint --ext ts,tsx,js,jsx --fix .",
+    "test": "vitest",
+    "build": "tsc",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\""
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.189",
+    "@typescript-eslint/eslint-plugin": "^5.42.1",
+    "@typescript-eslint/parser": "^5.42.1",
+    "eslint": "^8.27.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-universe": "^11.1.1",
+    "eslint-plugin-prettier": "^4.2.1",
+    "lodash": "^4.17.21",
+    "prettier": "^2.7.1",
+    "typescript": "^4.9.3",
+    "vitest": "^0.24.5",
+    "zod": "^3.19.1"
+  },
+  "dependencies": {
+    "@prisma/generator-helper": "^4.6.1",
+    "@prisma/internals": "^4.6.1",
+    "ts-morph": "^16.0.0"
+  }
+}
