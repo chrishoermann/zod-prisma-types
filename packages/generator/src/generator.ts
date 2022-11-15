@@ -100,7 +100,7 @@ generatorHandler({
 
             if (generateEnumFilter) {
               filters.push(
-                writeHeading(`${formattedNames.upperCaseSpace} ENUM FILTER`),
+                writeHeading(`${formattedNames.upperCaseSpace} - ENUM FILTER`),
                 writeConstStatement({
                   leadingTrivia: (writer) => writer.newLine(),
                   declarations: [
@@ -198,7 +198,7 @@ generatorHandler({
             if (generateEnumListFilter) {
               filters.push(
                 writeHeading(
-                  `${formattedNames.upperCaseSpace} ENUM LIST FILTER`,
+                  `${formattedNames.upperCaseSpace} - ENUM LIST FILTER`,
                 ),
                 writeConstStatement({
                   leadingTrivia: (writer) => writer.newLine(),
