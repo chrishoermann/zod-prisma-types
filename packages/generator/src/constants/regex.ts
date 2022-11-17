@@ -12,6 +12,7 @@ import {
 // VALIDATOR TYPE REGEX
 // ----------------------------------------
 
+// maybe remove validatorKey and make a second step after splitting matches on .
 export const VALIDATOR_TYPE_REGEX =
   /@zod.(?<type>string|number|bigint|date){1}(?<errorMessage>\([a-zA-Z-09"'{}:_, ]+\))?(?<validatorPattern>.(?<validatorKey>[a-z]+).*)/;
 
