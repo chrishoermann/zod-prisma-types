@@ -1,13 +1,27 @@
-import { Prisma } from '@prisma/client';
+import * as Prisma from '@prisma/client';
 import { z } from 'zod';
 
 /////////////////////////////////////////
 // ANOTHER ENUM ENUM
 /////////////////////////////////////////
 
-export const AnotherEnumType = z.enum(['ONE', 'TWO']);
+z.string().min(5, { message: 'Must be 5 or more characters long' });
+z.string().max(5, { message: 'Must be 5 or fewer characters long' });
+z.string().length(5, { message: 'Must be exactly 5 characters long' });
+z.string().email({ message: 'Invalid email address' });
+z.string().url({ message: 'Invalid url' });
+z.string().uuid({ message: 'Invalid UUID' });
+z.string().cuid();
+z.string().startsWith('https://', { message: 'Must provide secure URL' });
+z.string().endsWith('.com', { message: 'Only .com domains allowed' });
 
-// ANOTHER ENUM ENUM FILTER
+z.number().gt(5, { message: 'Must be greater than 5' });
+
+// z.string().datetime({ message: 'Invalid datetime string! Must be UTC.' });
+
+export const AnotherEnumType = z.nativeEnum(Prisma.AnotherEnum);
+
+// ANOTHER ENUM - ENUM FILTER
 //------------------------------------------------------
 
 export const EnumAnotherEnumFilterType = z.object({
@@ -32,7 +46,7 @@ export const EnumAnotherEnumFilterType = z.object({
     .optional(),
 });
 
-export const NestedEnumAnotherEnumFilterType: z.ZodType<Prisma.NestedEnumAnotherEnumFilter> =
+export const NestedEnumAnotherEnumFilterType: z.ZodType<Prisma.Prisma.NestedEnumAnotherEnumFilter> =
   z.object({
     equals: z.lazy(() => AnotherEnumType).optional(),
     in: z
@@ -55,7 +69,7 @@ export const NestedEnumAnotherEnumFilterType: z.ZodType<Prisma.NestedEnumAnother
       .optional(),
   });
 
-// ANOTHER ENUM ENUM LIST FILTER
+// ANOTHER ENUM - ENUM LIST FILTER
 //------------------------------------------------------
 
 export const EnumAnotherEnumNullableListFilterType = z.object({
@@ -86,9 +100,9 @@ export const EnumAnotherEnumNullableListFilterType = z.object({
 // ROLE ENUM
 /////////////////////////////////////////
 
-export const RoleType = z.enum(['USER', 'ADMIN']);
+export const RoleType = z.nativeEnum(Prisma.Role);
 
-// ROLE ENUM LIST FILTER
+// ROLE - ENUM LIST FILTER
 //------------------------------------------------------
 
 export const EnumRoleNullableListFilterType = z.object({
@@ -109,9 +123,9 @@ export const EnumRoleNullableListFilterType = z.object({
 // SECOND ENUM ENUM
 /////////////////////////////////////////
 
-export const SecondEnumType = z.enum(['ONE', 'TWO']);
+export const SecondEnumType = z.nativeEnum(Prisma.SecondEnum);
 
-// SECOND ENUM ENUM FILTER
+// SECOND ENUM - ENUM FILTER
 //------------------------------------------------------
 
 export const EnumSecondEnumFilterType = z.object({
@@ -136,7 +150,7 @@ export const EnumSecondEnumFilterType = z.object({
     .optional(),
 });
 
-export const NestedEnumSecondEnumFilterType: z.ZodType<Prisma.NestedEnumSecondEnumFilter> =
+export const NestedEnumSecondEnumFilterType: z.ZodType<Prisma.Prisma.NestedEnumSecondEnumFilter> =
   z.object({
     equals: z.lazy(() => SecondEnumType).optional(),
     in: z

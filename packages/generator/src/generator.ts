@@ -3,8 +3,12 @@ import { Project, StructureKind } from 'ts-morph';
 
 import { DirectoryHelper } from './classes/directoryHelper';
 import { ExtendedDMMF } from './classes/extendedDmmf';
-import { PRIMSA_IMPORT_STATEMENT, ZOD_IMPORT_STATEMENT } from './constants';
-import { StatementsArray } from './types';
+import {
+  PRIMSA_IMPORT_STATEMENT,
+  ZOD_IMPORT_STATEMENT,
+} from './constants/importStatements';
+// import { writeEnumStatements } from './statements/writeEnumStatements';
+import { Statement } from './types';
 import { writeConstStatement } from './utils/writeConstStatement';
 import { writeHeading } from './utils/writeHeading';
 
@@ -23,16 +27,16 @@ generatorHandler({
     // EXTENDED DMMF
     //--------------------------------------------------------------------------------
     // Create an instance of the extended DMMF class
-    // This class extends the Prisma DMMF with additional information:
-    // - name of models and fields in different formats (uppercase, pascalcase, camelcase)
+    // This class extends the Prisma DMMF with additional information like
+    // - name of models, enums and fields in different formats (uppercase, pascalcase, camelcase)
     // - helper methods for generating types
 
     const extendedDMMF = new ExtendedDMMF(options.dmmf);
 
     const { datamodel } = extendedDMMF;
-    const { enums, models } = datamodel;
+    // const { models } = datamodel;
 
-    console.log('Output models:', models);
+    // console.log('Output models:', models);
 
     // CREATE TS-MORPH PROJECT
     //--------------------------------------------------------------------------------
@@ -84,22 +88,49 @@ generatorHandler({
       { overwrite: true },
     );
 
-    // CREATE STATEMENTS
+    //////////////////////////////////////////////////////////////
+    // CREATE TYPES
+    //////////////////////////////////////////////////////////////
+
+    // CREATE ENUM
     //------------------------------------------------------
 
     enumSource.addStatements(
-      enums
+      datamodel.enums
         .map(
           ({
-            values,
+            // values,
             formattedNames,
             generateEnumFilter,
             generateEnumListFilter,
-          }): StatementsArray => {
-            const filters: StatementsArray = [];
+          }): Statement[] => {
+            const enumStatements: Statement[] = [];
+
+            // GENERATE ENUM
+            // ---------------------------------------------------------------------
+
+            enumStatements.push(
+              writeHeading(`${formattedNames.upperCaseSpace} ENUM`, 'FAT'),
+              writeConstStatement({
+                leadingTrivia: (writer) => writer.newLine(),
+                declarations: [
+                  {
+                    name: `${formattedNames.pascalCase}Type`,
+                    initializer(writer) {
+                      writer.write(
+                        `z.nativeEnum(Prisma.${formattedNames.pascalCase})`,
+                      );
+                    },
+                  },
+                ],
+              }),
+            );
+
+            // GENERATE ENUM FILTER
+            // ---------------------------------------------------------------------
 
             if (generateEnumFilter) {
-              filters.push(
+              enumStatements.push(
                 writeHeading(`${formattedNames.upperCaseSpace} - ENUM FILTER`),
                 writeConstStatement({
                   leadingTrivia: (writer) => writer.newLine(),
@@ -151,7 +182,7 @@ generatorHandler({
                   declarations: [
                     {
                       name: `NestedEnum${formattedNames.pascalCase}FilterType`,
-                      type: `z.ZodType<Prisma.NestedEnum${formattedNames.pascalCase}Filter>`,
+                      type: `z.ZodType<Prisma.Prisma.NestedEnum${formattedNames.pascalCase}Filter>`,
                       initializer(writer) {
                         writer
                           .write(`z.object(`)
@@ -195,8 +226,11 @@ generatorHandler({
               );
             }
 
+            // GENERATE ENUM LIST FILTER
+            // ---------------------------------------------------------------------
+
             if (generateEnumListFilter) {
-              filters.push(
+              enumStatements.push(
                 writeHeading(
                   `${formattedNames.upperCaseSpace} - ENUM LIST FILTER`,
                 ),
@@ -257,32 +291,13 @@ generatorHandler({
               );
             }
 
-            return [
-              writeHeading(`${formattedNames.upperCaseSpace} ENUM`, 'FAT'),
-              writeConstStatement({
-                leadingTrivia: (writer) => writer.newLine(),
-                declarations: [
-                  {
-                    name: `${formattedNames.pascalCase}Type`,
-                    initializer(writer) {
-                      writer
-                        .writeLine(`z.enum([`)
-                        .withIndentationLevel(2, () => {
-                          values.forEach((value) =>
-                            writer.writeLine(`'${value.name}',`),
-                          );
-                        })
-                        .write(`])`);
-                    },
-                  },
-                ],
-              }),
-              ...filters,
-            ];
+            return enumStatements;
           },
         )
         .flat(),
     );
+
+    // enumSource.addStatements(getEnumStatements(datamodel));
 
     // FORMAT SOURCE FILES
     //------------------------------------------------------

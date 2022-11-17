@@ -15,8 +15,8 @@ generator zod {
 }
 
 model User {
-  id      Int         @id @default(autoincrement())
-  email   String      @unique
+  id      String      @id @default(cuid()) /// @zod.string.cuid()
+  email   String      @unique /// @zod.string.email({ message: "Invalid email address" })
   name    String?
   posts   Post[]
   profile Profile?
@@ -54,7 +54,7 @@ model Post {
   content     String?
   published   Boolean       @default(false)
   author      User          @relation(fields: [authorId], references: [id])
-  authorId    Int
+  authorId    String
   anotherEnum AnotherEnum[]
 }
 
@@ -62,7 +62,7 @@ model Profile {
   id     Int        @id @default(autoincrement())
   bio    String
   user   User       @relation(fields: [userId], references: [id])
-  userId Int        @unique
+  userId String     @unique
   role   Role[]     @default([USER, ADMIN])
   second SecondEnum @default(ONE)
 }

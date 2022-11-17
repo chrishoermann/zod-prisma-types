@@ -5,8 +5,9 @@ export const ZOD_IMPORT_STATEMENT: ImportDeclarationStructure = {
   namedImports: ['z'],
   moduleSpecifier: 'zod',
 };
+
 export const PRIMSA_IMPORT_STATEMENT: ImportDeclarationStructure = {
   kind: StructureKind.ImportDeclaration,
-  namedImports: ['Prisma'],
+  defaultImport: '* as Prisma',
   moduleSpecifier: '@prisma/client',
 };

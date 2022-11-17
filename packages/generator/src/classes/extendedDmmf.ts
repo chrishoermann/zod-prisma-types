@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DMMF } from '@prisma/generator-helper';
 
+import { DMMFField } from './DMMFField';
 import { FormattedNames } from './formattedNames';
 
 /////////////////////////////////////////////////
@@ -14,7 +15,7 @@ export interface ObejctWithName {
 
 export interface ExtendedDatamodel {
   models: DMMFModel[];
-  enums: DMMFDatamodelEnum[];
+  enums: DMMFEnum[];
   types: DMMF.Model[];
 }
 
@@ -32,16 +33,22 @@ export const ENUM_FILTER: EnumListFilter = '@generate.enum.filter';
 // EXTENDED ENUM
 // ------------------------------------------------------
 
-export class DMMFDatamodelEnum
-  extends FormattedNames
-  implements DMMFDatamodelEnum
-{
+export class DMMFEnum extends FormattedNames implements DMMFEnum {
   name: string;
   values: DMMF.EnumValue[];
   dbName?: string | null;
   documentation?: string;
 
+  /**
+   * `true` if the enum has '@generate.enum.listFilter'
+   * @default false
+   */
   generateEnumListFilter: boolean;
+
+  /**
+   * `true` if the enum has '@generate.enum.filter'
+   * @default false
+   */
   generateEnumFilter: boolean;
 
   constructor(enums: DMMF.DatamodelEnum) {
@@ -67,7 +74,7 @@ export class DMMFDatamodelEnum
 export class DMMFModel extends FormattedNames implements DMMF.Model {
   readonly name: DMMF.Model['name'];
   readonly dbName: DMMF.Model['dbName'];
-  readonly fields: DMMF.Model['fields'];
+  readonly fields: DMMFField[];
   readonly uniqueFields: DMMF.Model['uniqueFields'];
   readonly uniqueIndexes: DMMF.Model['uniqueIndexes'];
   readonly documentation?: DMMF.Model['documentation'];
@@ -78,11 +85,15 @@ export class DMMFModel extends FormattedNames implements DMMF.Model {
 
     this.name = model.name;
     this.dbName = model.dbName;
-    this.fields = model.fields;
+    this.fields = this.getExtendedFields(model);
     this.uniqueFields = model.uniqueFields;
     this.uniqueIndexes = model.uniqueIndexes;
     this.documentation = model.documentation;
     this.primaryKey = model.primaryKey;
+  }
+
+  private getExtendedFields(model: DMMF.Model) {
+    return model.fields.map((field) => new DMMFField(field));
   }
 }
 
@@ -116,7 +127,7 @@ export class ExtendedDMMF implements DMMF.Document {
 
   private getExtendedEnums(enums: DMMF.DatamodelEnum[]) {
     const enumFields = enums.map((elem) => {
-      return new DMMFDatamodelEnum(elem);
+      return new DMMFEnum(elem);
     });
 
     return this.sortObjectsByName(enumFields);
