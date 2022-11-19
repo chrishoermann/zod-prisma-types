@@ -2,7 +2,8 @@
 import { DMMF } from '@prisma/generator-helper';
 import { it, expect } from 'vitest';
 
-import { DMMFField, PrismaScalarTypeMap } from '../../DMMFField';
+import { KeyValueMap, PrismaScalarType } from '../../../types';
+import { DMMFField } from '../../DMMFField';
 
 const BASE_FIELD: DMMF.Field = {
   name: 'name',
@@ -22,7 +23,7 @@ const BASE_FIELD: DMMF.Field = {
   relationName: undefined,
 };
 
-export const FIELDS: PrismaScalarTypeMap<DMMF.Field> = {
+export const FIELDS: KeyValueMap<PrismaScalarType, DMMF.Field> = {
   String: { ...BASE_FIELD, type: 'String' },
   Boolean: { ...BASE_FIELD, type: 'Boolean' },
   DateTime: { ...BASE_FIELD, type: 'DateTime' },
@@ -34,22 +35,47 @@ export const FIELDS: PrismaScalarTypeMap<DMMF.Field> = {
   Bytes: { ...BASE_FIELD, type: 'Bytes' },
 };
 
-it('should extract validator from a string', () => {
+it('should extract validatorPatterns from a string', () => {
   const type = 'string';
-  const validator = ".min(3, { message: 'some string' })";
-  const match = `@zod.${type}${validator}`;
+  const error = "({ error: 'someError', errorTwo: 'someOtherError' })";
+  const validatorPattern =
+    ".min(3, { message: 'some string' }).max(10, { message: 'some other string' }).email({ message: 'some email' })";
+  const match = `@zod.${type}${error}${validatorPattern}`;
 
   const field = new DMMFField({
     ...FIELDS.String,
     documentation: `some string - ${match}`,
   });
 
-  expect(field.validator).toEqual({
-    match,
-    type,
-    typeErrorMessages: undefined,
-    validator,
+  expect(field.zodCustomErrors).toBe(error);
+  expect(field.zodValidatorString).toBe(validatorPattern);
+});
+
+it('should not extract customErrorMessage from a string without validators', () => {
+  const type = 'string';
+  const error = "({ error: 'someError', errorTwo: 'someOtherError' })";
+  const match = `@zod.${type}${error}`;
+
+  const field = new DMMFField({
+    ...FIELDS.String,
+    documentation: `some string - ${match}`,
   });
+
+  expect(field.zodCustomErrors).toBe(error);
+});
+
+it('should extract validatorPatterns from a string without custom error messages', () => {
+  const type = 'string';
+  const validatorPattern =
+    ".min(3, { message: 'some string' }).max(10, { message: 'some other string' }).email({ message: 'some email' })";
+  const match = `@zod.${type}${validatorPattern}`;
+
+  const field = new DMMFField({
+    ...FIELDS.String,
+    documentation: `some string - ${match}`,
+  });
+
+  expect(field.zodValidatorString).toBe(validatorPattern);
 });
 
 // it('should extract validator from a date', () => {

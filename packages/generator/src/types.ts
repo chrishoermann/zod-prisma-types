@@ -10,24 +10,24 @@ export type GetStatements = (
 ) => void;
 
 export interface ValidatorFunctionOptions {
-  validatorKey: string;
-  validatorPattern: string;
+  key: string;
+  pattern: string;
 }
 
 export type ValidatorFunction = (options: ValidatorFunctionOptions) => string;
 
-export type ValidatorMap<K extends string, T> = {
-  [key in K]: T;
+export type KeyValueMap<TKey extends string, TValue> = {
+  [key in TKey]: TValue;
 };
 
-export type ZodValidatorTypeMap = ValidatorMap<
+export type ZodValidatorTypeMap = KeyValueMap<
   ZodValidatorType,
   PrismaScalarType[]
 >;
 
-export type PrismaScalarTypeMap<T> = ValidatorMap<PrismaScalarType, T>;
+export type PrismaScalarTypeMap<T> = KeyValueMap<PrismaScalarType, T>;
 
-export type ValidatorFunctionMap = ValidatorMap<
+export type ValidatorFunctionMap = KeyValueMap<
   ZodValidatorType,
   ValidatorFunction
 >;

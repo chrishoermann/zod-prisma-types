@@ -3,6 +3,7 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": ".",
+    "baseUrl": ".",
     "lib": ["ESNext"],
     "declaration": true,
     "declarationMap": true,
@@ -29,6 +30,9 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "useDefineForClassFields": true,
-    "useUnknownInCatchVariables": true
+    "useUnknownInCatchVariables": true,
+    "paths": {
+      "@/*": ["src/*"]
+    }
   }
 }

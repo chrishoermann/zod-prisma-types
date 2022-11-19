@@ -2,15 +2,16 @@ import { DMMF } from '@prisma/generator-helper';
 import {
   DATE_VALIDATOR_REGEX_MAP,
   NUMBER_VALIDATOR_REGEX_MAP,
-  STRING_VALIDATOR_REGEX,
+  SPLIT_VALIDATOR_PATTERN_REGEX,
   STRING_VALIDATOR_REGEX_MAP,
+  VALIDATOR_KEY_REGEX,
   VALIDATOR_TYPE_REGEX,
 } from 'src/constants/regex';
 import {
   PrismaScalarType,
   ValidatorFunctionMap,
   ValidatorFunctionOptions,
-  ValidatorMap,
+  KeyValueMap,
   ZodValidatorType,
   ZodValidatorTypeMap,
 } from 'src/types';
@@ -22,9 +23,8 @@ import { FormattedNames } from './formattedNames';
 /////////////////////////////////////////////////
 
 export interface Validator {
-  match: string;
-  validator: string;
-  typeErrorMessages?: string;
+  customErrors?: string;
+  pattern?: string;
 }
 
 /////////////////////////////////////////////////
@@ -45,22 +45,20 @@ export const VALIDATOR_TYPE_MAP: ZodValidatorTypeMap = {
 /////////////////////////////////////////////////
 
 export const validateRegexInMap = <TKeys extends string>(
-  regexMap: ValidatorMap<TKeys, RegExp>,
-  { validatorPattern, validatorKey: validator }: ValidatorFunctionOptions,
+  regexMap: KeyValueMap<TKeys, RegExp>,
+  { pattern, key }: ValidatorFunctionOptions,
 ): string => {
-  const regex = regexMap[validator as TKeys];
+  const regex = regexMap[key as TKeys];
 
   if (!regex) {
-    throw new Error(
-      `Could not find regex for validator ${validator} in regexMap`,
-    );
+    throw new Error(`Could not find regex for validator ${key} in regexMap`);
   }
 
-  const match = validatorPattern.match(regex);
+  const match = pattern.match(regex);
 
   if (!match) {
     throw new Error(
-      `Could not match validator ${validator} with validatorPattern ${validatorPattern}`,
+      `Could not match validator ${key} with validatorPattern ${pattern}`,
     );
   }
 
@@ -95,9 +93,12 @@ export class DMMFField extends FormattedNames implements DMMF.Field {
   readonly relationName?: DMMF.Field['relationName'];
   readonly documentation?: DMMF.Field['documentation'];
 
-  readonly validator?: Validator;
-  private _validatorType: ZodValidatorType | undefined;
-  private _validatorPatterns: string[] = [];
+  private _validatorRegexMatch?: RegExpMatchArray;
+  private _zodValidatorType?: ZodValidatorType;
+
+  readonly clearedDocumentation?: string;
+  readonly zodValidatorString?: string;
+  readonly zodCustomErrors?: string;
 
   constructor(field: DMMF.Field) {
     super(field.name);
@@ -119,67 +120,75 @@ export class DMMFField extends FormattedNames implements DMMF.Field {
     this.relationName = field.relationName;
     this.documentation = field.documentation;
 
-    this.validator = this.setValidator();
+    this._validatorRegexMatch = this._setValidatorRegexMatch();
+    this._zodValidatorType = this._setZodValidatorType();
+
+    this.clearedDocumentation = this._setClearedDocumentation();
+    this.zodCustomErrors = this._setZodCustomErrors();
+    this.zodValidatorString = this._setZodValidatorString();
   }
 
-  private setValidatorType(validatorType: string) {
-    const isValidType = VALIDATOR_TYPE_MAP[
-      validatorType as ZodValidatorType
-    ].includes(this.type as PrismaScalarType);
+  // INITIALIZERS
+  // ----------------------------------------------
 
-    if (!isValidType)
+  private _setValidatorRegexMatch() {
+    if (!this.documentation) return;
+    return this.documentation.match(VALIDATOR_TYPE_REGEX) ?? undefined;
+  }
+
+  private _setZodValidatorType() {
+    const validatorType = this._validatorRegexMatch?.groups?.['type'];
+    if (!validatorType) throw new Error('No validator type found');
+    if (!this._isZodValidatorType(validatorType))
       throw new Error(
         `Validator '${validatorType}' is not valid for type '${this.type}'`,
       );
-
-    this._validatorType = validatorType as ZodValidatorType;
+    return validatorType as ZodValidatorType;
   }
 
-  private validateKeys(options: ValidatorFunctionOptions) {
-    if (!this._validatorType) {
-      throw new Error(`No validator type set in field: ${this.name}`);
+  private _setClearedDocumentation() {
+    if (!this.documentation) return;
+    return this.documentation.replace(VALIDATOR_TYPE_REGEX, '');
+  }
+
+  private _isZodValidatorType(validatorType: string) {
+    return VALIDATOR_TYPE_MAP[validatorType as ZodValidatorType].includes(
+      this.type as PrismaScalarType,
+    );
+  }
+
+  private _setZodCustomErrors() {
+    return this._validatorRegexMatch?.groups?.['customErrors'];
+  }
+
+  private _setZodValidatorString() {
+    const pattern = this._validatorRegexMatch?.groups?.['validatorPattern'];
+
+    if (!pattern) return;
+
+    // If pattern consists of multiple validators (e.g. .min(1).max(10))
+    // the pattern is split into an array for further processing
+    const validatorList = pattern?.match(SPLIT_VALIDATOR_PATTERN_REGEX);
+
+    if (!validatorList) {
+      throw new Error(
+        `no validators found in pattern: ${pattern} in field ${this.name}`,
+      );
     }
 
-    return VALIDATOR_MAP[this._validatorType](options);
-  }
+    // Check if each validator in list is valid for the field type
+    validatorList.forEach((pattern) => {
+      const key = pattern.match(VALIDATOR_KEY_REGEX)?.groups?.['validatorKey'];
 
-  // To implement:
-  // - check if only one validator is set
-  // - check if validator is valid
-  setValidator(): Validator | undefined {
-    if (!this.documentation) return;
+      if (!key)
+        throw new Error(`no validator key found in field: ${this.name}`);
 
-    const validator = this.documentation.match(VALIDATOR_TYPE_REGEX);
+      if (!this._zodValidatorType)
+        throw new Error(`No validator type set in field: ${this.name}`);
 
-    if (!validator) return;
-
-    const validatorType = validator.groups?.['type'];
-    const validatorErrorMessages = validator.groups?.['errorMessages'];
-    const validatorPattern = validator.groups?.['validatorPattern'];
-
-    // TODO: support multiple validators by:
-    // - splitting validatorPattern at "."
-    // - validating each validator with validateKeys (shoud receive array of validators) and set the validatorPatterns in class
-
-    const validatorKey = validator.groups?.['validatorKey']; // extract keys from validation pattern
-
-    if (!validatorType) throw new Error('No validator type found');
-    if (!validatorPattern) throw new Error('No validator pattern found');
-    if (!validatorKey) throw new Error('No validator key found');
-
-    this.setValidatorType(validatorType);
-    const validatorString = this.validateKeys({
-      validatorPattern,
-      validatorKey,
+      return VALIDATOR_MAP[this._zodValidatorType]({ pattern, key });
     });
 
-    // here the validator needs to be removed from teh documentation
-    // and the documentation needs to be set to the new documentation
-
-    return {
-      match: validator[0],
-      typeErrorMessages: validator[2],
-      validator: validatorString,
-    };
+    return pattern;
   }
 }

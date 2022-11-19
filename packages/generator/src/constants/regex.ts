@@ -1,5 +1,5 @@
 import {
-  ValidatorMap,
+  KeyValueMap,
   ZodStringValidatorKeys,
   ZodNumberValidatorKeys,
   ZodDateValidatorKeys,
@@ -9,17 +9,22 @@ import {
 // REGEX
 /////////////////////////////////////////////
 
-// VALIDATOR TYPE REGEX
+// VALIDATOR TYPE AND KEY REGEX
 // ----------------------------------------
 
-// maybe remove validatorKey and make a second step after splitting matches on .
 export const VALIDATOR_TYPE_REGEX =
-  /@zod.(?<type>string|number|bigint|date){1}(?<errorMessage>\([a-zA-Z-09"'{}:_, ]+\))?(?<validatorPattern>.(?<validatorKey>[a-z]+).*)/;
+  /@zod\.(?<type>string|number|bigint|date){1}(?<customErrors>\({[\w"': ,%&/()=?$§!,_#@><°^+*~-]+}\))?(?<validatorPattern>.*)?/;
+
+export const SPLIT_VALIDATOR_PATTERN_REGEX =
+  /(\.[\w"': ,%&/()=?$§!,_#@><°^+*~{}-]+)/g;
+
+export const VALIDATOR_KEY_REGEX = /(\.(?<validatorKey>[\w]+))/;
+
+export const VALIDATOR_CUSTOM_ERROR_REGEX =
+  /(?<opening>\(\{)(?<messages>[\w,": ]+)(?<closing>\}\))/;
 
 // TODO: Refine this regex to match the following:
-// - multiple validators
 // - multiple custom error messages
-// - multiple custom error messages with multiple validators
 
 // STRING
 // ----------------------------------------
@@ -54,10 +59,9 @@ export const DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
 // REGEX MAOS
 /////////////////////////////////////////////
 
-export const STRING_VALIDATOR_REGEX_MAP: ValidatorMap<
-  ZodStringValidatorKeys,
-  RegExp
-> = {
+export type RegexMap<TKeys extends string> = KeyValueMap<TKeys, RegExp>;
+
+export const STRING_VALIDATOR_REGEX_MAP: RegexMap<ZodStringValidatorKeys> = {
   min: STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
   max: STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
   length: STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
@@ -72,10 +76,7 @@ export const STRING_VALIDATOR_REGEX_MAP: ValidatorMap<
   endsWith: STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX,
 };
 
-export const NUMBER_VALIDATOR_REGEX_MAP: ValidatorMap<
-  ZodNumberValidatorKeys,
-  RegExp
-> = {
+export const NUMBER_VALIDATOR_REGEX_MAP: RegexMap<ZodNumberValidatorKeys> = {
   gt: NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
   gte: NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
   lt: NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
@@ -89,10 +90,7 @@ export const NUMBER_VALIDATOR_REGEX_MAP: ValidatorMap<
   finite: NUMBER_VALIDATOR_MESSAGE_REGEX,
 };
 
-export const DATE_VALIDATOR_REGEX_MAP: ValidatorMap<
-  ZodDateValidatorKeys,
-  RegExp
-> = {
+export const DATE_VALIDATOR_REGEX_MAP: RegexMap<ZodDateValidatorKeys> = {
   min: DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
   max: DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
 };

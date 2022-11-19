@@ -1,11 +1,91 @@
 import { it, expect, describe } from 'vitest';
 
 import {
+  SPLIT_VALIDATOR_PATTERN_REGEX,
   STRING_VALIDATOR_MESSAGE_REGEX,
   STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
   STRING_VALIDATOR_REGEX,
   STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX,
+  VALIDATOR_KEY_REGEX,
+  VALIDATOR_TYPE_REGEX,
 } from '../regex';
+
+///////////////////////////////////////////
+// VALIDATE WHOLE STRING
+///////////////////////////////////////////
+
+describe('VALIDATOR_TYPE_REGEX', () => {
+  it('should match "VALIDATOR_TYPE_REGEX" with customErrors', () => {
+    const TYPE = 'string';
+    const CUSTOM_ERROR = "({ error: 'someError' })";
+    const VALIDATOR =
+      ".min(3, { message: 'some string' }).max(10).email({ message: 'some string' })";
+    const STRING = `@zod.${TYPE}${CUSTOM_ERROR}${VALIDATOR}`;
+
+    const validator = STRING.match(VALIDATOR_TYPE_REGEX);
+
+    const validatorType = validator?.groups?.['type'];
+    const validatorCustomErrors = validator?.groups?.['customErrors'];
+    const validatorPattern = validator?.groups?.['validatorPattern'];
+
+    expect(validatorType).toBe(TYPE);
+    expect(validatorCustomErrors).toBe(CUSTOM_ERROR);
+    expect(validatorPattern).toBe(VALIDATOR);
+  });
+
+  it('should match "VALIDATOR_TYPE_REGEX"', () => {
+    const TYPE = 'string';
+    const VALIDATOR =
+      ".min(3, { message: 'some string' }).max(10).email({ message: 'some string' })";
+    const STRING = `@zod.${TYPE}${VALIDATOR}`;
+
+    const validator = STRING.match(VALIDATOR_TYPE_REGEX);
+
+    const validatorType = validator?.groups?.['type'];
+    const validatorPattern = validator?.groups?.['validatorPattern'];
+
+    expect(validatorType).toBe(TYPE);
+    expect(validatorPattern).toBe(VALIDATOR);
+  });
+});
+
+/////////////////////////////////////////////
+// VALIDATOR PATTERN
+/////////////////////////////////////////////
+
+describe('SPLIT_VALIDATOR_PATTERN_REGEX', () => {
+  it('should split validatorPatterns via "SPLIT_VALIDATOR_PATTERN_REGEX"', () => {
+    const SPLIT_VALIDATOR = [
+      ".min(3, { message: 'some string' })",
+      '.max(10)',
+      ".email({ message: 'some string' })",
+    ];
+
+    const STRING = SPLIT_VALIDATOR.join('');
+
+    const validator = STRING.match(SPLIT_VALIDATOR_PATTERN_REGEX);
+
+    expect(validator).toHaveLength(SPLIT_VALIDATOR.length);
+    expect(validator).toEqual(SPLIT_VALIDATOR);
+  });
+});
+
+/////////////////////////////////////////////
+// VALIDATOR KEY
+/////////////////////////////////////////////
+
+describe('SPLIT_VALIDATOR_PATTERN_REGEX', () => {
+  it('should split validatorPatterns via "SPLIT_VALIDATOR_PATTERN_REGEX"', () => {
+    const STRING = ".min(3, { message: 'some string' })";
+    const validator = STRING.match(VALIDATOR_KEY_REGEX);
+    expect(validator?.groups?.['validatorKey']).toBe('min');
+  });
+  it('should split validatorPatterns via "SPLIT_VALIDATOR_PATTERN_REGEX"', () => {
+    const STRING = ".startsWith('asdfasdf', { message: 'some string' })";
+    const validator = STRING.match(VALIDATOR_KEY_REGEX);
+    expect(validator?.groups?.['validatorKey']).toBe('startsWith');
+  });
+});
 
 /////////////////////////////////////////////
 // MATCH KEYS
