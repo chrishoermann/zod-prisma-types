@@ -1,4 +1,5 @@
 import { DMMF } from '@prisma/generator-helper';
+
 import {
   DATE_VALIDATOR_REGEX_MAP,
   NUMBER_VALIDATOR_REGEX_MAP,
@@ -6,7 +7,7 @@ import {
   STRING_VALIDATOR_REGEX_MAP,
   VALIDATOR_KEY_REGEX,
   VALIDATOR_TYPE_REGEX,
-} from 'src/constants/regex';
+} from '../constants/regex';
 import {
   PrismaScalarType,
   ValidatorFunctionMap,
@@ -14,8 +15,9 @@ import {
   KeyValueMap,
   ZodValidatorType,
   ZodValidatorTypeMap,
-} from 'src/types';
-
+  ZodScalarType,
+  ZodPrismaScalarType,
+} from '../types';
 import { FormattedNames } from './formattedNames';
 
 /////////////////////////////////////////////////
@@ -36,46 +38,29 @@ export interface Validator {
  */
 export const VALIDATOR_TYPE_MAP: ZodValidatorTypeMap = {
   string: ['String', 'DateTime'],
-  number: ['Float', 'Int', 'Decimal'],
+  number: ['Float', 'Int', 'Decimal', 'BigInt'],
   date: ['DateTime'],
 };
 
-/////////////////////////////////////////////////
-// HELPER FUNCTIONS
-/////////////////////////////////////////////////
-
-export const validateRegexInMap = <TKeys extends string>(
-  regexMap: KeyValueMap<TKeys, RegExp>,
-  { pattern, key }: ValidatorFunctionOptions,
-): string => {
-  const regex = regexMap[key as TKeys];
-
-  if (!regex) {
-    throw new Error(`Could not find regex for validator ${key} in regexMap`);
-  }
-
-  const match = pattern.match(regex);
-
-  if (!match) {
-    throw new Error(
-      `Could not match validator ${key} with validatorPattern ${pattern}`,
-    );
-  }
-
-  return match[0];
-};
-
-export const VALIDATOR_MAP: ValidatorFunctionMap = {
-  string: (options) => validateRegexInMap(STRING_VALIDATOR_REGEX_MAP, options),
-  number: (options) => validateRegexInMap(NUMBER_VALIDATOR_REGEX_MAP, options),
-  date: (options) => validateRegexInMap(DATE_VALIDATOR_REGEX_MAP, options),
-};
+/**
+ * Map prisma scalar types to their corresponding zod validators
+ */
+export const PRISMA_TYPE_MAP: KeyValueMap<ZodPrismaScalarType, ZodScalarType> =
+  {
+    String: 'string',
+    Boolean: 'boolean',
+    DateTime: 'date',
+    Int: 'number',
+    BigInt: 'number',
+    Float: 'number',
+    Decimal: 'number',
+  };
 
 /////////////////////////////////////////////////
 // CLASS
 /////////////////////////////////////////////////
 
-export class DMMFField extends FormattedNames implements DMMF.Field {
+export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   readonly kind: DMMF.Field['kind'];
   readonly name: DMMF.Field['name'];
   readonly isRequired: DMMF.Field['isRequired'];
@@ -93,14 +78,25 @@ export class DMMFField extends FormattedNames implements DMMF.Field {
   readonly relationName?: DMMF.Field['relationName'];
   readonly documentation?: DMMF.Field['documentation'];
 
+  readonly modelName: string;
+
   private _validatorRegexMatch?: RegExpMatchArray;
   private _zodValidatorType?: ZodValidatorType;
+  private _validatorMap: ValidatorFunctionMap = {
+    string: (options) =>
+      this._validateRegexInMap(STRING_VALIDATOR_REGEX_MAP, options),
+    number: (options) =>
+      this._validateRegexInMap(NUMBER_VALIDATOR_REGEX_MAP, options),
+    date: (options) =>
+      this._validateRegexInMap(DATE_VALIDATOR_REGEX_MAP, options),
+  };
 
   readonly clearedDocumentation?: string;
   readonly zodValidatorString?: string;
   readonly zodCustomErrors?: string;
+  readonly zodType: string;
 
-  constructor(field: DMMF.Field) {
+  constructor(field: DMMF.Field, modelName: string) {
     super(field.name);
 
     this.kind = field.kind;
@@ -120,16 +116,30 @@ export class DMMFField extends FormattedNames implements DMMF.Field {
     this.relationName = field.relationName;
     this.documentation = field.documentation;
 
+    this.modelName = modelName;
+
     this._validatorRegexMatch = this._setValidatorRegexMatch();
     this._zodValidatorType = this._setZodValidatorType();
 
     this.clearedDocumentation = this._setClearedDocumentation();
+    this.zodType = this._setZodType();
     this.zodCustomErrors = this._setZodCustomErrors();
     this.zodValidatorString = this._setZodValidatorString();
   }
 
   // INITIALIZERS
   // ----------------------------------------------
+
+  private _setZodType(): string {
+    if (this.isScalarField()) {
+      return this._getZodTypeFromScalarType();
+    }
+    return this.type;
+  }
+
+  private _getZodTypeFromScalarType(): string {
+    return PRISMA_TYPE_MAP[this.type as ZodPrismaScalarType] || this.type;
+  }
 
   private _setValidatorRegexMatch() {
     if (!this.documentation) return;
@@ -138,10 +148,10 @@ export class DMMFField extends FormattedNames implements DMMF.Field {
 
   private _setZodValidatorType() {
     const validatorType = this._validatorRegexMatch?.groups?.['type'];
-    if (!validatorType) throw new Error('No validator type found');
+    if (!validatorType) return;
     if (!this._isZodValidatorType(validatorType))
       throw new Error(
-        `Validator '${validatorType}' is not valid for type '${this.type}'`,
+        `Validator '${validatorType}' is not valid for type '${this.type}' @${this.modelName}.${this.name}`,
       );
     return validatorType as ZodValidatorType;
   }
@@ -172,7 +182,7 @@ export class DMMFField extends FormattedNames implements DMMF.Field {
 
     if (!validatorList) {
       throw new Error(
-        `no validators found in pattern: ${pattern} in field ${this.name}`,
+        `no validators found in pattern: ${pattern} in field ${this.modelName}.${this.name}`,
       );
     }
 
@@ -181,14 +191,96 @@ export class DMMFField extends FormattedNames implements DMMF.Field {
       const key = pattern.match(VALIDATOR_KEY_REGEX)?.groups?.['validatorKey'];
 
       if (!key)
-        throw new Error(`no validator key found in field: ${this.name}`);
+        throw new Error(
+          `no validator key found in field: ${this.modelName}.${this.name}`,
+        );
 
       if (!this._zodValidatorType)
-        throw new Error(`No validator type set in field: ${this.name}`);
+        throw new Error(
+          `No validator type set in field: ${this.modelName}.${this.name}`,
+        );
 
-      return VALIDATOR_MAP[this._zodValidatorType]({ pattern, key });
+      return this._validatorMap[this._zodValidatorType]({ pattern, key });
     });
 
     return pattern;
+  }
+
+  private _validateRegexInMap = <TKeys extends string>(
+    regexMap: KeyValueMap<TKeys, RegExp>,
+    { pattern, key }: ValidatorFunctionOptions,
+  ): string => {
+    const regex = regexMap[key as TKeys];
+
+    if (!regex) {
+      throw new Error(
+        `Could not find regex for validator ${key} in regexMap @${this.modelName}.${this.name}`,
+      );
+    }
+
+    const match = pattern.match(regex);
+
+    if (!match) {
+      throw new Error(
+        `Could not match validator ${key} with validatorPattern ${pattern} @${this.modelName}.${this.name}`,
+      );
+    }
+
+    return match[0];
+  };
+
+  // PUBLIC METHODS
+  //------------------------------------------------------
+
+  isScalarField() {
+    return this.kind === 'scalar';
+  }
+
+  isBooleanField() {
+    return this.isScalarField() && this.type === 'Boolean';
+  }
+
+  isEnumField() {
+    return this.kind === 'enum';
+  }
+
+  isIdField() {
+    return this.isId;
+  }
+
+  isRelationField() {
+    return this.kind === 'object';
+  }
+
+  isListField() {
+    return this.isList && !this.isScalarListField();
+  }
+
+  isObjectField() {
+    return this.kind === 'object' && !this.isList;
+  }
+
+  isScalarListField() {
+    return this.isList && this.kind === 'scalar';
+  }
+
+  isScalarEnumField() {
+    return this.isScalarField() || this.isEnumField();
+  }
+
+  isUniqueField() {
+    return this.isUnique || this.isIdField();
+  }
+
+  private isRequiredFieldWithDefault() {
+    return this.isRequired && this.hasDefaultValue;
+  }
+
+  isNullableField() {
+    return !this.isRequired || this.isRequiredFieldWithDefault();
+  }
+
+  isNonNullableField() {
+    return this.isRequired && !this.isRequiredFieldWithDefault();
   }
 }

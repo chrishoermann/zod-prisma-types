@@ -14,7 +14,7 @@ import {
 // VALIDATE WHOLE STRING
 ///////////////////////////////////////////
 
-describe('VALIDATOR_TYPE_REGEX', () => {
+describe('test VALIDATOR_TYPE_REGEX', () => {
   it('should match "VALIDATOR_TYPE_REGEX" with customErrors', () => {
     const TYPE = 'string';
     const CUSTOM_ERROR = "({ error: 'someError' })";
@@ -53,7 +53,7 @@ describe('VALIDATOR_TYPE_REGEX', () => {
 // VALIDATOR PATTERN
 /////////////////////////////////////////////
 
-describe('SPLIT_VALIDATOR_PATTERN_REGEX', () => {
+describe('test SPLIT_VALIDATOR_PATTERN_REGEX', () => {
   it('should split validatorPatterns via "SPLIT_VALIDATOR_PATTERN_REGEX"', () => {
     const SPLIT_VALIDATOR = [
       ".min(3, { message: 'some string' })",
@@ -74,7 +74,7 @@ describe('SPLIT_VALIDATOR_PATTERN_REGEX', () => {
 // VALIDATOR KEY
 /////////////////////////////////////////////
 
-describe('SPLIT_VALIDATOR_PATTERN_REGEX', () => {
+describe('test SPLIT_VALIDATOR_PATTERN_REGEX', () => {
   it('should split validatorPatterns via "SPLIT_VALIDATOR_PATTERN_REGEX"', () => {
     const STRING = ".min(3, { message: 'some string' })";
     const validator = STRING.match(VALIDATOR_KEY_REGEX);

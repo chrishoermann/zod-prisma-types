@@ -11,3 +11,9 @@ export const PRIMSA_IMPORT_STATEMENT: ImportDeclarationStructure = {
   defaultImport: '* as Prisma',
   moduleSpecifier: '@prisma/client',
 };
+
+export const ENUM_IMPORT_STATEMENT: ImportDeclarationStructure = {
+  kind: StructureKind.ImportDeclaration,
+  defaultImport: '* as Enum',
+  moduleSpecifier: './enum',
+};

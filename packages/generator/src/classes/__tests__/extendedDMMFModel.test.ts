@@ -2,8 +2,8 @@
 import { DMMF } from '@prisma/generator-helper';
 import { it, expect } from 'vitest';
 
-import { KeyValueMap, PrismaScalarType } from '../../../types';
-import { DMMFField } from '../../DMMFField';
+import { KeyValueMap, PrismaScalarType } from '../../types';
+import { ExtendedDMMFField } from '../extendedDMMFField';
 
 const BASE_FIELD: DMMF.Field = {
   name: 'name',
@@ -42,10 +42,15 @@ it('should extract validatorPatterns from a string', () => {
     ".min(3, { message: 'some string' }).max(10, { message: 'some other string' }).email({ message: 'some email' })";
   const match = `@zod.${type}${error}${validatorPattern}`;
 
-  const field = new DMMFField({
-    ...FIELDS.String,
-    documentation: `some string - ${match}`,
-  });
+  const field = new ExtendedDMMFField(
+    {
+      ...FIELDS.String,
+      documentation: `some string - ${match}`,
+    },
+    'MyModel',
+  );
+
+  console.log('zodType', field.zodType);
 
   expect(field.zodCustomErrors).toBe(error);
   expect(field.zodValidatorString).toBe(validatorPattern);
@@ -56,10 +61,13 @@ it('should not extract customErrorMessage from a string without validators', () 
   const error = "({ error: 'someError', errorTwo: 'someOtherError' })";
   const match = `@zod.${type}${error}`;
 
-  const field = new DMMFField({
-    ...FIELDS.String,
-    documentation: `some string - ${match}`,
-  });
+  const field = new ExtendedDMMFField(
+    {
+      ...FIELDS.String,
+      documentation: `some string - ${match}`,
+    },
+    'MyModel',
+  );
 
   expect(field.zodCustomErrors).toBe(error);
 });
@@ -70,10 +78,13 @@ it('should extract validatorPatterns from a string without custom error messages
     ".min(3, { message: 'some string' }).max(10, { message: 'some other string' }).email({ message: 'some email' })";
   const match = `@zod.${type}${validatorPattern}`;
 
-  const field = new DMMFField({
-    ...FIELDS.String,
-    documentation: `some string - ${match}`,
-  });
+  const field = new ExtendedDMMFField(
+    {
+      ...FIELDS.String,
+      documentation: `some string - ${match}`,
+    },
+    'MyModel',
+  );
 
   expect(field.zodValidatorString).toBe(validatorPattern);
 });

@@ -1,13 +1,10 @@
-import { SourceFile, StatementStructures, WriterFunction } from 'ts-morph';
+import { StatementStructures, WriterFunction } from 'ts-morph';
 
-import { ExtendedDatamodel } from './classes/extendedDmmf';
+import { ExtendedDatamodel } from './classes/extendedDMMF';
 
 export type StatementsArray = Statement[];
 export type Statement = string | WriterFunction | StatementStructures;
-export type GetStatements = (
-  datamodel: ExtendedDatamodel,
-  source: SourceFile,
-) => void;
+export type GetStatements = (datamodel: ExtendedDatamodel) => Statement[];
 
 export interface ValidatorFunctionOptions {
   key: string;
@@ -32,7 +29,29 @@ export type ValidatorFunctionMap = KeyValueMap<
   ValidatorFunction
 >;
 
-export type ZodValidatorType = 'string' | 'number' | 'date';
+export type ZodPrimitiveType =
+  | 'string'
+  | 'number'
+  | 'bigint'
+  | 'boolean'
+  | 'date'
+  | 'symbol'
+  | 'undefined'
+  | 'null'
+  | 'void'
+  | 'unknown'
+  | 'never'
+  | 'any';
+
+export type ZodValidatorType = Extract<
+  ZodPrimitiveType,
+  'string' | 'number' | 'date'
+>;
+
+export type ZodScalarType = Extract<
+  ZodPrimitiveType,
+  'string' | 'number' | 'date' | 'boolean'
+>;
 
 export type PrismaScalarType =
   | 'String'
@@ -44,6 +63,11 @@ export type PrismaScalarType =
   | 'DateTime'
   | 'Json'
   | 'Bytes';
+
+export type ZodPrismaScalarType = Extract<
+  PrismaScalarType,
+  'String' | 'Boolean' | 'Int' | 'BigInt' | 'Float' | 'Decimal' | 'DateTime'
+>;
 
 export type ZodStringValidatorKeys =
   | 'min'

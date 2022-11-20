@@ -2,15 +2,18 @@ import { generatorHandler } from '@prisma/generator-helper';
 import { Project, StructureKind } from 'ts-morph';
 
 import { DirectoryHelper } from './classes/directoryHelper';
-import { ExtendedDMMF } from './classes/extendedDmmf';
+import { ExtendedDMMF } from './classes/extendedDMMF';
 import {
+  ENUM_IMPORT_STATEMENT,
   PRIMSA_IMPORT_STATEMENT,
   ZOD_IMPORT_STATEMENT,
 } from './constants/importStatements';
-// import { writeEnumStatements } from './statements/writeEnumStatements';
+import {
+  getEnumStatements,
+  getFilterBaseStatements,
+  getModelStatements,
+} from './statements';
 import { Statement } from './types';
-import { writeConstStatement } from './utils/writeConstStatement';
-import { writeHeading } from './utils/writeHeading';
 
 generatorHandler({
   onManifest: () => {
@@ -26,20 +29,17 @@ generatorHandler({
 
     // EXTENDED DMMF
     //--------------------------------------------------------------------------------
+
     // Create an instance of the extended DMMF class
     // This class extends the Prisma DMMF with additional information like
     // - name of models, enums and fields in different formats (uppercase, pascalcase, camelcase)
     // - helper methods for generating types
 
-    const extendedDMMF = new ExtendedDMMF(options.dmmf);
-
-    const { datamodel } = extendedDMMF;
-    // const { models } = datamodel;
-
-    // console.log('Output models:', models);
+    const { datamodel } = new ExtendedDMMF(options.dmmf);
 
     // CREATE TS-MORPH PROJECT
     //--------------------------------------------------------------------------------
+
     // Ts-morph is used to generate the TypeScript files
     // For further information see: https://ts-morph.com/
 
@@ -51,8 +51,32 @@ generatorHandler({
     // CREATE PATH
     //------------------------------------------------------
 
-    // check if path exists, if not create it
     DirectoryHelper.pathExistsElseCreate(path.value);
+
+    // CREATE IMPORT STATEMENTS
+    //------------------------------------------------------
+
+    const enumImportStatements: Statement[] = [
+      PRIMSA_IMPORT_STATEMENT,
+      ZOD_IMPORT_STATEMENT,
+    ];
+
+    const modelImportStatements: Statement[] = [
+      PRIMSA_IMPORT_STATEMENT,
+      ZOD_IMPORT_STATEMENT,
+    ];
+
+    const filterBaseImportStatements: Statement[] = [
+      PRIMSA_IMPORT_STATEMENT,
+      ZOD_IMPORT_STATEMENT,
+    ];
+
+    // CONDITIONALLY EXTEND IMPORT STATEMENTS
+    //------------------------------------------------------
+
+    if (datamodel.enums.length > 0) {
+      modelImportStatements.push(ENUM_IMPORT_STATEMENT);
+    }
 
     // CREATE SOURCE FILES
     //------------------------------------------------------
@@ -67,6 +91,10 @@ generatorHandler({
           },
           {
             kind: StructureKind.ExportDeclaration,
+            moduleSpecifier: './filterBase',
+          },
+          {
+            kind: StructureKind.ExportDeclaration,
             moduleSpecifier: './model',
           },
         ],
@@ -78,13 +106,19 @@ generatorHandler({
 
     const enumSource = project.createSourceFile(
       `${path.value}/enum.ts`,
-      { statements: [PRIMSA_IMPORT_STATEMENT, ZOD_IMPORT_STATEMENT] },
+      { statements: enumImportStatements },
       { overwrite: true },
     );
 
     const modelSource = project.createSourceFile(
       `${path.value}/model.ts`,
-      { statements: [ZOD_IMPORT_STATEMENT] },
+      { statements: modelImportStatements },
+      { overwrite: true },
+    );
+
+    const filterBaseSource = project.createSourceFile(
+      `${path.value}/filterBase.ts`,
+      { statements: filterBaseImportStatements },
       { overwrite: true },
     );
 
@@ -95,209 +129,14 @@ generatorHandler({
     // CREATE ENUM
     //------------------------------------------------------
 
-    enumSource.addStatements(
-      datamodel.enums
-        .map(
-          ({
-            // values,
-            formattedNames,
-            generateEnumFilter,
-            generateEnumListFilter,
-          }): Statement[] => {
-            const enumStatements: Statement[] = [];
+    const filterBaseStatements = getFilterBaseStatements(datamodel);
+    filterBaseSource.addStatements(filterBaseStatements);
 
-            // GENERATE ENUM
-            // ---------------------------------------------------------------------
+    const enumStatements = getEnumStatements(datamodel);
+    enumSource.addStatements(enumStatements);
 
-            enumStatements.push(
-              writeHeading(`${formattedNames.upperCaseSpace} ENUM`, 'FAT'),
-              writeConstStatement({
-                leadingTrivia: (writer) => writer.newLine(),
-                declarations: [
-                  {
-                    name: `${formattedNames.pascalCase}Type`,
-                    initializer(writer) {
-                      writer.write(
-                        `z.nativeEnum(Prisma.${formattedNames.pascalCase})`,
-                      );
-                    },
-                  },
-                ],
-              }),
-            );
-
-            // GENERATE ENUM FILTER
-            // ---------------------------------------------------------------------
-
-            if (generateEnumFilter) {
-              enumStatements.push(
-                writeHeading(`${formattedNames.upperCaseSpace} - ENUM FILTER`),
-                writeConstStatement({
-                  leadingTrivia: (writer) => writer.newLine(),
-                  declarations: [
-                    {
-                      name: `Enum${formattedNames.pascalCase}FilterType`,
-                      initializer(writer) {
-                        writer
-                          .write(`z.object(`)
-                          .inlineBlock(() => {
-                            writer.write(
-                              `equals: z.lazy(() => ${formattedNames.pascalCase}Type).optional(),`,
-                            );
-                            writer
-                              .writeLine(`in: z`)
-                              .withIndentationLevel(2, () =>
-                                writer
-                                  .writeLine(
-                                    `.union([z.lazy(() => ${formattedNames.pascalCase}Type), z.array(z.lazy(() => ${formattedNames.pascalCase}Type))])`,
-                                  )
-                                  .writeLine(`.optional(),`),
-                              );
-                            writer
-                              .writeLine(`notIn: z`)
-                              .withIndentationLevel(2, () =>
-                                writer
-                                  .writeLine(
-                                    `.union([z.lazy(() => ${formattedNames.pascalCase}Type), z.array(z.lazy(() => ${formattedNames.pascalCase}Type))])`,
-                                  )
-                                  .writeLine(`.optional(),`),
-                              );
-                            writer
-                              .writeLine(`not: z`)
-                              .withIndentationLevel(2, () =>
-                                writer
-                                  .writeLine(
-                                    `.union([z.lazy(() => NestedEnum${formattedNames.pascalCase}FilterType), z.lazy(() => ${formattedNames.pascalCase}Type)])`,
-                                  )
-                                  .writeLine(`.optional(),`),
-                              );
-                          })
-                          .write(`)`);
-                      },
-                    },
-                  ],
-                }),
-                writeConstStatement({
-                  leadingTrivia: (writer) => writer.newLine(),
-                  declarations: [
-                    {
-                      name: `NestedEnum${formattedNames.pascalCase}FilterType`,
-                      type: `z.ZodType<Prisma.Prisma.NestedEnum${formattedNames.pascalCase}Filter>`,
-                      initializer(writer) {
-                        writer
-                          .write(`z.object(`)
-                          .inlineBlock(() => {
-                            writer.write(
-                              `equals: z.lazy(() => ${formattedNames.pascalCase}Type).optional(),`,
-                            );
-                            writer
-                              .writeLine(`in: z`)
-                              .withIndentationLevel(2, () =>
-                                writer
-                                  .writeLine(
-                                    `.union([z.lazy(() => ${formattedNames.pascalCase}Type), z.array(z.lazy(() => ${formattedNames.pascalCase}Type))])`,
-                                  )
-                                  .writeLine(`.optional(),`),
-                              );
-                            writer
-                              .writeLine(`notIn: z`)
-                              .withIndentationLevel(2, () =>
-                                writer
-                                  .writeLine(
-                                    `.union([z.lazy(() => ${formattedNames.pascalCase}Type), z.array(z.lazy(() => ${formattedNames.pascalCase}Type))])`,
-                                  )
-                                  .writeLine(`.optional(),`),
-                              );
-                            writer
-                              .writeLine(`not: z`)
-                              .withIndentationLevel(2, () =>
-                                writer
-                                  .writeLine(
-                                    `.union([z.lazy(() => NestedEnum${formattedNames.pascalCase}FilterType), z.lazy(() => ${formattedNames.pascalCase}Type)])`,
-                                  )
-                                  .writeLine(`.optional(),`),
-                              );
-                          })
-                          .write(`)`);
-                      },
-                    },
-                  ],
-                }),
-              );
-            }
-
-            // GENERATE ENUM LIST FILTER
-            // ---------------------------------------------------------------------
-
-            if (generateEnumListFilter) {
-              enumStatements.push(
-                writeHeading(
-                  `${formattedNames.upperCaseSpace} - ENUM LIST FILTER`,
-                ),
-                writeConstStatement({
-                  leadingTrivia: (writer) => writer.newLine(),
-                  declarations: [
-                    {
-                      name: `Enum${formattedNames.pascalCase}NullableListFilterType`,
-                      initializer(writer) {
-                        writer
-                          .write(`z.object(`)
-                          .inlineBlock(() => {
-                            writer
-                              .writeLine(`equals: z`)
-                              .withIndentationLevel(2, () =>
-                                writer
-                                  .writeLine(
-                                    `.union([z.lazy(() => ${formattedNames.pascalCase}Type), z.array(z.lazy(() => ${formattedNames.pascalCase}Type)), z.null()])`,
-                                  )
-                                  .writeLine(`.optional(),`),
-                              );
-                            writer
-                              .writeLine(`has: z`)
-                              .withIndentationLevel(2, () =>
-                                writer
-                                  .writeLine(
-                                    `.union([z.lazy(() => ${formattedNames.pascalCase}Type), z.null()])`,
-                                  )
-                                  .writeLine(`.optional(),`),
-                              );
-                            writer
-                              .writeLine(`hasEvery: z`)
-                              .withIndentationLevel(2, () =>
-                                writer
-                                  .writeLine(
-                                    `.union([z.lazy(() => ${formattedNames.pascalCase}Type), z.array(z.lazy(() => ${formattedNames.pascalCase}Type))])`,
-                                  )
-                                  .writeLine(`.optional(),`),
-                              );
-                            writer
-                              .writeLine(`hasSome: z`)
-                              .withIndentationLevel(2, () =>
-                                writer
-                                  .writeLine(
-                                    `.union([z.lazy(() => ${formattedNames.pascalCase}Type), z.array(z.lazy(() => ${formattedNames.pascalCase}Type))])`,
-                                  )
-                                  .writeLine(`.optional(),`),
-                              );
-                            writer.writeLine(
-                              `isEmpty: z.boolean().optional(),`,
-                            );
-                          })
-                          .write(`)`);
-                      },
-                    },
-                  ],
-                }),
-              );
-            }
-
-            return enumStatements;
-          },
-        )
-        .flat(),
-    );
-
-    // enumSource.addStatements(getEnumStatements(datamodel));
+    const modelStatements = getModelStatements(datamodel);
+    modelSource.addStatements(modelStatements);
 
     // FORMAT SOURCE FILES
     //------------------------------------------------------
@@ -315,6 +154,12 @@ generatorHandler({
     });
 
     modelSource.formatText({
+      indentSize: 2,
+      convertTabsToSpaces: true,
+      ensureNewLineAtEndOfFile: true,
+    });
+
+    filterBaseSource.formatText({
       indentSize: 2,
       convertTabsToSpaces: true,
       ensureNewLineAtEndOfFile: true,

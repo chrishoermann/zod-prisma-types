@@ -17,6 +17,8 @@ generator zod {
 model User {
   id      String      @id @default(cuid()) /// @zod.string.cuid()
   email   String      @unique /// @zod.string.email({ message: "Invalid email address" })
+  /// some other comment 
+  /// @zod.string.min(1).max(100) 
   name    String?
   posts   Post[]
   profile Profile?
