@@ -15,56 +15,66 @@ generator zod {
 }
 
 model User {
-  id      String      @id @default(cuid()) /// @zod.string.cuid()
-  email   String      @unique /// @zod.string.email({ message: "Invalid email address" })
-  /// some other comment 
-  /// @zod.string.min(1).max(100) 
-  name    String?
-  posts   Post[]
-  profile Profile?
-  role    Role[]      @default([USER, ADMIN])
-  enum    AnotherEnum @default(ONE)
+  id     String @id @default(cuid())
+  name   String
+  intTwo Int
+  int    Int?
+  // email String @unique
+  // name  Float
+  // posts Post[]
 }
 
-// Role enum is only used as list
+// model User {
+//   id      String      @id @default(cuid()) /// @zod.string.cuid()
+//   email   String      @unique /// @zod.string.email({ message: "Invalid email address" })
+//   /// some other comment 
+//   /// @zod.string.min(1).max(100) 
+//   name    String?
+//   posts   Post[]
+//   profile Profile?
+//   role    Role[]      @default([USER, ADMIN])
+//   enum    AnotherEnum @default(ONE)
+// }
 
-/// @generate.enum.listFilter
-enum Role {
-  USER
-  ADMIN
-}
+// // Role enum is only used as list
 
-// Second enum is only used as scalar
+// /// @generate.enum.listFilter
+// enum Role {
+//   USER
+//   ADMIN
+// }
 
-/// @generate.enum.filter
-enum SecondEnum {
-  ONE
-  TWO
-}
+// // Second enum is only used as scalar
 
-// Third enum is used as both a list and a scalar
+// /// @generate.enum.filter
+// enum SecondEnum {
+//   ONE
+//   TWO
+// }
 
-/// @generate.enum.listFilter @generate.enum.filter
-enum AnotherEnum {
-  ONE
-  TWO
-}
+// // Third enum is used as both a list and a scalar
 
-model Post {
-  id          Int           @id @default(autoincrement())
-  title       String
-  content     String?
-  published   Boolean       @default(false)
-  author      User          @relation(fields: [authorId], references: [id])
-  authorId    String
-  anotherEnum AnotherEnum[]
-}
+// /// @generate.enum.listFilter @generate.enum.filter
+// enum AnotherEnum {
+//   ONE
+//   TWO
+// }
 
-model Profile {
-  id     Int        @id @default(autoincrement())
-  bio    String
-  user   User       @relation(fields: [userId], references: [id])
-  userId String     @unique
-  role   Role[]     @default([USER, ADMIN])
-  second SecondEnum @default(ONE)
-}
+// model Post {
+//   id          Int           @id @default(autoincrement())
+//   title       String
+//   content     String?
+//   published   Boolean       @default(false)
+//   author      User          @relation(fields: [authorId], references: [id])
+//   authorId    String
+//   anotherEnum AnotherEnum[]
+// }
+
+// model Profile {
+//   id     Int        @id @default(autoincrement())
+//   bio    String
+//   user   User       @relation(fields: [userId], references: [id])
+//   userId String     @unique
+//   role   Role[]     @default([USER, ADMIN])
+//   second SecondEnum @default(ONE)
+// }

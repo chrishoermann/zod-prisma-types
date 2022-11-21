@@ -1,12 +1,16 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 // import { ENUM_IMPORT_STATEMENT } from '../constants';
-import { GetStatements } from '../types';
+import { GetStatements, Statement } from '../types';
 import { writeConstStatement, writeHeading } from '../utils';
+import { getIntFilterBaseStatements } from './getIntFilterBaseStatements';
 
-export const getFilterBaseStatements: GetStatements = () =>
-  [
+export const getFilterBaseStatements: GetStatements = (datamodel) => {
+  // ENUM FILTER
+  //------------------------------------------------------
+
+  const enumFilter = [
     writeHeading(`ENUMS`, 'FAT'),
-    writeHeading(`SORT ORDER`, 'FAT'),
+    writeHeading(`SORT ORDER`, 'SLIM'),
     writeConstStatement({
       leadingTrivia: (writer) => writer.newLine(),
       declarations: [
@@ -18,7 +22,7 @@ export const getFilterBaseStatements: GetStatements = () =>
         },
       ],
     }),
-    writeHeading(`QUERY MODE`, 'FAT'),
+    writeHeading(`QUERY MODE`, 'SLIM'),
     writeConstStatement({
       leadingTrivia: (writer) => writer.newLine(),
       declarations: [
@@ -30,6 +34,100 @@ export const getFilterBaseStatements: GetStatements = () =>
         },
       ],
     }),
+  ];
+
+  // BOOL FILTER
+  //------------------------------------------------------
+
+  const boolFilter: Statement[] = [];
+
+  if (datamodel.baseFilters.Boolean.standard) {
+    boolFilter.push(
+      writeHeading(`BOOL FILTERS`, 'FAT'),
+      writeHeading(`BOOL FILTER`, 'SLIM'),
+      writeConstStatement({
+        leadingTrivia: (writer) => writer.newLine(),
+        declarations: [
+          {
+            name: 'BoolFilter',
+            type: 'z.ZodType<Prisma.Prisma.BoolFilter>',
+            initializer(writer) {
+              writer
+                .write(`z.object(`)
+                .inlineBlock(() => {
+                  writer.writeLine(`equals: z.boolean().optional(),`);
+                  writer.writeLine(
+                    `not: z.union([z.boolean(), z.lazy(() => NestedBoolFilter)]).optional(),`,
+                  );
+                })
+                .write(`)`);
+            },
+          },
+        ],
+      }),
+      writeHeading(`NESTED BOOL FILTER`, 'SLIM'),
+      writeConstStatement({
+        leadingTrivia: (writer) => writer.newLine(),
+        declarations: [
+          {
+            name: 'NestedBoolFilter',
+            type: 'z.ZodType<Prisma.Prisma.NestedBoolFilter>',
+            initializer(writer) {
+              writer
+                .write(`z.object(`)
+                .inlineBlock(() => {
+                  writer.writeLine(`equals: z.boolean().optional(),`);
+                  writer.writeLine(
+                    `not: z.union([z.boolean(), z.lazy(() => NestedBoolFilter)]).optional(),`,
+                  );
+                })
+                .write(`)`);
+            },
+          },
+        ],
+      }),
+    );
+  }
+
+  if (datamodel.baseFilters.Boolean.aggregate) {
+    boolFilter.push(
+      writeHeading(`NESTED BOOL WITH AGGREGATES FILTER`, 'SLIM'),
+      writeConstStatement({
+        leadingTrivia: (writer) => writer.newLine(),
+        declarations: [
+          {
+            name: 'NestedBoolWithAggregatesFilter',
+            type: 'z.ZodType<Prisma.Prisma.NestedBoolWithAggregatesFilter>',
+            initializer(writer) {
+              writer
+                .write(`z.object(`)
+                .inlineBlock(() => {
+                  writer.writeLine(`equals: z.boolean().optional(),`);
+                  writer.writeLine(
+                    `not: z.union([z.boolean(), z.lazy(() => NestedBoolWithAggregatesFilter)]).optional(),`,
+                  );
+                  writer.writeLine(
+                    `_count: z.lazy(()=> NestedIntFilter).optional(),`,
+                  );
+                  writer.writeLine(
+                    `_min: z.lazy(()=> NestedBoolFilter).optional(),`,
+                  );
+                  writer.writeLine(
+                    `_max: z.lazy(()=> NestedBoolFilter).optional(),`,
+                  );
+                })
+                .write(`)`);
+            },
+          },
+        ],
+      }),
+    );
+  }
+
+  // STRING FILTER
+  //------------------------------------------------------
+
+  const stringFilter = [
     writeHeading(`STRING FILTERS`, 'FAT'),
     writeHeading(`STRING FILTER`, 'SLIM'),
     writeConstStatement({
@@ -347,14 +445,25 @@ export const getFilterBaseStatements: GetStatements = () =>
         },
       ],
     }),
-    writeHeading(`INT FILTERS`, 'FAT'),
-    writeHeading(`INT FILTER`, 'SLIM'),
+  ];
+
+  // INT FILTER
+  //------------------------------------------------------
+
+  const intFilter: Statement[] = getIntFilterBaseStatements(datamodel);
+
+  // FLOAT FILTER
+  //------------------------------------------------------
+
+  const floatFilter = [
+    writeHeading(`FLOAT FILTERS`, 'FAT'),
+    writeHeading(`FLOAT FILTER`, 'SLIM'),
     writeConstStatement({
       leadingTrivia: (writer) => writer.newLine(),
       declarations: [
         {
-          name: 'IntFilter',
-          type: 'z.ZodType<Prisma.Prisma.IntFilter>',
+          name: 'FloatFilter',
+          type: 'z.ZodType<Prisma.Prisma.FloatFilter>',
           initializer(writer) {
             writer
               .write(`z.object(`)
@@ -371,7 +480,7 @@ export const getFilterBaseStatements: GetStatements = () =>
                 writer.writeLine(`gt: z.number().optional(),`);
                 writer.writeLine(`gte: z.number().optional(),`);
                 writer.writeLine(
-                  `not: z.union([z.number(), z.lazy(() => NestedIntFilter)]).optional(),`,
+                  `not: z.union([z.number(), z.lazy(() => NestedFloatFilter)]).optional(),`,
                 );
               })
               .write(`)`);
@@ -379,44 +488,13 @@ export const getFilterBaseStatements: GetStatements = () =>
         },
       ],
     }),
-    writeHeading(`NESTED INT FILTER`, 'SLIM'),
+    writeHeading(`FLOAT NULLABLE FILTER`, 'SLIM'),
     writeConstStatement({
       leadingTrivia: (writer) => writer.newLine(),
       declarations: [
         {
-          name: 'NestedIntFilter',
-          type: 'z.ZodType<Prisma.Prisma.NestedIntFilter>',
-          initializer(writer) {
-            writer
-              .write(`z.object(`)
-              .inlineBlock(() => {
-                writer.writeLine(`equals: z.number().optional(),`);
-                writer.writeLine(
-                  `in: z.union([z.number(), z.number().array()]).optional(),`,
-                );
-                writer.writeLine(
-                  `notIn: z.union([z.number(), z.number().array()]).optional(),`,
-                );
-                writer.writeLine(`lt: z.number().optional(),`);
-                writer.writeLine(`lte: z.number().optional(),`);
-                writer.writeLine(`gt: z.number().optional(),`);
-                writer.writeLine(`gte: z.number().optional(),`);
-                writer.writeLine(
-                  `not: z.union([z.number(), z.lazy(() => NestedIntFilter)]).optional(),`,
-                );
-              })
-              .write(`)`);
-          },
-        },
-      ],
-    }),
-    writeHeading(`NESTED INT NULLABLE FILTER`, 'SLIM'),
-    writeConstStatement({
-      leadingTrivia: (writer) => writer.newLine(),
-      declarations: [
-        {
-          name: 'NestedIntNullableFilter',
-          type: 'z.ZodType<Prisma.Prisma.NestedIntNullableFilter>',
+          name: 'FloatNullableFilter',
+          type: 'z.ZodType<Prisma.Prisma.FloatNullableFilter>',
           initializer(writer) {
             writer
               .write(`z.object(`)
@@ -433,7 +511,7 @@ export const getFilterBaseStatements: GetStatements = () =>
                 writer.writeLine(`gt: z.number().optional(),`);
                 writer.writeLine(`gte: z.number().optional(),`);
                 writer.writeLine(
-                  `not: z.union([z.number(), z.lazy(() => NestedIntNullableFilter)]).optional().nullable(),`,
+                  `not: z.union([z.number(), z.lazy(() => NestedFloatNullableFilter)]).optional().nullable(),`,
                 );
               })
               .write(`)`);
@@ -441,4 +519,74 @@ export const getFilterBaseStatements: GetStatements = () =>
         },
       ],
     }),
+    writeHeading(`NESTED FLOAT FILTER`, 'SLIM'),
+    writeConstStatement({
+      leadingTrivia: (writer) => writer.newLine(),
+      declarations: [
+        {
+          name: 'NestedFloatFilter',
+          type: 'z.ZodType<Prisma.Prisma.NestedFloatFilter>',
+          initializer(writer) {
+            writer
+              .write(`z.object(`)
+              .inlineBlock(() => {
+                writer.writeLine(`equals: z.number().optional(),`);
+                writer.writeLine(
+                  `in: z.union([z.number(), z.number().array()]).optional(),`,
+                );
+                writer.writeLine(
+                  `notIn: z.union([z.number(), z.number().array()]).optional(),`,
+                );
+                writer.writeLine(`lt: z.number().optional(),`);
+                writer.writeLine(`lte: z.number().optional(),`);
+                writer.writeLine(`gt: z.number().optional(),`);
+                writer.writeLine(`gte: z.number().optional(),`);
+                writer.writeLine(
+                  `not: z.union([z.number(), z.lazy(() => NestedFloatFilter)]).optional(),`,
+                );
+              })
+              .write(`)`);
+          },
+        },
+      ],
+    }),
+    writeConstStatement({
+      leadingTrivia: (writer) => writer.newLine(),
+      declarations: [
+        {
+          name: 'NestedFloatNullableFilter',
+          type: 'z.ZodType<Prisma.Prisma.NestedFloatNullableFilter>',
+          initializer(writer) {
+            writer
+              .write(`z.object(`)
+              .inlineBlock(() => {
+                writer.writeLine(`equals: z.number().optional().nullable(),`);
+                writer.writeLine(
+                  `in: z.union([z.number(), z.number().array()]).optional().nullable(),`,
+                );
+                writer.writeLine(
+                  `notIn: z.union([z.number(), z.number().array()]).optional().nullable(),`,
+                );
+                writer.writeLine(`lt: z.number().optional(),`);
+                writer.writeLine(`lte: z.number().optional(),`);
+                writer.writeLine(`gt: z.number().optional(),`);
+                writer.writeLine(`gte: z.number().optional(),`);
+                writer.writeLine(
+                  `not: z.union([z.number(), z.lazy(() => NestedFloatNullableFilter)]).optional().nullable(),`,
+                );
+              })
+              .write(`)`);
+          },
+        },
+      ],
+    }),
+  ];
+
+  return [
+    ...enumFilter,
+    ...boolFilter,
+    ...stringFilter,
+    ...intFilter,
+    ...floatFilter,
   ].flat();
+};
