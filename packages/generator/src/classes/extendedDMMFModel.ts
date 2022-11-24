@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DMMF } from '@prisma/generator-helper';
 
+import { KeyValueMap, PrismaScalarType } from '../types';
 import { ExtendedDMMFField } from './extendedDMMFField';
 import { FormattedNames } from './formattedNames';
-
-import { KeyValueMap, PrismaScalarType } from '@/types';
 
 /////////////////////////////////////////////////
 // TYPES  INTERFACE

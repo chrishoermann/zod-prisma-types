@@ -1,10 +1,10 @@
 import { CodeBlockWriter, StatementStructures, WriterFunction } from 'ts-morph';
 
-import { ExtendedDatamodel } from './classes/extendedDatamodel';
+import { ExtendedDMMF } from './classes';
 
 export type StatementsArray = Statement[];
 export type Statement = string | WriterFunction | StatementStructures;
-export type GetStatements = (datamodel: ExtendedDatamodel) => Statement[];
+export type GetStatements = (datamodel: ExtendedDMMF) => Statement[];
 
 export interface ValidatorFunctionOptions {
   key: string;
@@ -98,7 +98,7 @@ export type ZodNumberValidatorKeys =
 
 export type ZodDateValidatorKeys = 'min' | 'max';
 
-export type WriteBaseTypesFunction = (options?: {
+export type WriteBaseFilterTypesFunction = (options?: {
   nullable?: boolean;
   aggregates?: boolean;
 }) => (writer: CodeBlockWriter) => void;

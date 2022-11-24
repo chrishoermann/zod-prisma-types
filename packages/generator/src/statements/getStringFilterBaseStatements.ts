@@ -15,34 +15,41 @@ const filterTypes: WriteBaseFilterTypesFunction =
   (options) => (writer: CodeBlockWriter) => {
     writer.inlineBlock(() => {
       writer
-        .write(`equals?: number`)
+        .write(`equals?: string`)
         .conditionalWrite(options?.nullable, ` | null`)
         .write(`;`)
         .newLine();
       writer
-        .write(`in?: Prisma.Prisma.Enumerable<number>`)
+        .write(`in?: Prisma.Prisma.Enumerable<string>`)
         .conditionalWrite(options?.nullable, ` | null`)
         .write(`;`)
         .newLine();
       writer
-        .write(`notIn?: Prisma.Prisma.Enumerable<number>`)
+        .write(`notIn?: Prisma.Prisma.Enumerable<string>`)
         .conditionalWrite(options?.nullable, ` | null`)
         .write(`;`)
         .newLine();
-      writer.writeLine(`lt?: number;`);
-      writer.writeLine(`lte?: number;`);
-      writer.writeLine(`gt?: number;`);
-      writer.writeLine(`gte?: number;`);
+      writer.writeLine(`lt?: string;`);
+      writer.writeLine(`lte?: string;`);
+      writer.writeLine(`gt?: string;`);
+      writer.writeLine(`gte?: string;`);
+      writer.writeLine(`contains?: string;`);
+      writer.writeLine(`startsWith?: string;`);
+      writer.writeLine(`endsWith?: string;`);
+      writer.writeLine(`mode?: Prisma.Prisma.QueryMode;`);
 
       if (options?.aggregates) {
         writer
           .write(`not?: `)
           .conditionalWrite(
             options?.nullable,
-            `NestedIntNullableWithAggregatesFilter`,
+            `NestedStringNullableWithAggregatesFilter`,
           )
-          .conditionalWrite(!options?.nullable, `NestedIntWithAggregatesFilter`)
-          .write(` | number`)
+          .conditionalWrite(
+            !options?.nullable,
+            `NestedStringWithAggregatesFilter`,
+          )
+          .write(` | string`)
           .conditionalWrite(options?.nullable, ` | null`)
           .write(`;`)
           .newLine();
@@ -53,32 +60,20 @@ const filterTypes: WriteBaseFilterTypesFunction =
           .write(`;`)
           .newLine();
         writer
-          .write(`_avg?: `)
-          .conditionalWrite(options?.nullable, `NestedFloatNullableFilter`)
-          .conditionalWrite(!options?.nullable, `NestedFloatFilter`)
-          .write(`;`)
-          .newLine();
-        writer
-          .write(`_sum?: `)
-          .conditionalWrite(options?.nullable, `NestedIntNullableFilter`)
-          .conditionalWrite(!options?.nullable, `NestedIntFilter`)
-          .write(`;`)
-          .newLine();
-        writer
           .write(`_min?: `)
-          .conditionalWrite(options?.nullable, `NestedIntNullableFilter`)
-          .conditionalWrite(!options?.nullable, `NestedIntFilter`)
+          .conditionalWrite(options?.nullable, `NestedStringNullableFilter`)
+          .conditionalWrite(!options?.nullable, `NestedStringFilter`)
           .write(`;`)
           .newLine();
         writer
           .write(`_max?: `)
-          .conditionalWrite(options?.nullable, `NestedIntNullableFilter`)
-          .conditionalWrite(!options?.nullable, `NestedIntFilter`)
+          .conditionalWrite(options?.nullable, `NestedStringNullableFilter`)
+          .conditionalWrite(!options?.nullable, `NestedStringFilter`)
           .write(`;`)
           .newLine();
       } else {
         writer
-          .write(`not?: NestedIntFilter | number`)
+          .write(`not?: NestedStringFilter | string`)
           .conditionalWrite(options?.nullable, ` | null`)
           .write(`;`)
           .newLine();
@@ -92,36 +87,40 @@ const filterInitializer: WriteBaseFilterTypesFunction =
       .write(`z.object(`)
       .inlineBlock(() => {
         writer
-          .write(`equals: z.number().optional()`)
+          .write(`equals: z.string().optional()`)
           .conditionalWrite(options?.nullable, `.nullable()`)
           .write(`,`)
           .newLine();
         writer
-          .write(`in: z.union([z.number(), z.number().array()]).optional()`)
+          .write(`in: z.union([z.string(), z.string().array()]).optional()`)
           .conditionalWrite(options?.nullable, `.nullable()`)
           .write(`,`)
           .newLine();
         writer
-          .write(`notIn: z.union([z.number(), z.number().array()]).optional()`)
+          .write(`notIn: z.union([z.string(), z.string().array()]).optional()`)
           .conditionalWrite(options?.nullable, `.nullable()`)
           .write(`,`)
           .newLine();
-        writer.writeLine(`lt: z.number().optional(),`);
-        writer.writeLine(`lte: z.number().optional(),`);
-        writer.writeLine(`gt: z.number().optional(),`);
-        writer.writeLine(`gte: z.number().optional(),`);
+        writer.writeLine(`lt: z.string().optional(),`);
+        writer.writeLine(`lte: z.string().optional(),`);
+        writer.writeLine(`gt: z.string().optional(),`);
+        writer.writeLine(`gte: z.string().optional(),`);
+        writer.writeLine(`contains: z.string().optional(),`);
+        writer.writeLine(`startsWith: z.string().optional(),`);
+        writer.writeLine(`endsWith: z.string().optional(),`);
+        writer.writeLine(`queryMode: z.lazy(()=> QueryMode),`);
 
         /// ceck options
         if (options?.aggregates) {
           writer
-            .write(`not: z.union([z.number(), z.lazy(() => `)
+            .write(`not: z.union([z.string(), z.lazy(() => `)
             .conditionalWrite(
               options?.nullable,
-              `NestedIntNullableWithAggregatesFilter`,
+              `NestedStringNullableWithAggregatesFilter`,
             )
             .conditionalWrite(
               !options?.nullable,
-              `NestedIntWithAggregatesFilter`,
+              `NestedStringWithAggregatesFilter`,
             )
             .write(`)]).optional()`)
             .conditionalWrite(options?.nullable, `.nullable()`)
@@ -136,37 +135,23 @@ const filterInitializer: WriteBaseFilterTypesFunction =
             .write(`,`)
             .newLine();
           writer
-            .write(`_avg: z.lazy(()=> `)
-            .conditionalWrite(options?.nullable, `NestedFloatNullableFilter`)
-            .conditionalWrite(!options?.nullable, `NestedFloatFilter`)
-            .write(`).optional()`)
-            .write(`,`)
-            .newLine();
-          writer
-            .write(`_sum: z.lazy(()=> `)
-            .conditionalWrite(options?.nullable, `NestedIntNullableFilter`)
-            .conditionalWrite(!options?.nullable, `NestedIntFilter`)
-            .write(`).optional()`)
-            .write(`,`)
-            .newLine();
-          writer
             .write(`_min: z.lazy(()=> `)
-            .conditionalWrite(options?.nullable, `NestedIntNullableFilter`)
-            .conditionalWrite(!options?.nullable, `NestedIntFilter`)
+            .conditionalWrite(options?.nullable, `NestedStringNullableFilter`)
+            .conditionalWrite(!options?.nullable, `NestedStringFilter`)
             .write(`).optional()`)
             .write(`,`)
             .newLine();
           writer
             .write(`_max: z.lazy(()=> `)
-            .conditionalWrite(options?.nullable, `NestedIntNullableFilter`)
-            .conditionalWrite(!options?.nullable, `NestedIntFilter`)
+            .conditionalWrite(options?.nullable, `NestedStringNullableFilter`)
+            .conditionalWrite(!options?.nullable, `NestedStringFilter`)
             .write(`).optional()`)
             .write(`,`)
             .newLine();
         } else {
           writer
             .write(
-              `not: z.union([z.number(), z.lazy(() => NestedIntFilter)]).optional()`,
+              `not: z.union([z.string(), z.lazy(() => NestedStringFilter)]).optional()`,
             )
             .conditionalWrite(options?.nullable, `.nullable()`)
             .write(`,`);
@@ -179,124 +164,124 @@ const filterInitializer: WriteBaseFilterTypesFunction =
 // STATEMENTS
 ///////////////////////////////////////////
 
-export const getIntFilterBaseStatements: GetStatements = () => {
+export const getStringFilterBaseStatements: GetStatements = () => {
   return [
-    writeHeading(`INT FILTERS`, 'FAT'),
-    writeHeading(`INT FILTER`, 'SLIM'),
+    writeHeading(`STRING FILTERS`, 'FAT'),
+    writeHeading(`STRING FILTER`, 'SLIM'),
     {
       leadingTrivia: (writer) => writer.newLine(),
       kind: StructureKind.TypeAlias,
-      name: 'IntFilter',
+      name: 'StringFilter',
       type: filterTypes(),
     } as Statement,
     writeConstStatement({
       leadingTrivia: (writer) => writer.newLine(),
       declarations: [
         {
-          name: 'IntFilter',
-          type: 'z.ZodType<IntFilter>',
+          name: 'StringFilter',
+          type: 'z.ZodType<StringFilter>',
           initializer: filterInitializer(),
         },
       ],
     }),
-    writeHeading(`NESTED INT FILTER`, 'SLIM'),
+    writeHeading(`NESTED STRING FILTER`, 'SLIM'),
     {
       leadingTrivia: (writer) => writer.newLine(),
       kind: StructureKind.TypeAlias,
-      name: 'NestedIntFilter',
+      name: 'NestedStringFilter',
       type: filterTypes(),
     } as Statement,
     writeConstStatement({
       leadingTrivia: (writer) => writer.newLine(),
       declarations: [
         {
-          name: 'NestedIntFilter',
-          type: 'z.ZodType<NestedIntFilter>',
+          name: 'NestedStringFilter',
+          type: 'z.ZodType<NestedStringFilter>',
           initializer: filterInitializer(),
         },
       ],
     }),
-    writeHeading(`INT WITH AGGREGATES FILTER`, 'SLIM'),
+    writeHeading(`STRING WITH AGGREGATES FILTER`, 'SLIM'),
     {
       leadingTrivia: (writer) => writer.newLine(),
       kind: StructureKind.TypeAlias,
-      name: 'IntWithAggregatesFilter',
+      name: 'StringWithAggregatesFilter',
       type: filterTypes({ aggregates: true }),
     } as Statement,
     writeConstStatement({
       leadingTrivia: (writer) => writer.newLine(),
       declarations: [
         {
-          name: 'IntWithAggregatesFilter',
-          type: 'z.ZodType<IntWithAggregatesFilter>',
+          name: 'StringWithAggregatesFilter',
+          type: 'z.ZodType<StringWithAggregatesFilter>',
           initializer: filterInitializer({ aggregates: true }),
         },
       ],
     }),
-    writeHeading(`NESTED INT WITH AGGREGATES FILTER`, 'SLIM'),
+    writeHeading(`NESTED STRING WITH AGGREGATES FILTER`, 'SLIM'),
     {
       leadingTrivia: (writer) => writer.newLine(),
       kind: StructureKind.TypeAlias,
-      name: 'NestedIntWithAggregatesFilter',
+      name: 'NestedStringWithAggregatesFilter',
       type: filterTypes({ aggregates: true }),
     } as Statement,
     writeConstStatement({
       leadingTrivia: (writer) => writer.newLine(),
       declarations: [
         {
-          name: 'NestedIntWithAggregatesFilter',
-          type: 'z.ZodType<NestedIntWithAggregatesFilter>',
+          name: 'NestedStringWithAggregatesFilter',
+          type: 'z.ZodType<NestedStringWithAggregatesFilter>',
           initializer: filterInitializer({ aggregates: true }),
         },
       ],
     }),
-    writeHeading(`INT NULLABLE FILTER`, 'SLIM'),
+    writeHeading(`STRING NULLABLE FILTER`, 'SLIM'),
     {
       leadingTrivia: (writer) => writer.newLine(),
       kind: StructureKind.TypeAlias,
-      name: 'IntNullableFilter',
+      name: 'StringNullableFilter',
       type: filterTypes({ nullable: true }),
     } as Statement,
     writeConstStatement({
       leadingTrivia: (writer) => writer.newLine(),
       declarations: [
         {
-          name: 'IntNullableFilter',
-          type: 'z.ZodType<IntNullableFilter>',
+          name: 'StringNullableFilter',
+          type: 'z.ZodType<StringNullableFilter>',
           initializer: filterInitializer({ nullable: true }),
         },
       ],
     }),
-    writeHeading(`NESTED NULLABLE INT FILTER`, 'SLIM'),
+    writeHeading(`NESTED NULLABLE STRING FILTER`, 'SLIM'),
     {
       leadingTrivia: (writer) => writer.newLine(),
       kind: StructureKind.TypeAlias,
-      name: 'NestedIntNullableFilter',
+      name: 'NestedStringNullableFilter',
       type: filterTypes({ nullable: true }),
     } as Statement,
     writeConstStatement({
       leadingTrivia: (writer) => writer.newLine(),
       declarations: [
         {
-          name: 'NestedIntNullableFilter',
-          type: 'z.ZodType<NestedIntNullableFilter>',
+          name: 'NestedStringNullableFilter',
+          type: 'z.ZodType<NestedStringNullableFilter>',
           initializer: filterInitializer({ nullable: true }),
         },
       ],
     }),
-    writeHeading(`INT NULLABLE WITH AGGREGATES FILTER`, 'SLIM'),
+    writeHeading(`STRING NULLABLE WITH AGGREGATES FILTER`, 'SLIM'),
     {
       leadingTrivia: (writer) => writer.newLine(),
       kind: StructureKind.TypeAlias,
-      name: 'IntNullableWithAggregatesFilter',
+      name: 'StringNullableWithAggregatesFilter',
       type: filterTypes({ nullable: true, aggregates: true }),
     } as Statement,
     writeConstStatement({
       leadingTrivia: (writer) => writer.newLine(),
       declarations: [
         {
-          name: 'IntNullableWithAggregatesFilter',
-          type: 'z.ZodType<IntNullableWithAggregatesFilter>',
+          name: 'StringNullableWithAggregatesFilter',
+          type: 'z.ZodType<StringNullableWithAggregatesFilter>',
           initializer: filterInitializer({
             nullable: true,
             aggregates: true,
@@ -304,19 +289,19 @@ export const getIntFilterBaseStatements: GetStatements = () => {
         },
       ],
     }),
-    writeHeading(`NESTED INT NULLABLE WITH AGGREGATES FILTER`, 'SLIM'),
+    writeHeading(`NESTED STRING NULLABLE WITH AGGREGATES FILTER`, 'SLIM'),
     {
       leadingTrivia: (writer) => writer.newLine(),
       kind: StructureKind.TypeAlias,
-      name: 'NestedIntNullableWithAggregatesFilter',
+      name: 'NestedStringNullableWithAggregatesFilter',
       type: filterTypes({ nullable: true, aggregates: true }),
     } as Statement,
     writeConstStatement({
       leadingTrivia: (writer) => writer.newLine(),
       declarations: [
         {
-          name: 'NestedIntNullableWithAggregatesFilter',
-          type: 'z.ZodType<NestedIntNullableWithAggregatesFilter>',
+          name: 'NestedStringNullableWithAggregatesFilter',
+          type: 'z.ZodType<NestedStringNullableWithAggregatesFilter>',
           initializer: filterInitializer({
             nullable: true,
             aggregates: true,

@@ -2,10 +2,9 @@
 // import { ENUM_IMPORT_STATEMENT } from '../constants';
 import { CodeBlockWriter } from 'ts-morph';
 
+import { ExtendedDMMFField } from '../classes/extendedDMMFField';
 import { GetStatements, Statement } from '../types';
 import { writeConstStatement, writeHeading } from '../utils';
-
-import { ExtendedDMMFField } from '@/classes/extendedDMMFField';
 
 // export interface WriteScalarFieldsOptions {
 //   writer: CodeBlockWriter;
@@ -67,8 +66,8 @@ const writeRelationFields = (
   });
 };
 
-export const getModelStatements: GetStatements = (datamodel) =>
-  datamodel.models
+export const getModelStatements: GetStatements = (dmmf) =>
+  dmmf.datamodel.models
     .map(({ formattedNames, fields }) => {
       // GENERATE MODEL
       // ---------------------------------------------------------------------

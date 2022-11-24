@@ -9,9 +9,10 @@ import {
   ZOD_IMPORT_STATEMENT,
 } from './constants/importStatements';
 import {
-  getEnumStatements,
-  getFilterBaseStatements,
-  getModelStatements,
+  // getEnumStatements,
+  // getFilterBaseStatements,
+  getInputTypeStatements,
+  // getModelStatements,
 } from './statements';
 import { Statement } from './types';
 
@@ -35,7 +36,8 @@ generatorHandler({
     // - name of models, enums and fields in different formats (uppercase, pascalcase, camelcase)
     // - helper methods for generating types
 
-    const { datamodel } = new ExtendedDMMF(options.dmmf);
+    const ExtendendDMMF = new ExtendedDMMF(options.dmmf);
+    const { datamodel } = ExtendendDMMF;
 
     // CREATE TS-MORPH PROJECT
     //--------------------------------------------------------------------------------
@@ -67,6 +69,11 @@ generatorHandler({
     ];
 
     const filterBaseImportStatements: Statement[] = [
+      PRIMSA_IMPORT_STATEMENT,
+      ZOD_IMPORT_STATEMENT,
+    ];
+
+    const inputTypesImportStatements: Statement[] = [
       PRIMSA_IMPORT_STATEMENT,
       ZOD_IMPORT_STATEMENT,
     ];
@@ -122,6 +129,12 @@ generatorHandler({
       { overwrite: true },
     );
 
+    const inputTypesBaseSource = project.createSourceFile(
+      `${path.value}/inputTypesBase.ts`,
+      { statements: inputTypesImportStatements },
+      { overwrite: true },
+    );
+
     //////////////////////////////////////////////////////////////
     // CREATE TYPES
     //////////////////////////////////////////////////////////////
@@ -129,14 +142,17 @@ generatorHandler({
     // CREATE ENUM
     //------------------------------------------------------
 
-    const filterBaseStatements = getFilterBaseStatements(datamodel);
-    filterBaseSource.addStatements(filterBaseStatements);
+    // const filterBaseStatements = getFilterBaseStatements(datamodel);
+    // filterBaseSource.addStatements(filterBaseStatements);
 
-    const enumStatements = getEnumStatements(datamodel);
-    enumSource.addStatements(enumStatements);
+    // const enumStatements = getEnumStatements(datamodel);
+    // enumSource.addStatements(enumStatements);
 
-    const modelStatements = getModelStatements(datamodel);
-    modelSource.addStatements(modelStatements);
+    // const modelStatements = getModelStatements(datamodel);
+    // modelSource.addStatements(modelStatements);
+
+    const inputTypeStatements = getInputTypeStatements(ExtendendDMMF);
+    inputTypesBaseSource.addStatements(inputTypeStatements);
 
     // FORMAT SOURCE FILES
     //------------------------------------------------------
@@ -160,6 +176,12 @@ generatorHandler({
     });
 
     filterBaseSource.formatText({
+      indentSize: 2,
+      convertTabsToSpaces: true,
+      ensureNewLineAtEndOfFile: true,
+    });
+
+    inputTypesBaseSource.formatText({
       indentSize: 2,
       convertTabsToSpaces: true,
       ensureNewLineAtEndOfFile: true,

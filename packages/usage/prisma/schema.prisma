@@ -11,14 +11,36 @@ datasource db {
 }
 
 generator zod {
+  provider = "prisma-zod-generator"
+}
+
+generator zodNew {
   provider = "zod-prisma-types"
+  output   = "./zod"
+}
+
+enum MyValue {
+  A
+  B
+  C
 }
 
 model User {
-  id     String @id @default(cuid())
-  name   String
-  intTwo Int
-  int    Int?
+  id    String  @id @default(cuid()) /// @zod.string({ invalid_type_error: "error" }).cuid()
+  name  String? /// some comment @zod.string({ required_error: "error" })
+  value MyValue
+  // intTwo     Int
+  // int        Int?
+  // floatOpt   Float?
+  // float      Float
+  // decimal    Decimal
+  // decimalOpt Decimal?
+  // bigInt     BigInt
+  // bigIntOpt  BigInt?
+  // json       Json
+  // jsonOpt    Json?
+  // bytes      Bytes
+  // bytesOpt   Bytes?
   // email String @unique
   // name  Float
   // posts Post[]

@@ -24,7 +24,7 @@ export const VALIDATOR_CUSTOM_ERROR_REGEX =
   /(?<opening>\(\{)(?<messages>[\w,": ]+)(?<closing>\}\))/;
 
 // TODO: Refine this regex to match the following:
-// - multiple custom error messages
+// - validate the possible error messages "invalid_type_error", "required_error" and "decription"
 
 // STRING
 // ----------------------------------------

@@ -2,8 +2,8 @@ import { GetStatements, Statement } from '../types';
 import { writeConstStatement } from '../utils/writeConstStatement';
 import { writeHeading } from '../utils/writeHeading';
 
-export const getEnumStatements: GetStatements = (datamodel) =>
-  datamodel.enums
+export const getEnumStatements: GetStatements = (dmmf) =>
+  dmmf.datamodel.enums
     .map(
       ({
         // values,

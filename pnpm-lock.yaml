@@ -42,11 +42,13 @@ importers:
       '@prisma/client': ^4.6.1
       '@types/node': ^18.11.9
       prisma: ^4.6.1
+      prisma-zod-generator: ^0.7.4
       typescript: ^4.9.3
       zod: ^3.19.1
       zod-prisma-types: workspace:^0.0.1
     dependencies:
       '@prisma/client': 4.6.1_prisma@4.6.1
+      prisma-zod-generator: 0.7.4_prisma@4.6.1
       zod: 3.19.1
       zod-prisma-types: link:../generator
     devDependencies:
@@ -2620,7 +2622,22 @@ packages:
     resolution: {integrity: sha512-ujppO+MkdPqoVINuDFDRLClm7D78qbDt0/NR+wp5FqEZOoTNAjPHWj17QRhu7geIHJfcNhRk1XVQmF8Bp3ye+g==}
     engines: {node: '>=10.13.0'}
     hasBin: true
-    dev: true
+
+  /prisma-zod-generator/0.7.4_prisma@4.6.1:
+    resolution: {integrity: sha512-84e5hO0pdKrAWDhwwekvk+x55Ujarv0Syu3yn0I7cgKPJqfy9le9tAVGilUHEd17Ee1YtV8CaqDeO6RXo0qZEw==}
+    hasBin: true
+    dependencies:
+      '@prisma/client': 4.6.1_prisma@4.6.1
+      '@prisma/generator-helper': 4.6.1
+      '@prisma/internals': 4.6.1
+      prettier: 2.7.1
+      tslib: 2.4.1
+      zod: 3.19.1
+    transitivePeerDependencies:
+      - encoding
+      - prisma
+      - supports-color
+    dev: false
 
   /prisma/4.6.1:
     resolution: {integrity: sha512-BR4itMCuzrDV4tn3e2TF+nh1zIX/RVU0isKtKoN28ADeoJ9nYaMhiuRRkFd2TZN8+l/XfYzoRKyHzUFXLQhmBQ==}
@@ -3112,6 +3129,10 @@ packages:
   /tslib/1.14.1:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
     dev: true
+
+  /tslib/2.4.1:
+    resolution: {integrity: sha512-tGyy4dAjRIEwI7BzsB0lynWgOpfqjUdq91XXAlIWD2OwKBH7oCl/GZG/HT4BOHrTlPMOASlMQ7veyTqpmRcrNA==}
+    dev: false
 
   /tsutils/3.21.0_typescript@4.9.3:
     resolution: {integrity: sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==}
