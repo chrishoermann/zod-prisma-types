@@ -941,19 +941,19 @@ export const UserGroupByArgs: z.ZodType<Prisma.Prisma.UserGroupByArgs> = z.objec
 export const UserFindUniqueArgs: z.ZodType<Prisma.Prisma.UserFindUniqueArgs> = z.object({
 }).strict();
 
-export const UserCreateUniqueArgs: z.ZodType<Prisma.Prisma.UserCreateUniqueArgs> = z.object({
+export const UserCreateArgs: z.ZodType<Prisma.Prisma.UserCreateArgs> = z.object({
 }).strict();
 
-export const UserUpsertUniqueArgs: z.ZodType<Prisma.Prisma.UserUpsertUniqueArgs> = z.object({
+export const UserUpsertArgs: z.ZodType<Prisma.Prisma.UserUpsertArgs> = z.object({
 }).strict();
 
 export const UserCreateManyArgs: z.ZodType<Prisma.Prisma.UserCreateManyArgs> = z.object({
 }).strict();
 
-export const UserDeleteUniqueArgs: z.ZodType<Prisma.Prisma.UserDeleteUniqueArgs> = z.object({
+export const UserDeleteArgs: z.ZodType<Prisma.Prisma.UserDeleteArgs> = z.object({
 }).strict();
 
-export const UserUpdateUniqueArgs: z.ZodType<Prisma.Prisma.UserUpdateUniqueArgs> = z.object({
+export const UserUpdateArgs: z.ZodType<Prisma.Prisma.UserUpdateArgs> = z.object({
 }).strict();
 
 export const UserUpdateManyArgs: z.ZodType<Prisma.Prisma.UserUpdateManyArgs> = z.object({
