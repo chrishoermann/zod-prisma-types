@@ -26,17 +26,17 @@ enum MyValue {
 }
 
 model User {
-  id    String  @id @default(cuid()) /// @zod.string({ invalid_type_error: "error" }).cuid()
-  name  String? /// some comment @zod.string({ required_error: "error" })
-  value MyValue
-  // intTwo     Int
-  // int        Int?
-  // floatOpt   Float?
-  // float      Float
-  // decimal    Decimal
-  // decimalOpt Decimal?
-  // bigInt     BigInt
-  // bigIntOpt  BigInt?
+  id         String   @id @default(cuid()) /// @zod.string({ invalid_type_error: "error" }).cuid()
+  name       String? /// some comment @zod.string({ required_error: "error" })
+  value      MyValue
+  intTwo     Int
+  int        Int?
+  floatOpt   Float?
+  float      Float
+  decimal    Decimal
+  decimalOpt Decimal?
+  bigInt     BigInt
+  bigIntOpt  BigInt?
   // json       Json
   // jsonOpt    Json?
   // bytes      Bytes

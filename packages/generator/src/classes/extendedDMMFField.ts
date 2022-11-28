@@ -37,9 +37,10 @@ export interface Validator {
  * Map zod validators to their corresponding prisma scalar types
  */
 export const VALIDATOR_TYPE_MAP: ZodValidatorTypeMap = {
-  string: ['String', 'DateTime'],
-  number: ['Float', 'Int', 'Decimal', 'BigInt'],
+  string: ['String'],
+  number: ['Float', 'Int', 'Decimal'],
   date: ['DateTime'],
+  // bigint: ['BigInt'],
 };
 
 /**
@@ -51,9 +52,11 @@ export const PRISMA_TYPE_MAP: KeyValueMap<ZodPrismaScalarType, ZodScalarType> =
     Boolean: 'boolean',
     DateTime: 'date',
     Int: 'number',
-    BigInt: 'number',
+    BigInt: 'bigint',
     Float: 'number',
     Decimal: 'number',
+    Json: 'unknown',
+    Bytes: 'unknown',
   };
 
 /////////////////////////////////////////////////
@@ -89,6 +92,8 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
       this._validateRegexInMap(NUMBER_VALIDATOR_REGEX_MAP, options),
     date: (options) =>
       this._validateRegexInMap(DATE_VALIDATOR_REGEX_MAP, options),
+    // bigint: (options) =>
+    //   this._validateRegexInMap(NUMBER_VALIDATOR_REGEX_MAP, options),
   };
 
   readonly clearedDocumentation?: string;

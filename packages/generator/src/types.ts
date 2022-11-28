@@ -50,7 +50,7 @@ export type ZodValidatorType = Extract<
 
 export type ZodScalarType = Extract<
   ZodPrimitiveType,
-  'string' | 'number' | 'date' | 'boolean'
+  'string' | 'number' | 'date' | 'boolean' | 'bigint' | 'unknown'
 >;
 
 export type PrismaScalarType =
@@ -64,10 +64,11 @@ export type PrismaScalarType =
   | 'Json'
   | 'Bytes';
 
-export type ZodPrismaScalarType = Extract<
-  PrismaScalarType,
-  'String' | 'Boolean' | 'Int' | 'BigInt' | 'Float' | 'Decimal' | 'DateTime'
->;
+// export type ZodPrismaScalarType = Extract<
+//   PrismaScalarType,
+//   'String' | 'Boolean' | 'Int' | 'BigInt' | 'Float' | 'Decimal' | 'DateTime'
+// >;
+export type ZodPrismaScalarType = PrismaScalarType;
 
 export type ZodStringValidatorKeys =
   | 'min'
@@ -102,3 +103,19 @@ export type WriteBaseFilterTypesFunction = (options?: {
   nullable?: boolean;
   aggregates?: boolean;
 }) => (writer: CodeBlockWriter) => void;
+
+export type PrismaAction =
+  | 'findUnique'
+  | 'findMany'
+  | 'findFirst'
+  | 'createOne'
+  | 'createMany'
+  | 'updateOne'
+  | 'updateMany'
+  | 'upsertOne'
+  | 'deleteOne'
+  | 'deleteMany'
+  | 'executeRaw'
+  | 'aggregate'
+  | 'count'
+  | 'groupBy';

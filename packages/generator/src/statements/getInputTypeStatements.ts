@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { CodeBlockWriter } from 'ts-morph';
 
-import { ExtendedDMMFSchemaArgInputType, FormattedNames } from '../classes';
+import { ExtendedDMMFSchemaArgInputType } from '../classes';
 import { GetStatements, Statement } from '../types';
 import { writeConstStatement, writeHeading } from '../utils';
 
@@ -169,35 +169,17 @@ export const getInputTypeStatements: GetStatements = (DMMF) => {
 
   const argsStatements: Statement[] = [writeHeading(`ARGS`, 'FAT')];
 
-  // console.log(
-  //   'outputObjectTypes',
-  //   schema.outputObjectTypes.prisma[0].fields[0],
-  // );
-
   schema.outputObjectTypes.prisma
     .filter((type) => type.name === 'Query' || type.name === 'Mutation')
     .forEach((outputType) => {
       outputType.fields.forEach((field) => {
-        const { formattedNames } = new FormattedNames(field.name);
-
-        console.log('field', field);
-
-        // const replaceRegex = new RegExp(field.outputType.type as string);
-
-        const name = `${
-          field.outputType.type
-        }${formattedNames.pascalCase.replace(
-          field.outputType.type as string,
-          '',
-        )}Args`;
-
         argsStatements.push(
           writeConstStatement({
             leadingTrivia: (writer) => writer.newLine(),
             declarations: [
               {
-                name: `${name}`,
-                type: `z.ZodType<Prisma.Prisma.${name}>`,
+                name: `${field.argName}`,
+                type: `z.ZodType<Prisma.Prisma.${field.argName}>`,
                 initializer: (writer) => {
                   writer.write(`z.object(`);
                   writer.inlineBlock(() => {

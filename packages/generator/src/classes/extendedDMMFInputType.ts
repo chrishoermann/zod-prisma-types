@@ -9,7 +9,7 @@ import { FormattedNames } from './formattedNames';
 // CLASS
 /////////////////////////////////////////////////
 
-export class ExtendedDMMFInputObjectType
+export class ExtendedDMMFInputType
   extends FormattedNames
   implements DMMF.InputType
 {
@@ -33,7 +33,7 @@ export class ExtendedDMMFInputObjectType
   private setFields(fields: DMMF.SchemaArg[]) {
     return fields.map((field) => {
       // validators should only be written in create and update types.
-      // this is to prevent validation in e.g. search queries in "where inputs",
+      // this prevents validation in e.g. search queries in "where inputs",
       // where strings can be incomplete
       const isMatch = this.name.match(
         /CreateInput|CreateMany|UpdateInput|UpdateMany/,

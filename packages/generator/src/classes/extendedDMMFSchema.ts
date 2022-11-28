@@ -1,6 +1,10 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { ExtendedDatamodel, ExtendedDMMFInputObjectType } from '.';
+import {
+  ExtendedDatamodel,
+  ExtendedDMMFInputType,
+  ExtendedDMMFOutputType,
+} from '.';
 
 /////////////////////////////////////////////////
 // CLASS
@@ -11,11 +15,11 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
   rootMutationType?: DMMF.Schema['rootMutationType'];
   inputObjectTypes: {
     model?: DMMF.InputType[];
-    prisma: ExtendedDMMFInputObjectType[];
+    prisma: ExtendedDMMFInputType[];
   };
   outputObjectTypes: {
     model: DMMF.OutputType[];
-    prisma: DMMF.OutputType[];
+    prisma: ExtendedDMMFOutputType[];
   };
   enumTypes: {
     model?: DMMF.SchemaEnum[];
@@ -29,7 +33,7 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
     this.rootQueryType = schema.rootQueryType;
     this.rootMutationType = schema.rootMutationType;
     this.inputObjectTypes = this.setExtendedInputObjectTypes(schema, datamodel);
-    this.outputObjectTypes = schema.outputObjectTypes;
+    this.outputObjectTypes = this.setExtendedOutputObjectTypes(schema);
     this.enumTypes = schema.enumTypes;
     this.fieldRefTypes = schema.fieldRefTypes;
   }
@@ -41,11 +45,23 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
     return {
       ...schema.inputObjectTypes,
       prisma: schema.inputObjectTypes.prisma.map((type) => {
+        // find the datamodel that matches the input type.
+        // This way the documentation and the validator strings
+        // from the datamodel can be added to the input types.
         const matchingDatamodel = datamodel.models.find((model) => {
           return type.name.match(model.name);
         });
 
-        return new ExtendedDMMFInputObjectType(type, matchingDatamodel);
+        return new ExtendedDMMFInputType(type, matchingDatamodel);
+      }),
+    };
+  }
+
+  private setExtendedOutputObjectTypes(schema: DMMF.Schema) {
+    return {
+      ...schema.outputObjectTypes,
+      prisma: schema.outputObjectTypes.prisma.map((type) => {
+        return new ExtendedDMMFOutputType(type);
       }),
     };
   }
