@@ -40,6 +40,8 @@ importers:
   packages/usage:
     specifiers:
       '@prisma/client': ^4.6.1
+      '@trpc/client': ^10.4.2
+      '@trpc/server': ^10.4.2
       '@types/node': ^18.11.9
       prisma: ^4.6.1
       prisma-zod-generator: ^0.7.4
@@ -48,6 +50,8 @@ importers:
       zod-prisma-types: workspace:^0.0.1
     dependencies:
       '@prisma/client': 4.6.1_prisma@4.6.1
+      '@trpc/client': 10.4.2_@trpc+server@10.4.2
+      '@trpc/server': 10.4.2
       prisma-zod-generator: 0.7.4_prisma@4.6.1
       zod: 3.19.1
       zod-prisma-types: link:../generator
@@ -351,6 +355,18 @@ packages:
   /@tootallnate/once/2.0.0:
     resolution: {integrity: sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==}
     engines: {node: '>= 10'}
+    dev: false
+
+  /@trpc/client/10.4.2_@trpc+server@10.4.2:
+    resolution: {integrity: sha512-E21TTmFN8bWYWrZk4nDaNsOUektL8I1ASvToSzOIys9X7iF/IRZ6H8CNdTZtQ3k6K7kvcDAu/8SlPuqZRgFvsg==}
+    peerDependencies:
+      '@trpc/server': 10.4.2
+    dependencies:
+      '@trpc/server': 10.4.2
+    dev: false
+
+  /@trpc/server/10.4.2:
+    resolution: {integrity: sha512-/DO7fwIHjKmZ4QawYVbmJnPzTdtTRQR1qrVgQNYf8YlqygQe6xPlPjBQK47iIi1G5fveXhgKFG8SQjNDP3vaDQ==}
     dev: false
 
   /@ts-morph/common/0.17.0:

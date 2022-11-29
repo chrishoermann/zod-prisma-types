@@ -17,6 +17,8 @@
   },
   "dependencies": {
     "@prisma/client": "^4.6.1",
+    "@trpc/client": "^10.4.2",
+    "@trpc/server": "^10.4.2",
     "prisma-zod-generator": "^0.7.4",
     "zod": "^3.19.1",
     "zod-prisma-types": "workspace:^0.0.1"

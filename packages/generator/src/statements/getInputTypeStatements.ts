@@ -9,8 +9,14 @@ import { writeConstStatement, writeHeading } from '../utils';
 // TYPES & INTERFACES
 /////////////////////////////////////////////////
 
-interface WriteScalarTypeOptions {
+interface WriteTypeOptions {
   inputType: ExtendedDMMFSchemaArgInputType;
+  isOptional?: boolean;
+  isNullable?: boolean;
+  writeLazy?: boolean;
+}
+
+interface WriteScalarTypeOptions extends WriteTypeOptions {
   zodValidatorString?: string;
   zodCustomErrors?: string;
 }
@@ -21,7 +27,13 @@ interface WriteScalarTypeOptions {
 
 const writeScalarType = (
   writer: CodeBlockWriter,
-  { inputType, zodCustomErrors, zodValidatorString }: WriteScalarTypeOptions,
+  {
+    inputType,
+    isOptional,
+    isNullable,
+    zodCustomErrors,
+    zodValidatorString,
+  }: WriteScalarTypeOptions,
 ) => {
   const zodType = inputType.getZodScalarType();
   if (!zodType) return;
@@ -32,30 +44,39 @@ const writeScalarType = (
     .write(`)`)
     .conditionalWrite(!!zodValidatorString, zodValidatorString!)
     .conditionalWrite(inputType.isList, `.array()`)
+    .conditionalWrite(isOptional, `.optional()`)
+    .conditionalWrite(isNullable, `.nullable()`)
     .write(`,`);
 };
 
 const writeNonScalarType = (
   writer: CodeBlockWriter,
-  inputType: ExtendedDMMFSchemaArgInputType,
+  { inputType, isOptional, isNullable, writeLazy = true }: WriteTypeOptions,
 ) => {
   const nonScalarType = inputType.getZodNonScalarType();
   if (!nonScalarType) return;
 
   writer
-    .write(`z.lazy(() => ${nonScalarType})`)
+    .conditionalWrite(writeLazy, `z.lazy(() => ${nonScalarType})`)
+    .conditionalWrite(!writeLazy, `${nonScalarType}`)
     .conditionalWrite(inputType.isList, `.array()`)
+    .conditionalWrite(isOptional, `.optional()`)
+    .conditionalWrite(isNullable, `.nullable()`)
     .write(`,`);
 };
 
 const writeNullType = (
   writer: CodeBlockWriter,
-  inputType: ExtendedDMMFSchemaArgInputType,
+  { inputType, isOptional: isRequired, isNullable }: WriteTypeOptions,
 ) => {
   const nullType = inputType.getZodNullType();
   if (!nullType) return;
 
-  writer.write(`z.${nullType}(),`);
+  writer
+    .write(`z.${nullType}(),`)
+    .conditionalWrite(!isRequired, `.optional()`)
+    .conditionalWrite(isNullable, `.nullable()`)
+    .write(`,`);
 };
 
 /////////////////////////////////////////////////
@@ -126,18 +147,26 @@ export const getInputTypeStatements: GetStatements = (DMMF) => {
                     (type) => type.type !== 'Null',
                   );
 
+                  const { isNullable, isOptional } = field;
+
                   if (inputTypes.length > 1) {
                     writer.write(`z.union([ `);
 
                     inputTypes.forEach((inputType) => {
+                      // don't pass optional and nullable props in this loop
+                      // because they are handled by the union
                       writeScalarType(writer, {
                         inputType,
                         zodCustomErrors: field.zodCustomErrors,
                         zodValidatorString: field.zodValidatorString,
                       });
 
-                      writeNonScalarType(writer, inputType);
-                      writeNullType(writer, inputType);
+                      writeNonScalarType(writer, {
+                        inputType,
+                      });
+                      writeNullType(writer, {
+                        inputType,
+                      });
                     });
 
                     writer
@@ -151,9 +180,19 @@ export const getInputTypeStatements: GetStatements = (DMMF) => {
                       inputType,
                       zodCustomErrors: field.zodCustomErrors,
                       zodValidatorString: field.zodValidatorString,
+                      isNullable,
+                      isOptional,
                     });
-                    writeNonScalarType(writer, inputType);
-                    writeNullType(writer, inputType);
+                    writeNonScalarType(writer, {
+                      inputType,
+                      isNullable,
+                      isOptional,
+                    });
+                    writeNullType(writer, {
+                      inputType,
+                      isNullable,
+                      isOptional,
+                    });
                   }
 
                   writer.newLine();
@@ -183,39 +222,73 @@ export const getInputTypeStatements: GetStatements = (DMMF) => {
                 initializer: (writer) => {
                   writer.write(`z.object(`);
                   writer.inlineBlock(() => {
-                    // outputType.fields.forEach((field) => {
-                    //   writer.write(`${field.name}: `);
-                    //   const inputTypes = field.inputTypes.filter(
-                    //     (type) => type.type !== 'Null',
-                    //   );
-                    //   if (inputTypes.length > 1) {
-                    //     writer.write(`z.union([ `);
-                    //     inputTypes.forEach((inputType) => {
-                    //       writeScalarType(writer, {
-                    //         inputType,
-                    //         zodCustomErrors: field.zodCustomErrors,
-                    //         zodValidatorString: field.zodValidatorString,
-                    //       });
-                    //       writeNonScalarType(writer, inputType);
-                    //       writeNullType(writer, inputType);
-                    //     });
-                    //     writer
-                    //       .write(` ])`)
-                    //       .conditionalWrite(!field.isRequired, `.optional()`)
-                    //       .conditionalWrite(field.isNullable, `.nullable()`)
-                    //       .write(`,`);
-                    //   } else {
-                    //     const inputType = field.inputTypes[0];
-                    //     writeScalarType(writer, {
-                    //       inputType,
-                    //       zodCustomErrors: field.zodCustomErrors,
-                    //       zodValidatorString: field.zodValidatorString,
-                    //     });
-                    //     writeNonScalarType(writer, inputType);
-                    //     writeNullType(writer, inputType);
-                    //   }
-                    //   writer.newLine();
-                    // });
+                    field.args.forEach((arg) => {
+                      writer.write(`${arg.name}: `);
+
+                      const inputTypes = arg.inputTypes.filter(
+                        (type) => type.type !== 'Null',
+                      );
+
+                      const { isOptional, isNullable } = arg;
+
+                      console.log(JSON.stringify(arg, null, 2));
+
+                      if (inputTypes.length > 1) {
+                        writer.write(`z.union([ `);
+
+                        inputTypes.forEach((inputType) => {
+                          // don't pass optional and nullable props in this loop
+                          // because they are handled by the union
+                          writeScalarType(writer, {
+                            inputType,
+                            // isOptional,
+                            // isNullable,
+                            writeLazy: false,
+                          });
+
+                          writeNonScalarType(writer, {
+                            inputType,
+                            writeLazy: false,
+                            // isOptional,
+                            // isNullable,
+                          });
+                          writeNullType(writer, {
+                            inputType,
+                            // isNullable,
+                            // isOptional,
+                            writeLazy: false,
+                          });
+                        });
+
+                        writer
+                          .write(` ])`)
+                          .conditionalWrite(arg.isOptional, `.optional()`)
+                          .conditionalWrite(arg.isNullable, `.nullable()`)
+                          .write(`,`);
+                      } else {
+                        const inputType = arg.inputTypes[0];
+                        writeScalarType(writer, {
+                          inputType,
+                          isNullable,
+                          isOptional,
+                          writeLazy: false,
+                        });
+                        writeNonScalarType(writer, {
+                          inputType,
+                          isNullable,
+                          isOptional,
+                          writeLazy: false,
+                        });
+                        writeNullType(writer, {
+                          inputType,
+                          isNullable,
+                          isOptional,
+                          writeLazy: false,
+                        });
+                      }
+
+                      writer.newLine();
+                    });
                   });
                   writer.write(`)`).write(`.strict()`);
                 },

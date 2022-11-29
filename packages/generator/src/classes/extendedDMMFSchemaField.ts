@@ -2,6 +2,7 @@ import { DMMF } from '@prisma/generator-helper';
 import { KeyValueMap, PrismaAction } from 'src/types';
 
 import { PRISMA_ACTION_MAP } from './extendedDMMFOutputType';
+import { ExtendedDMMFSchemaArg } from './extendedDMMFSchemaArg';
 import { FormattedNames } from './formattedNames';
 
 export type FilterdPrismaAction = Exclude<
@@ -9,6 +10,11 @@ export type FilterdPrismaAction = Exclude<
   'executeRaw' | 'queryRaw' | 'count'
 >;
 
+/**
+ * Map is used to get the right naming for the prisma action
+ * according to the prisma schema.
+ * @example type UserFindUnique // becomes const UserFindUnique = ...
+ */
 export const PRISMA_ACTION_ARG_MAP: KeyValueMap<
   FilterdPrismaAction,
   FormattedNames
@@ -38,7 +44,7 @@ export class ExtendedDMMFSchemaField
   name: DMMF.SchemaField['name'];
   isNullable: DMMF.SchemaField['isNullable'];
   outputType: DMMF.SchemaField['outputType'];
-  args: DMMF.SchemaField['args'];
+  args: ExtendedDMMFSchemaArg[];
   deprecation?: DMMF.SchemaField['deprecation'];
   documentation?: DMMF.SchemaField['documentation'];
 
@@ -50,12 +56,18 @@ export class ExtendedDMMFSchemaField
     this.name = params.name;
     this.isNullable = params.isNullable;
     this.outputType = params.outputType;
-    this.args = params.args;
+    this.args = this.setArgs(params);
     this.deprecation = params.deprecation;
     this.documentation = params.documentation;
 
     this.modelType = this.setType();
     this.argName = this.setArgName();
+  }
+
+  private setArgs({ args }: DMMF.SchemaField) {
+    return args.map((arg) => {
+      return new ExtendedDMMFSchemaArg(arg);
+    });
   }
 
   // filter out the typename from the prisma naming convention
@@ -76,26 +88,6 @@ export class ExtendedDMMFSchemaField
 
     const argName =
       PRISMA_ACTION_ARG_MAP[matchedPrismaAction as FilterdPrismaAction];
-
-    // const prismaAction = matchedPrismaAction?.replace('One', 'Unique');
-
-    // Todo extract the whole thing to map object where eacht prismaAction
-    // has a matching string that returns the correct argName
-
-    // if (!prismaAction)
-    //   throw new Error(`No prisma action found for ${this.name}`);
-
-    // const { pascalCase } = this.getStringVariants(prismaAction);
-
-    // console.log(prismaAction);
-
-    // if (prismaAction === 'aggregate') {
-    //   return `${this.modelType}${pascalCase}Args`;
-    // }
-
-    // if (prismaAction === 'groupBy') {
-    //   return `${this.modelType}GroupByArgs`;
-    // }
 
     return `${this.modelType}${argName.formattedNames.pascalCase}Args`;
   }
