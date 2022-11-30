@@ -59,11 +59,7 @@ const writeNonScalarType = (
   { inputType, isOptional, isNullable, writeLazy = true }: WriteTypeOptions,
 ) => {
   const nonScalarType = inputType.getZodNonScalarType();
-
-  console.log('nonScalarType', nonScalarType);
   if (!nonScalarType) return;
-
-  console.log('writeLazy', writeLazy);
 
   writer
     .conditionalWrite(writeLazy, `z.lazy(() => ${nonScalarType})`)
@@ -162,9 +158,9 @@ export const getInputTypeStatements: GetStatements = (DMMF) => {
                   if (field.hasMultipleTypes) {
                     writer.write(`z.union([ `);
 
+                    // don't pass optional and nullable props in this loop
+                    // because they are handled by the union
                     field.inputTypes.forEach((inputType) => {
-                      // don't pass optional and nullable props in this loop
-                      // because they are handled by the union
                       writeScalarType(writer, {
                         inputType,
                         zodCustomErrors,
@@ -254,9 +250,9 @@ export const getInputTypeStatements: GetStatements = (DMMF) => {
                       if (arg.hasMultipleTypes) {
                         writer.write(`z.union([ `);
 
+                        // don't pass optional and nullable props in this loop
+                        // because they are handled by the union
                         arg.inputTypes.forEach((inputType) => {
-                          // don't pass optional and nullable props in this loop
-                          // because they are handled by the union
                           writeScalarType(writer, {
                             inputType,
                             writeLazy: false,
