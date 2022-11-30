@@ -32,13 +32,16 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
   constructor(schema: DMMF.Schema, datamodel: ExtendedDatamodel) {
     this.rootQueryType = schema.rootQueryType;
     this.rootMutationType = schema.rootMutationType;
-    this.inputObjectTypes = this.setExtendedInputObjectTypes(schema, datamodel);
-    this.outputObjectTypes = this.setExtendedOutputObjectTypes(schema);
+    this.inputObjectTypes = this._setExtendedInputObjectTypes(
+      schema,
+      datamodel,
+    );
+    this.outputObjectTypes = this._setExtendedOutputObjectTypes(schema);
     this.enumTypes = schema.enumTypes;
     this.fieldRefTypes = schema.fieldRefTypes;
   }
 
-  private setExtendedInputObjectTypes(
+  private _setExtendedInputObjectTypes(
     schema: DMMF.Schema,
     datamodel: ExtendedDatamodel,
   ) {
@@ -57,7 +60,7 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
     };
   }
 
-  private setExtendedOutputObjectTypes(schema: DMMF.Schema) {
+  private _setExtendedOutputObjectTypes(schema: DMMF.Schema) {
     return {
       ...schema.outputObjectTypes,
       prisma: schema.outputObjectTypes.prisma.map((type) => {

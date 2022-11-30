@@ -1,7 +1,7 @@
 import { DMMF } from '@prisma/generator-helper';
 import { KeyValueMap, PrismaAction } from 'src/types';
 
-import { PRISMA_ACTION_MAP } from './extendedDMMFOutputType';
+import { PRISMA_ACTION_ARRAY } from './extendedDMMFOutputType';
 import { ExtendedDMMFSchemaArg } from './extendedDMMFSchemaArg';
 import { FormattedNames } from './formattedNames';
 
@@ -72,7 +72,7 @@ export class ExtendedDMMFSchemaField
 
   // filter out the typename from the prisma naming convention
   private setType() {
-    const matchedPrismaAction = PRISMA_ACTION_MAP.find((elem) =>
+    const matchedPrismaAction = PRISMA_ACTION_ARRAY.find((elem) =>
       this.name.includes(elem),
     );
 
@@ -82,7 +82,7 @@ export class ExtendedDMMFSchemaField
 
   // rebuild the typename used in prisma types
   private setArgName() {
-    const matchedPrismaAction = PRISMA_ACTION_MAP.find((elem) =>
+    const matchedPrismaAction = PRISMA_ACTION_ARRAY.find((elem) =>
       this.name.includes(elem),
     );
 

@@ -4,7 +4,7 @@ import { PrismaAction } from 'src/types';
 import { ExtendedDMMFSchemaField } from './extendedDMMFSchemaField';
 import { FormattedNames } from './formattedNames';
 
-export const PRISMA_ACTION_MAP: PrismaAction[] = [
+export const PRISMA_ACTION_ARRAY: PrismaAction[] = [
   'findUnique',
   'findMany',
   'findFirst',
@@ -29,19 +29,19 @@ export class ExtendedDMMFOutputType
 {
   name: DMMF.OutputType['name'];
   fields: ExtendedDMMFSchemaField[];
-  fieldMap: DMMF.OutputType['fieldMap'];
+  fieldMap?: DMMF.OutputType['fieldMap'];
 
   constructor(type: DMMF.OutputType) {
     super(type.name);
     this.name = type.name;
-    this.fields = this.setFields(type.fields);
+    this.fields = this._setFields(type.fields);
     this.fieldMap = type.fieldMap;
   }
 
-  private setFields(fields: DMMF.SchemaField[]) {
+  private _setFields(fields: DMMF.SchemaField[]) {
     return fields
       .filter((field) =>
-        PRISMA_ACTION_MAP.find((elem) => field.name.includes(elem)),
+        PRISMA_ACTION_ARRAY.find((elem) => field.name.includes(elem)),
       )
       .filter((field) => !field.name.includes('OrThrow'))
       .map((field) => {

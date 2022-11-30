@@ -44,7 +44,23 @@ export class ExtendedDMMFSchemaArg
   }
 
   private setInputTypes = (inputTypes: DMMF.SchemaArgInputType[]) => {
-    return inputTypes.map((inputType) => {
+    // filter "null" from the inputTypes array to prevent the generator
+    // from generating a "null" type in a union field wiht the actual type
+    // instead of e.g. a scalar type
+    const nonNullTypes = inputTypes.filter((type) => type.type !== 'Null');
+
+    // FIX: this is a hacky workaround to prevent the generator from
+    // generating a union in the "GroupByArgs" at the "by" property.
+    // this should be fixed in the prisma dmmf
+    if (this.name === 'by') {
+      return nonNullTypes
+        .filter((inputType) => inputType.isList === true)
+        .map((inputType) => {
+          return new ExtendedDMMFSchemaArgInputType(inputType);
+        });
+    }
+
+    return nonNullTypes.map((inputType) => {
       return new ExtendedDMMFSchemaArgInputType(inputType);
     });
   };
