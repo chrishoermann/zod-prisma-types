@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DMMF } from '@prisma/generator-helper';
 
 import { ExtendedDMMFMappings } from './extendedDMMFMappings';
@@ -10,9 +9,9 @@ import { ExtendedDatamodel } from './extendedDatamodel';
 /////////////////////////////////////////////////
 
 export class ExtendedDMMF implements DMMF.Document {
-  datamodel: ExtendedDatamodel;
-  schema: ExtendedDMMFSchema;
-  mappings: DMMF.Mappings;
+  readonly datamodel: ExtendedDatamodel;
+  readonly schema: ExtendedDMMFSchema;
+  readonly mappings: DMMF.Mappings;
 
   constructor(dmmf: DMMF.Document) {
     this.datamodel = this._getExtendedDatamodel(dmmf);

@@ -31,13 +31,13 @@ export const UserScalarFieldEnum = z.nativeEnum(Prisma.Prisma.UserScalarFieldEnu
 // CUSTOM ENUMS
 //------------------------------------------------------
 
-export const AnotherEnum = z.nativeEnum(Prisma.AnotherEnum);
-
 export const MyValue = z.nativeEnum(Prisma.MyValue);
 
 export const Role = z.nativeEnum(Prisma.Role);
 
 export const SecondEnum = z.nativeEnum(Prisma.SecondEnum);
+
+export const AnotherEnum = z.nativeEnum(Prisma.AnotherEnum);
 
 /////////////////////////////////////////
 // HELPER TYPES
@@ -58,6 +58,97 @@ export const InputJsonValue: z.ZodType<Prisma.Prisma.InputJsonValue> = z.union([
   z.lazy(() => z.array(InputJsonValue.nullable())),
   z.lazy(() => z.record(InputJsonValue.nullable())),
 ]);
+
+/////////////////////////////////////////
+// SELECT & INCLUDE
+/////////////////////////////////////////
+
+// TEST
+//------------------------------------------------------
+
+export const TestSelect: z.ZodType<Prisma.Prisma.TestSelect> = z.object({
+  id: z.boolean().optional(),
+  name: z.boolean().optional(),
+  intTwo: z.boolean().optional(),
+  int: z.boolean().optional(),
+  floatOpt: z.boolean().optional(),
+  float: z.boolean().optional(),
+  decimal: z.boolean().optional(),
+  decimalOpt: z.boolean().optional(),
+  bigInt: z.boolean().optional(),
+  bigIntOpt: z.boolean().optional(),
+  json: z.boolean().optional(),
+  jsonOpt: z.boolean().optional(),
+  bytes: z.boolean().optional(),
+  bytesOpt: z.boolean().optional(),
+  value: z.boolean().optional(),
+}).strict();
+
+// USER
+//------------------------------------------------------
+
+export const UserArgs: z.ZodType<Prisma.Prisma.UserArgs> = z.object({
+  select: z.lazy(() => UserSelect).optional(),
+  include: z.lazy(() => UserInclude).optional(),
+}).strict();
+
+export const UserSelect: z.ZodType<Prisma.Prisma.UserSelect> = z.object({
+  id: z.boolean().optional(),
+  email: z.boolean().optional(),
+  name: z.boolean().optional(),
+  role: z.boolean().optional(),
+  enum: z.boolean().optional(),
+  posts: z.union([z.boolean(), z.lazy(() => PostArgs)]).optional(),
+  profile: z.union([z.boolean(), z.lazy(() => ProfileArgs)]).optional(),
+}).strict();
+
+export const UserInclude: z.ZodType<Prisma.Prisma.UserInclude> = z.object({
+  posts: z.union([z.boolean(), z.lazy(() => PostArgs)]).optional(),
+  profile: z.union([z.boolean(), z.lazy(() => ProfileArgs)]).optional(),
+}).strict();
+
+// POST
+//------------------------------------------------------
+
+export const PostArgs: z.ZodType<Prisma.Prisma.PostArgs> = z.object({
+  select: z.lazy(() => PostSelect).optional(),
+  include: z.lazy(() => PostInclude).optional(),
+}).strict();
+
+export const PostSelect: z.ZodType<Prisma.Prisma.PostSelect> = z.object({
+  id: z.boolean().optional(),
+  title: z.boolean().optional(),
+  content: z.boolean().optional(),
+  published: z.boolean().optional(),
+  authorId: z.boolean().optional(),
+  anotherEnum: z.boolean().optional(),
+  author: z.union([z.boolean(), z.lazy(() => UserArgs)]).optional(),
+}).strict();
+
+export const PostInclude: z.ZodType<Prisma.Prisma.PostInclude> = z.object({
+  author: z.union([z.boolean(), z.lazy(() => UserArgs)]).optional(),
+}).strict();
+
+// PROFILE
+//------------------------------------------------------
+
+export const ProfileArgs: z.ZodType<Prisma.Prisma.ProfileArgs> = z.object({
+  select: z.lazy(() => ProfileSelect).optional(),
+  include: z.lazy(() => ProfileInclude).optional(),
+}).strict();
+
+export const ProfileSelect: z.ZodType<Prisma.Prisma.ProfileSelect> = z.object({
+  id: z.boolean().optional(),
+  bio: z.boolean().optional(),
+  userId: z.boolean().optional(),
+  role: z.boolean().optional(),
+  second: z.boolean().optional(),
+  user: z.union([z.boolean(), z.lazy(() => UserArgs)]).optional(),
+}).strict();
+
+export const ProfileInclude: z.ZodType<Prisma.Prisma.ProfileInclude> = z.object({
+  user: z.union([z.boolean(), z.lazy(() => UserArgs)]).optional(),
+}).strict();
 
 /////////////////////////////////////////
 // MODELS
@@ -2156,6 +2247,7 @@ export const PostUncheckedUpdateManyWithoutPostsInput: z.ZodType<Prisma.Prisma.P
 /////////////////////////////////////////
 
 export const TestFindFirstArgs: z.ZodType<Prisma.Prisma.TestFindFirstArgs> = z.object({
+  select: z.lazy(() => TestSelect).optional(),
   where: TestWhereInput.optional(),
   orderBy: z.union([TestOrderByWithRelationInput.array(), TestOrderByWithRelationInput]).optional(),
   cursor: TestWhereUniqueInput.optional(),
@@ -2165,6 +2257,7 @@ export const TestFindFirstArgs: z.ZodType<Prisma.Prisma.TestFindFirstArgs> = z.o
 }).strict();
 
 export const TestFindManyArgs: z.ZodType<Prisma.Prisma.TestFindManyArgs> = z.object({
+  select: z.lazy(() => TestSelect).optional(),
   where: TestWhereInput.optional(),
   orderBy: z.union([TestOrderByWithRelationInput.array(), TestOrderByWithRelationInput]).optional(),
   cursor: TestWhereUniqueInput.optional(),
@@ -2174,6 +2267,7 @@ export const TestFindManyArgs: z.ZodType<Prisma.Prisma.TestFindManyArgs> = z.obj
 }).strict();
 
 export const TestAggregateArgs: z.ZodType<Prisma.Prisma.TestAggregateArgs> = z.object({
+  select: z.lazy(() => TestSelect).optional(),
   where: TestWhereInput.optional(),
   orderBy: z.union([TestOrderByWithRelationInput.array(), TestOrderByWithRelationInput]).optional(),
   cursor: TestWhereUniqueInput.optional(),
@@ -2182,6 +2276,7 @@ export const TestAggregateArgs: z.ZodType<Prisma.Prisma.TestAggregateArgs> = z.o
 }).strict();
 
 export const TestGroupByArgs: z.ZodType<Prisma.Prisma.TestGroupByArgs> = z.object({
+  select: z.lazy(() => TestSelect).optional(),
   where: TestWhereInput.optional(),
   orderBy: z.union([TestOrderByWithAggregationInput.array(), TestOrderByWithAggregationInput]).optional(),
   by: TestScalarFieldEnum.array(),
@@ -2191,10 +2286,13 @@ export const TestGroupByArgs: z.ZodType<Prisma.Prisma.TestGroupByArgs> = z.objec
 }).strict();
 
 export const TestFindUniqueArgs: z.ZodType<Prisma.Prisma.TestFindUniqueArgs> = z.object({
+  select: z.lazy(() => TestSelect).optional(),
   where: TestWhereUniqueInput,
 }).strict();
 
 export const UserFindFirstArgs: z.ZodType<Prisma.Prisma.UserFindFirstArgs> = z.object({
+  select: z.lazy(() => UserSelect).optional(),
+  include: z.lazy(() => UserInclude).optional(),
   where: UserWhereInput.optional(),
   orderBy: z.union([UserOrderByWithRelationInput.array(), UserOrderByWithRelationInput]).optional(),
   cursor: UserWhereUniqueInput.optional(),
@@ -2204,6 +2302,8 @@ export const UserFindFirstArgs: z.ZodType<Prisma.Prisma.UserFindFirstArgs> = z.o
 }).strict();
 
 export const UserFindManyArgs: z.ZodType<Prisma.Prisma.UserFindManyArgs> = z.object({
+  select: z.lazy(() => UserSelect).optional(),
+  include: z.lazy(() => UserInclude).optional(),
   where: UserWhereInput.optional(),
   orderBy: z.union([UserOrderByWithRelationInput.array(), UserOrderByWithRelationInput]).optional(),
   cursor: UserWhereUniqueInput.optional(),
@@ -2213,6 +2313,8 @@ export const UserFindManyArgs: z.ZodType<Prisma.Prisma.UserFindManyArgs> = z.obj
 }).strict();
 
 export const UserAggregateArgs: z.ZodType<Prisma.Prisma.UserAggregateArgs> = z.object({
+  select: z.lazy(() => UserSelect).optional(),
+  include: z.lazy(() => UserInclude).optional(),
   where: UserWhereInput.optional(),
   orderBy: z.union([UserOrderByWithRelationInput.array(), UserOrderByWithRelationInput]).optional(),
   cursor: UserWhereUniqueInput.optional(),
@@ -2221,6 +2323,8 @@ export const UserAggregateArgs: z.ZodType<Prisma.Prisma.UserAggregateArgs> = z.o
 }).strict();
 
 export const UserGroupByArgs: z.ZodType<Prisma.Prisma.UserGroupByArgs> = z.object({
+  select: z.lazy(() => UserSelect).optional(),
+  include: z.lazy(() => UserInclude).optional(),
   where: UserWhereInput.optional(),
   orderBy: z.union([UserOrderByWithAggregationInput.array(), UserOrderByWithAggregationInput]).optional(),
   by: UserScalarFieldEnum.array(),
@@ -2230,10 +2334,14 @@ export const UserGroupByArgs: z.ZodType<Prisma.Prisma.UserGroupByArgs> = z.objec
 }).strict();
 
 export const UserFindUniqueArgs: z.ZodType<Prisma.Prisma.UserFindUniqueArgs> = z.object({
+  select: z.lazy(() => UserSelect).optional(),
+  include: z.lazy(() => UserInclude).optional(),
   where: UserWhereUniqueInput,
 }).strict();
 
 export const PostFindFirstArgs: z.ZodType<Prisma.Prisma.PostFindFirstArgs> = z.object({
+  select: z.lazy(() => PostSelect).optional(),
+  include: z.lazy(() => PostInclude).optional(),
   where: PostWhereInput.optional(),
   orderBy: z.union([PostOrderByWithRelationInput.array(), PostOrderByWithRelationInput]).optional(),
   cursor: PostWhereUniqueInput.optional(),
@@ -2243,6 +2351,8 @@ export const PostFindFirstArgs: z.ZodType<Prisma.Prisma.PostFindFirstArgs> = z.o
 }).strict();
 
 export const PostFindManyArgs: z.ZodType<Prisma.Prisma.PostFindManyArgs> = z.object({
+  select: z.lazy(() => PostSelect).optional(),
+  include: z.lazy(() => PostInclude).optional(),
   where: PostWhereInput.optional(),
   orderBy: z.union([PostOrderByWithRelationInput.array(), PostOrderByWithRelationInput]).optional(),
   cursor: PostWhereUniqueInput.optional(),
@@ -2252,6 +2362,8 @@ export const PostFindManyArgs: z.ZodType<Prisma.Prisma.PostFindManyArgs> = z.obj
 }).strict();
 
 export const PostAggregateArgs: z.ZodType<Prisma.Prisma.PostAggregateArgs> = z.object({
+  select: z.lazy(() => PostSelect).optional(),
+  include: z.lazy(() => PostInclude).optional(),
   where: PostWhereInput.optional(),
   orderBy: z.union([PostOrderByWithRelationInput.array(), PostOrderByWithRelationInput]).optional(),
   cursor: PostWhereUniqueInput.optional(),
@@ -2260,6 +2372,8 @@ export const PostAggregateArgs: z.ZodType<Prisma.Prisma.PostAggregateArgs> = z.o
 }).strict();
 
 export const PostGroupByArgs: z.ZodType<Prisma.Prisma.PostGroupByArgs> = z.object({
+  select: z.lazy(() => PostSelect).optional(),
+  include: z.lazy(() => PostInclude).optional(),
   where: PostWhereInput.optional(),
   orderBy: z.union([PostOrderByWithAggregationInput.array(), PostOrderByWithAggregationInput]).optional(),
   by: PostScalarFieldEnum.array(),
@@ -2269,10 +2383,14 @@ export const PostGroupByArgs: z.ZodType<Prisma.Prisma.PostGroupByArgs> = z.objec
 }).strict();
 
 export const PostFindUniqueArgs: z.ZodType<Prisma.Prisma.PostFindUniqueArgs> = z.object({
+  select: z.lazy(() => PostSelect).optional(),
+  include: z.lazy(() => PostInclude).optional(),
   where: PostWhereUniqueInput,
 }).strict();
 
 export const ProfileFindFirstArgs: z.ZodType<Prisma.Prisma.ProfileFindFirstArgs> = z.object({
+  select: z.lazy(() => ProfileSelect).optional(),
+  include: z.lazy(() => ProfileInclude).optional(),
   where: ProfileWhereInput.optional(),
   orderBy: z.union([ProfileOrderByWithRelationInput.array(), ProfileOrderByWithRelationInput]).optional(),
   cursor: ProfileWhereUniqueInput.optional(),
@@ -2282,6 +2400,8 @@ export const ProfileFindFirstArgs: z.ZodType<Prisma.Prisma.ProfileFindFirstArgs>
 }).strict();
 
 export const ProfileFindManyArgs: z.ZodType<Prisma.Prisma.ProfileFindManyArgs> = z.object({
+  select: z.lazy(() => ProfileSelect).optional(),
+  include: z.lazy(() => ProfileInclude).optional(),
   where: ProfileWhereInput.optional(),
   orderBy: z.union([ProfileOrderByWithRelationInput.array(), ProfileOrderByWithRelationInput]).optional(),
   cursor: ProfileWhereUniqueInput.optional(),
@@ -2291,6 +2411,8 @@ export const ProfileFindManyArgs: z.ZodType<Prisma.Prisma.ProfileFindManyArgs> =
 }).strict();
 
 export const ProfileAggregateArgs: z.ZodType<Prisma.Prisma.ProfileAggregateArgs> = z.object({
+  select: z.lazy(() => ProfileSelect).optional(),
+  include: z.lazy(() => ProfileInclude).optional(),
   where: ProfileWhereInput.optional(),
   orderBy: z.union([ProfileOrderByWithRelationInput.array(), ProfileOrderByWithRelationInput]).optional(),
   cursor: ProfileWhereUniqueInput.optional(),
@@ -2299,6 +2421,8 @@ export const ProfileAggregateArgs: z.ZodType<Prisma.Prisma.ProfileAggregateArgs>
 }).strict();
 
 export const ProfileGroupByArgs: z.ZodType<Prisma.Prisma.ProfileGroupByArgs> = z.object({
+  select: z.lazy(() => ProfileSelect).optional(),
+  include: z.lazy(() => ProfileInclude).optional(),
   where: ProfileWhereInput.optional(),
   orderBy: z.union([ProfileOrderByWithAggregationInput.array(), ProfileOrderByWithAggregationInput]).optional(),
   by: ProfileScalarFieldEnum.array(),
@@ -2308,137 +2432,188 @@ export const ProfileGroupByArgs: z.ZodType<Prisma.Prisma.ProfileGroupByArgs> = z
 }).strict();
 
 export const ProfileFindUniqueArgs: z.ZodType<Prisma.Prisma.ProfileFindUniqueArgs> = z.object({
+  select: z.lazy(() => ProfileSelect).optional(),
+  include: z.lazy(() => ProfileInclude).optional(),
   where: ProfileWhereUniqueInput,
 }).strict();
 
 export const TestCreateArgs: z.ZodType<Prisma.Prisma.TestCreateArgs> = z.object({
+  select: z.lazy(() => TestSelect).optional(),
   data: z.union([TestCreateInput, TestUncheckedCreateInput]),
 }).strict();
 
 export const TestUpsertArgs: z.ZodType<Prisma.Prisma.TestUpsertArgs> = z.object({
+  select: z.lazy(() => TestSelect).optional(),
   where: TestWhereUniqueInput,
   create: z.union([TestCreateInput, TestUncheckedCreateInput]),
   update: z.union([TestUpdateInput, TestUncheckedUpdateInput]),
 }).strict();
 
 export const TestCreateManyArgs: z.ZodType<Prisma.Prisma.TestCreateManyArgs> = z.object({
+  select: z.lazy(() => TestSelect).optional(),
   data: TestCreateManyInput.array(),
   skipDuplicates: z.boolean().optional(),
 }).strict();
 
 export const TestDeleteArgs: z.ZodType<Prisma.Prisma.TestDeleteArgs> = z.object({
+  select: z.lazy(() => TestSelect).optional(),
   where: TestWhereUniqueInput,
 }).strict();
 
 export const TestUpdateArgs: z.ZodType<Prisma.Prisma.TestUpdateArgs> = z.object({
+  select: z.lazy(() => TestSelect).optional(),
   data: z.union([TestUpdateInput, TestUncheckedUpdateInput]),
   where: TestWhereUniqueInput,
 }).strict();
 
 export const TestUpdateManyArgs: z.ZodType<Prisma.Prisma.TestUpdateManyArgs> = z.object({
+  select: z.lazy(() => TestSelect).optional(),
   data: z.union([TestUpdateManyMutationInput, TestUncheckedUpdateManyInput]),
   where: TestWhereInput.optional(),
 }).strict();
 
 export const TestDeleteManyArgs: z.ZodType<Prisma.Prisma.TestDeleteManyArgs> = z.object({
+  select: z.lazy(() => TestSelect).optional(),
   where: TestWhereInput.optional(),
 }).strict();
 
 export const UserCreateArgs: z.ZodType<Prisma.Prisma.UserCreateArgs> = z.object({
+  select: z.lazy(() => UserSelect).optional(),
+  include: z.lazy(() => UserInclude).optional(),
   data: z.union([UserCreateInput, UserUncheckedCreateInput]),
 }).strict();
 
 export const UserUpsertArgs: z.ZodType<Prisma.Prisma.UserUpsertArgs> = z.object({
+  select: z.lazy(() => UserSelect).optional(),
+  include: z.lazy(() => UserInclude).optional(),
   where: UserWhereUniqueInput,
   create: z.union([UserCreateInput, UserUncheckedCreateInput]),
   update: z.union([UserUpdateInput, UserUncheckedUpdateInput]),
 }).strict();
 
 export const UserCreateManyArgs: z.ZodType<Prisma.Prisma.UserCreateManyArgs> = z.object({
+  select: z.lazy(() => UserSelect).optional(),
+  include: z.lazy(() => UserInclude).optional(),
   data: UserCreateManyInput.array(),
   skipDuplicates: z.boolean().optional(),
 }).strict();
 
 export const UserDeleteArgs: z.ZodType<Prisma.Prisma.UserDeleteArgs> = z.object({
+  select: z.lazy(() => UserSelect).optional(),
+  include: z.lazy(() => UserInclude).optional(),
   where: UserWhereUniqueInput,
 }).strict();
 
 export const UserUpdateArgs: z.ZodType<Prisma.Prisma.UserUpdateArgs> = z.object({
+  select: z.lazy(() => UserSelect).optional(),
+  include: z.lazy(() => UserInclude).optional(),
   data: z.union([UserUpdateInput, UserUncheckedUpdateInput]),
   where: UserWhereUniqueInput,
 }).strict();
 
 export const UserUpdateManyArgs: z.ZodType<Prisma.Prisma.UserUpdateManyArgs> = z.object({
+  select: z.lazy(() => UserSelect).optional(),
+  include: z.lazy(() => UserInclude).optional(),
   data: z.union([UserUpdateManyMutationInput, UserUncheckedUpdateManyInput]),
   where: UserWhereInput.optional(),
 }).strict();
 
 export const UserDeleteManyArgs: z.ZodType<Prisma.Prisma.UserDeleteManyArgs> = z.object({
+  select: z.lazy(() => UserSelect).optional(),
+  include: z.lazy(() => UserInclude).optional(),
   where: UserWhereInput.optional(),
 }).strict();
 
 export const PostCreateArgs: z.ZodType<Prisma.Prisma.PostCreateArgs> = z.object({
+  select: z.lazy(() => PostSelect).optional(),
+  include: z.lazy(() => PostInclude).optional(),
   data: z.union([PostCreateInput, PostUncheckedCreateInput]),
 }).strict();
 
 export const PostUpsertArgs: z.ZodType<Prisma.Prisma.PostUpsertArgs> = z.object({
+  select: z.lazy(() => PostSelect).optional(),
+  include: z.lazy(() => PostInclude).optional(),
   where: PostWhereUniqueInput,
   create: z.union([PostCreateInput, PostUncheckedCreateInput]),
   update: z.union([PostUpdateInput, PostUncheckedUpdateInput]),
 }).strict();
 
 export const PostCreateManyArgs: z.ZodType<Prisma.Prisma.PostCreateManyArgs> = z.object({
+  select: z.lazy(() => PostSelect).optional(),
+  include: z.lazy(() => PostInclude).optional(),
   data: PostCreateManyInput.array(),
   skipDuplicates: z.boolean().optional(),
 }).strict();
 
 export const PostDeleteArgs: z.ZodType<Prisma.Prisma.PostDeleteArgs> = z.object({
+  select: z.lazy(() => PostSelect).optional(),
+  include: z.lazy(() => PostInclude).optional(),
   where: PostWhereUniqueInput,
 }).strict();
 
 export const PostUpdateArgs: z.ZodType<Prisma.Prisma.PostUpdateArgs> = z.object({
+  select: z.lazy(() => PostSelect).optional(),
+  include: z.lazy(() => PostInclude).optional(),
   data: z.union([PostUpdateInput, PostUncheckedUpdateInput]),
   where: PostWhereUniqueInput,
 }).strict();
 
 export const PostUpdateManyArgs: z.ZodType<Prisma.Prisma.PostUpdateManyArgs> = z.object({
+  select: z.lazy(() => PostSelect).optional(),
+  include: z.lazy(() => PostInclude).optional(),
   data: z.union([PostUpdateManyMutationInput, PostUncheckedUpdateManyInput]),
   where: PostWhereInput.optional(),
 }).strict();
 
 export const PostDeleteManyArgs: z.ZodType<Prisma.Prisma.PostDeleteManyArgs> = z.object({
+  select: z.lazy(() => PostSelect).optional(),
+  include: z.lazy(() => PostInclude).optional(),
   where: PostWhereInput.optional(),
 }).strict();
 
 export const ProfileCreateArgs: z.ZodType<Prisma.Prisma.ProfileCreateArgs> = z.object({
+  select: z.lazy(() => ProfileSelect).optional(),
+  include: z.lazy(() => ProfileInclude).optional(),
   data: z.union([ProfileCreateInput, ProfileUncheckedCreateInput]),
 }).strict();
 
 export const ProfileUpsertArgs: z.ZodType<Prisma.Prisma.ProfileUpsertArgs> = z.object({
+  select: z.lazy(() => ProfileSelect).optional(),
+  include: z.lazy(() => ProfileInclude).optional(),
   where: ProfileWhereUniqueInput,
   create: z.union([ProfileCreateInput, ProfileUncheckedCreateInput]),
   update: z.union([ProfileUpdateInput, ProfileUncheckedUpdateInput]),
 }).strict();
 
 export const ProfileCreateManyArgs: z.ZodType<Prisma.Prisma.ProfileCreateManyArgs> = z.object({
+  select: z.lazy(() => ProfileSelect).optional(),
+  include: z.lazy(() => ProfileInclude).optional(),
   data: ProfileCreateManyInput.array(),
   skipDuplicates: z.boolean().optional(),
 }).strict();
 
 export const ProfileDeleteArgs: z.ZodType<Prisma.Prisma.ProfileDeleteArgs> = z.object({
+  select: z.lazy(() => ProfileSelect).optional(),
+  include: z.lazy(() => ProfileInclude).optional(),
   where: ProfileWhereUniqueInput,
 }).strict();
 
 export const ProfileUpdateArgs: z.ZodType<Prisma.Prisma.ProfileUpdateArgs> = z.object({
+  select: z.lazy(() => ProfileSelect).optional(),
+  include: z.lazy(() => ProfileInclude).optional(),
   data: z.union([ProfileUpdateInput, ProfileUncheckedUpdateInput]),
   where: ProfileWhereUniqueInput,
 }).strict();
 
 export const ProfileUpdateManyArgs: z.ZodType<Prisma.Prisma.ProfileUpdateManyArgs> = z.object({
+  select: z.lazy(() => ProfileSelect).optional(),
+  include: z.lazy(() => ProfileInclude).optional(),
   data: z.union([ProfileUpdateManyMutationInput, ProfileUncheckedUpdateManyInput]),
   where: ProfileWhereInput.optional(),
 }).strict();
 
 export const ProfileDeleteManyArgs: z.ZodType<Prisma.Prisma.ProfileDeleteManyArgs> = z.object({
+  select: z.lazy(() => ProfileSelect).optional(),
+  include: z.lazy(() => ProfileInclude).optional(),
   where: ProfileWhereInput.optional(),
 }).strict();

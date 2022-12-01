@@ -1,5 +1,7 @@
+import { FormattedNames } from '../classes/formattedNames';
 import {
   KeyValueMap,
+  PrismaAction,
   PrismaScalarType,
   ZodDateValidatorKeys,
   ZodNumberValidatorKeys,
@@ -119,3 +121,54 @@ export const DATE_VALIDATOR_REGEX_MAP: RegexMap<ZodDateValidatorKeys> = {
   min: DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
   max: DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
 };
+
+/////////////////////////////////////////////
+// PRISMA ACTION MAP
+/////////////////////////////////////////////
+
+export type FilterdPrismaAction = Exclude<
+  PrismaAction,
+  'executeRaw' | 'queryRaw' | 'count'
+>;
+
+/**
+ * Map is used to get the right naming for the prisma action
+ * according to the prisma schema.
+ * @example type UserFindUnique // becomes const UserFindUnique = ...
+ */
+export const PRISMA_ACTION_ARG_MAP: KeyValueMap<
+  FilterdPrismaAction,
+  FormattedNames
+> = {
+  findUnique: new FormattedNames('findUnique'),
+  findMany: new FormattedNames('findMany'),
+  findFirst: new FormattedNames('findFirst'),
+  createOne: new FormattedNames('create'),
+  createMany: new FormattedNames('createMany'),
+  updateOne: new FormattedNames('update'),
+  updateMany: new FormattedNames('updateMany'),
+  upsertOne: new FormattedNames('upsert'),
+  deleteOne: new FormattedNames('delete'),
+  deleteMany: new FormattedNames('deleteMany'),
+  aggregate: new FormattedNames('aggregate'),
+  groupBy: new FormattedNames('groupBy'),
+};
+
+/**
+ * This array contains all prisma actions for which
+ * we want to generate a zod input schema.
+ */
+export const PRISMA_ACTION_ARRAY: FilterdPrismaAction[] = [
+  'findUnique',
+  'findMany',
+  'findFirst',
+  'createOne',
+  'createMany',
+  'updateOne',
+  'updateMany',
+  'upsertOne',
+  'deleteOne',
+  'deleteMany',
+  'aggregate',
+  'groupBy',
+];

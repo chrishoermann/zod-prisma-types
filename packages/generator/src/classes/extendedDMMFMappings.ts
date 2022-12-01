@@ -5,10 +5,10 @@ import { DMMF } from '@prisma/generator-helper';
 /////////////////////////////////////////////////
 
 export class ExtendedDMMFMappings implements DMMF.Mappings {
-  modelOperations: DMMF.ModelMapping[];
-  otherOperations: {
-    read: string[];
-    write: string[];
+  readonly modelOperations: DMMF.ModelMapping[];
+  readonly otherOperations: {
+    readonly read: string[];
+    readonly write: string[];
   };
 
   constructor(mappings: DMMF.Mappings) {

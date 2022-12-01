@@ -246,7 +246,6 @@ export const getInputTypeStatements: GetStatements = (DMMF) => {
                 }
 
                 if (field.isJsonType) {
-                  console.log('isJsonType', field.name);
                   return writer
                     .write(`${field.formattedNames.camelCase}: `)
                     .write(`InputJsonValue`)
@@ -257,7 +256,6 @@ export const getInputTypeStatements: GetStatements = (DMMF) => {
                 }
 
                 if (field.isBytesType) {
-                  console.log('isByteType', field.name);
                   return writer
                     .write(`${field.formattedNames.camelCase}: `)
                     .write(`z.instanceof(Buffer)`)
@@ -290,6 +288,111 @@ export const getInputTypeStatements: GetStatements = (DMMF) => {
         ],
       }),
     );
+  });
+
+  // GENERATE SELECT TYPES
+  // ---------------------------------------------------------------------
+
+  const includeAndSelectStatements: Statement[] = [
+    writeHeading(`SELECT & INCLUDE`, 'FAT'),
+  ];
+
+  datamodel.models.forEach((model) => {
+    includeAndSelectStatements.push(
+      writeHeading(`${model.formattedNames.upperCaseSpace}`, 'SLIM'),
+    );
+
+    if (model.hasRelationFields) {
+      includeAndSelectStatements.push(
+        writeConstStatement({
+          leadingTrivia: (writer) => writer.newLine(),
+          declarations: [
+            {
+              name: `${model.formattedNames.pascalCase}Args`,
+              type: `z.ZodType<Prisma.Prisma.${model.formattedNames.pascalCase}Args>`,
+              initializer(writer) {
+                writer
+                  .writeLine(`z.object({`)
+                  .write(`select: `)
+                  .write(
+                    `z.lazy(() => ${model.formattedNames.pascalCase}Select).optional(),`,
+                  )
+                  .newLine()
+                  .conditionalWrite(model.hasRelationFields, `include: `)
+                  .conditionalWrite(
+                    model.hasRelationFields,
+                    `z.lazy(() => ${model.formattedNames.pascalCase}Include).optional(),`,
+                  )
+                  .newLine()
+                  .write(`})`)
+                  .write(`.strict()`);
+              },
+            },
+          ],
+        }),
+      );
+    }
+
+    includeAndSelectStatements.push(
+      writeConstStatement({
+        leadingTrivia: (writer) => writer.newLine(),
+        declarations: [
+          {
+            name: `${model.formattedNames.pascalCase}Select`,
+            type: `z.ZodType<Prisma.Prisma.${model.formattedNames.pascalCase}Select>`,
+            initializer(writer) {
+              writer.write(`z.object({`);
+              [...model.scalarFields, ...model.enumFields].forEach((field) => {
+                writer
+                  .write(`${field.formattedNames.camelCase}: `)
+                  .write(`z.boolean().optional(),`)
+                  .newLine();
+              });
+
+              model.relationFields.forEach((field) => {
+                writer
+                  .write(`${field.formattedNames.camelCase}: `)
+                  .write(`z.union([`)
+                  .write(`z.boolean(),`)
+                  .write(`z.lazy(() => ${field.type}Args)`)
+                  .write(`]).optional(),`)
+                  .newLine();
+              });
+
+              writer.write(`})`).write(`.strict()`);
+            },
+          },
+        ],
+      }),
+    );
+
+    if (model.hasRelationFields) {
+      includeAndSelectStatements.push(
+        writeConstStatement({
+          leadingTrivia: (writer) => writer.newLine(),
+          declarations: [
+            {
+              name: `${model.formattedNames.pascalCase}Include`,
+              type: `z.ZodType<Prisma.Prisma.${model.formattedNames.pascalCase}Include>`,
+              initializer(writer) {
+                writer.write(`z.object({`);
+                model.relationFields.forEach((field) => {
+                  writer
+                    .write(`${field.formattedNames.camelCase}: `)
+                    .write(`z.union([`)
+                    .write(`z.boolean(),`)
+                    .write(`z.lazy(() => ${field.type}Args)`)
+                    .write(`]).optional(),`)
+                    .newLine();
+                });
+
+                writer.write(`})`).write(`.strict()`);
+              },
+            },
+          ],
+        }),
+      );
+    }
   });
 
   // GENERATE INPUT TYPES
@@ -418,6 +521,14 @@ export const getInputTypeStatements: GetStatements = (DMMF) => {
                 initializer: (writer) => {
                   writer.write(`z.object(`);
                   writer.inlineBlock(() => {
+                    writer
+                      .writeLine(
+                        `select: z.lazy(() => ${field.modelType}Select).optional(),`,
+                      )
+                      .conditionalWriteLine(
+                        field.linkedModel?.hasRelationFields,
+                        `include: z.lazy(() => ${field.modelType}Include).optional(),`,
+                      );
                     field.args.forEach((arg) => {
                       writer.write(`${arg.name}: `);
 
@@ -491,6 +602,7 @@ export const getInputTypeStatements: GetStatements = (DMMF) => {
   return [
     ...enumStatements,
     ...helperStatements,
+    ...includeAndSelectStatements,
     ...modelStatements,
     ...typesStatements,
     ...argsStatements,

@@ -1,18 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DMMF } from '@prisma/generator-helper';
 
-import { KeyValueMap, PrismaScalarType } from '../types';
 import { ExtendedDMMFField } from './extendedDMMFField';
 import { FormattedNames } from './formattedNames';
 
 /////////////////////////////////////////////////
 // TYPES  INTERFACE
 /////////////////////////////////////////////////
-
-export type ScalarFields = KeyValueMap<PrismaScalarType, ExtendedDMMFField[]>;
-
-// EXTENDED MODEL
-// ------------------------------------------------------
 
 export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
   readonly name: DMMF.Model['name'];
@@ -22,14 +15,13 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
   readonly uniqueIndexes: DMMF.Model['uniqueIndexes'];
   readonly documentation?: DMMF.Model['documentation'];
   readonly primaryKey: DMMF.Model['primaryKey'];
-
   readonly scalarFields: ExtendedDMMFField[];
-  readonly realationFields: ExtendedDMMFField[];
+  readonly relationFields: ExtendedDMMFField[];
   readonly enumFields: ExtendedDMMFField[];
+  readonly hasRelationFields: boolean;
 
   constructor(model: DMMF.Model) {
     super(model.name);
-
     this.name = model.name;
     this.dbName = model.dbName;
     this.fields = this._getExtendedFields(model);
@@ -37,10 +29,10 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
     this.uniqueIndexes = model.uniqueIndexes;
     this.documentation = model.documentation;
     this.primaryKey = model.primaryKey;
-
     this.scalarFields = this._setScalarFields();
-    this.realationFields = this._setRelationFields();
+    this.relationFields = this._setRelationFields();
     this.enumFields = this._setEnumfields();
+    this.hasRelationFields = this._setHasRelationFields();
   }
 
   private _getExtendedFields(model: DMMF.Model) {
@@ -57,5 +49,9 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
 
   private _setEnumfields() {
     return this.fields.filter((field) => field.kind === 'enum');
+  }
+
+  private _setHasRelationFields() {
+    return this.relationFields.length > 0;
   }
 }

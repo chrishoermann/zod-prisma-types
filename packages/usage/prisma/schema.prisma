@@ -10,14 +10,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// generator zod {
-//   provider = "prisma-zod-generator"
-// }
-
 generator zodNew {
-  provider     = "zod-prisma-types"
-  output       = "./zod"
-  runGenerator = env("ZOD_PRISMA")
+  provider = "zod-prisma-types"
+  output   = "./zod"
 }
 
 enum MyValue {

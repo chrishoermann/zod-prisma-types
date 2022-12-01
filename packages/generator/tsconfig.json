@@ -10,7 +10,7 @@
     "rootDir": "./src",
     "newLine": "lf",
     "strict": true,
-    "strictPropertyInitialization": false,
+    "strictPropertyInitialization": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
@@ -29,7 +29,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "useDefineForClassFields": true,
-    "useUnknownInCatchVariables": true,
+    "useUnknownInCatchVariables": true
   },
   "include": ["src/**/*"],
   "exclude": ["**/node_modules", "**/*.test.ts", "**/__tests__", "**/dist"]

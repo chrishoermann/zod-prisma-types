@@ -104,16 +104,12 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   // ----------------------------------------------
 
   private _setIsJsonType() {
-    if (this.type === 'Json') {
-      return true;
-    }
+    if (this.type === 'Json') return true;
     return false;
   }
 
   private _setIsBytesType() {
-    if (this.type === 'Bytes') {
-      return true;
-    }
+    if (this.type === 'Bytes') return true;
     return false;
   }
 
@@ -122,9 +118,7 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   }
 
   private _setZodType(): string {
-    if (this.kind === 'scalar') {
-      return this._getZodTypeFromScalarType();
-    }
+    if (this.kind === 'scalar') return this._getZodTypeFromScalarType();
     return this.type;
   }
 

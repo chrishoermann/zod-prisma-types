@@ -29,6 +29,7 @@ generatorHandler({
     // This class extends the Prisma DMMF with additional information like
     // - name of models, enums and fields in different formats (uppercase, pascalcase, camelcase)
     // - helper methods for generating types
+    // - ...
 
     const ExtendendDMMF = new ExtendedDMMF(options.dmmf);
 

@@ -16,19 +16,19 @@ export class ExtendedDMMFSchemaArg
   extends FormattedNames
   implements DMMF.SchemaArg
 {
-  name: DMMF.SchemaArg['name'];
-  comment?: DMMF.SchemaArg['comment'];
-  isNullable: DMMF.SchemaArg['isNullable'];
-  isRequired: DMMF.SchemaArg['isRequired'];
-  inputTypes: ExtendedDMMFSchemaArgInputType[];
-  deprecation?: DMMF.SchemaArg['deprecation'];
-  zodValidatorString?: string;
-  zodCustomErrors?: string;
-  hasSingleType: boolean;
-  hasMultipleTypes: boolean;
-  isOptional: boolean;
-  isJsonType: boolean;
-  isBytesType: boolean;
+  readonly name: DMMF.SchemaArg['name'];
+  readonly comment?: DMMF.SchemaArg['comment'];
+  readonly isNullable: DMMF.SchemaArg['isNullable'];
+  readonly isRequired: DMMF.SchemaArg['isRequired'];
+  readonly inputTypes: ExtendedDMMFSchemaArgInputType[];
+  readonly deprecation?: DMMF.SchemaArg['deprecation'];
+  readonly zodValidatorString?: string;
+  readonly zodCustomErrors?: string;
+  readonly hasSingleType: boolean;
+  readonly hasMultipleTypes: boolean;
+  readonly isOptional: boolean;
+  readonly isJsonType: boolean;
+  readonly isBytesType: boolean;
 
   constructor(arg: ExtendedDMMFSchemaArgOptions) {
     super(arg.name);

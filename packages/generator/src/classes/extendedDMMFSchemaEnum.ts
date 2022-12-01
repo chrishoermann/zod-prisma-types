@@ -10,9 +10,9 @@ export class ExtendedDMMFSchemaEnum
   extends FormattedNames
   implements DMMF.SchemaEnum
 {
-  name: DMMF.SchemaEnum['name'];
-  values: DMMF.SchemaEnum['values'];
-  useNativeEnum: boolean;
+  readonly name: DMMF.SchemaEnum['name'];
+  readonly values: DMMF.SchemaEnum['values'];
+  readonly useNativeEnum: boolean;
 
   constructor(enumType: DMMF.SchemaEnum) {
     super(enumType.name);
@@ -23,8 +23,6 @@ export class ExtendedDMMFSchemaEnum
   }
 
   private _setUseNativeEnum() {
-    const isJsonField = this.name.includes('Json');
-    if (isJsonField) return false;
-    return true;
+    return !this.name.includes('Json');
   }
 }

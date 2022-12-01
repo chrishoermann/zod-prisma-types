@@ -13,18 +13,18 @@ export class ExtendedDMMFInputType
   extends FormattedNames
   implements DMMF.InputType
 {
-  name: DMMF.InputType['name'];
-  constraints: DMMF.InputType['constraints'];
-  meta: DMMF.InputType['meta'];
-  fields: ExtendedDMMFSchemaArg[];
-  fieldMap: DMMF.InputType['fieldMap'];
-  matchingModel?: ExtendedDMMFModel;
-  isJsonField: boolean;
-  isBytesField: boolean;
+  readonly name: DMMF.InputType['name'];
+  readonly constraints: DMMF.InputType['constraints'];
+  readonly meta: DMMF.InputType['meta'];
+  readonly fields: ExtendedDMMFSchemaArg[];
+  readonly fieldMap: DMMF.InputType['fieldMap'];
+  readonly linkedModel?: ExtendedDMMFModel;
+  readonly isJsonField: boolean;
+  readonly isBytesField: boolean;
 
   constructor(type: DMMF.InputType, model?: ExtendedDMMFModel) {
     super(type.name);
-    this.matchingModel = model;
+    this.linkedModel = model;
     this.name = type.name;
     this.constraints = type.constraints;
     this.meta = type.meta;
@@ -36,46 +36,39 @@ export class ExtendedDMMFInputType
 
   private _setFields(fields: DMMF.SchemaArg[]) {
     return fields.map((field) => {
-      // validators should only be written in create and update types.
+      // validators should only be written for create and update types.
       // this prevents validation in e.g. search queries in "where inputs",
       // where strings like email addresses can be incomplete.
-      const isMatch = this.name.match(PRISMA_FUNCTION_TYPES_WITH_VALIDATORS);
+      const optionalValidators = this._fieldIsPrismaFunction()
+        ? {
+            zodValidatorString: this._getZodValidatorString(field.name),
+            zodCustomErrors: this._getZodCustomErrorsString(field.name),
+          }
+        : undefined;
 
-      return new ExtendedDMMFSchemaArg({
-        ...field,
-        zodValidatorString: isMatch
-          ? this._getZodValidatorString(field.name)
-          : undefined,
-        zodCustomErrors: isMatch
-          ? this._getZodCustomErrorsString(field.name)
-          : undefined,
-      });
+      return new ExtendedDMMFSchemaArg({ ...field, ...optionalValidators });
     });
   }
 
-  private _setIsJsonField() {
-    const isJsonField = this.fields.some((field) => field.isJsonType);
-    if (isJsonField) return true;
-    return false;
-  }
-
-  private _setIsBytesField() {
-    const isBytesField = this.fields.some((field) => field.isBytesType);
-    if (isBytesField) return true;
-    return false;
+  private _fieldIsPrismaFunction() {
+    return this.name.match(PRISMA_FUNCTION_TYPES_WITH_VALIDATORS);
   }
 
   private _getZodValidatorString(fieldName: string) {
-    const field = this.matchingModel?.fields.find((field) => {
-      return field.name === fieldName;
-    });
-    return field?.zodValidatorString;
+    return this.linkedModel?.fields.find((field) => field.name === fieldName)
+      ?.zodValidatorString;
   }
 
   private _getZodCustomErrorsString(fieldName: string) {
-    const field = this.matchingModel?.fields.find(
-      (field) => field.name === fieldName,
-    );
-    return field?.zodCustomErrors;
+    return this.linkedModel?.fields.find((field) => field.name === fieldName)
+      ?.zodCustomErrors;
+  }
+
+  private _setIsJsonField() {
+    return this.fields.some((field) => field.isJsonType);
+  }
+
+  private _setIsBytesField() {
+    return this.fields.some((field) => field.isBytesType);
   }
 }

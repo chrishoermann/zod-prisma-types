@@ -8,12 +8,12 @@ import { ZodPrismaScalarType } from '../types';
 /////////////////////////////////////////////////
 
 export class ExtendedDMMFSchemaArgInputType implements DMMF.SchemaArgInputType {
-  isJsonType: boolean;
-  isBytesType: boolean;
-  isList: DMMF.SchemaArgInputType['isList'];
-  type: DMMF.SchemaArgInputType['type'];
-  location: DMMF.SchemaArgInputType['location'];
-  namespace?: DMMF.SchemaArgInputType['namespace'];
+  readonly isJsonType: boolean;
+  readonly isBytesType: boolean;
+  readonly isList: DMMF.SchemaArgInputType['isList'];
+  readonly type: DMMF.SchemaArgInputType['type'];
+  readonly location: DMMF.SchemaArgInputType['location'];
+  readonly namespace?: DMMF.SchemaArgInputType['namespace'];
 
   constructor(arg: DMMF.SchemaArgInputType) {
     this.isJsonType = this._setIsJsonType(arg);
@@ -24,11 +24,11 @@ export class ExtendedDMMFSchemaArgInputType implements DMMF.SchemaArgInputType {
     this.namespace = arg.namespace;
   }
 
-  private _setIsJsonType(arg: DMMF.SchemaArgInputType): boolean {
+  private _setIsJsonType(arg: DMMF.SchemaArgInputType) {
     return arg.type === 'Json';
   }
 
-  private _setIsBytesType(arg: DMMF.SchemaArgInputType): boolean {
+  private _setIsBytesType(arg: DMMF.SchemaArgInputType) {
     return arg.type === 'Bytes';
   }
 
