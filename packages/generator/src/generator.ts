@@ -10,7 +10,7 @@ import {
   getIncludeSelectStatements,
   getInputTypeStatements,
   getImportStatements,
-} from './statements';
+} from './functions';
 
 generatorHandler({
   onManifest: () => {
