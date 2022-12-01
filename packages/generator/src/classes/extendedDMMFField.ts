@@ -1,11 +1,14 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { PRISMA_TYPE_MAP, VALIDATOR_TYPE_MAP } from '../constants/objectMaps';
 import {
   DATE_VALIDATOR_REGEX_MAP,
   NUMBER_VALIDATOR_REGEX_MAP,
-  SPLIT_VALIDATOR_PATTERN_REGEX,
+  PRISMA_TYPE_MAP,
   STRING_VALIDATOR_REGEX_MAP,
+  VALIDATOR_TYPE_MAP,
+} from '../constants/objectMaps';
+import {
+  SPLIT_VALIDATOR_PATTERN_REGEX,
   VALIDATOR_KEY_REGEX,
   VALIDATOR_TYPE_REGEX,
 } from '../constants/regex';
@@ -41,6 +44,9 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   readonly relationName?: DMMF.Field['relationName'];
   readonly documentation?: DMMF.Field['documentation'];
 
+  readonly isNullable: boolean;
+  readonly isJsonType: boolean;
+  readonly isBytesType: boolean;
   readonly modelName: string;
 
   private _validatorRegexMatch?: RegExpMatchArray;
@@ -52,8 +58,6 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
       this._validateRegexInMap(NUMBER_VALIDATOR_REGEX_MAP, options),
     date: (options) =>
       this._validateRegexInMap(DATE_VALIDATOR_REGEX_MAP, options),
-    // bigint: (options) =>
-    //   this._validateRegexInMap(NUMBER_VALIDATOR_REGEX_MAP, options),
   };
 
   readonly clearedDocumentation?: string;
@@ -81,6 +85,10 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
     this.relationName = field.relationName;
     this.documentation = field.documentation;
 
+    this.isJsonType = this._setIsJsonType();
+    this.isBytesType = this._setIsBytesType();
+
+    this.isNullable = this._setIsNullable();
     this.modelName = modelName;
 
     this._validatorRegexMatch = this._setValidatorRegexMatch();
@@ -95,8 +103,26 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   // INITIALIZERS
   // ----------------------------------------------
 
+  private _setIsJsonType() {
+    if (this.type === 'Json') {
+      return true;
+    }
+    return false;
+  }
+
+  private _setIsBytesType() {
+    if (this.type === 'Bytes') {
+      return true;
+    }
+    return false;
+  }
+
+  private _setIsNullable() {
+    return !this.isRequired;
+  }
+
   private _setZodType(): string {
-    if (this.isScalarField()) {
+    if (this.kind === 'scalar') {
       return this._getZodTypeFromScalarType();
     }
     return this.type;
@@ -193,59 +219,4 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
 
     return match[0];
   };
-
-  // PUBLIC METHODS
-  //------------------------------------------------------
-
-  isScalarField() {
-    return this.kind === 'scalar';
-  }
-
-  isBooleanField() {
-    return this.isScalarField() && this.type === 'Boolean';
-  }
-
-  isEnumField() {
-    return this.kind === 'enum';
-  }
-
-  isIdField() {
-    return this.isId;
-  }
-
-  isRelationField() {
-    return this.kind === 'object';
-  }
-
-  isListField() {
-    return this.isList && !this.isScalarListField();
-  }
-
-  isObjectField() {
-    return this.kind === 'object' && !this.isList;
-  }
-
-  isScalarListField() {
-    return this.isList && this.kind === 'scalar';
-  }
-
-  isScalarEnumField() {
-    return this.isScalarField() || this.isEnumField();
-  }
-
-  isUniqueField() {
-    return this.isUnique || this.isIdField();
-  }
-
-  private isRequiredFieldWithDefault() {
-    return this.isRequired && this.hasDefaultValue;
-  }
-
-  isNullableField() {
-    return !this.isRequired || this.isRequiredFieldWithDefault();
-  }
-
-  isNonNullableField() {
-    return this.isRequired && !this.isRequiredFieldWithDefault();
-  }
 }

@@ -8,16 +8,28 @@ import { ZodPrismaScalarType } from '../types';
 /////////////////////////////////////////////////
 
 export class ExtendedDMMFSchemaArgInputType implements DMMF.SchemaArgInputType {
+  isJsonType: boolean;
+  isBytesType: boolean;
   isList: DMMF.SchemaArgInputType['isList'];
   type: DMMF.SchemaArgInputType['type'];
   location: DMMF.SchemaArgInputType['location'];
   namespace?: DMMF.SchemaArgInputType['namespace'];
 
   constructor(arg: DMMF.SchemaArgInputType) {
+    this.isJsonType = this._setIsJsonType(arg);
+    this.isBytesType = this._setIsBytesType(arg);
     this.isList = arg.isList;
     this.type = arg.type;
     this.location = arg.location;
     this.namespace = arg.namespace;
+  }
+
+  private _setIsJsonType(arg: DMMF.SchemaArgInputType): boolean {
+    return arg.type === 'Json';
+  }
+
+  private _setIsBytesType(arg: DMMF.SchemaArgInputType): boolean {
+    return arg.type === 'Bytes';
   }
 
   /**
@@ -34,12 +46,15 @@ export class ExtendedDMMFSchemaArgInputType implements DMMF.SchemaArgInputType {
 
   /**
    * Checks if the type is a nont scalar type and returns the generated zod type
-   * @returns true if the type is a non scalar type (e.g. User, Post, etc.)
+   * @returns non scalar type (e.g. `User`, `Post`, etc.), `z.instanceof(Buffer)` for Bytes type
+   * or `InputJsonValue` for Json type
    */
   getZodNonScalarType = () => {
     if (!this.isStringType()) return;
     const zodType = PRISMA_TYPE_MAP[this.type as ZodPrismaScalarType];
     if (zodType || this.type === 'Null') return;
+    if (this.isJsonType) return 'InputJsonValue';
+    if (this.isBytesType) return `z.instanceof(Buffer)`;
     return this.type;
   };
 

@@ -4,6 +4,10 @@ import { PrismaAction } from 'src/types';
 import { ExtendedDMMFSchemaField } from './extendedDMMFSchemaField';
 import { FormattedNames } from './formattedNames';
 
+/**
+ * This array contains all the prisma actions for which
+ * we want to generate a zod input schema.
+ */
 export const PRISMA_ACTION_ARRAY: PrismaAction[] = [
   'findUnique',
   'findMany',
@@ -39,13 +43,18 @@ export class ExtendedDMMFOutputType
   }
 
   private _setFields(fields: DMMF.SchemaField[]) {
-    return fields
-      .filter((field) =>
-        PRISMA_ACTION_ARRAY.find((elem) => field.name.includes(elem)),
-      )
-      .filter((field) => !field.name.includes('OrThrow'))
-      .map((field) => {
-        return new ExtendedDMMFSchemaField(field);
-      });
+    return (
+      fields
+        // filter all fields that are not in the PRISMA_ACTION_ARRAY
+        .filter((field) =>
+          PRISMA_ACTION_ARRAY.find((elem) => field.name.includes(elem)),
+        )
+        // filter those fields that end with "OrThrow" because they
+        // use the same input types as the non "OrThrow" version
+        .filter((field) => !field.name.includes('OrThrow'))
+        .map((field) => {
+          return new ExtendedDMMFSchemaField(field);
+        })
+    );
   }
 }

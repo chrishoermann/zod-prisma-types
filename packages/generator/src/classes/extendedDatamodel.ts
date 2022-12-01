@@ -23,18 +23,18 @@ export class ExtendedDatamodel {
   readonly types: DMMF.Model[];
 
   constructor(datamodel: DMMF.Datamodel) {
-    this.enums = this.getExtendedEnums(datamodel.enums);
-    this.models = this.getExtendedModels(datamodel.models);
+    this.enums = this._getExtendedEnums(datamodel.enums);
+    this.models = this._getExtendedModels(datamodel.models);
     this.types = datamodel.types;
   }
 
-  private getExtendedModels(models: DMMF.Model[]) {
+  private _getExtendedModels(models: DMMF.Model[]) {
     return models.map((model) => {
       return new ExtendedDMMFModel(model);
     });
   }
 
-  private getExtendedEnums(enums: DMMF.DatamodelEnum[]) {
+  private _getExtendedEnums(enums: DMMF.DatamodelEnum[]) {
     const enumFields = enums.map((elem) => {
       return new ExtendedDMMFEnum(elem);
     });

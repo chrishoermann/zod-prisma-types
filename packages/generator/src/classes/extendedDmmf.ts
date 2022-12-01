@@ -15,20 +15,20 @@ export class ExtendedDMMF implements DMMF.Document {
   mappings: DMMF.Mappings;
 
   constructor(dmmf: DMMF.Document) {
-    this.datamodel = this.getExtendedDatamodel(dmmf);
-    this.schema = this.getExtendedSchema(dmmf);
-    this.mappings = this.getExtendedMappings(dmmf);
+    this.datamodel = this._getExtendedDatamodel(dmmf);
+    this.schema = this._getExtendedSchema(dmmf);
+    this.mappings = this._getExtendedMappings(dmmf);
   }
 
-  private getExtendedDatamodel(dmmf: DMMF.Document) {
+  private _getExtendedDatamodel(dmmf: DMMF.Document) {
     return new ExtendedDatamodel(dmmf.datamodel);
   }
 
-  private getExtendedSchema(dmmf: DMMF.Document) {
+  private _getExtendedSchema(dmmf: DMMF.Document) {
     return new ExtendedDMMFSchema(dmmf.schema, this.datamodel);
   }
 
-  private getExtendedMappings(dmmf: DMMF.Document) {
+  private _getExtendedMappings(dmmf: DMMF.Document) {
     return new ExtendedDMMFMappings(dmmf.mappings);
   }
 }

@@ -1,10 +1,3 @@
-import {
-  KeyValueMap,
-  ZodStringValidatorKeys,
-  ZodNumberValidatorKeys,
-  ZodDateValidatorKeys,
-} from 'src/types';
-
 /////////////////////////////////////////////
 // REGEX
 /////////////////////////////////////////////
@@ -55,42 +48,8 @@ export const NUMBER_VALIDATOR_MESSAGE_REGEX =
 export const DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
   /.(?<validator>min|max)(\()(?<date>(new Date\((['"\d-]+)?\)))([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\)/;
 
-/////////////////////////////////////////////
-// REGEX MAOS
-/////////////////////////////////////////////
+// PRISMA FUNCTION TYPES W/ VALIDATORS
+// ----------------------------------------
 
-export type RegexMap<TKeys extends string> = KeyValueMap<TKeys, RegExp>;
-
-export const STRING_VALIDATOR_REGEX_MAP: RegexMap<ZodStringValidatorKeys> = {
-  min: STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-  max: STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-  length: STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-  email: STRING_VALIDATOR_MESSAGE_REGEX,
-  url: STRING_VALIDATOR_MESSAGE_REGEX,
-  uuid: STRING_VALIDATOR_MESSAGE_REGEX,
-  cuid: STRING_VALIDATOR_MESSAGE_REGEX,
-  trim: STRING_VALIDATOR_MESSAGE_REGEX,
-  datetime: STRING_VALIDATOR_MESSAGE_REGEX,
-  regex: STRING_VALIDATOR_REGEX,
-  startsWith: STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX,
-  endsWith: STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX,
-};
-
-export const NUMBER_VALIDATOR_REGEX_MAP: RegexMap<ZodNumberValidatorKeys> = {
-  gt: NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-  gte: NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-  lt: NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-  lte: NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-  multipleOf: NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-  int: NUMBER_VALIDATOR_MESSAGE_REGEX,
-  positive: NUMBER_VALIDATOR_MESSAGE_REGEX,
-  nonpositive: NUMBER_VALIDATOR_MESSAGE_REGEX,
-  negative: NUMBER_VALIDATOR_MESSAGE_REGEX,
-  nonnegative: NUMBER_VALIDATOR_MESSAGE_REGEX,
-  finite: NUMBER_VALIDATOR_MESSAGE_REGEX,
-};
-
-export const DATE_VALIDATOR_REGEX_MAP: RegexMap<ZodDateValidatorKeys> = {
-  min: DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-  max: DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-};
+export const PRISMA_FUNCTION_TYPES_WITH_VALIDATORS =
+  /CreateInput|CreateMany|UpdateInput|UpdateMany/;

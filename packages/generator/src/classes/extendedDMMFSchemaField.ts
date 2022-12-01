@@ -70,7 +70,7 @@ export class ExtendedDMMFSchemaField
     });
   }
 
-  // filter out the typename from the prisma naming convention
+  // filter out the relevant action names according to the prisma naming convention
   private setType() {
     const matchedPrismaAction = PRISMA_ACTION_ARRAY.find((elem) =>
       this.name.includes(elem),

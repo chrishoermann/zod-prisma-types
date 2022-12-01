@@ -27,18 +27,6 @@ export class ExtendedDMMFEnum extends FormattedNames {
   dbName?: string | null;
   documentation?: string;
 
-  /**
-   * `true` if the enum has '@generate.enum.listFilter'
-   * @default false
-   */
-  generateEnumListFilter: boolean;
-
-  /**
-   * `true` if the enum has '@generate.enum.filter'
-   * @default false
-   */
-  generateEnumFilter: boolean;
-
   constructor(enums: DMMF.DatamodelEnum) {
     super(enums.name);
 
@@ -46,12 +34,5 @@ export class ExtendedDMMFEnum extends FormattedNames {
     this.values = enums.values;
     this.dbName = enums.dbName;
     this.documentation = enums.documentation;
-
-    this.generateEnumListFilter = this.setGenerateFilter(ENUM_LIST_FILTER);
-    this.generateEnumFilter = this.setGenerateFilter(ENUM_FILTER);
-  }
-
-  private setGenerateFilter(filter: EnumListFilter) {
-    return this.documentation?.includes(filter) || false;
   }
 }

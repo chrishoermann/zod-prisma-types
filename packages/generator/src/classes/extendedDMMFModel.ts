@@ -23,90 +23,39 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
   readonly documentation?: DMMF.Model['documentation'];
   readonly primaryKey: DMMF.Model['primaryKey'];
 
-  readonly stringFields: ExtendedDMMFField[];
-  readonly booleanFields: ExtendedDMMFField[];
-  readonly intFields: ExtendedDMMFField[];
-  readonly bigIntFields: ExtendedDMMFField[];
-  readonly floatFields: ExtendedDMMFField[];
-  readonly decimalFields: ExtendedDMMFField[];
-  readonly dateTimeFields: ExtendedDMMFField[];
-  readonly jsonFields: ExtendedDMMFField[];
-  readonly bytesFields: ExtendedDMMFField[];
-
-  readonly scalarFields: KeyValueMap<PrismaScalarType, ExtendedDMMFField[]>;
+  readonly scalarFields: ExtendedDMMFField[];
   readonly realationFields: ExtendedDMMFField[];
   readonly enumFields: ExtendedDMMFField[];
-
-  readonly writeStringFilter: boolean;
-  readonly writeBooleanFilter: boolean;
-  readonly writeIntFilter: boolean;
-  readonly writeBigIntFilter: boolean;
-  readonly writeFloatFilter: boolean;
-  readonly writeDecimalFilter: boolean;
-  readonly writeDateTimeFilter: boolean;
-  readonly writeJsonFilter: boolean;
-  readonly writeBytesFilter: boolean;
 
   constructor(model: DMMF.Model) {
     super(model.name);
 
     this.name = model.name;
     this.dbName = model.dbName;
-    this.fields = this.getExtendedFields(model);
+    this.fields = this._getExtendedFields(model);
     this.uniqueFields = model.uniqueFields;
     this.uniqueIndexes = model.uniqueIndexes;
     this.documentation = model.documentation;
     this.primaryKey = model.primaryKey;
 
-    this.stringFields = this.getScalarFields('String');
-    this.booleanFields = this.getScalarFields('Boolean');
-    this.intFields = this.getScalarFields('Int');
-    this.bigIntFields = this.getScalarFields('BigInt');
-    this.floatFields = this.getScalarFields('Float');
-    this.decimalFields = this.getScalarFields('Decimal');
-    this.dateTimeFields = this.getScalarFields('DateTime');
-    this.jsonFields = this.getScalarFields('Json');
-    this.bytesFields = this.getScalarFields('Bytes');
-
-    this.scalarFields = this.setScalarFields();
-    this.realationFields = this.setRelationFields();
-    this.enumFields = this.setEnumfields();
-
-    this.writeIntFilter = this.setWriteIntFilters();
-    this.writeBooleanFilter = this.booleanFields.length !== 0;
+    this.scalarFields = this._setScalarFields();
+    this.realationFields = this._setRelationFields();
+    this.enumFields = this._setEnumfields();
   }
 
-  private getScalarFields(type: PrismaScalarType) {
-    return this.fields.filter((field) => field.type === type);
+  private _getExtendedFields(model: DMMF.Model) {
+    return model.fields.map((field) => new ExtendedDMMFField(field, this.name));
   }
 
-  private setScalarFields() {
-    return {
-      String: this.stringFields,
-      Boolean: this.booleanFields,
-      Int: this.intFields,
-      BigInt: this.bigIntFields,
-      Float: this.floatFields,
-      Decimal: this.decimalFields,
-      DateTime: this.dateTimeFields,
-      Json: this.jsonFields,
-      Bytes: this.bytesFields,
-    };
+  private _setScalarFields() {
+    return this.fields.filter((field) => field.kind === 'scalar');
   }
 
-  private setRelationFields() {
+  private _setRelationFields() {
     return this.fields.filter((field) => field.kind === 'object');
   }
 
-  private setEnumfields() {
+  private _setEnumfields() {
     return this.fields.filter((field) => field.kind === 'enum');
-  }
-
-  setWriteIntFilters() {
-    return this.intFields.length !== 0;
-  }
-
-  private getExtendedFields(model: DMMF.Model) {
-    return model.fields.map((field) => new ExtendedDMMFField(field, this.name));
   }
 }

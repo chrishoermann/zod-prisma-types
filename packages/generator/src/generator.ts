@@ -4,16 +4,10 @@ import { Project, StructureKind } from 'ts-morph';
 import { DirectoryHelper } from './classes/directoryHelper';
 import { ExtendedDMMF } from './classes/extendedDMMF';
 import {
-  ENUM_IMPORT_STATEMENT,
   PRIMSA_IMPORT_STATEMENT,
   ZOD_IMPORT_STATEMENT,
 } from './constants/importStatements';
-import {
-  // getEnumStatements,
-  // getFilterBaseStatements,
-  getInputTypeStatements,
-  // getModelStatements,
-} from './statements';
+import { getInputTypeStatements } from './statements';
 import { Statement } from './types';
 
 generatorHandler({
@@ -37,7 +31,6 @@ generatorHandler({
     // - helper methods for generating types
 
     const ExtendendDMMF = new ExtendedDMMF(options.dmmf);
-    const { datamodel } = ExtendendDMMF;
 
     // CREATE TS-MORPH PROJECT
     //--------------------------------------------------------------------------------
@@ -58,32 +51,10 @@ generatorHandler({
     // CREATE IMPORT STATEMENTS
     //------------------------------------------------------
 
-    const enumImportStatements: Statement[] = [
-      PRIMSA_IMPORT_STATEMENT,
-      ZOD_IMPORT_STATEMENT,
-    ];
-
-    const modelImportStatements: Statement[] = [
-      PRIMSA_IMPORT_STATEMENT,
-      ZOD_IMPORT_STATEMENT,
-    ];
-
-    const filterBaseImportStatements: Statement[] = [
-      PRIMSA_IMPORT_STATEMENT,
-      ZOD_IMPORT_STATEMENT,
-    ];
-
     const inputTypesImportStatements: Statement[] = [
       PRIMSA_IMPORT_STATEMENT,
       ZOD_IMPORT_STATEMENT,
     ];
-
-    // CONDITIONALLY EXTEND IMPORT STATEMENTS
-    //------------------------------------------------------
-
-    if (datamodel.enums.length > 0) {
-      modelImportStatements.push(ENUM_IMPORT_STATEMENT);
-    }
 
     // CREATE SOURCE FILES
     //------------------------------------------------------
@@ -94,15 +65,7 @@ generatorHandler({
         statements: [
           {
             kind: StructureKind.ExportDeclaration,
-            moduleSpecifier: './enum',
-          },
-          {
-            kind: StructureKind.ExportDeclaration,
-            moduleSpecifier: './filterBase',
-          },
-          {
-            kind: StructureKind.ExportDeclaration,
-            moduleSpecifier: './model',
+            moduleSpecifier: './inputTypesBase',
           },
         ],
       },
@@ -111,45 +74,14 @@ generatorHandler({
       },
     );
 
-    const enumSource = project.createSourceFile(
-      `${path.value}/enum.ts`,
-      { statements: enumImportStatements },
-      { overwrite: true },
-    );
-
-    const modelSource = project.createSourceFile(
-      `${path.value}/model.ts`,
-      { statements: modelImportStatements },
-      { overwrite: true },
-    );
-
-    const filterBaseSource = project.createSourceFile(
-      `${path.value}/filterBase.ts`,
-      { statements: filterBaseImportStatements },
-      { overwrite: true },
-    );
-
     const inputTypesBaseSource = project.createSourceFile(
       `${path.value}/inputTypesBase.ts`,
       { statements: inputTypesImportStatements },
       { overwrite: true },
     );
 
-    //////////////////////////////////////////////////////////////
     // CREATE TYPES
-    //////////////////////////////////////////////////////////////
-
-    // CREATE ENUM
     //------------------------------------------------------
-
-    // const filterBaseStatements = getFilterBaseStatements(datamodel);
-    // filterBaseSource.addStatements(filterBaseStatements);
-
-    // const enumStatements = getEnumStatements(datamodel);
-    // enumSource.addStatements(enumStatements);
-
-    // const modelStatements = getModelStatements(datamodel);
-    // modelSource.addStatements(modelStatements);
 
     const inputTypeStatements = getInputTypeStatements(ExtendendDMMF);
     inputTypesBaseSource.addStatements(inputTypeStatements);
@@ -158,24 +90,6 @@ generatorHandler({
     //------------------------------------------------------
 
     indexSource.formatText({
-      indentSize: 2,
-      convertTabsToSpaces: true,
-      ensureNewLineAtEndOfFile: true,
-    });
-
-    enumSource.formatText({
-      indentSize: 2,
-      convertTabsToSpaces: true,
-      ensureNewLineAtEndOfFile: true,
-    });
-
-    modelSource.formatText({
-      indentSize: 2,
-      convertTabsToSpaces: true,
-      ensureNewLineAtEndOfFile: true,
-    });
-
-    filterBaseSource.formatText({
       indentSize: 2,
       convertTabsToSpaces: true,
       ensureNewLineAtEndOfFile: true,

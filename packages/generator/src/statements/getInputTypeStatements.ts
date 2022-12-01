@@ -14,6 +14,7 @@ interface WriteTypeOptions {
   isOptional?: boolean;
   isNullable?: boolean;
   writeLazy?: boolean;
+  writeComma?: boolean;
   zodValidatorString?: string;
   zodCustomErrors?: string;
 }
@@ -25,7 +26,7 @@ interface WriteTypeOptions {
 /**
  * Checks if a type is a scalar type.
  * If yes, it writes the type.
- * If no, it writes the non-scalar type.
+ * If no, it returns undefined.
  * @param writer CodeBlockWriter
  * @param param1 options
  * @returns void
@@ -36,6 +37,7 @@ const writeScalarType = (
     inputType,
     isOptional,
     isNullable,
+    writeComma = true,
     zodCustomErrors,
     zodValidatorString,
   }: WriteTypeOptions,
@@ -43,7 +45,7 @@ const writeScalarType = (
   const zodType = inputType.getZodScalarType();
   if (!zodType) return;
 
-  writer
+  return writer
     .write(`z.${zodType}(`)
     .conditionalWrite(!!zodCustomErrors, zodCustomErrors!)
     .write(`)`)
@@ -51,37 +53,48 @@ const writeScalarType = (
     .conditionalWrite(inputType.isList, `.array()`)
     .conditionalWrite(isOptional, `.optional()`)
     .conditionalWrite(isNullable, `.nullable()`)
-    .write(`,`);
+    .conditionalWrite(writeComma, `,`);
 };
 
 const writeNonScalarType = (
   writer: CodeBlockWriter,
-  { inputType, isOptional, isNullable, writeLazy = true }: WriteTypeOptions,
+  {
+    inputType,
+    isOptional,
+    isNullable,
+    writeLazy = true,
+    writeComma = true,
+  }: WriteTypeOptions,
 ) => {
   const nonScalarType = inputType.getZodNonScalarType();
   if (!nonScalarType) return;
 
-  writer
+  return writer
     .conditionalWrite(writeLazy, `z.lazy(() => ${nonScalarType})`)
     .conditionalWrite(!writeLazy, `${nonScalarType}`)
     .conditionalWrite(inputType.isList, `.array()`)
     .conditionalWrite(isOptional, `.optional()`)
     .conditionalWrite(isNullable, `.nullable()`)
-    .write(`,`);
+    .conditionalWrite(writeComma, `,`);
 };
 
 const writeNullType = (
   writer: CodeBlockWriter,
-  { inputType, isOptional: isRequired, isNullable }: WriteTypeOptions,
+  {
+    inputType,
+    isOptional: isRequired,
+    isNullable,
+    writeComma = true,
+  }: WriteTypeOptions,
 ) => {
   const nullType = inputType.getZodNullType();
   if (!nullType) return;
 
-  writer
+  return writer
     .write(`z.${nullType}(),`)
     .conditionalWrite(!isRequired, `.optional()`)
     .conditionalWrite(isNullable, `.nullable()`)
-    .write(`,`);
+    .conditionalWrite(writeComma, `,`);
 };
 
 /////////////////////////////////////////////////
@@ -91,27 +104,53 @@ const writeNullType = (
 export const getInputTypeStatements: GetStatements = (DMMF) => {
   const { schema, datamodel } = DMMF;
 
-  // GENERATE ENUM
+  // PRISMA GENERATED ENUMS
   // ---------------------------------------------------------------------
   const enumStatements: Statement[] = [writeHeading(`ENUMS`, 'FAT')];
 
-  schema.enumTypes.prisma.forEach((enumType) => {
-    const enumName = enumType.name;
+  enumStatements.push(writeHeading(`GENERATED ENUMS`, 'SLIM'));
 
-    enumStatements.push(
-      writeConstStatement({
-        leadingTrivia: (writer) => writer.newLine(),
-        declarations: [
-          {
-            name: `${enumName}`,
-            initializer(writer) {
-              writer.write(`z.nativeEnum(Prisma.Prisma.${enumName})`);
-            },
-          },
-        ],
-      }),
-    );
-  });
+  schema.enumTypes.prisma.forEach(
+    ({ formattedNames, useNativeEnum, values }) => {
+      if (useNativeEnum) {
+        enumStatements.push(
+          writeConstStatement({
+            leadingTrivia: (writer) => writer.newLine(),
+            declarations: [
+              {
+                name: `${formattedNames.pascalCase}`,
+                initializer(writer) {
+                  writer.write(
+                    `z.nativeEnum(Prisma.Prisma.${formattedNames.pascalCase})`,
+                  );
+                },
+              },
+            ],
+          }),
+        );
+      } else {
+        enumStatements.push(
+          writeConstStatement({
+            leadingTrivia: (writer) => writer.newLine(),
+            declarations: [
+              {
+                name: `${formattedNames.pascalCase}`,
+                initializer(writer) {
+                  writer.write(`z.enum([`);
+                  values.forEach((value) => {
+                    writer.write(`'${value}',`);
+                  });
+                  writer.write(`])`);
+                },
+              },
+            ],
+          }),
+        );
+      }
+    },
+  );
+
+  enumStatements.push(writeHeading(`CUSTOM ENUMS`, 'SLIM'));
 
   datamodel.enums.forEach(({ formattedNames }) => {
     enumStatements.push(
@@ -129,7 +168,131 @@ export const getInputTypeStatements: GetStatements = (DMMF) => {
     );
   });
 
-  // GENERATE TYPES
+  // GENERATE HELPER TYPES
+  // ---------------------------------------------------------------------
+
+  const helperStatements: Statement[] = [];
+
+  if (schema.hasJsonTypes) {
+    helperStatements.push(
+      writeHeading(`HELPER TYPES`, 'FAT'),
+      writeConstStatement({
+        leadingTrivia: (writer) => writer.newLine(),
+        declarations: [
+          {
+            name: `JsonValue`,
+            type: 'z.ZodType<Prisma.Prisma.JsonValue>',
+            initializer(writer) {
+              writer.writeLine(`z.union([`);
+              writer.writeLine(`z.string(),`);
+              writer.writeLine(`z.number(),`);
+              writer.writeLine(`z.boolean(),`);
+              writer.writeLine(`z.lazy(() => z.array(JsonValue)),`);
+              writer.writeLine(`z.lazy(() => z.record(JsonValue)),`);
+              writer.write(`])`).write('.nullable()');
+            },
+          },
+        ],
+      }),
+      writeConstStatement({
+        leadingTrivia: (writer) => writer.newLine(),
+        declarations: [
+          {
+            name: `InputJsonValue`,
+            type: 'z.ZodType<Prisma.Prisma.InputJsonValue>',
+            initializer(writer) {
+              writer.writeLine(`z.union([`);
+              writer.writeLine(`z.string(),`);
+              writer.writeLine(`z.number(),`);
+              writer.writeLine(`z.boolean(),`);
+              writer.writeLine(
+                `z.lazy(() => z.array(InputJsonValue.nullable())),`,
+              );
+              writer.writeLine(
+                `z.lazy(() => z.record(InputJsonValue.nullable())),`,
+              );
+              writer.write(`])`);
+            },
+          },
+        ],
+      }),
+    );
+  }
+
+  // GENERATE MODELS
+  // ---------------------------------------------------------------------
+
+  const modelStatements: Statement[] = [writeHeading(`MODELS`, 'FAT')];
+
+  datamodel.models.forEach((model) => {
+    modelStatements.push(
+      writeHeading(`${model.formattedNames.upperCaseSpace}`, 'SLIM'),
+      writeConstStatement({
+        leadingTrivia: (writer) => writer.newLine(),
+        declarations: [
+          {
+            name: `${model.formattedNames.pascalCase}`,
+            initializer(writer) {
+              writer.write(`z.object({`);
+              [...model.enumFields, ...model.scalarFields].forEach((field) => {
+                if (field.kind === 'enum') {
+                  return writer
+                    .write(`${field.formattedNames.camelCase}: `)
+                    .write(field.zodType)
+                    .conditionalWrite(field.isList, `.array()`)
+                    .conditionalWrite(field.isNullable, `.nullable()`)
+                    .write(`,`)
+                    .newLine();
+                }
+
+                if (field.isJsonType) {
+                  console.log('isJsonType', field.name);
+                  return writer
+                    .write(`${field.formattedNames.camelCase}: `)
+                    .write(`InputJsonValue`)
+                    .conditionalWrite(field.isList, `.array()`)
+                    .conditionalWrite(field.isNullable, `.nullable()`)
+                    .write(`,`)
+                    .newLine();
+                }
+
+                if (field.isBytesType) {
+                  console.log('isByteType', field.name);
+                  return writer
+                    .write(`${field.formattedNames.camelCase}: `)
+                    .write(`z.instanceof(Buffer)`)
+                    .conditionalWrite(field.isList, `.array()`)
+                    .conditionalWrite(field.isNullable, `.nullable()`)
+                    .write(`,`)
+                    .newLine();
+                }
+
+                return writer
+                  .write(`${field.formattedNames.camelCase}: `)
+                  .write(`z.${field.zodType}(`)
+                  .conditionalWrite(
+                    !!field.zodCustomErrors,
+                    field.zodCustomErrors!,
+                  )
+                  .write(`)`)
+                  .conditionalWrite(
+                    !!field.zodValidatorString,
+                    field.zodValidatorString!,
+                  )
+                  .conditionalWrite(field.isList, `.array()`)
+                  .conditionalWrite(field.isNullable, `.nullable()`)
+                  .write(`,`)
+                  .newLine();
+              });
+              writer.write(`})`);
+            },
+          },
+        ],
+      }),
+    );
+  });
+
+  // GENERATE INPUT TYPES
   // ---------------------------------------------------------------------
 
   const typesStatements: Statement[] = [writeHeading(`INPUT TYPES`, 'FAT')];
@@ -160,24 +323,32 @@ export const getInputTypeStatements: GetStatements = (DMMF) => {
 
                     // don't pass optional and nullable props in this loop
                     // because they are handled by the union
-                    field.inputTypes.forEach((inputType) => {
+                    field.inputTypes.forEach((inputType, idx) => {
+                      const writeComma = idx !== field.inputTypes.length - 1;
                       writeScalarType(writer, {
                         inputType,
                         zodCustomErrors,
                         zodValidatorString,
-                        writeLazy: true,
+                        // don't lazy load json types
+                        // they are handled like scalars with "InputJsonValue" helper type
+                        writeLazy: !field.isJsonType,
+                        writeComma,
                       });
                       writeNonScalarType(writer, {
                         inputType,
                         zodCustomErrors,
                         zodValidatorString,
-                        writeLazy: true,
+                        // don't lazy load json types
+                        // they are handled like scalars with "InputJsonValue" helper type
+                        writeLazy: !field.isJsonType,
+                        writeComma,
                       });
                       writeNullType(writer, {
                         inputType,
                         zodCustomErrors,
                         zodValidatorString,
                         writeLazy: true,
+                        writeComma,
                       });
                     });
 
@@ -187,8 +358,9 @@ export const getInputTypeStatements: GetStatements = (DMMF) => {
                       .conditionalWrite(field.isNullable, `.nullable()`)
                       .write(`,`);
                   } else {
+                    const inputType = field.inputTypes[0];
                     writeScalarType(writer, {
-                      inputType: field.inputTypes[0],
+                      inputType,
                       writeLazy: false,
                       isNullable,
                       isOptional,
@@ -196,15 +368,18 @@ export const getInputTypeStatements: GetStatements = (DMMF) => {
                       zodValidatorString,
                     });
                     writeNonScalarType(writer, {
-                      inputType: field.inputTypes[0],
-                      writeLazy: true, // here the type needs to be wrapped in a z.lazy
+                      inputType,
+                      // don't lazy load json types
+                      // they are handled like scalars with "InputJsonValue" helper type
+                      writeLazy: !field.isJsonType,
+                      // writeLazy: true, // type needs to be wrapped in a z.lazy
                       isNullable,
                       isOptional,
                       zodCustomErrors,
                       zodValidatorString,
                     });
                     writeNullType(writer, {
-                      inputType: field.inputTypes[0],
+                      inputType,
                       writeLazy: false,
                       isNullable,
                       isOptional,
@@ -223,6 +398,9 @@ export const getInputTypeStatements: GetStatements = (DMMF) => {
       }),
     );
   });
+
+  // GENERATE ARG TYPES
+  // ---------------------------------------------------------------------
 
   const argsStatements: Statement[] = [writeHeading(`ARGS`, 'FAT')];
 
@@ -252,18 +430,23 @@ export const getInputTypeStatements: GetStatements = (DMMF) => {
 
                         // don't pass optional and nullable props in this loop
                         // because they are handled by the union
-                        arg.inputTypes.forEach((inputType) => {
+                        arg.inputTypes.forEach((inputType, idx) => {
+                          const writeComma = idx !== arg.inputTypes.length - 1;
+
                           writeScalarType(writer, {
                             inputType,
                             writeLazy: false,
+                            writeComma,
                           });
                           writeNonScalarType(writer, {
                             inputType,
                             writeLazy: false,
+                            writeComma,
                           });
                           writeNullType(writer, {
                             inputType,
                             writeLazy: false,
+                            writeComma,
                           });
                         });
 
@@ -305,5 +488,11 @@ export const getInputTypeStatements: GetStatements = (DMMF) => {
       });
     });
 
-  return [...enumStatements, ...typesStatements, ...argsStatements];
+  return [
+    ...enumStatements,
+    ...helperStatements,
+    ...modelStatements,
+    ...typesStatements,
+    ...argsStatements,
+  ];
 };

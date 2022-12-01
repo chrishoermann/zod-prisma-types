@@ -52,6 +52,7 @@ export type ZodScalarType = Extract<
   ZodPrimitiveType,
   'string' | 'number' | 'date' | 'boolean' | 'bigint' | 'unknown'
 >;
+// | 'JsonValue'; // allow jsonSchema as a type
 
 export type PrismaScalarType =
   | 'String'
@@ -64,11 +65,8 @@ export type PrismaScalarType =
   | 'Json'
   | 'Bytes';
 
-// export type ZodPrismaScalarType = Extract<
-//   PrismaScalarType,
-//   'String' | 'Boolean' | 'Int' | 'BigInt' | 'Float' | 'Decimal' | 'DateTime'
-// >;
-export type ZodPrismaScalarType = PrismaScalarType;
+// "Json" | "Bytes" are handled seperately in the generator functions
+export type ZodPrismaScalarType = Exclude<PrismaScalarType, 'Json' | 'Bytes'>;
 
 export type ZodStringValidatorKeys =
   | 'min'

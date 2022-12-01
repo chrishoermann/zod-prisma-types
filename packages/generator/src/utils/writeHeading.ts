@@ -1,5 +1,13 @@
 import { CodeBlockWriter } from 'ts-morph';
 
+/////////////////////////////////////////////
+// FUNCITON
+/////////////////////////////////////////////
+
+/**
+ * Formats a heading for the generated file.
+ */
+
 export const writeHeading = (
   headerString: string,
   type: 'SLIM' | 'FAT' = 'SLIM',

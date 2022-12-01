@@ -4,6 +4,7 @@ import {
   ExtendedDatamodel,
   ExtendedDMMFInputType,
   ExtendedDMMFOutputType,
+  ExtendedDMMFSchemaEnum,
 } from '.';
 
 /////////////////////////////////////////////////
@@ -23,11 +24,13 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
   };
   enumTypes: {
     model?: DMMF.SchemaEnum[];
-    prisma: DMMF.SchemaEnum[];
+    prisma: ExtendedDMMFSchemaEnum[];
   };
   fieldRefTypes: {
     prisma?: DMMF.FieldRefType[];
   };
+  hasJsonTypes: boolean;
+  hasBytesTypes: boolean;
 
   constructor(schema: DMMF.Schema, datamodel: ExtendedDatamodel) {
     this.rootQueryType = schema.rootQueryType;
@@ -37,8 +40,10 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
       datamodel,
     );
     this.outputObjectTypes = this._setExtendedOutputObjectTypes(schema);
-    this.enumTypes = schema.enumTypes;
+    this.enumTypes = this._setExtendedEnumTypes(schema);
     this.fieldRefTypes = schema.fieldRefTypes;
+    this.hasJsonTypes = this._setHasJsonTypes();
+    this.hasBytesTypes = this._setHasBytesTypes();
   }
 
   private _setExtendedInputObjectTypes(
@@ -67,5 +72,28 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
         return new ExtendedDMMFOutputType(type);
       }),
     };
+  }
+
+  private _setExtendedEnumTypes(schema: DMMF.Schema) {
+    return {
+      ...schema.enumTypes,
+      prisma: schema.enumTypes.prisma.map((type) => {
+        return new ExtendedDMMFSchemaEnum(type);
+      }),
+    };
+  }
+
+  // check if any of the types in the schema are of type Json
+  // if so, the "InputJsonValue" helper type needs to be created
+  private _setHasJsonTypes() {
+    return this.inputObjectTypes.prisma.some((type) => {
+      return type.isJsonField;
+    });
+  }
+
+  private _setHasBytesTypes() {
+    return this.inputObjectTypes.prisma.some((type) => {
+      return type.isBytesField;
+    });
   }
 }

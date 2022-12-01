@@ -27,6 +27,8 @@ export class ExtendedDMMFSchemaArg
   hasSingleType: boolean;
   hasMultipleTypes: boolean;
   isOptional: boolean;
+  isJsonType: boolean;
+  isBytesType: boolean;
 
   constructor(arg: ExtendedDMMFSchemaArgOptions) {
     super(arg.name);
@@ -34,16 +36,18 @@ export class ExtendedDMMFSchemaArg
     this.comment = arg.comment;
     this.isNullable = arg.isNullable;
     this.isRequired = arg.isRequired;
-    this.inputTypes = this.setInputTypes(arg.inputTypes);
+    this.inputTypes = this._setInputTypes(arg.inputTypes);
     this.deprecation = arg.deprecation;
     this.zodValidatorString = arg.zodValidatorString;
     this.zodCustomErrors = arg.zodCustomErrors;
-    this.hasSingleType = this.setHasSingleType();
-    this.hasMultipleTypes = this.setHasMultipleTypes();
-    this.isOptional = this.setIsOptional();
+    this.hasSingleType = this._setHasSingleType();
+    this.hasMultipleTypes = this._setHasMultipleTypes();
+    this.isOptional = this._setIsOptional();
+    this.isJsonType = this._setIsJsonType();
+    this.isBytesType = this._setIsBytesType();
   }
 
-  private setInputTypes = (inputTypes: DMMF.SchemaArgInputType[]) => {
+  private _setInputTypes = (inputTypes: DMMF.SchemaArgInputType[]) => {
     // filter "null" from the inputTypes array to prevent the generator
     // from generating a "null" type in a union field wiht the actual type
     // instead of e.g. a scalar type
@@ -65,15 +69,23 @@ export class ExtendedDMMFSchemaArg
     });
   };
 
-  private setHasSingleType() {
+  private _setHasSingleType() {
     return this.inputTypes.length === 1;
   }
 
-  private setHasMultipleTypes() {
+  private _setHasMultipleTypes() {
     return this.inputTypes.length > 1;
   }
 
-  private setIsOptional() {
+  private _setIsOptional() {
     return !this.isRequired;
+  }
+
+  private _setIsJsonType() {
+    return this.inputTypes.some((inputType) => inputType.isJsonType);
+  }
+
+  private _setIsBytesType() {
+    return this.inputTypes.some((inputType) => inputType.isBytesType);
   }
 }
