@@ -1,6 +1,6 @@
 import { CodeBlockWriter, StatementStructures, WriterFunction } from 'ts-morph';
 
-import { ExtendedDMMF } from './classes';
+import { ExtendedDMMF, ExtendedDMMFSchemaArgInputType } from './classes';
 
 export type StatementsArray = Statement[];
 export type Statement = string | WriterFunction | StatementStructures;
@@ -117,3 +117,18 @@ export type PrismaAction =
   | 'aggregate'
   | 'count'
   | 'groupBy';
+
+interface WriteTypeOptions {
+  inputType: ExtendedDMMFSchemaArgInputType;
+  isOptional?: boolean;
+  isNullable?: boolean;
+  writeLazy?: boolean;
+  writeComma?: boolean;
+  zodValidatorString?: string;
+  zodCustomErrors?: string;
+}
+
+export type WriteTypeFunction = (
+  writer: CodeBlockWriter,
+  options: WriteTypeOptions,
+) => CodeBlockWriter | undefined;

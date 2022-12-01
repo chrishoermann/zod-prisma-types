@@ -3,7 +3,7 @@ import {
   UserFindFirstArgs,
   UserFindManyArgs,
   UserFindUniqueArgs,
-} from './prisma/zod/inputTypesBase';
+} from './prisma/zod';
 import { initTRPC } from '@trpc/server';
 
 const prisma = new PrismaClient();

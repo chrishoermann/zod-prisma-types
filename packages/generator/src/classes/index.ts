@@ -1,5 +1,5 @@
 export * from './directoryHelper';
-export * from './extendedDatamodel';
+export * from './extendedDMMFDatamodel';
 export * from './extendedDMMF';
 export * from './extendedDMMFEnum';
 export * from './extendedDMMFField';

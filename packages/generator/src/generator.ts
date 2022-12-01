@@ -1,14 +1,16 @@
 import { generatorHandler } from '@prisma/generator-helper';
-import { Project, StructureKind } from 'ts-morph';
+import { Project } from 'ts-morph';
 
 import { DirectoryHelper } from './classes/directoryHelper';
 import { ExtendedDMMF } from './classes/extendedDMMF';
 import {
-  PRIMSA_IMPORT_STATEMENT,
-  ZOD_IMPORT_STATEMENT,
-} from './constants/importStatements';
-import { getInputTypeStatements } from './statements';
-import { Statement } from './types';
+  getArgTypeStatements,
+  getEnumStatements,
+  getHelperStatements,
+  getIncludeSelectStatements,
+  getInputTypeStatements,
+  getImportStatements,
+} from './statements';
 
 generatorHandler({
   onManifest: () => {
@@ -22,52 +24,30 @@ generatorHandler({
 
     if (!path) throw new Error('No output path specified');
 
-    // EXTENDED DMMF
-    //--------------------------------------------------------------------------------
+    // extend the DMMF with custom functionality - see in "classes" folder
+    const extendendDMMF = new ExtendedDMMF(options.dmmf);
 
-    // Create an instance of the extended DMMF class
-    // This class extends the Prisma DMMF with additional information like
-    // - name of models, enums and fields in different formats (uppercase, pascalcase, camelcase)
-    // - helper methods for generating types
-    // - ...
-
-    const ExtendendDMMF = new ExtendedDMMF(options.dmmf);
-
-    // CREATE TS-MORPH PROJECT
-    //--------------------------------------------------------------------------------
-
-    // Ts-morph is used to generate the TypeScript files
-    // For further information see: https://ts-morph.com/
-
+    // create ts-morph project - see: https://ts-morph.com/
     const project = new Project({
       tsConfigFilePath: './tsconfig.json',
       skipAddingFilesFromTsConfig: true,
     });
 
-    // CREATE PATH
-    //------------------------------------------------------
-
+    // Create the path specified in the generator output
     DirectoryHelper.pathExistsElseCreate(path.value);
 
-    // CREATE IMPORT STATEMENTS
-    //------------------------------------------------------
-
-    const inputTypesImportStatements: Statement[] = [
-      PRIMSA_IMPORT_STATEMENT,
-      ZOD_IMPORT_STATEMENT,
-    ];
-
-    // CREATE SOURCE FILES
-    //------------------------------------------------------
-
+    // create the source file containing all zod types
     const indexSource = project.createSourceFile(
       `${path.value}/index.ts`,
       {
         statements: [
-          {
-            kind: StructureKind.ExportDeclaration,
-            moduleSpecifier: './inputTypesBase',
-          },
+          ...getImportStatements(extendendDMMF),
+          ...getEnumStatements(extendendDMMF),
+          ...getHelperStatements(extendendDMMF),
+          ...getIncludeSelectStatements(extendendDMMF),
+          ...getImportStatements(extendendDMMF),
+          ...getInputTypeStatements(extendendDMMF),
+          ...getArgTypeStatements(extendendDMMF),
         ],
       },
       {
@@ -75,36 +55,14 @@ generatorHandler({
       },
     );
 
-    const inputTypesBaseSource = project.createSourceFile(
-      `${path.value}/inputTypesBase.ts`,
-      { statements: inputTypesImportStatements },
-      { overwrite: true },
-    );
-
-    // CREATE TYPES
-    //------------------------------------------------------
-
-    const inputTypeStatements = getInputTypeStatements(ExtendendDMMF);
-    inputTypesBaseSource.addStatements(inputTypeStatements);
-
-    // FORMAT SOURCE FILES
-    //------------------------------------------------------
-
+    // format the source file
     indexSource.formatText({
       indentSize: 2,
       convertTabsToSpaces: true,
       ensureNewLineAtEndOfFile: true,
     });
 
-    inputTypesBaseSource.formatText({
-      indentSize: 2,
-      convertTabsToSpaces: true,
-      ensureNewLineAtEndOfFile: true,
-    });
-
-    // SAVE SOURCE FILES
-    //------------------------------------------------------
-
+    // save the source file and apply all changes
     return project.save();
   },
 });

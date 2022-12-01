@@ -5,9 +5,9 @@ import {
   PRISMA_ACTION_ARG_MAP,
   PRISMA_ACTION_ARRAY,
 } from '../constants/objectMaps';
+import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
 import { ExtendedDMMFModel } from './extendedDMMFModel';
 import { ExtendedDMMFSchemaArg } from './extendedDMMFSchemaArg';
-import { ExtendedDatamodel } from './extendedDatamodel';
 import { FormattedNames } from './formattedNames';
 
 /////////////////////////////////////////////////
@@ -49,7 +49,7 @@ export class ExtendedDMMFSchemaField
    */
   readonly linkedModel?: ExtendedDMMFModel;
 
-  constructor(field: DMMF.SchemaField, datamodel: ExtendedDatamodel) {
+  constructor(field: DMMF.SchemaField, datamodel: ExtendedDMMFDatamodel) {
     super(field.name);
     this.name = field.name;
     this.isNullable = field.isNullable;
@@ -104,7 +104,7 @@ export class ExtendedDMMFSchemaField
    * Used when generating the `select` and `include` args.
    * @returns datamodel matching the field
    */
-  private _setLinkedModel(datamodel: ExtendedDatamodel) {
+  private _setLinkedModel(datamodel: ExtendedDMMFDatamodel) {
     return datamodel.models.find((model) =>
       typeof this.modelType === 'string'
         ? this.modelType.includes(model.name)

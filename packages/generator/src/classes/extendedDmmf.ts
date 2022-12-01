@@ -1,15 +1,15 @@
 import { DMMF } from '@prisma/generator-helper';
 
+import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
 import { ExtendedDMMFMappings } from './extendedDMMFMappings';
 import { ExtendedDMMFSchema } from './extendedDMMFSchema';
-import { ExtendedDatamodel } from './extendedDatamodel';
 
 /////////////////////////////////////////////////
 // CLASS
 /////////////////////////////////////////////////
 
 export class ExtendedDMMF implements DMMF.Document {
-  readonly datamodel: ExtendedDatamodel;
+  readonly datamodel: ExtendedDMMFDatamodel;
   readonly schema: ExtendedDMMFSchema;
   readonly mappings: DMMF.Mappings;
 
@@ -20,7 +20,7 @@ export class ExtendedDMMF implements DMMF.Document {
   }
 
   private _getExtendedDatamodel(dmmf: DMMF.Document) {
-    return new ExtendedDatamodel(dmmf.datamodel);
+    return new ExtendedDMMFDatamodel(dmmf.datamodel);
   }
 
   private _getExtendedSchema(dmmf: DMMF.Document) {

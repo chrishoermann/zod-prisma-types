@@ -7,7 +7,7 @@ import { ExtendedDMMFModel } from './extendedDMMFModel';
 // CLASS
 /////////////////////////////////////////////////
 
-export class ExtendedDatamodel {
+export class ExtendedDMMFDatamodel {
   readonly enums: ExtendedDMMFEnum[];
   readonly models: ExtendedDMMFModel[];
   readonly types: DMMF.Model[];

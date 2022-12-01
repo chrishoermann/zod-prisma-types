@@ -1,8 +1,8 @@
 import { DMMF } from '@prisma/generator-helper';
 
 import { PRISMA_ACTION_ARRAY } from '../constants/objectMaps';
+import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
 import { ExtendedDMMFSchemaField } from './extendedDMMFSchemaField';
-import { ExtendedDatamodel } from './extendedDatamodel';
 import { FormattedNames } from './formattedNames';
 
 /////////////////////////////////////////////////
@@ -17,14 +17,17 @@ export class ExtendedDMMFOutputType
   readonly fields: ExtendedDMMFSchemaField[];
   readonly fieldMap?: DMMF.OutputType['fieldMap'];
 
-  constructor(type: DMMF.OutputType, datamodel: ExtendedDatamodel) {
+  constructor(type: DMMF.OutputType, datamodel: ExtendedDMMFDatamodel) {
     super(type.name);
     this.name = type.name;
     this.fields = this._setFields(type.fields, datamodel);
     this.fieldMap = type.fieldMap;
   }
 
-  private _setFields(fields: DMMF.SchemaField[], datamodel: ExtendedDatamodel) {
+  private _setFields(
+    fields: DMMF.SchemaField[],
+    datamodel: ExtendedDMMFDatamodel,
+  ) {
     return (
       fields
         // filter all fields that are not in the PRISMA_ACTION_ARRAY

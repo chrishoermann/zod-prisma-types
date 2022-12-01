@@ -1,7 +1,7 @@
 import { DMMF } from '@prisma/generator-helper';
 
 import {
-  ExtendedDatamodel,
+  ExtendedDMMFDatamodel,
   ExtendedDMMFInputType,
   ExtendedDMMFOutputType,
   ExtendedDMMFSchemaEnum,
@@ -32,7 +32,7 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
   readonly hasJsonTypes: boolean;
   readonly hasBytesTypes: boolean;
 
-  constructor(schema: DMMF.Schema, datamodel: ExtendedDatamodel) {
+  constructor(schema: DMMF.Schema, datamodel: ExtendedDMMFDatamodel) {
     this.rootQueryType = schema.rootQueryType;
     this.rootMutationType = schema.rootMutationType;
     this.inputObjectTypes = this._setExtendedInputObjectTypes(
@@ -51,7 +51,7 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
 
   private _setExtendedInputObjectTypes(
     schema: DMMF.Schema,
-    datamodel: ExtendedDatamodel,
+    datamodel: ExtendedDMMFDatamodel,
   ) {
     return {
       ...schema.inputObjectTypes,
@@ -70,7 +70,7 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
 
   private _setExtendedOutputObjectTypes(
     schema: DMMF.Schema,
-    datamodel: ExtendedDatamodel,
+    datamodel: ExtendedDMMFDatamodel,
   ) {
     return {
       ...schema.outputObjectTypes,
