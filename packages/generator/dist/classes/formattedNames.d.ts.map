@@ -1,0 +1,1 @@
+{"version":3,"file":"formattedNames.d.ts","sourceRoot":"","sources":["../../src/classes/formattedNames.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,iBAAiB,EAAE,cAAc,EAAE,MAAM,4BAA4B,CAAC;AAM/E,qBAAa,cAAc;IAKzB,QAAQ,CAAC,cAAc,EAAE,cAAc,CAAC;gBAE5B,MAAM,EAAE,MAAM;IAU1B,iBAAiB,2BAAqB;CACvC"}

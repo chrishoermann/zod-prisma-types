@@ -21,6 +21,6 @@
     "@trpc/server": "^10.4.2",
     "prisma-zod-generator": "^0.7.4",
     "zod": "^3.19.1",
-    "zod-prisma-types": "workspace:^0.0.1"
+    "zod-prisma-types": "workspace:^0.1.0"
   }
 }

@@ -1,0 +1,1 @@
+{"version":3,"file":"getStringVariants.d.ts","sourceRoot":"","sources":["../../src/utils/getStringVariants.ts"],"names":[],"mappings":"AAMA,MAAM,WAAW,cAAc;IAK7B,QAAQ,EAAE,MAAM,CAAC;IAMjB,SAAS,EAAE,MAAM,CAAC;IAQlB,UAAU,EAAE,MAAM,CAAC;IAQnB,eAAe,EAAE,MAAM,CAAC;IAQxB,cAAc,EAAE,MAAM,CAAC;CACxB;AAaD,wBAAgB,iBAAiB,CAAC,MAAM,EAAE,MAAM,GAAG,cAAc,CAQhE"}

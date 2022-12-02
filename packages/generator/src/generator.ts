@@ -10,6 +10,7 @@ import {
   getIncludeSelectStatements,
   getInputTypeStatements,
   getImportStatements,
+  getModelStatements,
 } from './functions';
 
 generatorHandler({
@@ -44,8 +45,8 @@ generatorHandler({
           ...getImportStatements(extendendDMMF),
           ...getEnumStatements(extendendDMMF),
           ...getHelperStatements(extendendDMMF),
+          ...getModelStatements(extendendDMMF),
           ...getIncludeSelectStatements(extendendDMMF),
-          ...getImportStatements(extendendDMMF),
           ...getInputTypeStatements(extendendDMMF),
           ...getArgTypeStatements(extendendDMMF),
         ],
