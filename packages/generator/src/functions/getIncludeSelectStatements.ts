@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { GetStatements, Statement } from '../types';
 import { writeConstStatement, writeHeading } from '../utils';
 

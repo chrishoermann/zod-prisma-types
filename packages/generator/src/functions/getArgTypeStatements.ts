@@ -3,7 +3,6 @@ import {
   writeConstStatement,
   writeHeading,
   writeNonScalarType,
-  // writeNullType,
   writeScalarType,
   writeSpecialType,
 } from '../utils';

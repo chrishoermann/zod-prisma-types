@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   ZOD_IMPORT_STATEMENT,
   PRIMSA_IMPORT_STATEMENT,
