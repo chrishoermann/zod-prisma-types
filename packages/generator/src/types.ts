@@ -66,7 +66,10 @@ export type PrismaScalarType =
   | 'Bytes';
 
 // "Json" | "Bytes" are handled seperately in the generator functions
-export type ZodPrismaScalarType = Exclude<PrismaScalarType, 'Json' | 'Bytes'>;
+export type ZodPrismaScalarType = Exclude<
+  PrismaScalarType,
+  'Json' | 'Bytes' | 'Decimal'
+>;
 
 export type ZodStringValidatorKeys =
   | 'min'

@@ -55,6 +55,12 @@ class ExtendedDMMFInputType extends formattedNames_1.FormattedNames {
             writable: true,
             value: void 0
         });
+        Object.defineProperty(this, "isDecimalField", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.linkedModel = model;
         this.name = type.name;
         this.constraints = type.constraints;
@@ -63,6 +69,7 @@ class ExtendedDMMFInputType extends formattedNames_1.FormattedNames {
         this.fieldMap = type.fieldMap;
         this.isJsonField = this._setIsJsonField();
         this.isBytesField = this._setIsBytesField();
+        this.isDecimalField = this._setIsDecimalField();
     }
     _setFields(fields) {
         return fields.map((field) => {
@@ -91,6 +98,9 @@ class ExtendedDMMFInputType extends formattedNames_1.FormattedNames {
     }
     _setIsBytesField() {
         return this.fields.some((field) => field.isBytesType);
+    }
+    _setIsDecimalField() {
+        return this.fields.some((field) => field.isDecimalType);
     }
 }
 exports.ExtendedDMMFInputType = ExtendedDMMFInputType;

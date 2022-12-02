@@ -15,7 +15,6 @@ exports.PRISMA_TYPE_MAP = {
     Int: 'number',
     BigInt: 'bigint',
     Float: 'number',
-    Decimal: 'number',
 };
 exports.STRING_VALIDATOR_REGEX_MAP = {
     min: regex_1.STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,

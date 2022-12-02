@@ -121,6 +121,12 @@ class ExtendedDMMFField extends formattedNames_1.FormattedNames {
             writable: true,
             value: void 0
         });
+        Object.defineProperty(this, "isDecimalType", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         Object.defineProperty(this, "modelName", {
             enumerable: true,
             configurable: true,
@@ -207,6 +213,7 @@ class ExtendedDMMFField extends formattedNames_1.FormattedNames {
         this.documentation = field.documentation;
         this.isJsonType = this._setIsJsonType();
         this.isBytesType = this._setIsBytesType();
+        this.isDecimalType = this._setIsDecimalType();
         this.isNullable = this._setIsNullable();
         this.modelName = modelName;
         this._validatorRegexMatch = this._setValidatorRegexMatch();
@@ -217,14 +224,13 @@ class ExtendedDMMFField extends formattedNames_1.FormattedNames {
         this.zodValidatorString = this._setZodValidatorString();
     }
     _setIsJsonType() {
-        if (this.type === 'Json')
-            return true;
-        return false;
+        return this.type === 'Json';
     }
     _setIsBytesType() {
-        if (this.type === 'Bytes')
-            return true;
-        return false;
+        return this.type === 'Bytes';
+    }
+    _setIsDecimalType() {
+        return this.type === 'Decimal';
     }
     _setIsNullable() {
         return !this.isRequired;

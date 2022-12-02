@@ -84,6 +84,12 @@ class ExtendedDMMFSchemaArg extends formattedNames_1.FormattedNames {
             writable: true,
             value: void 0
         });
+        Object.defineProperty(this, "isDecimalType", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         Object.defineProperty(this, "_setInputTypes", {
             enumerable: true,
             configurable: true,
@@ -115,6 +121,7 @@ class ExtendedDMMFSchemaArg extends formattedNames_1.FormattedNames {
         this.isOptional = this._setIsOptional();
         this.isJsonType = this._setIsJsonType();
         this.isBytesType = this._setIsBytesType();
+        this.isDecimalType = this._setIsDecimalType();
     }
     _setHasSingleType() {
         return this.inputTypes.length === 1;
@@ -130,6 +137,9 @@ class ExtendedDMMFSchemaArg extends formattedNames_1.FormattedNames {
     }
     _setIsBytesType() {
         return this.inputTypes.some((inputType) => inputType.isBytesType);
+    }
+    _setIsDecimalType() {
+        return this.inputTypes.some((inputType) => inputType.isDecimalType);
     }
 }
 exports.ExtendedDMMFSchemaArg = ExtendedDMMFSchemaArg;

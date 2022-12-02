@@ -58,7 +58,6 @@ export const PRISMA_TYPE_MAP: KeyValueMap<ZodPrismaScalarType, ZodScalarType> =
     Int: 'number',
     BigInt: 'bigint',
     Float: 'number',
-    Decimal: 'number',
   };
 
 /////////////////////////////////////////////

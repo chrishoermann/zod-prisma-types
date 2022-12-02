@@ -19,6 +19,7 @@ export declare class ExtendedDMMFSchemaArg extends FormattedNames implements DMM
     readonly isOptional: boolean;
     readonly isJsonType: boolean;
     readonly isBytesType: boolean;
+    readonly isDecimalType: boolean;
     constructor(arg: ExtendedDMMFSchemaArgOptions);
     private _setInputTypes;
     private _setHasSingleType;
@@ -26,5 +27,6 @@ export declare class ExtendedDMMFSchemaArg extends FormattedNames implements DMM
     private _setIsOptional;
     private _setIsJsonType;
     private _setIsBytesType;
+    private _setIsDecimalType;
 }
 //# sourceMappingURL=extendedDMMFSchemaArg.d.ts.map

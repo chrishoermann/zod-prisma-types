@@ -52,6 +52,12 @@ class ExtendedDMMFSchema {
             writable: true,
             value: void 0
         });
+        Object.defineProperty(this, "hasDecimalTypes", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.rootQueryType = schema.rootQueryType;
         this.rootMutationType = schema.rootMutationType;
         this.inputObjectTypes = this._setExtendedInputObjectTypes(schema, datamodel);
@@ -60,6 +66,7 @@ class ExtendedDMMFSchema {
         this.fieldRefTypes = schema.fieldRefTypes;
         this.hasJsonTypes = this._setHasJsonTypes();
         this.hasBytesTypes = this._setHasBytesTypes();
+        this.hasDecimalTypes = this._setHasDecimalTypes();
     }
     _setExtendedInputObjectTypes(schema, datamodel) {
         return {
@@ -89,6 +96,9 @@ class ExtendedDMMFSchema {
     }
     _setHasBytesTypes() {
         return this.inputObjectTypes.prisma.some((type) => type.isBytesField);
+    }
+    _setHasDecimalTypes() {
+        return this.inputObjectTypes.prisma.some((type) => type.isDecimalField);
     }
 }
 exports.ExtendedDMMFSchema = ExtendedDMMFSchema;

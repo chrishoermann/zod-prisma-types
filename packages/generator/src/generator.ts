@@ -22,11 +22,12 @@ generatorHandler({
   },
   onGenerate: async (options) => {
     const path = options.generator.output;
+    const config = options.generator.config;
 
     if (!path) throw new Error('No output path specified');
 
-    // extend the DMMF with custom functionality - see in "classes" folder
-    const extendendDMMF = new ExtendedDMMF(options.dmmf);
+    // extend the DMMF with custom functionality - check "classes" folder
+    const extendendDMMF = new ExtendedDMMF(options.dmmf, config);
 
     // create ts-morph project - see: https://ts-morph.com/
     const project = new Project({

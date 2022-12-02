@@ -38,7 +38,7 @@ const getArgTypeStatements = ({ schema }) => {
                                                 writeLazy: false,
                                                 writeComma,
                                             });
-                                            (0, utils_1.writeNullType)(writer, {
+                                            (0, utils_1.writeSpecialType)(writer, {
                                                 inputType,
                                                 writeLazy: false,
                                                 writeComma,
@@ -63,7 +63,7 @@ const getArgTypeStatements = ({ schema }) => {
                                             isNullable,
                                             isOptional,
                                         });
-                                        (0, utils_1.writeNullType)(writer, {
+                                        (0, utils_1.writeSpecialType)(writer, {
                                             inputType: arg.inputTypes[0],
                                             writeLazy: false,
                                             isNullable,

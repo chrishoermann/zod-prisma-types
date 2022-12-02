@@ -11,8 +11,10 @@ datasource db {
 }
 
 generator zod {
-  provider = "zod-prisma-types"
-  // output   = "./zod"
+  provider       = "zod-prisma-types"
+  output         = "./zod" // default is ./generated/zod
+  useValidatorJs = false // default is false
+  // useDecimalJs   = false // default is false
 }
 
 enum MyValue {
@@ -31,6 +33,8 @@ model Test {
   float      Float
   decimal    Decimal
   decimalOpt Decimal?
+  // date       DateTime  @default(now())
+  // dateOpt    DateTime?
   bigInt     BigInt
   bigIntOpt  BigInt?
   json       Json

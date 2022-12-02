@@ -20,4 +20,5 @@ __exportStar(require("./writeConstStatement"), exports);
 __exportStar(require("./writeScalarType"), exports);
 __exportStar(require("./writeNullType"), exports);
 __exportStar(require("./writeNonScalarType"), exports);
+__exportStar(require("./writeSpecialType"), exports);
 //# sourceMappingURL=index.js.map

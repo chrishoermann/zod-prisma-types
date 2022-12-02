@@ -17,3 +17,15 @@ export const ENUM_IMPORT_STATEMENT: ImportDeclarationStructure = {
   defaultImport: '* as Enum',
   moduleSpecifier: './enum',
 };
+
+export const DECIMAL_JS_IMPORT_STATEMENT: ImportDeclarationStructure = {
+  kind: StructureKind.ImportDeclaration,
+  namedImports: ['Decimal'],
+  moduleSpecifier: 'decimal.js',
+};
+
+export const VALIDATOR_JS_IMPORT_STATEMENT: ImportDeclarationStructure = {
+  kind: StructureKind.ImportDeclaration,
+  defaultImport: 'Validator',
+  moduleSpecifier: 'validator',
+};

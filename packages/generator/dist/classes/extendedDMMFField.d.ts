@@ -20,6 +20,7 @@ export declare class ExtendedDMMFField extends FormattedNames implements DMMF.Fi
     readonly isNullable: boolean;
     readonly isJsonType: boolean;
     readonly isBytesType: boolean;
+    readonly isDecimalType: boolean;
     readonly modelName: string;
     private _validatorRegexMatch?;
     private _zodValidatorType?;
@@ -31,6 +32,7 @@ export declare class ExtendedDMMFField extends FormattedNames implements DMMF.Fi
     constructor(field: DMMF.Field, modelName: string);
     private _setIsJsonType;
     private _setIsBytesType;
+    private _setIsDecimalType;
     private _setIsNullable;
     private _setZodType;
     private _getZodTypeFromScalarType;

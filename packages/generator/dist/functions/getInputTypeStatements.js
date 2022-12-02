@@ -25,21 +25,15 @@ const getInputTypeStatements = ({ schema }) => {
                                             inputType,
                                             zodCustomErrors,
                                             zodValidatorString,
-                                            writeLazy: !field.isJsonType,
+                                            writeComma,
+                                        });
+                                        (0, utils_1.writeSpecialType)(writer, {
+                                            inputType,
+                                            zodCustomErrors,
                                             writeComma,
                                         });
                                         (0, utils_1.writeNonScalarType)(writer, {
                                             inputType,
-                                            zodCustomErrors,
-                                            zodValidatorString,
-                                            writeLazy: !field.isJsonType,
-                                            writeComma,
-                                        });
-                                        (0, utils_1.writeNullType)(writer, {
-                                            inputType,
-                                            zodCustomErrors,
-                                            zodValidatorString,
-                                            writeLazy: true,
                                             writeComma,
                                         });
                                     });
@@ -53,27 +47,21 @@ const getInputTypeStatements = ({ schema }) => {
                                     const inputType = field.inputTypes[0];
                                     (0, utils_1.writeScalarType)(writer, {
                                         inputType,
-                                        writeLazy: false,
                                         isNullable,
                                         isOptional,
                                         zodCustomErrors,
                                         zodValidatorString,
+                                    });
+                                    (0, utils_1.writeSpecialType)(writer, {
+                                        inputType,
+                                        zodCustomErrors,
+                                        isNullable,
+                                        isOptional,
                                     });
                                     (0, utils_1.writeNonScalarType)(writer, {
                                         inputType,
-                                        writeLazy: !field.isJsonType,
                                         isNullable,
                                         isOptional,
-                                        zodCustomErrors,
-                                        zodValidatorString,
-                                    });
-                                    (0, utils_1.writeNullType)(writer, {
-                                        inputType,
-                                        writeLazy: false,
-                                        isNullable,
-                                        isOptional,
-                                        zodCustomErrors,
-                                        zodValidatorString,
                                     });
                                 }
                                 writer.newLine();

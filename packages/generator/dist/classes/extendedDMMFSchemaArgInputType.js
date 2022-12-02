@@ -16,6 +16,18 @@ class ExtendedDMMFSchemaArgInputType {
             writable: true,
             value: void 0
         });
+        Object.defineProperty(this, "isDecimalType", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "isNullType", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         Object.defineProperty(this, "isList", {
             enumerable: true,
             configurable: true,
@@ -60,13 +72,9 @@ class ExtendedDMMFSchemaArgInputType {
             value: () => {
                 if (!this.isStringType())
                     return;
-                const zodType = objectMaps_1.PRISMA_TYPE_MAP[this.type];
-                if (zodType || this.type === 'Null')
+                const zodScalarType = objectMaps_1.PRISMA_TYPE_MAP[this.type];
+                if (zodScalarType || this.isSpecialType())
                     return;
-                if (this.isJsonType)
-                    return 'InputJsonValue';
-                if (this.isBytesType)
-                    return `z.instanceof(Buffer)`;
                 return this.type;
             }
         });
@@ -106,8 +114,21 @@ class ExtendedDMMFSchemaArgInputType {
                 return type.fields !== undefined;
             }
         });
+        Object.defineProperty(this, "isSpecialType", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: () => {
+                return (this.isJsonType ||
+                    this.isBytesType ||
+                    this.isNullType ||
+                    this.isDecimalType);
+            }
+        });
         this.isJsonType = this._setIsJsonType(arg);
         this.isBytesType = this._setIsBytesType(arg);
+        this.isDecimalType = this._setIsDecimalType(arg);
+        this.isNullType = this._setIsNullType(arg);
         this.isList = arg.isList;
         this.type = arg.type;
         this.location = arg.location;
@@ -118,6 +139,12 @@ class ExtendedDMMFSchemaArgInputType {
     }
     _setIsBytesType(arg) {
         return arg.type === 'Bytes';
+    }
+    _setIsDecimalType(arg) {
+        return arg.type === 'Decimal';
+    }
+    _setIsNullType(arg) {
+        return arg.type === 'Null';
     }
 }
 exports.ExtendedDMMFSchemaArgInputType = ExtendedDMMFSchemaArgInputType;

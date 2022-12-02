@@ -21,6 +21,7 @@ export class ExtendedDMMFInputType
   readonly linkedModel?: ExtendedDMMFModel;
   readonly isJsonField: boolean;
   readonly isBytesField: boolean;
+  readonly isDecimalField: boolean;
 
   constructor(type: DMMF.InputType, model?: ExtendedDMMFModel) {
     super(type.name);
@@ -32,6 +33,7 @@ export class ExtendedDMMFInputType
     this.fieldMap = type.fieldMap;
     this.isJsonField = this._setIsJsonField();
     this.isBytesField = this._setIsBytesField();
+    this.isDecimalField = this._setIsDecimalField();
   }
 
   private _setFields(fields: DMMF.SchemaArg[]) {
@@ -70,5 +72,9 @@ export class ExtendedDMMFInputType
 
   private _setIsBytesField() {
     return this.fields.some((field) => field.isBytesType);
+  }
+
+  private _setIsDecimalField() {
+    return this.fields.some((field) => field.isDecimalType);
   }
 }

@@ -1,5 +1,6 @@
-import * as Prisma from "@prisma/client";
 import { z } from "zod";
+import * as Prisma from "@prisma/client";
+import { Decimal } from "decimal.js";
 
 /////////////////////////////////////////
 // ENUMS
@@ -58,6 +59,65 @@ export const InputJsonValue: z.ZodType<Prisma.Prisma.InputJsonValue> = z.union([
   z.lazy(() => z.array(InputJsonValue.nullable())),
   z.lazy(() => z.record(InputJsonValue.nullable())),
 ]);
+
+/////////////////////////////////////////
+// MODELS
+/////////////////////////////////////////
+
+// TEST
+//------------------------------------------------------
+
+export const Test = z.object({
+  value: MyValue,
+  id: z.string(({ invalid_type_error: "error" })).cuid(),
+  name: z.string(({ required_error: "error" })).nullable(),
+  intTwo: z.number(),
+  int: z.number().nullable(),
+  floatOpt: z.number().nullable(),
+  float: z.number(),
+  decimal: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal', path: ['Models', 'Test'] }),
+  decimalOpt: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal', path: ['Models', 'Test'] }).nullable(),
+  bigInt: z.bigint(),
+  bigIntOpt: z.bigint().nullable(),
+  json: InputJsonValue,
+  jsonOpt: InputJsonValue.nullable(),
+  bytes: z.instanceof(Buffer),
+  bytesOpt: z.instanceof(Buffer).nullable(),
+});
+
+// USER
+//------------------------------------------------------
+
+export const User = z.object({
+  role: Role.array(),
+  enum: AnotherEnum,
+  id: z.string().cuid(),
+  email: z.string().email({ message: "Invalid email address" }),
+  name: z.string().min(1).max(100).nullable(),
+});
+
+// POST
+//------------------------------------------------------
+
+export const Post = z.object({
+  anotherEnum: AnotherEnum.array(),
+  id: z.number(),
+  title: z.string(),
+  content: z.string().nullable(),
+  published: z.boolean(),
+  authorId: z.string(),
+});
+
+// PROFILE
+//------------------------------------------------------
+
+export const Profile = z.object({
+  role: Role.array(),
+  second: SecondEnum,
+  id: z.number(),
+  bio: z.string(),
+  userId: z.string(),
+});
 
 /////////////////////////////////////////
 // SELECT & INCLUDE
@@ -149,8 +209,6 @@ export const ProfileSelect: z.ZodType<Prisma.Prisma.ProfileSelect> = z.object({
 export const ProfileInclude: z.ZodType<Prisma.Prisma.ProfileInclude> = z.object({
   user: z.union([z.boolean(), z.lazy(() => UserArgs)]).optional(),
 }).strict();
-import * as Prisma from "@prisma/client";
-import { z } from "zod";
 
 /////////////////////////////////////////
 // INPUT TYPES
@@ -167,14 +225,14 @@ export const TestWhereInput: z.ZodType<Prisma.Prisma.TestWhereInput> = z.object(
   int: z.union([z.lazy(() => IntNullableFilter), z.number()]).optional().nullable(),
   floatOpt: z.union([z.lazy(() => FloatNullableFilter), z.number()]).optional().nullable(),
   float: z.union([z.lazy(() => FloatFilter), z.number()]).optional(),
-  decimal: z.union([z.lazy(() => DecimalFilter), z.number()]).optional(),
-  decimalOpt: z.union([z.lazy(() => DecimalNullableFilter), z.number()]).optional().nullable(),
+  decimal: z.union([z.lazy(() => DecimalFilter), z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' })]).optional(),
+  decimalOpt: z.union([z.lazy(() => DecimalNullableFilter), z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' })]).optional().nullable(),
   bigInt: z.union([z.lazy(() => BigIntFilter), z.bigint()]).optional(),
   bigIntOpt: z.union([z.lazy(() => BigIntNullableFilter), z.bigint()]).optional().nullable(),
   json: z.lazy(() => JsonFilter).optional(),
   jsonOpt: z.lazy(() => JsonNullableFilter).optional(),
-  bytes: z.union([z.lazy(() => BytesFilter), z.lazy(() => z.instanceof(Buffer))]).optional(),
-  bytesOpt: z.union([z.lazy(() => BytesNullableFilter), z.lazy(() => z.instanceof(Buffer))]).optional().nullable(),
+  bytes: z.union([z.lazy(() => BytesFilter), z.instanceof(Buffer)]).optional(),
+  bytesOpt: z.union([z.lazy(() => BytesNullableFilter), z.instanceof(Buffer)]).optional().nullable(),
 }).strict();
 
 export const TestOrderByWithRelationInput: z.ZodType<Prisma.Prisma.TestOrderByWithRelationInput> = z.object({
@@ -233,14 +291,14 @@ export const TestScalarWhereWithAggregatesInput: z.ZodType<Prisma.Prisma.TestSca
   int: z.union([z.lazy(() => IntNullableWithAggregatesFilter), z.number()]).optional().nullable(),
   floatOpt: z.union([z.lazy(() => FloatNullableWithAggregatesFilter), z.number()]).optional().nullable(),
   float: z.union([z.lazy(() => FloatWithAggregatesFilter), z.number()]).optional(),
-  decimal: z.union([z.lazy(() => DecimalWithAggregatesFilter), z.number()]).optional(),
-  decimalOpt: z.union([z.lazy(() => DecimalNullableWithAggregatesFilter), z.number()]).optional().nullable(),
+  decimal: z.union([z.lazy(() => DecimalWithAggregatesFilter), z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' })]).optional(),
+  decimalOpt: z.union([z.lazy(() => DecimalNullableWithAggregatesFilter), z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' })]).optional().nullable(),
   bigInt: z.union([z.lazy(() => BigIntWithAggregatesFilter), z.bigint()]).optional(),
   bigIntOpt: z.union([z.lazy(() => BigIntNullableWithAggregatesFilter), z.bigint()]).optional().nullable(),
   json: z.lazy(() => JsonWithAggregatesFilter).optional(),
   jsonOpt: z.lazy(() => JsonNullableWithAggregatesFilter).optional(),
-  bytes: z.union([z.lazy(() => BytesWithAggregatesFilter), z.lazy(() => z.instanceof(Buffer))]).optional(),
-  bytesOpt: z.union([z.lazy(() => BytesNullableWithAggregatesFilter), z.lazy(() => z.instanceof(Buffer))]).optional().nullable(),
+  bytes: z.union([z.lazy(() => BytesWithAggregatesFilter), z.instanceof(Buffer)]).optional(),
+  bytesOpt: z.union([z.lazy(() => BytesNullableWithAggregatesFilter), z.instanceof(Buffer)]).optional().nullable(),
 }).strict();
 
 export const UserWhereInput: z.ZodType<Prisma.Prisma.UserWhereInput> = z.object({
@@ -404,14 +462,14 @@ export const TestCreateInput: z.ZodType<Prisma.Prisma.TestCreateInput> = z.objec
   int: z.number().optional().nullable(),
   floatOpt: z.number().optional().nullable(),
   float: z.number(),
-  decimal: z.number(),
-  decimalOpt: z.number().optional().nullable(),
+  decimal: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }),
+  decimalOpt: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional().nullable(),
   bigInt: z.bigint(),
   bigIntOpt: z.bigint().optional().nullable(),
-  json: z.union([JsonNullValueInput, InputJsonValue]),
-  jsonOpt: z.union([NullableJsonNullValueInput, InputJsonValue]).optional(),
-  bytes: z.lazy(() => z.instanceof(Buffer)),
-  bytesOpt: z.lazy(() => z.instanceof(Buffer)).optional().nullable(),
+  json: z.union([z.lazy(() => JsonNullValueInput), InputJsonValue]),
+  jsonOpt: z.union([z.lazy(() => NullableJsonNullValueInput), InputJsonValue]).optional(),
+  bytes: z.instanceof(Buffer),
+  bytesOpt: z.instanceof(Buffer).optional().nullable(),
 }).strict();
 
 export const TestUncheckedCreateInput: z.ZodType<Prisma.Prisma.TestUncheckedCreateInput> = z.object({
@@ -422,14 +480,14 @@ export const TestUncheckedCreateInput: z.ZodType<Prisma.Prisma.TestUncheckedCrea
   int: z.number().optional().nullable(),
   floatOpt: z.number().optional().nullable(),
   float: z.number(),
-  decimal: z.number(),
-  decimalOpt: z.number().optional().nullable(),
+  decimal: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }),
+  decimalOpt: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional().nullable(),
   bigInt: z.bigint(),
   bigIntOpt: z.bigint().optional().nullable(),
-  json: z.union([JsonNullValueInput, InputJsonValue]),
-  jsonOpt: z.union([NullableJsonNullValueInput, InputJsonValue]).optional(),
-  bytes: z.lazy(() => z.instanceof(Buffer)),
-  bytesOpt: z.lazy(() => z.instanceof(Buffer)).optional().nullable(),
+  json: z.union([z.lazy(() => JsonNullValueInput), InputJsonValue]),
+  jsonOpt: z.union([z.lazy(() => NullableJsonNullValueInput), InputJsonValue]).optional(),
+  bytes: z.instanceof(Buffer),
+  bytesOpt: z.instanceof(Buffer).optional().nullable(),
 }).strict();
 
 export const TestUpdateInput: z.ZodType<Prisma.Prisma.TestUpdateInput> = z.object({
@@ -440,14 +498,14 @@ export const TestUpdateInput: z.ZodType<Prisma.Prisma.TestUpdateInput> = z.objec
   int: z.union([z.number(), z.lazy(() => NullableIntFieldUpdateOperationsInput)]).optional().nullable(),
   floatOpt: z.union([z.number(), z.lazy(() => NullableFloatFieldUpdateOperationsInput)]).optional().nullable(),
   float: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInput)]).optional(),
-  decimal: z.union([z.number(), z.lazy(() => DecimalFieldUpdateOperationsInput)]).optional(),
-  decimalOpt: z.union([z.number(), z.lazy(() => NullableDecimalFieldUpdateOperationsInput)]).optional().nullable(),
+  decimal: z.union([z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => DecimalFieldUpdateOperationsInput)]).optional(),
+  decimalOpt: z.union([z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => NullableDecimalFieldUpdateOperationsInput)]).optional().nullable(),
   bigInt: z.union([z.bigint(), z.lazy(() => BigIntFieldUpdateOperationsInput)]).optional(),
   bigIntOpt: z.union([z.bigint(), z.lazy(() => NullableBigIntFieldUpdateOperationsInput)]).optional().nullable(),
-  json: z.union([JsonNullValueInput, InputJsonValue]).optional(),
-  jsonOpt: z.union([NullableJsonNullValueInput, InputJsonValue]).optional(),
-  bytes: z.union([z.lazy(() => z.instanceof(Buffer)), z.lazy(() => BytesFieldUpdateOperationsInput)]).optional(),
-  bytesOpt: z.union([z.lazy(() => z.instanceof(Buffer)), z.lazy(() => NullableBytesFieldUpdateOperationsInput)]).optional().nullable(),
+  json: z.union([z.lazy(() => JsonNullValueInput), InputJsonValue]).optional(),
+  jsonOpt: z.union([z.lazy(() => NullableJsonNullValueInput), InputJsonValue]).optional(),
+  bytes: z.union([z.instanceof(Buffer), z.lazy(() => BytesFieldUpdateOperationsInput)]).optional(),
+  bytesOpt: z.union([z.instanceof(Buffer), z.lazy(() => NullableBytesFieldUpdateOperationsInput)]).optional().nullable(),
 }).strict();
 
 export const TestUncheckedUpdateInput: z.ZodType<Prisma.Prisma.TestUncheckedUpdateInput> = z.object({
@@ -458,14 +516,14 @@ export const TestUncheckedUpdateInput: z.ZodType<Prisma.Prisma.TestUncheckedUpda
   int: z.union([z.number(), z.lazy(() => NullableIntFieldUpdateOperationsInput)]).optional().nullable(),
   floatOpt: z.union([z.number(), z.lazy(() => NullableFloatFieldUpdateOperationsInput)]).optional().nullable(),
   float: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInput)]).optional(),
-  decimal: z.union([z.number(), z.lazy(() => DecimalFieldUpdateOperationsInput)]).optional(),
-  decimalOpt: z.union([z.number(), z.lazy(() => NullableDecimalFieldUpdateOperationsInput)]).optional().nullable(),
+  decimal: z.union([z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => DecimalFieldUpdateOperationsInput)]).optional(),
+  decimalOpt: z.union([z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => NullableDecimalFieldUpdateOperationsInput)]).optional().nullable(),
   bigInt: z.union([z.bigint(), z.lazy(() => BigIntFieldUpdateOperationsInput)]).optional(),
   bigIntOpt: z.union([z.bigint(), z.lazy(() => NullableBigIntFieldUpdateOperationsInput)]).optional().nullable(),
-  json: z.union([JsonNullValueInput, InputJsonValue]).optional(),
-  jsonOpt: z.union([NullableJsonNullValueInput, InputJsonValue]).optional(),
-  bytes: z.union([z.lazy(() => z.instanceof(Buffer)), z.lazy(() => BytesFieldUpdateOperationsInput)]).optional(),
-  bytesOpt: z.union([z.lazy(() => z.instanceof(Buffer)), z.lazy(() => NullableBytesFieldUpdateOperationsInput)]).optional().nullable(),
+  json: z.union([z.lazy(() => JsonNullValueInput), InputJsonValue]).optional(),
+  jsonOpt: z.union([z.lazy(() => NullableJsonNullValueInput), InputJsonValue]).optional(),
+  bytes: z.union([z.instanceof(Buffer), z.lazy(() => BytesFieldUpdateOperationsInput)]).optional(),
+  bytesOpt: z.union([z.instanceof(Buffer), z.lazy(() => NullableBytesFieldUpdateOperationsInput)]).optional().nullable(),
 }).strict();
 
 export const TestCreateManyInput: z.ZodType<Prisma.Prisma.TestCreateManyInput> = z.object({
@@ -476,14 +534,14 @@ export const TestCreateManyInput: z.ZodType<Prisma.Prisma.TestCreateManyInput> =
   int: z.number().optional().nullable(),
   floatOpt: z.number().optional().nullable(),
   float: z.number(),
-  decimal: z.number(),
-  decimalOpt: z.number().optional().nullable(),
+  decimal: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }),
+  decimalOpt: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional().nullable(),
   bigInt: z.bigint(),
   bigIntOpt: z.bigint().optional().nullable(),
-  json: z.union([JsonNullValueInput, InputJsonValue]),
-  jsonOpt: z.union([NullableJsonNullValueInput, InputJsonValue]).optional(),
-  bytes: z.lazy(() => z.instanceof(Buffer)),
-  bytesOpt: z.lazy(() => z.instanceof(Buffer)).optional().nullable(),
+  json: z.union([z.lazy(() => JsonNullValueInput), InputJsonValue]),
+  jsonOpt: z.union([z.lazy(() => NullableJsonNullValueInput), InputJsonValue]).optional(),
+  bytes: z.instanceof(Buffer),
+  bytesOpt: z.instanceof(Buffer).optional().nullable(),
 }).strict();
 
 export const TestUpdateManyMutationInput: z.ZodType<Prisma.Prisma.TestUpdateManyMutationInput> = z.object({
@@ -494,14 +552,14 @@ export const TestUpdateManyMutationInput: z.ZodType<Prisma.Prisma.TestUpdateMany
   int: z.union([z.number(), z.lazy(() => NullableIntFieldUpdateOperationsInput)]).optional().nullable(),
   floatOpt: z.union([z.number(), z.lazy(() => NullableFloatFieldUpdateOperationsInput)]).optional().nullable(),
   float: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInput)]).optional(),
-  decimal: z.union([z.number(), z.lazy(() => DecimalFieldUpdateOperationsInput)]).optional(),
-  decimalOpt: z.union([z.number(), z.lazy(() => NullableDecimalFieldUpdateOperationsInput)]).optional().nullable(),
+  decimal: z.union([z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => DecimalFieldUpdateOperationsInput)]).optional(),
+  decimalOpt: z.union([z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => NullableDecimalFieldUpdateOperationsInput)]).optional().nullable(),
   bigInt: z.union([z.bigint(), z.lazy(() => BigIntFieldUpdateOperationsInput)]).optional(),
   bigIntOpt: z.union([z.bigint(), z.lazy(() => NullableBigIntFieldUpdateOperationsInput)]).optional().nullable(),
-  json: z.union([JsonNullValueInput, InputJsonValue]).optional(),
-  jsonOpt: z.union([NullableJsonNullValueInput, InputJsonValue]).optional(),
-  bytes: z.union([z.lazy(() => z.instanceof(Buffer)), z.lazy(() => BytesFieldUpdateOperationsInput)]).optional(),
-  bytesOpt: z.union([z.lazy(() => z.instanceof(Buffer)), z.lazy(() => NullableBytesFieldUpdateOperationsInput)]).optional().nullable(),
+  json: z.union([z.lazy(() => JsonNullValueInput), InputJsonValue]).optional(),
+  jsonOpt: z.union([z.lazy(() => NullableJsonNullValueInput), InputJsonValue]).optional(),
+  bytes: z.union([z.instanceof(Buffer), z.lazy(() => BytesFieldUpdateOperationsInput)]).optional(),
+  bytesOpt: z.union([z.instanceof(Buffer), z.lazy(() => NullableBytesFieldUpdateOperationsInput)]).optional().nullable(),
 }).strict();
 
 export const TestUncheckedUpdateManyInput: z.ZodType<Prisma.Prisma.TestUncheckedUpdateManyInput> = z.object({
@@ -512,14 +570,14 @@ export const TestUncheckedUpdateManyInput: z.ZodType<Prisma.Prisma.TestUnchecked
   int: z.union([z.number(), z.lazy(() => NullableIntFieldUpdateOperationsInput)]).optional().nullable(),
   floatOpt: z.union([z.number(), z.lazy(() => NullableFloatFieldUpdateOperationsInput)]).optional().nullable(),
   float: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInput)]).optional(),
-  decimal: z.union([z.number(), z.lazy(() => DecimalFieldUpdateOperationsInput)]).optional(),
-  decimalOpt: z.union([z.number(), z.lazy(() => NullableDecimalFieldUpdateOperationsInput)]).optional().nullable(),
+  decimal: z.union([z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => DecimalFieldUpdateOperationsInput)]).optional(),
+  decimalOpt: z.union([z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => NullableDecimalFieldUpdateOperationsInput)]).optional().nullable(),
   bigInt: z.union([z.bigint(), z.lazy(() => BigIntFieldUpdateOperationsInput)]).optional(),
   bigIntOpt: z.union([z.bigint(), z.lazy(() => NullableBigIntFieldUpdateOperationsInput)]).optional().nullable(),
-  json: z.union([JsonNullValueInput, InputJsonValue]).optional(),
-  jsonOpt: z.union([NullableJsonNullValueInput, InputJsonValue]).optional(),
-  bytes: z.union([z.lazy(() => z.instanceof(Buffer)), z.lazy(() => BytesFieldUpdateOperationsInput)]).optional(),
-  bytesOpt: z.union([z.lazy(() => z.instanceof(Buffer)), z.lazy(() => NullableBytesFieldUpdateOperationsInput)]).optional().nullable(),
+  json: z.union([z.lazy(() => JsonNullValueInput), InputJsonValue]).optional(),
+  jsonOpt: z.union([z.lazy(() => NullableJsonNullValueInput), InputJsonValue]).optional(),
+  bytes: z.union([z.instanceof(Buffer), z.lazy(() => BytesFieldUpdateOperationsInput)]).optional(),
+  bytesOpt: z.union([z.instanceof(Buffer), z.lazy(() => NullableBytesFieldUpdateOperationsInput)]).optional().nullable(),
 }).strict();
 
 export const UserCreateInput: z.ZodType<Prisma.Prisma.UserCreateInput> = z.object({
@@ -779,25 +837,25 @@ export const FloatFilter: z.ZodType<Prisma.Prisma.FloatFilter> = z.object({
 }).strict();
 
 export const DecimalFilter: z.ZodType<Prisma.Prisma.DecimalFilter> = z.object({
-  equals: z.number().optional(),
-  in: z.number().array().optional(),
-  notIn: z.number().array().optional(),
-  lt: z.number().optional(),
-  lte: z.number().optional(),
-  gt: z.number().optional(),
-  gte: z.number().optional(),
-  not: z.union([z.number(), z.lazy(() => NestedDecimalFilter)]).optional(),
+  equals: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  in: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional(),
+  notIn: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional(),
+  lt: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  lte: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  gt: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  gte: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  not: z.union([z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => NestedDecimalFilter)]).optional(),
 }).strict();
 
 export const DecimalNullableFilter: z.ZodType<Prisma.Prisma.DecimalNullableFilter> = z.object({
-  equals: z.number().optional().nullable(),
-  in: z.number().array().optional().nullable(),
-  notIn: z.number().array().optional().nullable(),
-  lt: z.number().optional(),
-  lte: z.number().optional(),
-  gt: z.number().optional(),
-  gte: z.number().optional(),
-  not: z.union([z.number(), z.lazy(() => NestedDecimalNullableFilter)]).optional().nullable(),
+  equals: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional().nullable(),
+  in: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional().nullable(),
+  notIn: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional().nullable(),
+  lt: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  lte: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  gt: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  gte: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  not: z.union([z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => NestedDecimalNullableFilter)]).optional().nullable(),
 }).strict();
 
 export const BigIntFilter: z.ZodType<Prisma.Prisma.BigIntFilter> = z.object({
@@ -823,7 +881,7 @@ export const BigIntNullableFilter: z.ZodType<Prisma.Prisma.BigIntNullableFilter>
 }).strict();
 
 export const JsonFilter: z.ZodType<Prisma.Prisma.JsonFilter> = z.object({
-  equals: z.union([InputJsonValue, JsonNullValueFilter]).optional(),
+  equals: z.union([InputJsonValue, z.lazy(() => JsonNullValueFilter)]).optional(),
   path: z.string().array().optional(),
   string_contains: z.string().optional(),
   string_starts_with: z.string().optional(),
@@ -835,11 +893,11 @@ export const JsonFilter: z.ZodType<Prisma.Prisma.JsonFilter> = z.object({
   lte: InputJsonValue.optional(),
   gt: InputJsonValue.optional(),
   gte: InputJsonValue.optional(),
-  not: z.union([InputJsonValue, JsonNullValueFilter]).optional(),
+  not: z.union([InputJsonValue, z.lazy(() => JsonNullValueFilter)]).optional(),
 }).strict();
 
 export const JsonNullableFilter: z.ZodType<Prisma.Prisma.JsonNullableFilter> = z.object({
-  equals: z.union([InputJsonValue, JsonNullValueFilter]).optional(),
+  equals: z.union([InputJsonValue, z.lazy(() => JsonNullValueFilter)]).optional(),
   path: z.string().array().optional(),
   string_contains: z.string().optional(),
   string_starts_with: z.string().optional(),
@@ -851,21 +909,21 @@ export const JsonNullableFilter: z.ZodType<Prisma.Prisma.JsonNullableFilter> = z
   lte: InputJsonValue.optional(),
   gt: InputJsonValue.optional(),
   gte: InputJsonValue.optional(),
-  not: z.union([InputJsonValue, JsonNullValueFilter]).optional(),
+  not: z.union([InputJsonValue, z.lazy(() => JsonNullValueFilter)]).optional(),
 }).strict();
 
 export const BytesFilter: z.ZodType<Prisma.Prisma.BytesFilter> = z.object({
-  equals: z.lazy(() => z.instanceof(Buffer)).optional(),
-  in: z.lazy(() => z.instanceof(Buffer)).array().optional(),
-  notIn: z.lazy(() => z.instanceof(Buffer)).array().optional(),
-  not: z.union([z.lazy(() => z.instanceof(Buffer)), z.lazy(() => NestedBytesFilter)]).optional(),
+  equals: z.instanceof(Buffer).optional(),
+  in: z.instanceof(Buffer).array().optional(),
+  notIn: z.instanceof(Buffer).array().optional(),
+  not: z.union([z.instanceof(Buffer), z.lazy(() => NestedBytesFilter)]).optional(),
 }).strict();
 
 export const BytesNullableFilter: z.ZodType<Prisma.Prisma.BytesNullableFilter> = z.object({
-  equals: z.lazy(() => z.instanceof(Buffer)).optional().nullable(),
-  in: z.lazy(() => z.instanceof(Buffer)).array().optional().nullable(),
-  notIn: z.lazy(() => z.instanceof(Buffer)).array().optional().nullable(),
-  not: z.union([z.lazy(() => z.instanceof(Buffer)), z.lazy(() => NestedBytesNullableFilter)]).optional().nullable(),
+  equals: z.instanceof(Buffer).optional().nullable(),
+  in: z.instanceof(Buffer).array().optional().nullable(),
+  notIn: z.instanceof(Buffer).array().optional().nullable(),
+  not: z.union([z.instanceof(Buffer), z.lazy(() => NestedBytesNullableFilter)]).optional().nullable(),
 }).strict();
 
 export const TestCountOrderByAggregateInput: z.ZodType<Prisma.Prisma.TestCountOrderByAggregateInput> = z.object({
@@ -1051,14 +1109,14 @@ export const FloatWithAggregatesFilter: z.ZodType<Prisma.Prisma.FloatWithAggrega
 }).strict();
 
 export const DecimalWithAggregatesFilter: z.ZodType<Prisma.Prisma.DecimalWithAggregatesFilter> = z.object({
-  equals: z.number().optional(),
-  in: z.number().array().optional(),
-  notIn: z.number().array().optional(),
-  lt: z.number().optional(),
-  lte: z.number().optional(),
-  gt: z.number().optional(),
-  gte: z.number().optional(),
-  not: z.union([z.number(), z.lazy(() => NestedDecimalWithAggregatesFilter)]).optional(),
+  equals: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  in: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional(),
+  notIn: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional(),
+  lt: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  lte: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  gt: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  gte: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  not: z.union([z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => NestedDecimalWithAggregatesFilter)]).optional(),
   _count: z.lazy(() => NestedIntFilter).optional(),
   _avg: z.lazy(() => NestedDecimalFilter).optional(),
   _sum: z.lazy(() => NestedDecimalFilter).optional(),
@@ -1067,14 +1125,14 @@ export const DecimalWithAggregatesFilter: z.ZodType<Prisma.Prisma.DecimalWithAgg
 }).strict();
 
 export const DecimalNullableWithAggregatesFilter: z.ZodType<Prisma.Prisma.DecimalNullableWithAggregatesFilter> = z.object({
-  equals: z.number().optional().nullable(),
-  in: z.number().array().optional().nullable(),
-  notIn: z.number().array().optional().nullable(),
-  lt: z.number().optional(),
-  lte: z.number().optional(),
-  gt: z.number().optional(),
-  gte: z.number().optional(),
-  not: z.union([z.number(), z.lazy(() => NestedDecimalNullableWithAggregatesFilter)]).optional().nullable(),
+  equals: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional().nullable(),
+  in: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional().nullable(),
+  notIn: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional().nullable(),
+  lt: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  lte: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  gt: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  gte: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  not: z.union([z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => NestedDecimalNullableWithAggregatesFilter)]).optional().nullable(),
   _count: z.lazy(() => NestedIntNullableFilter).optional(),
   _avg: z.lazy(() => NestedDecimalNullableFilter).optional(),
   _sum: z.lazy(() => NestedDecimalNullableFilter).optional(),
@@ -1115,7 +1173,7 @@ export const BigIntNullableWithAggregatesFilter: z.ZodType<Prisma.Prisma.BigIntN
 }).strict();
 
 export const JsonWithAggregatesFilter: z.ZodType<Prisma.Prisma.JsonWithAggregatesFilter> = z.object({
-  equals: z.union([InputJsonValue, JsonNullValueFilter]).optional(),
+  equals: z.union([InputJsonValue, z.lazy(() => JsonNullValueFilter)]).optional(),
   path: z.string().array().optional(),
   string_contains: z.string().optional(),
   string_starts_with: z.string().optional(),
@@ -1127,14 +1185,14 @@ export const JsonWithAggregatesFilter: z.ZodType<Prisma.Prisma.JsonWithAggregate
   lte: InputJsonValue.optional(),
   gt: InputJsonValue.optional(),
   gte: InputJsonValue.optional(),
-  not: z.union([InputJsonValue, JsonNullValueFilter]).optional(),
+  not: z.union([InputJsonValue, z.lazy(() => JsonNullValueFilter)]).optional(),
   _count: z.lazy(() => NestedIntFilter).optional(),
   _min: z.lazy(() => NestedJsonFilter).optional(),
   _max: z.lazy(() => NestedJsonFilter).optional(),
 }).strict();
 
 export const JsonNullableWithAggregatesFilter: z.ZodType<Prisma.Prisma.JsonNullableWithAggregatesFilter> = z.object({
-  equals: z.union([InputJsonValue, JsonNullValueFilter]).optional(),
+  equals: z.union([InputJsonValue, z.lazy(() => JsonNullValueFilter)]).optional(),
   path: z.string().array().optional(),
   string_contains: z.string().optional(),
   string_starts_with: z.string().optional(),
@@ -1146,27 +1204,27 @@ export const JsonNullableWithAggregatesFilter: z.ZodType<Prisma.Prisma.JsonNulla
   lte: InputJsonValue.optional(),
   gt: InputJsonValue.optional(),
   gte: InputJsonValue.optional(),
-  not: z.union([InputJsonValue, JsonNullValueFilter]).optional(),
+  not: z.union([InputJsonValue, z.lazy(() => JsonNullValueFilter)]).optional(),
   _count: z.lazy(() => NestedIntNullableFilter).optional(),
   _min: z.lazy(() => NestedJsonNullableFilter).optional(),
   _max: z.lazy(() => NestedJsonNullableFilter).optional(),
 }).strict();
 
 export const BytesWithAggregatesFilter: z.ZodType<Prisma.Prisma.BytesWithAggregatesFilter> = z.object({
-  equals: z.lazy(() => z.instanceof(Buffer)).optional(),
-  in: z.lazy(() => z.instanceof(Buffer)).array().optional(),
-  notIn: z.lazy(() => z.instanceof(Buffer)).array().optional(),
-  not: z.union([z.lazy(() => z.instanceof(Buffer)), z.lazy(() => NestedBytesWithAggregatesFilter)]).optional(),
+  equals: z.instanceof(Buffer).optional(),
+  in: z.instanceof(Buffer).array().optional(),
+  notIn: z.instanceof(Buffer).array().optional(),
+  not: z.union([z.instanceof(Buffer), z.lazy(() => NestedBytesWithAggregatesFilter)]).optional(),
   _count: z.lazy(() => NestedIntFilter).optional(),
   _min: z.lazy(() => NestedBytesFilter).optional(),
   _max: z.lazy(() => NestedBytesFilter).optional(),
 }).strict();
 
 export const BytesNullableWithAggregatesFilter: z.ZodType<Prisma.Prisma.BytesNullableWithAggregatesFilter> = z.object({
-  equals: z.lazy(() => z.instanceof(Buffer)).optional().nullable(),
-  in: z.lazy(() => z.instanceof(Buffer)).array().optional().nullable(),
-  notIn: z.lazy(() => z.instanceof(Buffer)).array().optional().nullable(),
-  not: z.union([z.lazy(() => z.instanceof(Buffer)), z.lazy(() => NestedBytesNullableWithAggregatesFilter)]).optional().nullable(),
+  equals: z.instanceof(Buffer).optional().nullable(),
+  in: z.instanceof(Buffer).array().optional().nullable(),
+  notIn: z.instanceof(Buffer).array().optional().nullable(),
+  not: z.union([z.instanceof(Buffer), z.lazy(() => NestedBytesNullableWithAggregatesFilter)]).optional().nullable(),
   _count: z.lazy(() => NestedIntNullableFilter).optional(),
   _min: z.lazy(() => NestedBytesNullableFilter).optional(),
   _max: z.lazy(() => NestedBytesNullableFilter).optional(),
@@ -1385,19 +1443,19 @@ export const FloatFieldUpdateOperationsInput: z.ZodType<Prisma.Prisma.FloatField
 }).strict();
 
 export const DecimalFieldUpdateOperationsInput: z.ZodType<Prisma.Prisma.DecimalFieldUpdateOperationsInput> = z.object({
-  set: z.number().optional(),
-  increment: z.number().optional(),
-  decrement: z.number().optional(),
-  multiply: z.number().optional(),
-  divide: z.number().optional(),
+  set: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  increment: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  decrement: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  multiply: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  divide: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
 }).strict();
 
 export const NullableDecimalFieldUpdateOperationsInput: z.ZodType<Prisma.Prisma.NullableDecimalFieldUpdateOperationsInput> = z.object({
-  set: z.number().optional().nullable(),
-  increment: z.number().optional(),
-  decrement: z.number().optional(),
-  multiply: z.number().optional(),
-  divide: z.number().optional(),
+  set: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional().nullable(),
+  increment: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  decrement: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  multiply: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  divide: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
 }).strict();
 
 export const BigIntFieldUpdateOperationsInput: z.ZodType<Prisma.Prisma.BigIntFieldUpdateOperationsInput> = z.object({
@@ -1417,11 +1475,11 @@ export const NullableBigIntFieldUpdateOperationsInput: z.ZodType<Prisma.Prisma.N
 }).strict();
 
 export const BytesFieldUpdateOperationsInput: z.ZodType<Prisma.Prisma.BytesFieldUpdateOperationsInput> = z.object({
-  set: z.lazy(() => z.instanceof(Buffer)).optional(),
+  set: z.instanceof(Buffer).optional(),
 }).strict();
 
 export const NullableBytesFieldUpdateOperationsInput: z.ZodType<Prisma.Prisma.NullableBytesFieldUpdateOperationsInput> = z.object({
-  set: z.lazy(() => z.instanceof(Buffer)).optional().nullable(),
+  set: z.instanceof(Buffer).optional().nullable(),
 }).strict();
 
 export const PostCreateNestedManyWithoutAuthorInput: z.ZodType<Prisma.Prisma.PostCreateNestedManyWithoutAuthorInput> = z.object({
@@ -1645,25 +1703,25 @@ export const NestedFloatFilter: z.ZodType<Prisma.Prisma.NestedFloatFilter> = z.o
 }).strict();
 
 export const NestedDecimalFilter: z.ZodType<Prisma.Prisma.NestedDecimalFilter> = z.object({
-  equals: z.number().optional(),
-  in: z.number().array().optional(),
-  notIn: z.number().array().optional(),
-  lt: z.number().optional(),
-  lte: z.number().optional(),
-  gt: z.number().optional(),
-  gte: z.number().optional(),
-  not: z.union([z.number(), z.lazy(() => NestedDecimalFilter)]).optional(),
+  equals: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  in: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional(),
+  notIn: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional(),
+  lt: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  lte: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  gt: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  gte: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  not: z.union([z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => NestedDecimalFilter)]).optional(),
 }).strict();
 
 export const NestedDecimalNullableFilter: z.ZodType<Prisma.Prisma.NestedDecimalNullableFilter> = z.object({
-  equals: z.number().optional().nullable(),
-  in: z.number().array().optional().nullable(),
-  notIn: z.number().array().optional().nullable(),
-  lt: z.number().optional(),
-  lte: z.number().optional(),
-  gt: z.number().optional(),
-  gte: z.number().optional(),
-  not: z.union([z.number(), z.lazy(() => NestedDecimalNullableFilter)]).optional().nullable(),
+  equals: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional().nullable(),
+  in: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional().nullable(),
+  notIn: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional().nullable(),
+  lt: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  lte: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  gt: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  gte: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  not: z.union([z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => NestedDecimalNullableFilter)]).optional().nullable(),
 }).strict();
 
 export const NestedBigIntFilter: z.ZodType<Prisma.Prisma.NestedBigIntFilter> = z.object({
@@ -1689,17 +1747,17 @@ export const NestedBigIntNullableFilter: z.ZodType<Prisma.Prisma.NestedBigIntNul
 }).strict();
 
 export const NestedBytesFilter: z.ZodType<Prisma.Prisma.NestedBytesFilter> = z.object({
-  equals: z.lazy(() => z.instanceof(Buffer)).optional(),
-  in: z.lazy(() => z.instanceof(Buffer)).array().optional(),
-  notIn: z.lazy(() => z.instanceof(Buffer)).array().optional(),
-  not: z.union([z.lazy(() => z.instanceof(Buffer)), z.lazy(() => NestedBytesFilter)]).optional(),
+  equals: z.instanceof(Buffer).optional(),
+  in: z.instanceof(Buffer).array().optional(),
+  notIn: z.instanceof(Buffer).array().optional(),
+  not: z.union([z.instanceof(Buffer), z.lazy(() => NestedBytesFilter)]).optional(),
 }).strict();
 
 export const NestedBytesNullableFilter: z.ZodType<Prisma.Prisma.NestedBytesNullableFilter> = z.object({
-  equals: z.lazy(() => z.instanceof(Buffer)).optional().nullable(),
-  in: z.lazy(() => z.instanceof(Buffer)).array().optional().nullable(),
-  notIn: z.lazy(() => z.instanceof(Buffer)).array().optional().nullable(),
-  not: z.union([z.lazy(() => z.instanceof(Buffer)), z.lazy(() => NestedBytesNullableFilter)]).optional().nullable(),
+  equals: z.instanceof(Buffer).optional().nullable(),
+  in: z.instanceof(Buffer).array().optional().nullable(),
+  notIn: z.instanceof(Buffer).array().optional().nullable(),
+  not: z.union([z.instanceof(Buffer), z.lazy(() => NestedBytesNullableFilter)]).optional().nullable(),
 }).strict();
 
 export const NestedStringWithAggregatesFilter: z.ZodType<Prisma.Prisma.NestedStringWithAggregatesFilter> = z.object({
@@ -1811,14 +1869,14 @@ export const NestedFloatWithAggregatesFilter: z.ZodType<Prisma.Prisma.NestedFloa
 }).strict();
 
 export const NestedDecimalWithAggregatesFilter: z.ZodType<Prisma.Prisma.NestedDecimalWithAggregatesFilter> = z.object({
-  equals: z.number().optional(),
-  in: z.number().array().optional(),
-  notIn: z.number().array().optional(),
-  lt: z.number().optional(),
-  lte: z.number().optional(),
-  gt: z.number().optional(),
-  gte: z.number().optional(),
-  not: z.union([z.number(), z.lazy(() => NestedDecimalWithAggregatesFilter)]).optional(),
+  equals: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  in: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional(),
+  notIn: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional(),
+  lt: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  lte: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  gt: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  gte: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  not: z.union([z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => NestedDecimalWithAggregatesFilter)]).optional(),
   _count: z.lazy(() => NestedIntFilter).optional(),
   _avg: z.lazy(() => NestedDecimalFilter).optional(),
   _sum: z.lazy(() => NestedDecimalFilter).optional(),
@@ -1827,14 +1885,14 @@ export const NestedDecimalWithAggregatesFilter: z.ZodType<Prisma.Prisma.NestedDe
 }).strict();
 
 export const NestedDecimalNullableWithAggregatesFilter: z.ZodType<Prisma.Prisma.NestedDecimalNullableWithAggregatesFilter> = z.object({
-  equals: z.number().optional().nullable(),
-  in: z.number().array().optional().nullable(),
-  notIn: z.number().array().optional().nullable(),
-  lt: z.number().optional(),
-  lte: z.number().optional(),
-  gt: z.number().optional(),
-  gte: z.number().optional(),
-  not: z.union([z.number(), z.lazy(() => NestedDecimalNullableWithAggregatesFilter)]).optional().nullable(),
+  equals: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional().nullable(),
+  in: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional().nullable(),
+  notIn: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional().nullable(),
+  lt: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  lte: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  gt: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  gte: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  not: z.union([z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => NestedDecimalNullableWithAggregatesFilter)]).optional().nullable(),
   _count: z.lazy(() => NestedIntNullableFilter).optional(),
   _avg: z.lazy(() => NestedDecimalNullableFilter).optional(),
   _sum: z.lazy(() => NestedDecimalNullableFilter).optional(),
@@ -1875,7 +1933,7 @@ export const NestedBigIntNullableWithAggregatesFilter: z.ZodType<Prisma.Prisma.N
 }).strict();
 
 export const NestedJsonFilter: z.ZodType<Prisma.Prisma.NestedJsonFilter> = z.object({
-  equals: z.union([InputJsonValue, JsonNullValueFilter]).optional(),
+  equals: z.union([InputJsonValue, z.lazy(() => JsonNullValueFilter)]).optional(),
   path: z.string().array().optional(),
   string_contains: z.string().optional(),
   string_starts_with: z.string().optional(),
@@ -1887,11 +1945,11 @@ export const NestedJsonFilter: z.ZodType<Prisma.Prisma.NestedJsonFilter> = z.obj
   lte: InputJsonValue.optional(),
   gt: InputJsonValue.optional(),
   gte: InputJsonValue.optional(),
-  not: z.union([InputJsonValue, JsonNullValueFilter]).optional(),
+  not: z.union([InputJsonValue, z.lazy(() => JsonNullValueFilter)]).optional(),
 }).strict();
 
 export const NestedJsonNullableFilter: z.ZodType<Prisma.Prisma.NestedJsonNullableFilter> = z.object({
-  equals: z.union([InputJsonValue, JsonNullValueFilter]).optional(),
+  equals: z.union([InputJsonValue, z.lazy(() => JsonNullValueFilter)]).optional(),
   path: z.string().array().optional(),
   string_contains: z.string().optional(),
   string_starts_with: z.string().optional(),
@@ -1903,24 +1961,24 @@ export const NestedJsonNullableFilter: z.ZodType<Prisma.Prisma.NestedJsonNullabl
   lte: InputJsonValue.optional(),
   gt: InputJsonValue.optional(),
   gte: InputJsonValue.optional(),
-  not: z.union([InputJsonValue, JsonNullValueFilter]).optional(),
+  not: z.union([InputJsonValue, z.lazy(() => JsonNullValueFilter)]).optional(),
 }).strict();
 
 export const NestedBytesWithAggregatesFilter: z.ZodType<Prisma.Prisma.NestedBytesWithAggregatesFilter> = z.object({
-  equals: z.lazy(() => z.instanceof(Buffer)).optional(),
-  in: z.lazy(() => z.instanceof(Buffer)).array().optional(),
-  notIn: z.lazy(() => z.instanceof(Buffer)).array().optional(),
-  not: z.union([z.lazy(() => z.instanceof(Buffer)), z.lazy(() => NestedBytesWithAggregatesFilter)]).optional(),
+  equals: z.instanceof(Buffer).optional(),
+  in: z.instanceof(Buffer).array().optional(),
+  notIn: z.instanceof(Buffer).array().optional(),
+  not: z.union([z.instanceof(Buffer), z.lazy(() => NestedBytesWithAggregatesFilter)]).optional(),
   _count: z.lazy(() => NestedIntFilter).optional(),
   _min: z.lazy(() => NestedBytesFilter).optional(),
   _max: z.lazy(() => NestedBytesFilter).optional(),
 }).strict();
 
 export const NestedBytesNullableWithAggregatesFilter: z.ZodType<Prisma.Prisma.NestedBytesNullableWithAggregatesFilter> = z.object({
-  equals: z.lazy(() => z.instanceof(Buffer)).optional().nullable(),
-  in: z.lazy(() => z.instanceof(Buffer)).array().optional().nullable(),
-  notIn: z.lazy(() => z.instanceof(Buffer)).array().optional().nullable(),
-  not: z.union([z.lazy(() => z.instanceof(Buffer)), z.lazy(() => NestedBytesNullableWithAggregatesFilter)]).optional().nullable(),
+  equals: z.instanceof(Buffer).optional().nullable(),
+  in: z.instanceof(Buffer).array().optional().nullable(),
+  notIn: z.instanceof(Buffer).array().optional().nullable(),
+  not: z.union([z.instanceof(Buffer), z.lazy(() => NestedBytesNullableWithAggregatesFilter)]).optional().nullable(),
   _count: z.lazy(() => NestedIntNullableFilter).optional(),
   _min: z.lazy(() => NestedBytesNullableFilter).optional(),
   _max: z.lazy(() => NestedBytesNullableFilter).optional(),

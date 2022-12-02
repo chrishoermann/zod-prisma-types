@@ -40,6 +40,22 @@ const getModelStatements = ({ datamodel }) => {
                                     .write(`,`)
                                     .newLine();
                             }
+                            if (field.isDecimalType) {
+                                return writer
+                                    .write(`${field.formattedNames.camelCase}: `)
+                                    .write(`z.number(`)
+                                    .conditionalWrite(!!field.zodCustomErrors, field.zodCustomErrors)
+                                    .write(`).refine((v) => Decimal.isDecimal(v),`)
+                                    .write(` { `)
+                                    .write(`message: 'Must be a Decimal', `)
+                                    .write(`path: ['Models', '${model.formattedNames.pascalCase}']`)
+                                    .write(` }`)
+                                    .write(`)`)
+                                    .conditionalWrite(field.isList, `.array()`)
+                                    .conditionalWrite(field.isNullable, `.nullable()`)
+                                    .write(`,`)
+                                    .newLine();
+                            }
                             return writer
                                 .write(`${field.formattedNames.camelCase}: `)
                                 .write(`z.${field.zodType}(`)

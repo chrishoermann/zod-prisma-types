@@ -10,6 +10,8 @@ import { ZodPrismaScalarType } from '../types';
 export class ExtendedDMMFSchemaArgInputType implements DMMF.SchemaArgInputType {
   readonly isJsonType: boolean;
   readonly isBytesType: boolean;
+  readonly isDecimalType: boolean;
+  readonly isNullType: boolean;
   readonly isList: DMMF.SchemaArgInputType['isList'];
   readonly type: DMMF.SchemaArgInputType['type'];
   readonly location: DMMF.SchemaArgInputType['location'];
@@ -18,6 +20,8 @@ export class ExtendedDMMFSchemaArgInputType implements DMMF.SchemaArgInputType {
   constructor(arg: DMMF.SchemaArgInputType) {
     this.isJsonType = this._setIsJsonType(arg);
     this.isBytesType = this._setIsBytesType(arg);
+    this.isDecimalType = this._setIsDecimalType(arg);
+    this.isNullType = this._setIsNullType(arg);
     this.isList = arg.isList;
     this.type = arg.type;
     this.location = arg.location;
@@ -32,8 +36,16 @@ export class ExtendedDMMFSchemaArgInputType implements DMMF.SchemaArgInputType {
     return arg.type === 'Bytes';
   }
 
+  private _setIsDecimalType(arg: DMMF.SchemaArgInputType) {
+    return arg.type === 'Decimal';
+  }
+
+  private _setIsNullType(arg: DMMF.SchemaArgInputType) {
+    return arg.type === 'Null';
+  }
+
   /**
-   * Checks if the type is a scalar type and returns the corresponding zod scalar
+   * Checks if the type is a scalar type and returns the corresponding zod scalar type
    * e.g. String -> string, Int -> number, etc.
    * @returns zodScalarType or undefined
    */
@@ -46,15 +58,12 @@ export class ExtendedDMMFSchemaArgInputType implements DMMF.SchemaArgInputType {
 
   /**
    * Checks if the type is a nont scalar type and returns the generated zod type
-   * @returns non scalar type (e.g. `User`, `Post`, etc.), `z.instanceof(Buffer)` for Bytes type
-   * or `InputJsonValue` for Json type
+   * @returns non scalar type (e.g. `User`, `Post`, `UserWhereInput`, etc.)
    */
   getZodNonScalarType = () => {
     if (!this.isStringType()) return;
-    const zodType = PRISMA_TYPE_MAP[this.type as ZodPrismaScalarType];
-    if (zodType || this.type === 'Null') return;
-    if (this.isJsonType) return 'InputJsonValue';
-    if (this.isBytesType) return `z.instanceof(Buffer)`;
+    const zodScalarType = PRISMA_TYPE_MAP[this.type as ZodPrismaScalarType];
+    if (zodScalarType || this.isSpecialType()) return;
     return this.type;
   };
 
@@ -93,5 +102,14 @@ export class ExtendedDMMFSchemaArgInputType implements DMMF.SchemaArgInputType {
    */
   isInputType = (type: DMMF.ArgType = this.type): type is DMMF.InputType => {
     return (type as DMMF.InputType).fields !== undefined;
+  };
+
+  isSpecialType = () => {
+    return (
+      this.isJsonType ||
+      this.isBytesType ||
+      this.isNullType ||
+      this.isDecimalType
+    );
   };
 }

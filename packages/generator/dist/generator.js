@@ -14,9 +14,10 @@ const functions_1 = require("./functions");
     },
     onGenerate: async (options) => {
         const path = options.generator.output;
+        const config = options.generator.config;
         if (!path)
             throw new Error('No output path specified');
-        const extendendDMMF = new extendedDMMF_1.ExtendedDMMF(options.dmmf);
+        const extendendDMMF = new extendedDMMF_1.ExtendedDMMF(options.dmmf, config);
         const project = new ts_morph_1.Project({
             tsConfigFilePath: './tsconfig.json',
             skipAddingFilesFromTsConfig: true,

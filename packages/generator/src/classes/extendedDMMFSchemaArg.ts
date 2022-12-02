@@ -29,6 +29,7 @@ export class ExtendedDMMFSchemaArg
   readonly isOptional: boolean;
   readonly isJsonType: boolean;
   readonly isBytesType: boolean;
+  readonly isDecimalType: boolean;
 
   constructor(arg: ExtendedDMMFSchemaArgOptions) {
     super(arg.name);
@@ -45,6 +46,7 @@ export class ExtendedDMMFSchemaArg
     this.isOptional = this._setIsOptional();
     this.isJsonType = this._setIsJsonType();
     this.isBytesType = this._setIsBytesType();
+    this.isDecimalType = this._setIsDecimalType();
   }
 
   private _setInputTypes = (inputTypes: DMMF.SchemaArgInputType[]) => {
@@ -87,5 +89,9 @@ export class ExtendedDMMFSchemaArg
 
   private _setIsBytesType() {
     return this.inputTypes.some((inputType) => inputType.isBytesType);
+  }
+
+  private _setIsDecimalType() {
+    return this.inputTypes.some((inputType) => inputType.isDecimalType);
   }
 }

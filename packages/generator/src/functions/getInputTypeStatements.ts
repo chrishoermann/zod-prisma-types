@@ -4,7 +4,8 @@ import {
   writeConstStatement,
   writeHeading,
   writeNonScalarType,
-  writeNullType,
+  // writeNullType,
+  writeSpecialType,
   writeScalarType,
 } from '../utils';
 
@@ -42,33 +43,21 @@ export const getInputTypeStatements: GetStatements = ({ schema }) => {
                   if (field.hasMultipleTypes) {
                     writer.write(`z.union([ `);
 
-                    // don't pass optional and nullable props in this loop
-                    // because they are handled by the union
                     field.inputTypes.forEach((inputType, idx) => {
                       const writeComma = idx !== field.inputTypes.length - 1;
                       writeScalarType(writer, {
                         inputType,
                         zodCustomErrors,
                         zodValidatorString,
-                        // don't lazy load json types
-                        // they are handled like scalars with "InputJsonValue" helper type
-                        writeLazy: !field.isJsonType,
+                        writeComma,
+                      });
+                      writeSpecialType(writer, {
+                        inputType,
+                        zodCustomErrors,
                         writeComma,
                       });
                       writeNonScalarType(writer, {
                         inputType,
-                        zodCustomErrors,
-                        zodValidatorString,
-                        // don't lazy load json types
-                        // they are handled like scalars with "InputJsonValue" helper type
-                        writeLazy: !field.isJsonType,
-                        writeComma,
-                      });
-                      writeNullType(writer, {
-                        inputType,
-                        zodCustomErrors,
-                        zodValidatorString,
-                        writeLazy: true,
                         writeComma,
                       });
                     });
@@ -82,30 +71,21 @@ export const getInputTypeStatements: GetStatements = ({ schema }) => {
                     const inputType = field.inputTypes[0];
                     writeScalarType(writer, {
                       inputType,
-                      writeLazy: false,
                       isNullable,
                       isOptional,
                       zodCustomErrors,
                       zodValidatorString,
+                    });
+                    writeSpecialType(writer, {
+                      inputType,
+                      zodCustomErrors,
+                      isNullable,
+                      isOptional,
                     });
                     writeNonScalarType(writer, {
                       inputType,
-                      // don't lazy load json types
-                      // they are handled like scalars with "InputJsonValue" helper type
-                      writeLazy: !field.isJsonType,
-                      // writeLazy: true, // type needs to be wrapped in a z.lazy
                       isNullable,
                       isOptional,
-                      zodCustomErrors,
-                      zodValidatorString,
-                    });
-                    writeNullType(writer, {
-                      inputType,
-                      writeLazy: false,
-                      isNullable,
-                      isOptional,
-                      zodCustomErrors,
-                      zodValidatorString,
                     });
                   }
 

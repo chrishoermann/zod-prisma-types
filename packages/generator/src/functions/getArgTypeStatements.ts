@@ -3,8 +3,9 @@ import {
   writeConstStatement,
   writeHeading,
   writeNonScalarType,
-  writeNullType,
+  // writeNullType,
   writeScalarType,
+  writeSpecialType,
 } from '../utils';
 
 /////////////////////////////////////////////////
@@ -41,13 +42,9 @@ export const getArgTypeStatements: GetStatements = ({ schema }) => {
 
                       const { isOptional, isNullable } = arg;
 
-                      // console.log(JSON.stringify(arg, null, 2));
-
                       if (arg.hasMultipleTypes) {
                         writer.write(`z.union([ `);
 
-                        // don't pass optional and nullable props in this loop
-                        // because they are handled by the union
                         arg.inputTypes.forEach((inputType, idx) => {
                           const writeComma = idx !== arg.inputTypes.length - 1;
 
@@ -61,7 +58,7 @@ export const getArgTypeStatements: GetStatements = ({ schema }) => {
                             writeLazy: false,
                             writeComma,
                           });
-                          writeNullType(writer, {
+                          writeSpecialType(writer, {
                             inputType,
                             writeLazy: false,
                             writeComma,
@@ -86,7 +83,7 @@ export const getArgTypeStatements: GetStatements = ({ schema }) => {
                           isNullable,
                           isOptional,
                         });
-                        writeNullType(writer, {
+                        writeSpecialType(writer, {
                           inputType: arg.inputTypes[0],
                           writeLazy: false,
                           isNullable,

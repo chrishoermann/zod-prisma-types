@@ -31,6 +31,7 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
   };
   readonly hasJsonTypes: boolean;
   readonly hasBytesTypes: boolean;
+  readonly hasDecimalTypes: boolean;
 
   constructor(schema: DMMF.Schema, datamodel: ExtendedDMMFDatamodel) {
     this.rootQueryType = schema.rootQueryType;
@@ -47,6 +48,7 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
     this.fieldRefTypes = schema.fieldRefTypes;
     this.hasJsonTypes = this._setHasJsonTypes();
     this.hasBytesTypes = this._setHasBytesTypes();
+    this.hasDecimalTypes = this._setHasDecimalTypes();
   }
 
   private _setExtendedInputObjectTypes(
@@ -95,5 +97,9 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
 
   private _setHasBytesTypes() {
     return this.inputObjectTypes.prisma.some((type) => type.isBytesField);
+  }
+
+  private _setHasDecimalTypes() {
+    return this.inputObjectTypes.prisma.some((type) => type.isDecimalField);
   }
 }

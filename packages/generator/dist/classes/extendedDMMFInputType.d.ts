@@ -11,6 +11,7 @@ export declare class ExtendedDMMFInputType extends FormattedNames implements DMM
     readonly linkedModel?: ExtendedDMMFModel;
     readonly isJsonField: boolean;
     readonly isBytesField: boolean;
+    readonly isDecimalField: boolean;
     constructor(type: DMMF.InputType, model?: ExtendedDMMFModel);
     private _setFields;
     private _fieldIsPrismaFunction;
@@ -18,5 +19,6 @@ export declare class ExtendedDMMFInputType extends FormattedNames implements DMM
     private _getZodCustomErrorsString;
     private _setIsJsonField;
     private _setIsBytesField;
+    private _setIsDecimalField;
 }
 //# sourceMappingURL=extendedDMMFInputType.d.ts.map

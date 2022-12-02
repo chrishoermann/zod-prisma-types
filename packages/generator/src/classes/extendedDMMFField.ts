@@ -47,6 +47,7 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   readonly isNullable: boolean;
   readonly isJsonType: boolean;
   readonly isBytesType: boolean;
+  readonly isDecimalType: boolean;
   readonly modelName: string;
 
   private _validatorRegexMatch?: RegExpMatchArray;
@@ -87,6 +88,7 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
 
     this.isJsonType = this._setIsJsonType();
     this.isBytesType = this._setIsBytesType();
+    this.isDecimalType = this._setIsDecimalType();
 
     this.isNullable = this._setIsNullable();
     this.modelName = modelName;
@@ -104,13 +106,15 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   // ----------------------------------------------
 
   private _setIsJsonType() {
-    if (this.type === 'Json') return true;
-    return false;
+    return this.type === 'Json';
   }
 
   private _setIsBytesType() {
-    if (this.type === 'Bytes') return true;
-    return false;
+    return this.type === 'Bytes';
+  }
+
+  private _setIsDecimalType() {
+    return this.type === 'Decimal';
   }
 
   private _setIsNullable() {

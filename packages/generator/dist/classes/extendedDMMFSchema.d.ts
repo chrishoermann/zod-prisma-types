@@ -20,11 +20,13 @@ export declare class ExtendedDMMFSchema implements DMMF.Schema {
     };
     readonly hasJsonTypes: boolean;
     readonly hasBytesTypes: boolean;
+    readonly hasDecimalTypes: boolean;
     constructor(schema: DMMF.Schema, datamodel: ExtendedDMMFDatamodel);
     private _setExtendedInputObjectTypes;
     private _setExtendedOutputObjectTypes;
     private _setExtendedEnumTypes;
     private _setHasJsonTypes;
     private _setHasBytesTypes;
+    private _setHasDecimalTypes;
 }
 //# sourceMappingURL=extendedDMMFSchema.d.ts.map
