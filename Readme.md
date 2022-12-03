@@ -25,9 +25,9 @@ generator zod {
 }
 ```
 
-This generator only creates an `index.ts` file in the specified output folder that contains all relevant zod schemas. 
+This generator only creates a single `index.ts` file in the specified output folder. This file contains all the created schemas - similar to `prisma-client` `index.d.ts`
 
-> This design decesion was made because in ts-morph it is more efficient to create a single file and write a bunch of statements at once than creating multiple files where only a few statements are added. It can also be beneficial speedwise for big prisma schemas. Another point is that it makes the codebase of the generator more managable (...no need to create imports, simpler structure of the files) and it makes it simple to reexport all the types at once e.g. for use in the frontend (react-hook-form validation, ...).
+This design decesion was made because in ts-morph it is more efficient to create a single file and write a bunch of statements at once than creating multiple files where only a few statements are added. This can be beneficial for generating big prisma schemas. Another point is that it makes the codebase of the generator more managable (...no need to create imports, simpler structure of the files) and it makes it simpler to reexport all the types at once e.g. for use in the frontend (react-hook-form validation, ...).
 
 ## Generator options
 
@@ -49,13 +49,14 @@ decimalValue: z.number()
 
 > default: `false`
 
-This option lets you specify if the [validator.js](https://github.com/validatorjs/validator.js) library can be used in custom refine functions by importing it into the created file.
+This option lets you specify if the [validator.js](https://github.com/validatorjs/validator.js) library can be used in custom refine functions on string types by importing it into the created file.
 
 
 
 ## Naming of zod schemas
 
-The zod types are named after the generated prisma types so you just need to hover over a prisma function and and know which type to import. The result would look something like this in trpc v.10:
+The zod types are named after the generated prisma types so you just need to hover over a prisma function and you know which type to import. The result would look something like this for trpc v.10:
+
 ```ts
 import {
   UserFindFirstArgs,
