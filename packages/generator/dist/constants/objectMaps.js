@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PRISMA_ACTION_ARRAY = exports.PRISMA_ACTION_ARG_MAP = exports.DATE_VALIDATOR_REGEX_MAP = exports.NUMBER_VALIDATOR_REGEX_MAP = exports.STRING_VALIDATOR_REGEX_MAP = exports.PRISMA_TYPE_MAP = exports.VALIDATOR_TYPE_MAP = void 0;
+exports.CUSTOM_ERROR_MAP = exports.PRISMA_ACTION_ARRAY = exports.PRISMA_ACTION_ARG_MAP = exports.DATE_VALIDATOR_REGEX_MAP = exports.NUMBER_VALIDATOR_REGEX_MAP = exports.STRING_VALIDATOR_REGEX_MAP = exports.PRISMA_TYPE_MAP = exports.VALIDATOR_TYPE_MAP = void 0;
 const formattedNames_1 = require("../classes/formattedNames");
 const regex_1 = require("./regex");
 exports.VALIDATOR_TYPE_MAP = {
@@ -74,5 +74,10 @@ exports.PRISMA_ACTION_ARRAY = [
     'deleteMany',
     'aggregate',
     'groupBy',
+];
+exports.CUSTOM_ERROR_MAP = [
+    'invalid_type_error',
+    'required_error',
+    'description',
 ];
 //# sourceMappingURL=objectMaps.js.map

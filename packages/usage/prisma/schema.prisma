@@ -24,13 +24,13 @@ enum MyValue {
 }
 
 model Test {
-  id         String   @id @default(cuid()) /// @zod.string({ invalid_type_error: "error" }).cuid()
-  name       String? /// some comment @zod.string({ required_error: "error" })
+  id         String   @id @default(cuid()) /// @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid()
+  name       String? /// some comment @zod.string({ required_error: "error", invalid_type_error: "error", wrong_type_error: "error" })
   value      MyValue
   intTwo     Int
   int        Int?
   floatOpt   Float?
-  float      Float
+  float      Float /// @zod.number({ error: "error", some_key: "error", wrong_type_error: "error" })
   decimal    Decimal
   decimalOpt Decimal?
   // date       DateTime  @default(now())

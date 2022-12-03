@@ -171,3 +171,11 @@ export const PRISMA_ACTION_ARRAY: FilterdPrismaAction[] = [
   'aggregate',
   'groupBy',
 ];
+
+type CustomErrorKeys = 'invalid_type_error' | 'required_error' | 'description';
+
+export const CUSTOM_ERROR_MAP: CustomErrorKeys[] = [
+  'invalid_type_error',
+  'required_error',
+  'description',
+];

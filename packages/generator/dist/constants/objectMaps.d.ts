@@ -9,4 +9,7 @@ export declare const DATE_VALIDATOR_REGEX_MAP: RegexMap<ZodDateValidatorKeys>;
 export type FilterdPrismaAction = Exclude<PrismaAction, 'executeRaw' | 'queryRaw' | 'count'>;
 export declare const PRISMA_ACTION_ARG_MAP: KeyValueMap<FilterdPrismaAction, FormattedNames>;
 export declare const PRISMA_ACTION_ARRAY: FilterdPrismaAction[];
+type CustomErrorKeys = 'invalid_type_error' | 'required_error' | 'description';
+export declare const CUSTOM_ERROR_MAP: CustomErrorKeys[];
+export {};
 //# sourceMappingURL=objectMaps.d.ts.map

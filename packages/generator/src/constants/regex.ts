@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 /////////////////////////////////////////////
 // REGEX
 /////////////////////////////////////////////
@@ -6,18 +7,24 @@
 // ----------------------------------------
 
 export const VALIDATOR_TYPE_REGEX =
-  /@zod\.(?<type>string|number|bigint|date){1}(?<customErrors>\({[\w"': ,%&/()=?$§!,_#@><°^+*~-]+}\))?(?<validatorPattern>.*)?/;
+  /@zod\.(?<type>string|number|bigint|date){1}(?<customErrors>\({[\w (),'":+\-*#!§$%&\/{}\[\]=?~><°^]+}\))?(?<validatorPattern>.*)?/;
 
 export const SPLIT_VALIDATOR_PATTERN_REGEX =
-  /(\.[\w"': ,%&/()=?$§!,_#@><°^+*~{}-]+)/g;
+  /(\.[\w (),'":+\-*#!§$%&\/{}\[\]=?~><°^]+)/g;
 
 export const VALIDATOR_KEY_REGEX = /(\.(?<validatorKey>[\w]+))/;
 
 export const VALIDATOR_CUSTOM_ERROR_REGEX =
+  /(\()(?<object>\{(?<messages>[\w (),'":+\-*#!§$%&\/{}\[\]=?~><°^]+)\})(\))/;
+
+export const VALIDATOR_CUSTOM_ERROR_REGEX_ALT =
   /(?<opening>\(\{)(?<messages>[\w,": ]+)(?<closing>\}\))/;
 
+export const VALIDATOR_CUSTOM_ERROR_KEYS_REGEX =
+  /(?<message>invalid_type_error:[ ]?("|')[\w (),':+\-*#!§$%&\/{}\[\]=?~><°^]+("|')|required_error:[ ]?("|')[\w (),':+\-*#!§$%&\/{}\[\]=?~><°^]+("|')|description:[ ]?("|')[\w (),':+\-*#!§$%&\/{}\[\]=?~><°^]+("|'))/g;
+
 // TODO: Refine this regex to match the following:
-// - validate the possible error messages "invalid_type_error", "required_error" and "decription"
+// - validate the possible error messages "invalid_type_error", "required_error" and "description"
 
 // STRING
 // ----------------------------------------

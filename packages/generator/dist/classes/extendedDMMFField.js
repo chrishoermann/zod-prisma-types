@@ -222,6 +222,7 @@ class ExtendedDMMFField extends formattedNames_1.FormattedNames {
         this.zodType = this._setZodType();
         this.zodCustomErrors = this._setZodCustomErrors();
         this.zodValidatorString = this._setZodValidatorString();
+        console.log('customErrors in class', this.zodCustomErrors);
     }
     _setIsJsonType() {
         return this.type === 'Json';
@@ -267,8 +268,15 @@ class ExtendedDMMFField extends formattedNames_1.FormattedNames {
         return objectMaps_1.VALIDATOR_TYPE_MAP[validatorType].includes(this.type);
     }
     _setZodCustomErrors() {
-        var _a, _b;
-        return (_b = (_a = this._validatorRegexMatch) === null || _a === void 0 ? void 0 : _a.groups) === null || _b === void 0 ? void 0 : _b['customErrors'];
+        var _a, _b, _c;
+        const customErrors = (_b = (_a = this._validatorRegexMatch) === null || _a === void 0 ? void 0 : _a.groups) === null || _b === void 0 ? void 0 : _b['customErrors'];
+        if (!customErrors)
+            return;
+        const customErrorsString = customErrors.match(regex_1.VALIDATOR_CUSTOM_ERROR_REGEX);
+        const validErrorMessages = (_c = customErrorsString === null || customErrorsString === void 0 ? void 0 : customErrorsString.groups) === null || _c === void 0 ? void 0 : _c['object'].match(regex_1.VALIDATOR_CUSTOM_ERROR_KEYS_REGEX);
+        if (!validErrorMessages)
+            return;
+        return `{ ${validErrorMessages.join(', ')} }`;
     }
     _setZodValidatorString() {
         var _a, _b;

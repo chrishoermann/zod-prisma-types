@@ -1,6 +1,7 @@
 import { DMMF } from '@prisma/generator-helper';
 
 import {
+  // CUSTOM_ERROR_MAP,
   DATE_VALIDATOR_REGEX_MAP,
   NUMBER_VALIDATOR_REGEX_MAP,
   PRISMA_TYPE_MAP,
@@ -9,6 +10,8 @@ import {
 } from '../constants/objectMaps';
 import {
   SPLIT_VALIDATOR_PATTERN_REGEX,
+  VALIDATOR_CUSTOM_ERROR_KEYS_REGEX,
+  VALIDATOR_CUSTOM_ERROR_REGEX,
   VALIDATOR_KEY_REGEX,
   VALIDATOR_TYPE_REGEX,
 } from '../constants/regex';
@@ -100,6 +103,8 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
     this.zodType = this._setZodType();
     this.zodCustomErrors = this._setZodCustomErrors();
     this.zodValidatorString = this._setZodValidatorString();
+
+    console.log('customErrors in class', this.zodCustomErrors);
   }
 
   // INITIALIZERS
@@ -156,8 +161,25 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
     );
   }
 
+  /**
+   * Filters out all invalid custom error keys from the matched regex
+   * @example invalid_type_error: "some error" // -> is valid key
+   * @example some_error_key: "some error" // -> is invalid key -gets filterd out
+   * @returns valid error messages string for zod
+   */
   private _setZodCustomErrors() {
-    return this._validatorRegexMatch?.groups?.['customErrors'];
+    const customErrors = this._validatorRegexMatch?.groups?.['customErrors'];
+    if (!customErrors) return;
+
+    const customErrorsString = customErrors.match(VALIDATOR_CUSTOM_ERROR_REGEX);
+
+    const validErrorMessages = customErrorsString?.groups?.['object'].match(
+      VALIDATOR_CUSTOM_ERROR_KEYS_REGEX,
+    );
+
+    if (!validErrorMessages) return;
+
+    return `{ ${validErrorMessages.join(', ')} }`;
   }
 
   private _setZodValidatorString() {
