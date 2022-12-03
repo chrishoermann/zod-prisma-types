@@ -103,8 +103,6 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
     this.zodType = this._setZodType();
     this.zodCustomErrors = this._setZodCustomErrors();
     this.zodValidatorString = this._setZodValidatorString();
-
-    console.log('customErrors in class', this.zodCustomErrors);
   }
 
   // INITIALIZERS

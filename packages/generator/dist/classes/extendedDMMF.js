@@ -11,10 +11,12 @@ const extendedDMMFSchema_1 = require("./extendedDMMFSchema");
 exports.configSchema = zod_1.default.object({
     useValidatorJs: zod_1.default
         .string()
+        .default('false')
         .transform((val) => val === 'true')
         .optional(),
     useDecimalJs: zod_1.default
         .string()
+        .default('true')
         .transform((val) => val === 'true')
         .optional(),
 });
@@ -44,17 +46,10 @@ class ExtendedDMMF {
             writable: true,
             value: void 0
         });
-        Object.defineProperty(this, "hasDecimalField", {
-            enumerable: true,
-            configurable: true,
-            writable: true,
-            value: void 0
-        });
         this.datamodel = this._getExtendedDatamodel(dmmf);
         this.schema = this._getExtendedSchema(dmmf);
         this.mappings = this._getExtendedMappings(dmmf);
         this.config = this._getExtendedConfig(config);
-        this.hasDecimalField = this._setHasDecimalField();
     }
     _getExtendedDatamodel(dmmf) {
         return new extendedDMMFDatamodel_1.ExtendedDMMFDatamodel(dmmf.datamodel);
@@ -66,16 +61,17 @@ class ExtendedDMMF {
         return new extendedDMMFMappings_1.ExtendedDMMFMappings(dmmf.mappings);
     }
     _getExtendedConfig(config) {
-        return exports.configSchema.parse(config);
-    }
-    _setHasDecimalField() {
-        return this.datamodel.models.some((model) => model.fields.some((field) => field.type === 'Decimal'));
+        const parsedConfig = exports.configSchema.parse(config);
+        return {
+            useValidatorJs: Boolean(parsedConfig['useValidatorJs']),
+            useDecimalJs: Boolean(parsedConfig['useDecimalJs']),
+        };
     }
     useValidatorJs() {
-        return this.config.useValidatorJs;
+        return Boolean(this.config.useValidatorJs);
     }
     useDecimalJs() {
-        return this.hasDecimalField || this.config.useDecimalJs;
+        return Boolean(this.config.useDecimalJs);
     }
 }
 exports.ExtendedDMMF = ExtendedDMMF;

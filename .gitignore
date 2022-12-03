@@ -6,7 +6,7 @@ package-lock.json
 pnpm-debug.log
 
 # Output
-# dist
+dist
 
 # Keep environment variables out of version control
 .env

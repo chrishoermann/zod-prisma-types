@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getInputTypeStatements = void 0;
 const utils_1 = require("../utils");
-const getInputTypeStatements = ({ schema }) => {
+const getInputTypeStatements = (dmmf) => {
     const statements = [(0, utils_1.writeHeading)(`INPUT TYPES`, 'FAT')];
-    schema.inputObjectTypes.prisma.forEach((inputType) => {
+    dmmf.schema.inputObjectTypes.prisma.forEach((inputType) => {
         statements.push((0, utils_1.writeConstStatement)({
             leadingTrivia: (writer) => writer.newLine(),
             declarations: [
@@ -27,14 +27,15 @@ const getInputTypeStatements = ({ schema }) => {
                                             zodValidatorString,
                                             writeComma,
                                         });
+                                        (0, utils_1.writeNonScalarType)(writer, {
+                                            inputType,
+                                            writeComma,
+                                        });
                                         (0, utils_1.writeSpecialType)(writer, {
                                             inputType,
                                             zodCustomErrors,
                                             writeComma,
-                                        });
-                                        (0, utils_1.writeNonScalarType)(writer, {
-                                            inputType,
-                                            writeComma,
+                                            useDecimalJS: dmmf.useDecimalJs(),
                                         });
                                     });
                                     writer
@@ -52,16 +53,17 @@ const getInputTypeStatements = ({ schema }) => {
                                         zodCustomErrors,
                                         zodValidatorString,
                                     });
+                                    (0, utils_1.writeNonScalarType)(writer, {
+                                        inputType,
+                                        isNullable,
+                                        isOptional,
+                                    });
                                     (0, utils_1.writeSpecialType)(writer, {
                                         inputType,
                                         zodCustomErrors,
                                         isNullable,
                                         isOptional,
-                                    });
-                                    (0, utils_1.writeNonScalarType)(writer, {
-                                        inputType,
-                                        isNullable,
-                                        isOptional,
+                                        useDecimalJS: dmmf.useDecimalJs(),
                                     });
                                 }
                                 writer.newLine();

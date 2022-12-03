@@ -121,7 +121,7 @@ export type PrismaAction =
   | 'count'
   | 'groupBy';
 
-interface WriteTypeOptions {
+export interface WriteTypeOptions {
   inputType: ExtendedDMMFSchemaArgInputType;
   isOptional?: boolean;
   isNullable?: boolean;
@@ -131,7 +131,6 @@ interface WriteTypeOptions {
   zodCustomErrors?: string;
 }
 
-export type WriteTypeFunction = (
-  writer: CodeBlockWriter,
-  options: WriteTypeOptions,
-) => CodeBlockWriter | undefined;
+export type WriteTypeFunction<
+  TOptions extends WriteTypeOptions = WriteTypeOptions,
+> = (writer: CodeBlockWriter, options: TOptions) => CodeBlockWriter | undefined;

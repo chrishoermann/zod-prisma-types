@@ -27,7 +27,7 @@ export type WriteBaseFilterTypesFunction = (options?: {
     aggregates?: boolean;
 }) => (writer: CodeBlockWriter) => void;
 export type PrismaAction = 'findUnique' | 'findMany' | 'findFirst' | 'createOne' | 'createMany' | 'updateOne' | 'updateMany' | 'upsertOne' | 'deleteOne' | 'deleteMany' | 'executeRaw' | 'aggregate' | 'count' | 'groupBy';
-interface WriteTypeOptions {
+export interface WriteTypeOptions {
     inputType: ExtendedDMMFSchemaArgInputType;
     isOptional?: boolean;
     isNullable?: boolean;
@@ -36,6 +36,5 @@ interface WriteTypeOptions {
     zodValidatorString?: string;
     zodCustomErrors?: string;
 }
-export type WriteTypeFunction = (writer: CodeBlockWriter, options: WriteTypeOptions) => CodeBlockWriter | undefined;
-export {};
+export type WriteTypeFunction<TOptions extends WriteTypeOptions = WriteTypeOptions> = (writer: CodeBlockWriter, options: TOptions) => CodeBlockWriter | undefined;
 //# sourceMappingURL=types.d.ts.map

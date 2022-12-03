@@ -222,7 +222,6 @@ class ExtendedDMMFField extends formattedNames_1.FormattedNames {
         this.zodType = this._setZodType();
         this.zodCustomErrors = this._setZodCustomErrors();
         this.zodValidatorString = this._setZodValidatorString();
-        console.log('customErrors in class', this.zodCustomErrors);
     }
     _setIsJsonType() {
         return this.type === 'Json';

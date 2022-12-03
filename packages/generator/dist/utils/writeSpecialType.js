@@ -1,15 +1,25 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.writeSpecialType = void 0;
-const writeSpecialType = (writer, { inputType, isOptional, isNullable, writeComma = true, zodCustomErrors }) => {
+const writeSpecialType = (writer, { inputType, isOptional, isNullable, writeComma = true, zodCustomErrors, useDecimalJS, }) => {
     if (!inputType.isSpecialType())
         return;
-    if (inputType.isDecimalType) {
+    if (inputType.isDecimalType && useDecimalJS) {
         return writer
             .write(`z.number(`)
             .conditionalWrite(!!zodCustomErrors, zodCustomErrors)
             .write(`).refine((v) => Decimal.isDecimal(v),`)
             .write(` { message: 'Must be a Decimal' })`)
+            .conditionalWrite(inputType.isList, `.array()`)
+            .conditionalWrite(isOptional, `.optional()`)
+            .conditionalWrite(isNullable, `.nullable()`)
+            .conditionalWrite(writeComma, `,`);
+    }
+    if (inputType.isDecimalType && !useDecimalJS) {
+        return writer
+            .write(`z.number(`)
+            .conditionalWrite(!!zodCustomErrors, zodCustomErrors)
+            .write(`)`)
             .conditionalWrite(inputType.isList, `.array()`)
             .conditionalWrite(isOptional, `.optional()`)
             .conditionalWrite(isNullable, `.nullable()`)

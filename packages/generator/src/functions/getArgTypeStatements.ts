@@ -11,10 +11,10 @@ import {
 // FUNCTION
 /////////////////////////////////////////////////
 
-export const getArgTypeStatements: GetStatements = ({ schema }) => {
+export const getArgTypeStatements: GetStatements = (datamodel) => {
   const statements: Statement[] = [writeHeading(`ARGS`, 'FAT')];
 
-  schema.outputObjectTypes.prisma
+  datamodel.schema.outputObjectTypes.prisma
     .filter((type) => type.name === 'Query' || type.name === 'Mutation')
     .forEach((outputType) => {
       outputType.fields.forEach((field) => {
@@ -58,6 +58,7 @@ export const getArgTypeStatements: GetStatements = ({ schema }) => {
                             writeComma,
                           });
                           writeSpecialType(writer, {
+                            useDecimalJS: datamodel.useDecimalJs(),
                             inputType,
                             writeLazy: false,
                             writeComma,
@@ -83,6 +84,7 @@ export const getArgTypeStatements: GetStatements = ({ schema }) => {
                           isOptional,
                         });
                         writeSpecialType(writer, {
+                          useDecimalJS: datamodel.useDecimalJs(),
                           inputType: arg.inputTypes[0],
                           writeLazy: false,
                           isNullable,

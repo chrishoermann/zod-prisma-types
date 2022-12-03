@@ -6,10 +6,10 @@ import { writeConstStatement, writeHeading } from '../utils';
 // FUNCTION
 /////////////////////////////////////////////////
 
-export const getModelStatements: GetStatements = ({ datamodel }) => {
+export const getModelStatements: GetStatements = (dmmf) => {
   const statements: Statement[] = [writeHeading(`MODELS`, 'FAT')];
 
-  datamodel.models.forEach((model) => {
+  dmmf.datamodel.models.forEach((model) => {
     statements.push(
       writeHeading(`${model.formattedNames.upperCaseSpace}`, 'SLIM'),
       writeConstStatement({
@@ -50,7 +50,7 @@ export const getModelStatements: GetStatements = ({ datamodel }) => {
                     .newLine();
                 }
 
-                if (field.isDecimalType) {
+                if (field.isDecimalType && dmmf.useDecimalJs()) {
                   return writer
                     .write(`${field.formattedNames.camelCase}: `)
                     .write(`z.number(`)
@@ -58,13 +58,29 @@ export const getModelStatements: GetStatements = ({ datamodel }) => {
                       !!field.zodCustomErrors,
                       field.zodCustomErrors!,
                     )
-                    .write(`).refine((v) => Decimal.isDecimal(v),`)
+                    .write(`)`)
+                    .write(`.refine((v) => Decimal.isDecimal(v),`)
                     .write(` { `)
                     .write(`message: 'Must be a Decimal', `)
                     .write(
                       `path: ['Models', '${model.formattedNames.pascalCase}']`,
                     )
                     .write(` }`)
+                    .write(`)`)
+                    .conditionalWrite(field.isList, `.array()`)
+                    .conditionalWrite(field.isNullable, `.nullable()`)
+                    .write(`,`)
+                    .newLine();
+                }
+
+                if (field.isDecimalType && !dmmf.useDecimalJs()) {
+                  return writer
+                    .write(`${field.formattedNames.camelCase}: `)
+                    .write(`z.number(`)
+                    .conditionalWrite(
+                      !!field.zodCustomErrors,
+                      field.zodCustomErrors!,
+                    )
                     .write(`)`)
                     .conditionalWrite(field.isList, `.array()`)
                     .conditionalWrite(field.isNullable, `.nullable()`)

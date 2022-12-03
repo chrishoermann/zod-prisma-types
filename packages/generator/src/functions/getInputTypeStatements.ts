@@ -11,13 +11,13 @@ import {
 // FUNCTION
 /////////////////////////////////////////////////
 
-export const getInputTypeStatements: GetStatements = ({ schema }) => {
+export const getInputTypeStatements: GetStatements = (dmmf) => {
   // GENERATE INPUT TYPES
   // ---------------------------------------------------------------------
 
   const statements: Statement[] = [writeHeading(`INPUT TYPES`, 'FAT')];
 
-  schema.inputObjectTypes.prisma.forEach((inputType) => {
+  dmmf.schema.inputObjectTypes.prisma.forEach((inputType) => {
     statements.push(
       writeConstStatement({
         leadingTrivia: (writer) => writer.newLine(),
@@ -49,14 +49,15 @@ export const getInputTypeStatements: GetStatements = ({ schema }) => {
                         zodValidatorString,
                         writeComma,
                       });
+                      writeNonScalarType(writer, {
+                        inputType,
+                        writeComma,
+                      });
                       writeSpecialType(writer, {
                         inputType,
                         zodCustomErrors,
                         writeComma,
-                      });
-                      writeNonScalarType(writer, {
-                        inputType,
-                        writeComma,
+                        useDecimalJS: dmmf.useDecimalJs(),
                       });
                     });
 
@@ -74,16 +75,17 @@ export const getInputTypeStatements: GetStatements = ({ schema }) => {
                       zodCustomErrors,
                       zodValidatorString,
                     });
+                    writeNonScalarType(writer, {
+                      inputType,
+                      isNullable,
+                      isOptional,
+                    });
                     writeSpecialType(writer, {
                       inputType,
                       zodCustomErrors,
                       isNullable,
                       isOptional,
-                    });
-                    writeNonScalarType(writer, {
-                      inputType,
-                      isNullable,
-                      isOptional,
+                      useDecimalJS: dmmf.useDecimalJs(),
                     });
                   }
 

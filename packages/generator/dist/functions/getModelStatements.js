@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getModelStatements = void 0;
 const utils_1 = require("../utils");
-const getModelStatements = ({ datamodel }) => {
+const getModelStatements = (dmmf) => {
     const statements = [(0, utils_1.writeHeading)(`MODELS`, 'FAT')];
-    datamodel.models.forEach((model) => {
+    dmmf.datamodel.models.forEach((model) => {
         statements.push((0, utils_1.writeHeading)(`${model.formattedNames.upperCaseSpace}`, 'SLIM'), (0, utils_1.writeConstStatement)({
             leadingTrivia: (writer) => writer.newLine(),
             declarations: [
@@ -40,16 +40,28 @@ const getModelStatements = ({ datamodel }) => {
                                     .write(`,`)
                                     .newLine();
                             }
-                            if (field.isDecimalType) {
+                            if (field.isDecimalType && dmmf.useDecimalJs()) {
                                 return writer
                                     .write(`${field.formattedNames.camelCase}: `)
                                     .write(`z.number(`)
                                     .conditionalWrite(!!field.zodCustomErrors, field.zodCustomErrors)
-                                    .write(`).refine((v) => Decimal.isDecimal(v),`)
+                                    .write(`)`)
+                                    .write(`.refine((v) => Decimal.isDecimal(v),`)
                                     .write(` { `)
                                     .write(`message: 'Must be a Decimal', `)
                                     .write(`path: ['Models', '${model.formattedNames.pascalCase}']`)
                                     .write(` }`)
+                                    .write(`)`)
+                                    .conditionalWrite(field.isList, `.array()`)
+                                    .conditionalWrite(field.isNullable, `.nullable()`)
+                                    .write(`,`)
+                                    .newLine();
+                            }
+                            if (field.isDecimalType && !dmmf.useDecimalJs()) {
+                                return writer
+                                    .write(`${field.formattedNames.camelCase}: `)
+                                    .write(`z.number(`)
+                                    .conditionalWrite(!!field.zodCustomErrors, field.zodCustomErrors)
                                     .write(`)`)
                                     .conditionalWrite(field.isList, `.array()`)
                                     .conditionalWrite(field.isNullable, `.nullable()`)
