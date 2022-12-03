@@ -1,8 +1,10 @@
 ## Table of content
 
-1. [About](#about)
-2. [Installation](#installation)
-3. [Usage](#usage)
+* [About](#about)
+* [Installation](#installation)
+
+* [Usage](#usage)
+  - [Generator options](#generator-options)
 
 
 # About
@@ -13,17 +15,44 @@
 
 # Usage
 
-To use the generator add the following code snippet to your prisma.schema file:
+To use the generator add the following code to your prisma.schema file:
 
 ```prisma
 generator zod {
   provider = "zod-prisma-types"
   output   = "./zod" // optional custom output path - defaults to ./prisma/generated/zod
+  // useValidatorJs = true // optional: default is false
+  // useDecimalJs   = false // optional: default is true
 }
 ```
 
 This generator only creates an `index.ts` file in the specified output folder that contains all relevant zod schemas. 
->This design decesion was made because in ts-morph it is more efficient to create a single file and write a bunch of statements at once than creating multiple files where only a few statements are added. Can be beneficial for big prisma schemas.
+
+> This design decesion was made because in ts-morph it is more efficient to create a single file and write a bunch of statements at once than creating multiple files where only a few statements are added. It can also be beneficial speedwise for big prisma schemas. Another point is that it makes the codebase of the generator more managable (...no need to create imports, simpler structure of the files) and it makes it simple to reexport all the types at once e.g. for use in the frontend (react-hook-form validation, ...).
+
+## Generator options
+
+### useDecimalJs: 
+
+> default: `true`
+
+This option lets you specify if the [decimal.js](https://mikemcl.github.io/decimal.js/) library is used to validate the `Prisma.Decimal` type. In Prisma decimal fields are represented by the decimal.js library (see [prisma docs](https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields#working-with-decimal)). The output for both cases looks as follows:
+
+```ts
+// If true the generator imports the `Decimal` class and generates the following output:
+decimalValue: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }),
+
+// If `false` no additional library is importet and the generator creates the following output:
+decimalValue: z.number()
+```
+
+### useValidateJs: 
+
+> default: `false`
+
+This option lets you specify if the [validator.js](https://github.com/validatorjs/validator.js) library can be used in custom refine functions.
+
+
 
 ## Naming of zod schemas
 
