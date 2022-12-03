@@ -19,11 +19,35 @@ To use the generator add the following code snippet to your prisma.schema file:
 generator zod {
   provider = "zod-prisma-types"
   output   = "./zod" // optional custom output path - defaults to ./prisma/generated/zod
+  useValidatorJs = false // default is false
+  useDecimalJs   = false // default is true
 }
 ```
 
 This generator only creates an `index.ts` file in the specified output folder that contains all relevant zod schemas. 
 >This design decesion was made because in ts-morph it is more efficient to create a single file and write a bunch of statements at once than creating multiple files where only a few statements are added. Can be beneficial for big prisma schemas.
+
+## Options
+
+### useDecimalJs: 
+
+> Default: `true`
+
+This option lets you specify if the [decimal.js](https://mikemcl.github.io/decimal.js/) library is used to validate the `Prisma.Decimal` type. In Prisma decimal fields are represented by the decimal.js library (see [prisma docs](https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields#working-with-decimal))
+
+
+
+If true the generator imports the `Decimal` class and generates the following output:
+```ts
+decimalValue: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }),
+```
+
+If `false` the generator creates the following output:
+```ts
+decimalValue: z.number()
+```
+
+
 
 ## Naming of zod schemas
 
