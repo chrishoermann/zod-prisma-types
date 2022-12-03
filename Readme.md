@@ -2,18 +2,17 @@
 
 * [About](#about)
 * [Installation](#installation)
-
 * [Usage](#usage)
   - [Generator options](#generator-options)
 
 
-# About
+## About
 
-`zod-prisma-types` is a generator for `prisma` that tries to mirror the type structure of the generated prisma types as closly as possible in `zod schemas`. It also provides the option to write advanced zod validators directly in the prisma schema comments.
+`zod-prisma-types` is a generator for `prisma` that tries to mirror the type structure of the generated prisma types as closly as possible with `zod schemas`. It also provides the option to write advanced zod validators directly in the prisma schema comments.
 
-# Installation
+## Installation
 
-# Usage
+## Usage
 
 To use the generator add the following code to your prisma.schema file:
 
@@ -32,11 +31,11 @@ This generator only creates an `index.ts` file in the specified output folder th
 
 ## Generator options
 
-### useDecimalJs: 
+### `useDecimalJs`
 
 > default: `true`
 
-This option lets you specify if the [decimal.js](https://mikemcl.github.io/decimal.js/) library is used to validate the `Prisma.Decimal` type. In Prisma decimal fields are represented by the decimal.js library (see [prisma docs](https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields#working-with-decimal)). The output for both cases looks as follows:
+This option lets you specify if the [decimal.js](https://mikemcl.github.io/decimal.js/) library is used to validate the `Prisma.Decimal` type. In Prisma decimal fields are represented by the decimal.js library (see [prisma docs](https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields#working-with-decimal)). 
 
 ```ts
 // If true the generator imports the `Decimal` class and generates the following output:
@@ -46,11 +45,11 @@ decimalValue: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be
 decimalValue: z.number()
 ```
 
-### useValidateJs: 
+### `useValidateJs`
 
 > default: `false`
 
-This option lets you specify if the [validator.js](https://github.com/validatorjs/validator.js) library can be used in custom refine functions.
+This option lets you specify if the [validator.js](https://github.com/validatorjs/validator.js) library can be used in custom refine functions by importing it into the created file.
 
 
 
