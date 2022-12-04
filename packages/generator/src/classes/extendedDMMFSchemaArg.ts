@@ -1,11 +1,16 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { ExtendedDMMFSchemaArgInputType } from '.';
+import { ExtendedDMMFField, ExtendedDMMFSchemaArgInputType } from '.';
 import { FormattedNames } from './formattedNames';
 
-export interface ExtendedDMMFSchemaArgOptions extends DMMF.SchemaArg {
+export interface ExtendedDMMFSchemaArgOptions
+  extends DMMF.SchemaArg,
+    ZodValidatorOptions {}
+
+export interface ZodValidatorOptions {
   zodValidatorString?: string;
   zodCustomErrors?: string;
+  zodCustomValidatorString?: string;
 }
 
 /////////////////////////////////////////////////
@@ -24,14 +29,19 @@ export class ExtendedDMMFSchemaArg
   readonly deprecation?: DMMF.SchemaArg['deprecation'];
   readonly zodValidatorString?: string;
   readonly zodCustomErrors?: string;
+  readonly zodCustomValidatorString?: string;
   readonly hasSingleType: boolean;
   readonly hasMultipleTypes: boolean;
   readonly isOptional: boolean;
   readonly isJsonType: boolean;
   readonly isBytesType: boolean;
   readonly isDecimalType: boolean;
+  readonly linkedField?: ExtendedDMMFField;
 
-  constructor(arg: ExtendedDMMFSchemaArgOptions) {
+  constructor(
+    arg: ExtendedDMMFSchemaArgOptions,
+    linkedField?: ExtendedDMMFField,
+  ) {
     super(arg.name);
     this.name = arg.name;
     this.comment = arg.comment;
@@ -41,12 +51,14 @@ export class ExtendedDMMFSchemaArg
     this.deprecation = arg.deprecation;
     this.zodValidatorString = arg.zodValidatorString;
     this.zodCustomErrors = arg.zodCustomErrors;
+    this.zodCustomValidatorString = arg.zodCustomValidatorString;
     this.hasSingleType = this._setHasSingleType();
     this.hasMultipleTypes = this._setHasMultipleTypes();
     this.isOptional = this._setIsOptional();
     this.isJsonType = this._setIsJsonType();
     this.isBytesType = this._setIsBytesType();
     this.isDecimalType = this._setIsDecimalType();
+    this.linkedField = linkedField;
   }
 
   private _setInputTypes = (inputTypes: DMMF.SchemaArgInputType[]) => {

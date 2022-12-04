@@ -21,10 +21,19 @@ export const configSchema = z.object({
     .default('true')
     .transform((val) => val === 'true')
     .optional(),
+  import: z
+    .string()
+    .transform((val) => {
+      const valArray = val
+        .split(')')
+        .map((v) => v.replace(/import\(|.import\(/, ''))
+        .filter((v) => v !== '');
+      return valArray;
+    })
+    .optional(),
 });
 
-export type Config = z.infer<typeof configSchema>;
-export type ConfigSchema = NonNullable<Config>;
+export type ConfigSchema = z.infer<typeof configSchema>;
 
 /////////////////////////////////////////////////
 // CLASS
@@ -35,14 +44,12 @@ export class ExtendedDMMF implements DMMF.Document {
   readonly schema: ExtendedDMMFSchema;
   readonly mappings: DMMF.Mappings;
   readonly config: ConfigSchema;
-  // readonly hasDecimalField: boolean;
 
   constructor(dmmf: DMMF.Document, config: Dictionary<string>) {
     this.datamodel = this._getExtendedDatamodel(dmmf);
     this.schema = this._getExtendedSchema(dmmf);
     this.mappings = this._getExtendedMappings(dmmf);
     this.config = this._getExtendedConfig(config);
-    // this.hasDecimalField = this._setHasDecimalField();
   }
 
   private _getExtendedDatamodel(dmmf: DMMF.Document) {
@@ -62,14 +69,9 @@ export class ExtendedDMMF implements DMMF.Document {
     return {
       useValidatorJs: Boolean(parsedConfig['useValidatorJs']),
       useDecimalJs: Boolean(parsedConfig['useDecimalJs']),
+      import: parsedConfig['import'],
     };
   }
-
-  // private _setHasDecimalField() {
-  //   return this.datamodel.models.some((model) =>
-  //     model.fields.some((field) => field.type === 'Decimal'),
-  //   );
-  // }
 
   useValidatorJs() {
     return Boolean(this.config.useValidatorJs);
@@ -77,5 +79,9 @@ export class ExtendedDMMF implements DMMF.Document {
 
   useDecimalJs() {
     return Boolean(this.config.useDecimalJs);
+  }
+
+  hasCustomImports() {
+    return Boolean(this.config.import);
   }
 }

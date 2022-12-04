@@ -24,7 +24,7 @@ exports.DECIMAL_JS_IMPORT_STATEMENT = {
 };
 exports.VALIDATOR_JS_IMPORT_STATEMENT = {
     kind: ts_morph_1.StructureKind.ImportDeclaration,
-    defaultImport: 'Validator',
+    defaultImport: 'validator',
     moduleSpecifier: 'validator',
 };
 //# sourceMappingURL=importStatements.js.map

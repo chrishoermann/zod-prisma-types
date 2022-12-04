@@ -25,9 +25,19 @@ export const writeSpecialType: WriteTypeFunction<
     writeComma = true,
     zodCustomErrors,
     useDecimalJS,
+    zodCustomValidatorString,
   },
 ) => {
   if (!inputType.isSpecialType()) return;
+
+  if (zodCustomValidatorString) {
+    return writer
+      .write(zodCustomValidatorString)
+      .conditionalWrite(inputType.isList, `.array()`)
+      .conditionalWrite(isOptional, `.optional()`)
+      .conditionalWrite(isNullable, `.nullable()`)
+      .conditionalWrite(writeComma, `,`);
+  }
 
   if (inputType.isDecimalType && useDecimalJS) {
     return writer

@@ -2,7 +2,10 @@ import { DMMF } from '@prisma/generator-helper';
 
 import { PRISMA_FUNCTION_TYPES_WITH_VALIDATORS } from '../constants/regex';
 import { ExtendedDMMFModel } from './extendedDMMFModel';
-import { ExtendedDMMFSchemaArg } from './extendedDMMFSchemaArg';
+import {
+  ExtendedDMMFSchemaArg,
+  ZodValidatorOptions,
+} from './extendedDMMFSchemaArg';
 import { FormattedNames } from './formattedNames';
 
 /////////////////////////////////////////////////
@@ -41,18 +44,28 @@ export class ExtendedDMMFInputType
       // validators should only be written for create and update types.
       // this prevents validation in e.g. search queries in "where inputs",
       // where strings like email addresses can be incomplete.
-      const optionalValidators = this._fieldIsPrismaFunction()
-        ? {
-            zodValidatorString: this._getZodValidatorString(field.name),
-            zodCustomErrors: this._getZodCustomErrorsString(field.name),
-          }
-        : undefined;
+      const optionalValidators: ZodValidatorOptions | undefined =
+        this._fieldIsPrismaFunctionType()
+          ? {
+              zodValidatorString: this._getZodValidatorString(field.name),
+              zodCustomErrors: this._getZodCustomErrorsString(field.name),
+              zodCustomValidatorString: this._getZodCustomValidatorString(
+                field.name,
+              ),
+            }
+          : undefined;
 
-      return new ExtendedDMMFSchemaArg({ ...field, ...optionalValidators });
+      const linkedField = this.linkedModel?.fields.find(
+        (modelField) => modelField.name === field.name,
+      );
+
+      return new ExtendedDMMFSchemaArg(
+        { ...field, ...optionalValidators },
+        linkedField,
+      );
     });
   }
-
-  private _fieldIsPrismaFunction() {
+  private _fieldIsPrismaFunctionType() {
     return this.name.match(PRISMA_FUNCTION_TYPES_WITH_VALIDATORS);
   }
 
@@ -64,6 +77,11 @@ export class ExtendedDMMFInputType
   private _getZodCustomErrorsString(fieldName: string) {
     return this.linkedModel?.fields.find((field) => field.name === fieldName)
       ?.zodCustomErrors;
+  }
+
+  private _getZodCustomValidatorString(fieldName: string) {
+    return this.linkedModel?.fields.find((field) => field.name === fieldName)
+      ?.zodCustomValidatorString;
   }
 
   private _setIsJsonField() {

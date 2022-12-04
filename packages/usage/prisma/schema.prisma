@@ -13,7 +13,7 @@ datasource db {
 generator zod {
   provider       = "zod-prisma-types"
   output         = "./zod" // default is ./generated/zod
-  useValidatorJs = false // default is false
+  useValidatorJs = true // default is false
   useDecimalJs   = true // default is true
 }
 
@@ -24,17 +24,22 @@ enum MyValue {
 }
 
 model Test {
-  id         String   @id @default(cuid()) /// @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid()
-  name       String? /// some comment @zod.string({ required_error: "error", invalid_type_error: "error", wrong_type_error: "error" })
+  /// @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid()
+  id         String    @id @default(cuid())
+  /// some comment @zod.string({ required_error: "error", invalid_type_error: "error", wrong_type_error: "error" })
+  name       String?
   value      MyValue
+  /// @zod.custom.use(z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }))
+  bic        String?
   intTwo     Int
   int        Int?
   floatOpt   Float?
-  float      Float /// @zod.number({ error: "error", some_key: "error", wrong_type_error: "error" })
+  /// @zod.number({ error: "error", some_key: "error", wrong_type_error: "error" })
+  float      Float
   decimal    Decimal
   decimalOpt Decimal?
-  // date       DateTime  @default(now())
-  // dateOpt    DateTime?
+  date       DateTime  @default(now())
+  dateOpt    DateTime?
   bigInt     BigInt
   bigIntOpt  BigInt?
   json       Json

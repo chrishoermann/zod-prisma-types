@@ -18,7 +18,7 @@ export declare class ExtendedDMMFSchemaField extends FormattedNames implements D
     constructor(field: DMMF.SchemaField, datamodel: ExtendedDMMFDatamodel);
     private _setArgs;
     private _setMatchedPrismaAction;
-    private _setType;
+    private _setModelType;
     private _setArgName;
     private _setLinkedModel;
 }

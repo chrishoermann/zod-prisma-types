@@ -1,9 +1,12 @@
 import { DMMF } from '@prisma/generator-helper';
-import { ExtendedDMMFSchemaArgInputType } from '.';
+import { ExtendedDMMFField, ExtendedDMMFSchemaArgInputType } from '.';
 import { FormattedNames } from './formattedNames';
-export interface ExtendedDMMFSchemaArgOptions extends DMMF.SchemaArg {
+export interface ExtendedDMMFSchemaArgOptions extends DMMF.SchemaArg, ZodValidatorOptions {
+}
+export interface ZodValidatorOptions {
     zodValidatorString?: string;
     zodCustomErrors?: string;
+    zodCustomValidatorString?: string;
 }
 export declare class ExtendedDMMFSchemaArg extends FormattedNames implements DMMF.SchemaArg {
     readonly name: DMMF.SchemaArg['name'];
@@ -14,13 +17,15 @@ export declare class ExtendedDMMFSchemaArg extends FormattedNames implements DMM
     readonly deprecation?: DMMF.SchemaArg['deprecation'];
     readonly zodValidatorString?: string;
     readonly zodCustomErrors?: string;
+    readonly zodCustomValidatorString?: string;
     readonly hasSingleType: boolean;
     readonly hasMultipleTypes: boolean;
     readonly isOptional: boolean;
     readonly isJsonType: boolean;
     readonly isBytesType: boolean;
     readonly isDecimalType: boolean;
-    constructor(arg: ExtendedDMMFSchemaArgOptions);
+    readonly linkedField?: ExtendedDMMFField;
+    constructor(arg: ExtendedDMMFSchemaArgOptions, linkedField?: ExtendedDMMFField);
     private _setInputTypes;
     private _setHasSingleType;
     private _setHasMultipleTypes;

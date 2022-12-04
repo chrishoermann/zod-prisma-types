@@ -11,8 +11,10 @@ const getImportStatements = (datamodel) => {
         statements.push(importStatements_1.DECIMAL_JS_IMPORT_STATEMENT);
     }
     if (datamodel.useValidatorJs()) {
-        console.log('use validator', datamodel.config);
         statements.push(importStatements_1.VALIDATOR_JS_IMPORT_STATEMENT);
+    }
+    if (datamodel.config.import) {
+        statements.push(...datamodel.config.import);
     }
     return statements;
 };

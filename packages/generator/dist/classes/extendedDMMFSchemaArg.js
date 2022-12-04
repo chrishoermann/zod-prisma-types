@@ -4,7 +4,7 @@ exports.ExtendedDMMFSchemaArg = void 0;
 const _1 = require(".");
 const formattedNames_1 = require("./formattedNames");
 class ExtendedDMMFSchemaArg extends formattedNames_1.FormattedNames {
-    constructor(arg) {
+    constructor(arg, linkedField) {
         super(arg.name);
         Object.defineProperty(this, "name", {
             enumerable: true,
@@ -54,6 +54,12 @@ class ExtendedDMMFSchemaArg extends formattedNames_1.FormattedNames {
             writable: true,
             value: void 0
         });
+        Object.defineProperty(this, "zodCustomValidatorString", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         Object.defineProperty(this, "hasSingleType", {
             enumerable: true,
             configurable: true,
@@ -90,6 +96,12 @@ class ExtendedDMMFSchemaArg extends formattedNames_1.FormattedNames {
             writable: true,
             value: void 0
         });
+        Object.defineProperty(this, "linkedField", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         Object.defineProperty(this, "_setInputTypes", {
             enumerable: true,
             configurable: true,
@@ -116,12 +128,14 @@ class ExtendedDMMFSchemaArg extends formattedNames_1.FormattedNames {
         this.deprecation = arg.deprecation;
         this.zodValidatorString = arg.zodValidatorString;
         this.zodCustomErrors = arg.zodCustomErrors;
+        this.zodCustomValidatorString = arg.zodCustomValidatorString;
         this.hasSingleType = this._setHasSingleType();
         this.hasMultipleTypes = this._setHasMultipleTypes();
         this.isOptional = this._setIsOptional();
         this.isJsonType = this._setIsJsonType();
         this.isBytesType = this._setIsBytesType();
         this.isDecimalType = this._setIsDecimalType();
+        this.linkedField = linkedField;
     }
     _setHasSingleType() {
         return this.inputTypes.length === 1;

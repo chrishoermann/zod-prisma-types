@@ -73,16 +73,19 @@ class ExtendedDMMFInputType extends formattedNames_1.FormattedNames {
     }
     _setFields(fields) {
         return fields.map((field) => {
-            const optionalValidators = this._fieldIsPrismaFunction()
+            var _a;
+            const optionalValidators = this._fieldIsPrismaFunctionType()
                 ? {
                     zodValidatorString: this._getZodValidatorString(field.name),
                     zodCustomErrors: this._getZodCustomErrorsString(field.name),
+                    zodCustomValidatorString: this._getZodCustomValidatorString(field.name),
                 }
                 : undefined;
-            return new extendedDMMFSchemaArg_1.ExtendedDMMFSchemaArg({ ...field, ...optionalValidators });
+            const linkedField = (_a = this.linkedModel) === null || _a === void 0 ? void 0 : _a.fields.find((modelField) => modelField.name === field.name);
+            return new extendedDMMFSchemaArg_1.ExtendedDMMFSchemaArg({ ...field, ...optionalValidators }, linkedField);
         });
     }
-    _fieldIsPrismaFunction() {
+    _fieldIsPrismaFunctionType() {
         return this.name.match(regex_1.PRISMA_FUNCTION_TYPES_WITH_VALIDATORS);
     }
     _getZodValidatorString(fieldName) {
@@ -92,6 +95,10 @@ class ExtendedDMMFInputType extends formattedNames_1.FormattedNames {
     _getZodCustomErrorsString(fieldName) {
         var _a, _b;
         return (_b = (_a = this.linkedModel) === null || _a === void 0 ? void 0 : _a.fields.find((field) => field.name === fieldName)) === null || _b === void 0 ? void 0 : _b.zodCustomErrors;
+    }
+    _getZodCustomValidatorString(fieldName) {
+        var _a, _b;
+        return (_b = (_a = this.linkedModel) === null || _a === void 0 ? void 0 : _a.fields.find((field) => field.name === fieldName)) === null || _b === void 0 ? void 0 : _b.zodCustomValidatorString;
     }
     _setIsJsonField() {
         return this.fields.some((field) => field.isJsonType);

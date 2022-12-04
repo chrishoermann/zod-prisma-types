@@ -59,7 +59,7 @@ class ExtendedDMMFSchemaArgInputType {
             value: () => {
                 if (!this.isStringType())
                     return;
-                const zodType = objectMaps_1.PRISMA_TYPE_MAP[this.type];
+                const zodType = objectMaps_1.PRISMA_TO_ZOD_TYPE_MAP[this.type];
                 if (!zodType)
                     return;
                 return zodType;
@@ -72,7 +72,7 @@ class ExtendedDMMFSchemaArgInputType {
             value: () => {
                 if (!this.isStringType())
                     return;
-                const zodScalarType = objectMaps_1.PRISMA_TYPE_MAP[this.type];
+                const zodScalarType = objectMaps_1.PRISMA_TO_ZOD_TYPE_MAP[this.type];
                 if (zodScalarType || this.isSpecialType())
                     return;
                 return this.type;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { GetStatements, Statement } from '../types';
 import {
   writeConstStatement,
@@ -36,6 +37,7 @@ export const getInputTypeStatements: GetStatements = (dmmf) => {
                     isOptional,
                     zodCustomErrors,
                     zodValidatorString,
+                    zodCustomValidatorString,
                   } = field;
 
                   if (field.hasMultipleTypes) {
@@ -47,6 +49,7 @@ export const getInputTypeStatements: GetStatements = (dmmf) => {
                         inputType,
                         zodCustomErrors,
                         zodValidatorString,
+                        zodCustomValidatorString,
                         writeComma,
                       });
                       writeNonScalarType(writer, {
@@ -56,6 +59,7 @@ export const getInputTypeStatements: GetStatements = (dmmf) => {
                       writeSpecialType(writer, {
                         inputType,
                         zodCustomErrors,
+                        zodCustomValidatorString,
                         writeComma,
                         useDecimalJS: dmmf.useDecimalJs(),
                       });
@@ -74,6 +78,7 @@ export const getInputTypeStatements: GetStatements = (dmmf) => {
                       isOptional,
                       zodCustomErrors,
                       zodValidatorString,
+                      zodCustomValidatorString,
                     });
                     writeNonScalarType(writer, {
                       inputType,
@@ -83,6 +88,7 @@ export const getInputTypeStatements: GetStatements = (dmmf) => {
                     writeSpecialType(writer, {
                       inputType,
                       zodCustomErrors,
+                      zodCustomValidatorString,
                       isNullable,
                       isOptional,
                       useDecimalJS: dmmf.useDecimalJs(),

@@ -1,15 +1,14 @@
 import { FormattedNames } from '../classes/formattedNames';
-import { KeyValueMap, PrismaAction, PrismaScalarType, ZodDateValidatorKeys, ZodNumberValidatorKeys, ZodPrismaScalarType, ZodScalarType, ZodStringValidatorKeys, ZodValidatorType } from '../types';
-export declare const VALIDATOR_TYPE_MAP: KeyValueMap<ZodValidatorType, PrismaScalarType[]>;
-export declare const PRISMA_TYPE_MAP: KeyValueMap<ZodPrismaScalarType, ZodScalarType>;
-export type RegexMap<TKeys extends string> = KeyValueMap<TKeys, RegExp>;
-export declare const STRING_VALIDATOR_REGEX_MAP: RegexMap<ZodStringValidatorKeys>;
-export declare const NUMBER_VALIDATOR_REGEX_MAP: RegexMap<ZodNumberValidatorKeys>;
-export declare const DATE_VALIDATOR_REGEX_MAP: RegexMap<ZodDateValidatorKeys>;
+import { KeyValueMap, PrismaAction, PrismaScalarType, ZodCustomValidatorKeys, ZodDateValidatorKeys, ZodNumberValidatorKeys, ZodPrismaScalarType, ZodScalarType, ZodStringValidatorKeys, ZodValidatorType } from '../types';
+export declare const PRISMA_TO_VALIDATOR_TYPE_MAP: KeyValueMap<ZodValidatorType | 'custom', PrismaScalarType[]>;
+export declare const PRISMA_TO_ZOD_TYPE_MAP: KeyValueMap<ZodPrismaScalarType, ZodScalarType>;
+export type ValidatorMapValue = RegExp | ((pattern: string) => string | undefined);
+export type ValidatorMap<TKeys extends string> = KeyValueMap<TKeys, ValidatorMapValue>;
+export declare const STRING_VALIDATOR_REGEX_MAP: ValidatorMap<ZodStringValidatorKeys>;
+export declare const NUMBER_VALIDATOR_REGEX_MAP: ValidatorMap<ZodNumberValidatorKeys>;
+export declare const DATE_VALIDATOR_REGEX_MAP: ValidatorMap<ZodDateValidatorKeys>;
+export declare const CUSTOM_VALIDATOR_REGEX_MAP: ValidatorMap<ZodCustomValidatorKeys>;
 export type FilterdPrismaAction = Exclude<PrismaAction, 'executeRaw' | 'queryRaw' | 'count'>;
 export declare const PRISMA_ACTION_ARG_MAP: KeyValueMap<FilterdPrismaAction, FormattedNames>;
 export declare const PRISMA_ACTION_ARRAY: FilterdPrismaAction[];
-type CustomErrorKeys = 'invalid_type_error' | 'required_error' | 'description';
-export declare const CUSTOM_ERROR_MAP: CustomErrorKeys[];
-export {};
 //# sourceMappingURL=objectMaps.d.ts.map

@@ -20,6 +20,16 @@ export const getModelStatements: GetStatements = (dmmf) => {
             initializer(writer) {
               writer.write(`z.object({`);
               [...model.enumFields, ...model.scalarFields].forEach((field) => {
+                if (field.zodCustomValidatorString) {
+                  return writer
+                    .write(`${field.formattedNames.camelCase}: `)
+                    .write(field.zodCustomValidatorString!)
+                    .conditionalWrite(field.isList, `.array()`)
+                    .conditionalWrite(field.isNullable, `.nullable()`)
+                    .write(`,`)
+                    .newLine();
+                }
+
                 if (field.kind === 'enum') {
                   return writer
                     .write(`${field.formattedNames.camelCase}: `)
@@ -60,13 +70,11 @@ export const getModelStatements: GetStatements = (dmmf) => {
                     )
                     .write(`)`)
                     .write(`.refine((v) => Decimal.isDecimal(v),`)
-                    .write(` { `)
-                    .write(`message: 'Must be a Decimal', `)
+                    .write(` { message: 'Must be a Decimal', `)
                     .write(
                       `path: ['Models', '${model.formattedNames.pascalCase}']`,
                     )
-                    .write(` }`)
-                    .write(`)`)
+                    .write(` })`)
                     .conditionalWrite(field.isList, `.array()`)
                     .conditionalWrite(field.isNullable, `.nullable()`)
                     .write(`,`)

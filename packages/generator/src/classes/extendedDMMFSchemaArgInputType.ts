@@ -1,6 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { PRISMA_TYPE_MAP } from '../constants/objectMaps';
+import { PRISMA_TO_ZOD_TYPE_MAP } from '../constants/objectMaps';
 import { ZodPrismaScalarType } from '../types';
 
 /////////////////////////////////////////////////
@@ -51,7 +51,7 @@ export class ExtendedDMMFSchemaArgInputType implements DMMF.SchemaArgInputType {
    */
   getZodScalarType = () => {
     if (!this.isStringType()) return;
-    const zodType = PRISMA_TYPE_MAP[this.type as ZodPrismaScalarType];
+    const zodType = PRISMA_TO_ZOD_TYPE_MAP[this.type as ZodPrismaScalarType];
     if (!zodType) return;
     return zodType;
   };
@@ -62,7 +62,8 @@ export class ExtendedDMMFSchemaArgInputType implements DMMF.SchemaArgInputType {
    */
   getZodNonScalarType = () => {
     if (!this.isStringType()) return;
-    const zodScalarType = PRISMA_TYPE_MAP[this.type as ZodPrismaScalarType];
+    const zodScalarType =
+      PRISMA_TO_ZOD_TYPE_MAP[this.type as ZodPrismaScalarType];
     if (zodScalarType || this.isSpecialType()) return;
     return this.type;
   };

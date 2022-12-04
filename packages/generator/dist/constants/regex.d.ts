@@ -11,5 +11,6 @@ export declare const STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX: RegExp;
 export declare const NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX: RegExp;
 export declare const NUMBER_VALIDATOR_MESSAGE_REGEX: RegExp;
 export declare const DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX: RegExp;
+export declare const CUSTOM_VALIDATOR_MESSAGE_REGEX: RegExp;
 export declare const PRISMA_FUNCTION_TYPES_WITH_VALIDATORS: RegExp;
 //# sourceMappingURL=regex.d.ts.map

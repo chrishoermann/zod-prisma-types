@@ -54,18 +54,21 @@ export class ExtendedDMMFSchemaField
     this.name = field.name;
     this.isNullable = field.isNullable;
     this.outputType = field.outputType;
-    this.args = this._setArgs(field);
     this.deprecation = field.deprecation;
     this.documentation = field.documentation;
     this.prismaAction = this._setMatchedPrismaAction();
-    this.modelType = this._setType();
+    this.modelType = this._setModelType();
     this.argName = this._setArgName();
     this.linkedModel = this._setLinkedModel(datamodel);
+    this.args = this._setArgs(field);
   }
 
   private _setArgs({ args }: DMMF.SchemaField) {
     return args.map((arg) => {
-      return new ExtendedDMMFSchemaArg(arg);
+      const linkedField = this.linkedModel?.fields.find(
+        (field) => field.name === arg.name,
+      );
+      return new ExtendedDMMFSchemaArg(arg, linkedField);
     });
   }
 
@@ -85,7 +88,7 @@ export class ExtendedDMMFSchemaField
    * @example "findManyUser" -> "User"
    * @returns type of the model extracted from string
    */
-  private _setType() {
+  private _setModelType() {
     return this.name.replace(this.prismaAction as string, '');
   }
 

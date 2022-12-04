@@ -70,23 +70,25 @@ class ExtendedDMMFSchemaField extends formattedNames_1.FormattedNames {
         this.name = field.name;
         this.isNullable = field.isNullable;
         this.outputType = field.outputType;
-        this.args = this._setArgs(field);
         this.deprecation = field.deprecation;
         this.documentation = field.documentation;
         this.prismaAction = this._setMatchedPrismaAction();
-        this.modelType = this._setType();
+        this.modelType = this._setModelType();
         this.argName = this._setArgName();
         this.linkedModel = this._setLinkedModel(datamodel);
+        this.args = this._setArgs(field);
     }
     _setArgs({ args }) {
         return args.map((arg) => {
-            return new extendedDMMFSchemaArg_1.ExtendedDMMFSchemaArg(arg);
+            var _a;
+            const linkedField = (_a = this.linkedModel) === null || _a === void 0 ? void 0 : _a.fields.find((field) => field.name === arg.name);
+            return new extendedDMMFSchemaArg_1.ExtendedDMMFSchemaArg(arg, linkedField);
         });
     }
     _setMatchedPrismaAction() {
         return objectMaps_1.PRISMA_ACTION_ARRAY.find((elem) => this.name.includes(elem));
     }
-    _setType() {
+    _setModelType() {
         return this.name.replace(this.prismaAction, '');
     }
     _setArgName() {

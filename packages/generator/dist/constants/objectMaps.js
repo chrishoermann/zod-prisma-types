@@ -1,14 +1,25 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CUSTOM_ERROR_MAP = exports.PRISMA_ACTION_ARRAY = exports.PRISMA_ACTION_ARG_MAP = exports.DATE_VALIDATOR_REGEX_MAP = exports.NUMBER_VALIDATOR_REGEX_MAP = exports.STRING_VALIDATOR_REGEX_MAP = exports.PRISMA_TYPE_MAP = exports.VALIDATOR_TYPE_MAP = void 0;
+exports.PRISMA_ACTION_ARRAY = exports.PRISMA_ACTION_ARG_MAP = exports.CUSTOM_VALIDATOR_REGEX_MAP = exports.DATE_VALIDATOR_REGEX_MAP = exports.NUMBER_VALIDATOR_REGEX_MAP = exports.STRING_VALIDATOR_REGEX_MAP = exports.PRISMA_TO_ZOD_TYPE_MAP = exports.PRISMA_TO_VALIDATOR_TYPE_MAP = void 0;
 const formattedNames_1 = require("../classes/formattedNames");
 const regex_1 = require("./regex");
-exports.VALIDATOR_TYPE_MAP = {
+exports.PRISMA_TO_VALIDATOR_TYPE_MAP = {
     string: ['String'],
     number: ['Float', 'Int', 'Decimal'],
     date: ['DateTime'],
+    custom: [
+        'String',
+        'Boolean',
+        'Int',
+        'BigInt',
+        'Float',
+        'Decimal',
+        'DateTime',
+        'Json',
+        'Bytes',
+    ],
 };
-exports.PRISMA_TYPE_MAP = {
+exports.PRISMA_TO_ZOD_TYPE_MAP = {
     String: 'string',
     Boolean: 'boolean',
     DateTime: 'date',
@@ -47,6 +58,12 @@ exports.DATE_VALIDATOR_REGEX_MAP = {
     min: regex_1.DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
     max: regex_1.DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
 };
+exports.CUSTOM_VALIDATOR_REGEX_MAP = {
+    use: (pattern) => {
+        var _a, _b;
+        return (_b = (_a = pattern.match(regex_1.CUSTOM_VALIDATOR_MESSAGE_REGEX)) === null || _a === void 0 ? void 0 : _a.groups) === null || _b === void 0 ? void 0 : _b['custom'];
+    },
+};
 exports.PRISMA_ACTION_ARG_MAP = {
     findUnique: new formattedNames_1.FormattedNames('findUnique'),
     findMany: new formattedNames_1.FormattedNames('findMany'),
@@ -74,10 +91,5 @@ exports.PRISMA_ACTION_ARRAY = [
     'deleteMany',
     'aggregate',
     'groupBy',
-];
-exports.CUSTOM_ERROR_MAP = [
-    'invalid_type_error',
-    'required_error',
-    'description',
 ];
 //# sourceMappingURL=objectMaps.js.map

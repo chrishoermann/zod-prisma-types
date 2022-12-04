@@ -16,7 +16,7 @@ const getInputTypeStatements = (dmmf) => {
                         writer.inlineBlock(() => {
                             inputType.fields.forEach((field) => {
                                 writer.write(`${field.name}: `);
-                                const { isNullable, isOptional, zodCustomErrors, zodValidatorString, } = field;
+                                const { isNullable, isOptional, zodCustomErrors, zodValidatorString, zodCustomValidatorString, } = field;
                                 if (field.hasMultipleTypes) {
                                     writer.write(`z.union([ `);
                                     field.inputTypes.forEach((inputType, idx) => {
@@ -25,6 +25,7 @@ const getInputTypeStatements = (dmmf) => {
                                             inputType,
                                             zodCustomErrors,
                                             zodValidatorString,
+                                            zodCustomValidatorString,
                                             writeComma,
                                         });
                                         (0, utils_1.writeNonScalarType)(writer, {
@@ -34,6 +35,7 @@ const getInputTypeStatements = (dmmf) => {
                                         (0, utils_1.writeSpecialType)(writer, {
                                             inputType,
                                             zodCustomErrors,
+                                            zodCustomValidatorString,
                                             writeComma,
                                             useDecimalJS: dmmf.useDecimalJs(),
                                         });
@@ -52,6 +54,7 @@ const getInputTypeStatements = (dmmf) => {
                                         isOptional,
                                         zodCustomErrors,
                                         zodValidatorString,
+                                        zodCustomValidatorString,
                                     });
                                     (0, utils_1.writeNonScalarType)(writer, {
                                         inputType,
@@ -61,6 +64,7 @@ const getInputTypeStatements = (dmmf) => {
                                     (0, utils_1.writeSpecialType)(writer, {
                                         inputType,
                                         zodCustomErrors,
+                                        zodCustomValidatorString,
                                         isNullable,
                                         isOptional,
                                         useDecimalJS: dmmf.useDecimalJs(),

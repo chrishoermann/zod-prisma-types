@@ -14,9 +14,10 @@ export declare class ExtendedDMMFInputType extends FormattedNames implements DMM
     readonly isDecimalField: boolean;
     constructor(type: DMMF.InputType, model?: ExtendedDMMFModel);
     private _setFields;
-    private _fieldIsPrismaFunction;
+    private _fieldIsPrismaFunctionType;
     private _getZodValidatorString;
     private _getZodCustomErrorsString;
+    private _getZodCustomValidatorString;
     private _setIsJsonField;
     private _setIsBytesField;
     private _setIsDecimalField;

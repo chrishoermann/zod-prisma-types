@@ -23,10 +23,20 @@ export const writeScalarType: WriteTypeFunction = (
     writeComma = true,
     zodCustomErrors,
     zodValidatorString,
+    zodCustomValidatorString,
   },
 ) => {
   const zodType = inputType.getZodScalarType();
   if (!zodType) return;
+
+  if (zodCustomValidatorString) {
+    return writer
+      .write(zodCustomValidatorString)
+      .conditionalWrite(inputType.isList, `.array()`)
+      .conditionalWrite(isOptional, `.optional()`)
+      .conditionalWrite(isNullable, `.nullable()`)
+      .conditionalWrite(writeComma, `,`);
+  }
 
   return writer
     .write(`z.${zodType}(`)

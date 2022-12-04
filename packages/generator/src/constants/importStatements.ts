@@ -26,6 +26,6 @@ export const DECIMAL_JS_IMPORT_STATEMENT: ImportDeclarationStructure = {
 
 export const VALIDATOR_JS_IMPORT_STATEMENT: ImportDeclarationStructure = {
   kind: StructureKind.ImportDeclaration,
-  defaultImport: 'Validator',
+  defaultImport: 'validator',
   moduleSpecifier: 'validator',
 };

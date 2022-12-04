@@ -21,8 +21,11 @@ export const getImportStatements: GetStatements = (datamodel) => {
   }
 
   if (datamodel.useValidatorJs()) {
-    console.log('use validator', datamodel.config);
     statements.push(VALIDATOR_JS_IMPORT_STATEMENT);
+  }
+
+  if (datamodel.config.import) {
+    statements.push(...datamodel.config.import);
   }
 
   return statements;
