@@ -22,6 +22,7 @@ generator zod {
   output   = "./zod" // optional custom output path - defaults to ./prisma/generated/zod
   // useValidatorJs = true // optional: default is false
   // useDecimalJs   = false // optional: default is true
+  // import         = "import(import { my stuff } from 'mypackage').import(import { custom } from './myfolder')" // optional
 }
 ```
 
@@ -51,6 +52,9 @@ decimalValue: z.number()
 
 This option lets you specify if the [validator.js](https://github.com/validatorjs/validator.js) library can be used in custom refine functions on string types by importing it into the created file.
 
+### `import`
+
+This option lets you add custom imports to the generated file e.g. when you use the a custom validator and want to use a completly custom package.
 
 
 ## Naming of zod schemas
