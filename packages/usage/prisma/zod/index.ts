@@ -71,7 +71,7 @@ export const InputJsonValue: z.ZodType<Prisma.Prisma.InputJsonValue> = z.union([
 export const Test = z.object({
   value: MyValue,
   id: z.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid(),
-  name: z.string({ required_error: "error", invalid_type_error: "error" }).nullable(),
+  name: z.string().nullable(),
   bic: z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }).nullable(),
   intTwo: z.number(),
   int: z.number().nullable(),
@@ -475,7 +475,7 @@ export const ProfileScalarWhereWithAggregatesInput: z.ZodType<Prisma.Prisma.Prof
 
 export const TestCreateInput: z.ZodType<Prisma.Prisma.TestCreateInput> = z.object({
   id: z.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid().optional(),
-  name: z.string({ required_error: "error", invalid_type_error: "error" }).optional().nullable(),
+  name: z.string().optional().nullable(),
   value: z.lazy(() => MyValue),
   bic: z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }).optional().nullable(),
   intTwo: z.number(),
@@ -496,7 +496,7 @@ export const TestCreateInput: z.ZodType<Prisma.Prisma.TestCreateInput> = z.objec
 
 export const TestUncheckedCreateInput: z.ZodType<Prisma.Prisma.TestUncheckedCreateInput> = z.object({
   id: z.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid().optional(),
-  name: z.string({ required_error: "error", invalid_type_error: "error" }).optional().nullable(),
+  name: z.string().optional().nullable(),
   value: z.lazy(() => MyValue),
   bic: z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }).optional().nullable(),
   intTwo: z.number(),
@@ -517,7 +517,7 @@ export const TestUncheckedCreateInput: z.ZodType<Prisma.Prisma.TestUncheckedCrea
 
 export const TestUpdateInput: z.ZodType<Prisma.Prisma.TestUpdateInput> = z.object({
   id: z.union([z.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid(), z.lazy(() => StringFieldUpdateOperationsInput)]).optional(),
-  name: z.union([z.string({ required_error: "error", invalid_type_error: "error" }), z.lazy(() => NullableStringFieldUpdateOperationsInput)]).optional().nullable(),
+  name: z.union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInput)]).optional().nullable(),
   value: z.union([z.lazy(() => MyValue), z.lazy(() => EnumMyValueFieldUpdateOperationsInput)]).optional(),
   bic: z.union([z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }), z.lazy(() => NullableStringFieldUpdateOperationsInput)]).optional().nullable(),
   intTwo: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInput)]).optional(),
@@ -538,7 +538,7 @@ export const TestUpdateInput: z.ZodType<Prisma.Prisma.TestUpdateInput> = z.objec
 
 export const TestUncheckedUpdateInput: z.ZodType<Prisma.Prisma.TestUncheckedUpdateInput> = z.object({
   id: z.union([z.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid(), z.lazy(() => StringFieldUpdateOperationsInput)]).optional(),
-  name: z.union([z.string({ required_error: "error", invalid_type_error: "error" }), z.lazy(() => NullableStringFieldUpdateOperationsInput)]).optional().nullable(),
+  name: z.union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInput)]).optional().nullable(),
   value: z.union([z.lazy(() => MyValue), z.lazy(() => EnumMyValueFieldUpdateOperationsInput)]).optional(),
   bic: z.union([z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }), z.lazy(() => NullableStringFieldUpdateOperationsInput)]).optional().nullable(),
   intTwo: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInput)]).optional(),
@@ -559,7 +559,7 @@ export const TestUncheckedUpdateInput: z.ZodType<Prisma.Prisma.TestUncheckedUpda
 
 export const TestCreateManyInput: z.ZodType<Prisma.Prisma.TestCreateManyInput> = z.object({
   id: z.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid().optional(),
-  name: z.string({ required_error: "error", invalid_type_error: "error" }).optional().nullable(),
+  name: z.string().optional().nullable(),
   value: z.lazy(() => MyValue),
   bic: z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }).optional().nullable(),
   intTwo: z.number(),
@@ -580,7 +580,7 @@ export const TestCreateManyInput: z.ZodType<Prisma.Prisma.TestCreateManyInput> =
 
 export const TestUpdateManyMutationInput: z.ZodType<Prisma.Prisma.TestUpdateManyMutationInput> = z.object({
   id: z.union([z.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid(), z.lazy(() => StringFieldUpdateOperationsInput)]).optional(),
-  name: z.union([z.string({ required_error: "error", invalid_type_error: "error" }), z.lazy(() => NullableStringFieldUpdateOperationsInput)]).optional().nullable(),
+  name: z.union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInput)]).optional().nullable(),
   value: z.union([z.lazy(() => MyValue), z.lazy(() => EnumMyValueFieldUpdateOperationsInput)]).optional(),
   bic: z.union([z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }), z.lazy(() => NullableStringFieldUpdateOperationsInput)]).optional().nullable(),
   intTwo: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInput)]).optional(),
@@ -601,7 +601,7 @@ export const TestUpdateManyMutationInput: z.ZodType<Prisma.Prisma.TestUpdateMany
 
 export const TestUncheckedUpdateManyInput: z.ZodType<Prisma.Prisma.TestUncheckedUpdateManyInput> = z.object({
   id: z.union([z.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid(), z.lazy(() => StringFieldUpdateOperationsInput)]).optional(),
-  name: z.union([z.string({ required_error: "error", invalid_type_error: "error" }), z.lazy(() => NullableStringFieldUpdateOperationsInput)]).optional().nullable(),
+  name: z.union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInput)]).optional().nullable(),
   value: z.union([z.lazy(() => MyValue), z.lazy(() => EnumMyValueFieldUpdateOperationsInput)]).optional(),
   bic: z.union([z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }), z.lazy(() => NullableStringFieldUpdateOperationsInput)]).optional().nullable(),
   intTwo: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInput)]).optional(),

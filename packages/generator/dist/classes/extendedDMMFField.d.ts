@@ -1,5 +1,10 @@
 import { DMMF } from '@prisma/generator-helper';
+import { ZodValidatorType } from '../types';
 import { FormattedNames } from './formattedNames';
+export interface GetValidator {
+    type: ZodValidatorType;
+    pattern: string;
+}
 export declare class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
     readonly kind: DMMF.Field['kind'];
     readonly name: DMMF.Field['name'];
@@ -22,33 +27,28 @@ export declare class ExtendedDMMFField extends FormattedNames implements DMMF.Fi
     readonly isBytesType: boolean;
     readonly isDecimalType: boolean;
     readonly modelName: string;
-    private _zodValidatorRegexMatch?;
-    private _zodValidatorPattern?;
-    private _zodValidatorType?;
     private _validatorMap;
     readonly clearedDocumentation?: string;
     readonly zodValidatorString?: string;
     readonly zodCustomErrors?: string;
     readonly zodCustomValidatorString?: string;
     readonly zodType: string;
-    readonly isZodCustomField: boolean;
     constructor(field: DMMF.Field, modelName: string);
     private _setIsJsonType;
     private _setIsBytesType;
     private _setIsDecimalType;
     private _setIsNullable;
     private _setZodType;
-    private _setIsZodCustomField;
     private _getZodTypeFromScalarType;
-    private _setZodValidatorRegexMatch;
-    private _setZodValidatorPattern;
-    private _setZodValidatorType;
-    private _isZodValidatorType;
-    private _setClearedDocumentation;
-    private _setZodCustomErrors;
+    private _getZodValidatorData;
+    private _hasValidatorRegexMatchThenGet;
+    private _hasValidTypeThenGet;
+    private _extractValidatorPattern;
+    private _getZodCustomErrors;
+    private _getZodCustomValidatorString;
+    private _getZodValidatorString;
     private _getValidatorKeyFromPattern;
-    private _setZodCustomValidatorString;
-    private _setZodValidatorString;
     private _validateRegexInMap;
+    private _removeValidatorPatternFromDocs;
 }
 //# sourceMappingURL=extendedDMMFField.d.ts.map

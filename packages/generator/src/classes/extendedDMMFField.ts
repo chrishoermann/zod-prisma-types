@@ -1,7 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 
 import {
-  // CUSTOM_ERROR_MAP,
   DATE_VALIDATOR_REGEX_MAP,
   NUMBER_VALIDATOR_REGEX_MAP,
   PRISMA_TO_ZOD_TYPE_MAP,
@@ -25,6 +24,15 @@ import {
   ZodPrismaScalarType,
 } from '../types';
 import { FormattedNames } from './formattedNames';
+
+/////////////////////////////////////////////////
+// TYPES AND INTERFACES
+/////////////////////////////////////////////////
+
+export interface GetValidator {
+  type: ZodValidatorType;
+  pattern: string;
+}
 
 /////////////////////////////////////////////////
 // CLASS
@@ -54,9 +62,6 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   readonly isDecimalType: boolean;
   readonly modelName: string;
 
-  private _zodValidatorRegexMatch?: RegExpMatchArray;
-  private _zodValidatorPattern?: string;
-  private _zodValidatorType?: ZodValidatorType;
   private _validatorMap: ValidatorFunctionMap = {
     string: (options) =>
       this._validateRegexInMap(STRING_VALIDATOR_REGEX_MAP, options),
@@ -73,10 +78,6 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   readonly zodCustomErrors?: string;
   readonly zodCustomValidatorString?: string;
   readonly zodType: string;
-  /**
-   * @deprecated check for `zodCustomValidatorString` instead
-   */
-  readonly isZodCustomField: boolean;
 
   constructor(field: DMMF.Field, modelName: string) {
     super(field.name);
@@ -101,21 +102,17 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
     this.isJsonType = this._setIsJsonType();
     this.isBytesType = this._setIsBytesType();
     this.isDecimalType = this._setIsDecimalType();
-
     this.isNullable = this._setIsNullable();
     this.modelName = modelName;
 
-    this._zodValidatorRegexMatch = this._setZodValidatorRegexMatch();
-    this._zodValidatorType = this._setZodValidatorType();
-    this._zodValidatorPattern = this._setZodValidatorPattern();
+    const validatorData = this._getZodValidatorData();
 
-    this.clearedDocumentation = this._setClearedDocumentation();
+    this.clearedDocumentation = validatorData?.clearedDocumentation;
+    this.zodCustomErrors = validatorData?.zodCustomErrors;
+    this.zodValidatorString = validatorData?.zodValidatorString;
+    this.zodCustomValidatorString = validatorData?.zodCustomValidatorString;
+
     this.zodType = this._setZodType();
-    this.zodCustomErrors = this._setZodCustomErrors();
-    this.zodValidatorString = this._setZodValidatorString();
-    this.zodCustomValidatorString = this._setZodCustomValidatorString();
-
-    this.isZodCustomField = this._setIsZodCustomField();
   }
 
   // INITIALIZERS
@@ -142,44 +139,55 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
     return this.type;
   }
 
-  private _setIsZodCustomField() {
-    return this._zodValidatorType === 'custom';
-  }
-
   private _getZodTypeFromScalarType(): string {
     return (
       PRISMA_TO_ZOD_TYPE_MAP[this.type as ZodPrismaScalarType] || this.type
     );
   }
+  /////////////////////////////////////////////////
+  // EXTRACT VALIDATORS
+  /////////////////////////////////////////////////
 
-  /**
-   * Checks if the field has a validator in the documentation and returns the match array
-   * @returns match array of validator regex
-   */
-  private _setZodValidatorRegexMatch() {
+  private _getZodValidatorData = () => {
+    const matchArrary = this._hasValidatorRegexMatchThenGet();
+    if (!matchArrary) return;
+
+    const type = this._hasValidTypeThenGet(matchArrary);
+    if (!type) return;
+
+    const pattern = this._extractValidatorPattern(matchArrary);
+    if (!pattern) return;
+
+    const options = { type, pattern };
+
+    return {
+      zodValidatorString: this._getZodValidatorString(options),
+      zodCustomValidatorString: this._getZodCustomValidatorString(options),
+      zodCustomErrors: this._getZodCustomErrors(matchArrary),
+      clearedDocumentation: this._removeValidatorPatternFromDocs(),
+    };
+  };
+
+  // MATCH VALIDATOR AGAINST REGEX
+  // ----------------------------------------------
+
+  private _hasValidatorRegexMatchThenGet = () => {
     if (!this.documentation) return;
     return this.documentation.match(VALIDATOR_TYPE_REGEX) ?? undefined;
-  }
+  };
 
-  /**
-   * Extracts the pattern containing the validators from the regex match array
-   * @returns the string that contains the validator information
-   */
-  private _setZodValidatorPattern() {
-    if (!this._zodValidatorRegexMatch) return;
-    return this._zodValidatorRegexMatch?.groups?.['validatorPattern'];
-  }
+  // EXTRACT VALIDATOR TYPE
+  // ----------------------------------------------
 
-  /**
-   * Checkst if a matching type field is present in the validator regex match array and returns the type
-   * @returns the zod validator type
-   */
-  private _setZodValidatorType() {
-    const validatorType = this._zodValidatorRegexMatch?.groups?.['type'];
-
+  private _hasValidTypeThenGet(matchArray: RegExpMatchArray) {
+    const validatorType = matchArray?.groups?.['type'];
     if (!validatorType) return;
 
-    if (!this._isZodValidatorType(validatorType))
+    const isValidType = PRISMA_TO_VALIDATOR_TYPE_MAP[
+      validatorType as ZodValidatorType
+    ].includes(this.type as PrismaScalarType);
+
+    if (!isValidType)
       throw new Error(
         `[@zod validator error]: Validator '${validatorType}' is not valid for type '${this.type}' @${this.modelName}.${this.name}`,
       );
@@ -187,36 +195,19 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
     return validatorType as ZodValidatorType;
   }
 
-  /**
-   * Checks if the validator type in the documentation is valid for the prisma field Type
-   * @example 'string' is valid for 'String' but 'number' is not valid for 'String'
-   * @param validatorType string that could be a zod validator type
-   * @returns true if validatorType is a zod validator type
-   */
-  private _isZodValidatorType(validatorType: string) {
-    return PRISMA_TO_VALIDATOR_TYPE_MAP[
-      validatorType as ZodValidatorType
-    ].includes(this.type as PrismaScalarType);
+  // EXTRACT VALIDATOR PATTERN
+  // ----------------------------------------------
+
+  private _extractValidatorPattern(matchArray: RegExpMatchArray) {
+    if (!matchArray) return;
+    return matchArray?.groups?.['validatorPattern'];
   }
 
-  /**
-   * After extracting possible validators from the documentation,
-   * this function removes them from the docuemtation.
-   * @returns the cleared documentation string
-   */
-  private _setClearedDocumentation() {
-    if (!this.documentation) return;
-    return this.documentation.replace(VALIDATOR_TYPE_REGEX, '');
-  }
+  // EXTRACT CUSTOM ERROR MESSAGES
+  // ----------------------------------------------
 
-  /**
-   * Filters out all invalid custom error keys from the matched regex
-   * @example invalid_type_error: "some error" // -> is valid key
-   * @example some_error_key: "some error" // -> is invalid key -gets filterd out
-   * @returns valid error messages string for zod
-   */
-  private _setZodCustomErrors() {
-    const customErrors = this._zodValidatorRegexMatch?.groups?.['customErrors'];
+  private _getZodCustomErrors(matchArray: RegExpMatchArray) {
+    const customErrors = matchArray?.groups?.['customErrors'];
     if (!customErrors) return;
 
     const customErrorsString = customErrors.match(VALIDATOR_CUSTOM_ERROR_REGEX);
@@ -230,12 +221,44 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
     return `{ ${validErrorMessages.join(', ')} }`;
   }
 
-  /**
-   * Checks if a the validator has a `key` field and returns the key
-   * @param pattern validator pattern extracted from the documentation
-   * @returns validator key found in the pattern
-   */
-  private _getValidatorKeyFromPattern(pattern = this._zodValidatorPattern) {
+  // GET ZOD VALIDATOR STRINGS
+  // ----------------------------------------------
+
+  private _getZodCustomValidatorString({ type, pattern }: GetValidator) {
+    if (type !== 'custom') return;
+    const key = this._getValidatorKeyFromPattern(pattern);
+    return this._validatorMap[type]({ pattern, key });
+  }
+
+  private _getZodValidatorString({ type, pattern }: GetValidator) {
+    if (type === 'custom') return;
+
+    // If pattern consists of multiple validators (e.g. .min(1).max(10))
+    // the pattern is split into an array for further processing
+    const validatorList = pattern?.match(SPLIT_VALIDATOR_PATTERN_REGEX);
+
+    if (!validatorList) {
+      throw new Error(
+        `[@zod validator error]: no validators found in pattern: ${pattern} in field ${this.modelName}.${this.name}`,
+      );
+    }
+
+    // Check if each validator in list is valid for the field type
+    validatorList.forEach((pattern) => {
+      const key = this._getValidatorKeyFromPattern(pattern);
+
+      if (!type)
+        throw new Error(
+          `[@zod validator error]: No validator type set in class 'ExtendedDMMFField' of: ${this.modelName}.${this.name}`,
+        );
+
+      return this._validatorMap[type]({ pattern, key });
+    });
+
+    return pattern;
+  }
+
+  private _getValidatorKeyFromPattern(pattern: string) {
     const key = pattern?.match(VALIDATOR_KEY_REGEX)?.groups?.['validatorKey'];
 
     if (!key)
@@ -244,65 +267,6 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
       );
 
     return key;
-  }
-
-  /**
-   * If the field has a `custom` validator in the documentation,
-   * this function returns the custom validator string
-   * @returns the zod custom validator string
-   */
-  private _setZodCustomValidatorString() {
-    if (
-      !this._zodValidatorType ||
-      !this._zodValidatorPattern ||
-      this._zodValidatorType !== 'custom'
-    )
-      return;
-
-    return this._validatorMap[this._zodValidatorType]({
-      pattern: this._zodValidatorPattern,
-      key: this._getValidatorKeyFromPattern(),
-    });
-  }
-
-  /**
-   * Checks if the validator type in the documentation is valid for the prisma field type
-   * and thrwos an error if not
-   * @returns zod validator string for the field
-   */
-  private _setZodValidatorString() {
-    if (
-      !this._zodValidatorType ||
-      !this._zodValidatorPattern ||
-      this._zodValidatorType === 'custom'
-    )
-      return;
-
-    // If pattern consists of multiple validators (e.g. .min(1).max(10))
-    // the pattern is split into an array for further processing
-    const validatorList = this._zodValidatorPattern?.match(
-      SPLIT_VALIDATOR_PATTERN_REGEX,
-    );
-
-    if (!validatorList) {
-      throw new Error(
-        `[@zod validator error]: no validators found in pattern: ${this._zodValidatorPattern} in field ${this.modelName}.${this.name}`,
-      );
-    }
-
-    // Check if each validator in list is valid for the field type
-    validatorList.forEach((pattern) => {
-      const key = this._getValidatorKeyFromPattern(pattern);
-
-      if (!this._zodValidatorType)
-        throw new Error(
-          `[@zod validator error]: No validator type set in class 'ExtendedDMMFField' of: ${this.modelName}.${this.name}`,
-        );
-
-      return this._validatorMap[this._zodValidatorType]({ pattern, key });
-    });
-
-    return this._zodValidatorPattern;
   }
 
   private _validateRegexInMap = <TKeys extends string>(
@@ -339,4 +303,12 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
 
     return match[0];
   };
+
+  // GET CLEARED DOCUMENTATION
+  // ----------------------------------------------
+
+  private _removeValidatorPatternFromDocs() {
+    if (!this.documentation) return;
+    return this.documentation.replace(VALIDATOR_TYPE_REGEX, '');
+  }
 }

@@ -6,7 +6,6 @@
 // VALIDATOR TYPE AND KEY REGEX
 // ----------------------------------------
 
-// should match: @zod.custom(z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' })
 export const VALIDATOR_TYPE_REGEX =
   /@zod\.(?<type>string|number|bigint|date|custom){1}(?<customErrors>\({[\w (),'":+\-*#!§$%&\/{}\[\]=?~><°^]+}\))?(?<validatorPattern>[\w (),.'":+\-*#!§$%&\/{}\[\]=?~><°^]+)?/;
 
