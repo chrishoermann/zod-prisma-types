@@ -36,7 +36,7 @@ This design decesion was made because in ts-morph it is more efficient to create
 
 > default: `true`
 
-This option lets you specify if the [decimal.js](https://mikemcl.github.io/decimal.js/) library is used to validate the `Prisma.Decimal` type. In Prisma decimal fields are represented by the decimal.js library (see [prisma docs](https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields#working-with-decimal)). 
+This option lets you specify if the [decimal.js](https://mikemcl.github.io/decimal.js/) library is used to validate the `Prisma.Decimal` type. In Prisma decimal fields are represented by the decimal.js library (see [prisma docs](https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields#working-with-decimal)). If you use `Decimal` in your `prisma.schema` and want to use the standard validation you need to add [decimal.js](https://mikemcl.github.io/decimal.js/) to your project manually.
 
 ```ts
 // If true the generator imports the `Decimal` class and generates the following output:
@@ -50,7 +50,7 @@ decimalValue: z.number()
 
 > default: `false`
 
-This option lets you specify if the [validator.js](https://github.com/validatorjs/validator.js) library can be used in custom refine functions on string types by importing it into the created file.
+This option lets you specify if the [validator.js](https://github.com/validatorjs/validator.js) library can be used in custom refine functions on string types by importing it into the created file. If you want to use this option you need to add [validator.js](https://github.com/validatorjs/validator.js) to your dependencies manually.
 
 ### `import`
 
