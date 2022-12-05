@@ -218,7 +218,7 @@ export const MyPrismaScalarsType = z.object({
 });
 
 ```
-Additionally all the prisma input, enum, filter, orderby, select, include, ... types are generated ready to be used in e.g. `trpc` inputs.
+Additionally all the prisma input-, enum-, filter-, orderby-, select-, include and all other necessary types are generated ready to be used in e.g. `trpc` inputs.
 
 # Naming of zod schemas
 
