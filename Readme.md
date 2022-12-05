@@ -1,63 +1,226 @@
-## Table of content
 
-* [About](#about)
+# zod-prisma-types
+
+`zod-prisma-types` is a generator for [prisma](www.prisma.io) that mirrors the prisma type structure as closly as possible using [zod](https://github.com/colinhacks/zod). It also provides options to write advanced zod validators directly in the prisma schema comments.
+
+# Table of content
+
 * [Installation](#installation)
 * [Usage](#usage)
-  - [Generator options](#generator-options)
+  - [output](#output)
+  - [useDecimalJs](#usedecimaljs)
+  - [useValidatorJs](#usevalidatorjs)
+  - [imports](#imports)
+* [Field validators](#field-validators)
+* [Naming of zod schemas](#naming-of-zod-schemas)
 
 
-## About
 
-`zod-prisma-types` is a generator for `prisma` that tries to mirror the type structure of the generated prisma types as closly as possible with `zod schemas`. It also provides the option to write advanced zod validators directly in the prisma schema comments.
 
-## Installation
+# Installation
 
-## Usage
+# Usage
 
-To use the generator add the following code to your prisma.schema file:
+Just add the following code to your `prisma.schema` file to create a single `index.ts` file in the `./generated/zod` output folder containing all the zod prisma schemas.
 
 ```prisma
 generator zod {
-  provider = "zod-prisma-types"
-  output   = "./zod" // optional custom output path - defaults to ./prisma/generated/zod
-  // useValidatorJs = true // optional: default is false
-  // useDecimalJs   = false // optional: default is true
-  // import         = "import(import { my stuff } from 'mypackage').import(import { custom } from './myfolder')" // optional
+  provider       = "zod-prisma-types"
 }
 ```
+If you want to customize the behaviour of the generator you can use the following options: 
 
-This generator only creates a single `index.ts` file in the specified output folder. This file contains all the created schemas - similar to `prisma-client` `index.d.ts`
+```prisma
+generator zod {
+  provider       = "zod-prisma-types"
+  output         = "./zod" // optional - default is ./generated/zod
+  useValidatorJs = true // optional - default is false
+  useDecimalJs   = false // optional - default is true
+  imports        = "import(import { myFunction } from 'mypackage').import(import { custom } from './myfolder')" // optional
+}
+```
+> As mentinned above this generator only creates a single `index.ts` file in the specified output folder containing all the zod prisma schemas. I decided to only create a single file because in [`ts-morph`](https://ts-morph.com/manipulation/performance) it is more efficient to write a bunch of statements to a single file at once than creating multiple files where only a few statements are added. This can be beneficial for generating zod schemas for big prisma schemas. Another point is that it makes the codebase of the generator more managable (...no need to create imports, simpler structure of the files) and it's easier to use custom imports (see below).
+> 
 
-This design decesion was made because in ts-morph it is more efficient to create a single file and write a bunch of statements at once than creating multiple files where only a few statements are added. This can be beneficial for generating big prisma schemas. Another point is that it makes the codebase of the generator more managable (...no need to create imports, simpler structure of the files) and it makes it simpler to reexport all the types at once e.g. for use in the frontend (react-hook-form validation, ...).
+## `output`
 
-## Generator options
+> default: `./generated/zod`
 
-### `useDecimalJs`
+Provide an alternative output path.
+
+## `useDecimalJs`
 
 > default: `true`
 
-This option lets you specify if the [decimal.js](https://mikemcl.github.io/decimal.js/) library is used to validate the `Prisma.Decimal` type. In Prisma decimal fields are represented by the decimal.js library (see [prisma docs](https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields#working-with-decimal)). If you use `Decimal` in your `prisma.schema` and want to use the standard validation you need to add [decimal.js](https://mikemcl.github.io/decimal.js/) to your project manually.
+By default the [decimal.js](https://mikemcl.github.io/decimal.js/) library is used to validate the `Prisma.Decimal` type. In Prisma `Decimal` fields are represented by the [decimal.js](https://mikemcl.github.io/decimal.js/) library as stated in the [prisma docs](https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields#working-with-decimal). If you use the `Decimal` type somewhere in your `prisma.schema` and want to use the default implementation you need to install [decimal.js](https://mikemcl.github.io/decimal.js/) to your dependencies manually.
+
+```prisma
+model MyModel {
+  id         Int      @id @default(autoincrement())
+  decimal    Decimal
+  decimalOpt Decimal?
+}
+```
+By default the above model generates the following output:
+```ts
+// import added 
+import { Decimal } from "decimal.js";
+
+// generated zod schema
+export const MyModel = z.object({
+  id: z.number(),
+  decimal: z
+    .number()
+    .refine((v) => Decimal.isDecimal(v), {
+      message: 'Field "decimal" must be a Decimal',
+      path: ['Models', 'MyModel'],
+    }),
+  decimalOpt: z
+    .number()
+    .refine((v) => Decimal.isDecimal(v), {
+      message: 'Field "decimalOpt" must be a Decimal',
+      path: ['Models', 'MyModel'],
+    })
+    .nullable(),
+});
+```
+If you opt out of validating the `Decimal` type with `decimal.js` the generated output would look like this
 
 ```ts
-// If true the generator imports the `Decimal` class and generates the following output:
-decimalValue: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }),
+// no import added
 
-// If `false` no additional library is importet and the generator creates the following output:
-decimalValue: z.number()
+// generated zod schema
+export const MyModel = z.object({
+  id: z.number(),
+  decimal: z.number(),
+  decimalOpt: z.number().nullable(),
+});
 ```
 
-### `useValidateJs`
+## `useValidatorJs`
 
 > default: `false`
 
-This option lets you specify if the [validator.js](https://github.com/validatorjs/validator.js) library can be used in custom refine functions on string types by importing it into the created file. If you want to use this option you need to add [validator.js](https://github.com/validatorjs/validator.js) to your dependencies manually.
+If `true` the [validator.js](https://github.com/validatorjs/validator.js) library is imported and can be used in custom zod validator functions for `String` types. If you want to use this option you need to install [validator.js](https://github.com/validatorjs/validator.js) to your dependencies.
 
-### `import`
+```ts
+// adds import
+import validator from 'validator';
 
-This option lets you add custom imports to the generated file e.g. when you use the a custom validator and want to use a completly custom package.
+// 'validator' can now be used in every zod.string validator
+```
 
+## `imports`
 
-## Naming of zod schemas
+You can specify custom imports that are then added to the `index.ts` file. Since prisma only lets us specify `string` options in the `prisma.schema` generator config the syntax of the imports is a bit clumsy:
+
+```prisma
+generator zod {
+  // ...other config options
+  imports        = "import(import { myFunction } from 'mypackage').import(import { custom } from './myfolder')"
+}
+```
+> The function-like syntax is used to easily split the string into an array and remove the unnecessary stuff 
+
+This config adds the following imports to the file:
+
+```ts
+// ...standard imports
+
+// your custom imports
+import { myFunction } from 'mypackage'
+import { custom } from './myfolder'
+```
+
+# Field validators
+It is possible to add zod validators in the comments of the `prisma.schema` file with the following syntax (use `///` instead of `//`).
+
+```prisma
+myField [prisma-scalar-type] /// @zod.[zod-type with optional[(zod-error-messages)]].[zod validators for scalar]
+```
+
+This maybe looks a bit cryptc but to make it easier to undestand here is an example:
+
+```prisma
+generator zod {
+  provider       = "zod-prisma-types"
+  output         = "./zod" 
+  useDecimalJs   = true 
+  imports        = "import(import { myFunction } from 'mypackage')"
+}
+
+model MyPrismaScalarsType {
+  /// @zod.string({ invalid_type_error: "invalid type error" }).cuid()
+  id      String    @id @default(cuid())
+  /// Some comment about string @zod.string.min(3, { message: "min error" }).max(10, { message: "max error" })
+  string  String?
+  /// @zod.custom.use(z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }))
+  bic     String?
+  /// @zod.number({ error: "error", some_key: "error", wrong_type_error: "error" })
+  float   Float
+  decimal Decimal
+  date    DateTime? /// @zod.date.min(new Date('2020-01-01'))
+  bigInt  BigInt
+  json    Json
+  bytes   Bytes
+  /// @zod.custom.use(z.string().refine((val) => myFunction.validate(val), { message: 'Is not valid' }))
+  custom  String?
+}
+```
+This example generates a zod schema in `prisma/zod/index.ts` that looks like this:
+
+```ts
+import { z } from 'zod';
+import * as Prisma from '@prisma/client';
+import { Decimal } from 'decimal.js';
+import validator from 'validator';
+import { myFunction } from 'mypackage';
+
+export const JsonValue: z.ZodType<Prisma.Prisma.JsonValue> = z
+  .union([
+    z.string(),
+    z.number(),
+    z.boolean(),
+    z.lazy(() => z.array(JsonValue)),
+    z.lazy(() => z.record(JsonValue)),
+  ])
+  .nullable();
+
+export const MyPrismaScalarsType = z.object({
+  id: z.string({ invalid_type_error: 'invalid type error' }).cuid(),
+  /**
+   * Some comment about string
+   */
+  string: z
+    .string()
+    .min(3, { message: 'min error' })
+    .max(10, { message: 'max error' })
+    .nullable(),
+  bic: z
+    .string()
+    .refine((val) => validator.isBIC(val), { message: 'BIC is not valid' })
+    .nullable(),
+  float: z.number(),
+  decimal: z
+    .number()
+    .refine((v) => Decimal.isDecimal(v), {
+      message: 'Field "decimal" must be a Decimal',
+      path: ['Models', 'MyPrismaScalarsType'],
+    }),
+  date: z.date().min(new Date('2020-01-01')).nullable(),
+  bigInt: z.bigint(),
+  json: JsonValue,
+  bytes: z.instanceof(Buffer),
+  custom: z
+    .string()
+    .refine((val) => myFunction.validate(val), { message: 'Is not valid' })
+    .nullable(),
+});
+
+```
+Additionally all the prisma input, enum, filter, orderby, select, include, ... types are generated ready to be used in e.g. `trpc` inputs.
+
+# Naming of zod schemas
 
 The zod types are named after the generated prisma types so you just need to hover over a prisma function and you know which type to import. The result would look something like this for trpc v.10:
 
@@ -81,3 +244,28 @@ const appRouter = t.router({
   // rest of implementation ...
 });
 ```
+
+
+#### `prisma-scalar-type`
+Any prisma scalar type as mentioned in the [prisma docs](https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#model-field-scalar-types). The customized validation oly works on prisma scalars.
+
+#### `zod-type`
+The [zod primitive types](https://github.com/colinhacks/zod#primitives) `string`, `number` and `date` and a `custom` key to add a completly custom validation logic.
+
+#### `zod-error-messages`
+Any object that adheres to the `RawCreateParams` type. A
+
+```ts
+type RawCreateParams = {
+  invalid_type_error?: string;
+  required_error?: string;
+  description?: string;
+} | undefined
+```
+Any key that does not match the keys of `RawCreateParams` is filterd out and will not be printed in the generated zod schema
+
+### String
+
+e.g. if the zod scalar is `string` and you want to use `.min(3)` and `.max(10)` on a string field you can add the following to your prisma.schema
+
+
