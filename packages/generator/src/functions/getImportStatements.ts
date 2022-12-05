@@ -24,8 +24,8 @@ export const getImportStatements: GetStatements = (datamodel) => {
     statements.push(VALIDATOR_JS_IMPORT_STATEMENT);
   }
 
-  if (datamodel.config.import) {
-    statements.push(...datamodel.config.import);
+  if (datamodel.config.imports) {
+    statements.push(...datamodel.config.imports);
   }
 
   return statements;

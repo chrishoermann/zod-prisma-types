@@ -6,15 +6,15 @@ import { ExtendedDMMFSchema } from './extendedDMMFSchema';
 export declare const configSchema: z.ZodObject<{
     useValidatorJs: z.ZodOptional<z.ZodEffects<z.ZodDefault<z.ZodString>, boolean, string | undefined>>;
     useDecimalJs: z.ZodOptional<z.ZodEffects<z.ZodDefault<z.ZodString>, boolean, string | undefined>>;
-    import: z.ZodOptional<z.ZodEffects<z.ZodString, string[], string>>;
+    imports: z.ZodOptional<z.ZodEffects<z.ZodString, string[], string>>;
 }, "strip", z.ZodTypeAny, {
     useValidatorJs?: boolean | undefined;
     useDecimalJs?: boolean | undefined;
-    import?: string[] | undefined;
+    imports?: string[] | undefined;
 }, {
     useValidatorJs?: string | undefined;
     useDecimalJs?: string | undefined;
-    import?: string | undefined;
+    imports?: string | undefined;
 }>;
 export type ConfigSchema = z.infer<typeof configSchema>;
 export declare class ExtendedDMMF implements DMMF.Document {

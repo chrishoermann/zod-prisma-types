@@ -16,6 +16,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./getStringVariants"), exports);
 __exportStar(require("./writeHeading"), exports);
+__exportStar(require("./writeJsDoc"), exports);
 __exportStar(require("./writeConstStatement"), exports);
 __exportStar(require("./writeCustomType"), exports);
 __exportStar(require("./writeScalarType"), exports);

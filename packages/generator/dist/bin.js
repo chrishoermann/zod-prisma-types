@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-require("./generator");
+require("./generatorHandler");
 //# sourceMappingURL=bin.js.map

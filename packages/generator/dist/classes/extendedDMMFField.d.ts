@@ -28,10 +28,10 @@ export declare class ExtendedDMMFField extends FormattedNames implements DMMF.Fi
     readonly isDecimalType: boolean;
     readonly modelName: string;
     private _validatorMap;
-    readonly clearedDocumentation?: string;
-    readonly zodValidatorString?: string;
     readonly zodCustomErrors?: string;
+    readonly zodValidatorString?: string;
     readonly zodCustomValidatorString?: string;
+    readonly clearedDocumentation?: string;
     readonly zodType: string;
     constructor(field: DMMF.Field, modelName: string);
     private _setIsJsonType;
@@ -41,9 +41,9 @@ export declare class ExtendedDMMFField extends FormattedNames implements DMMF.Fi
     private _setZodType;
     private _getZodTypeFromScalarType;
     private _getZodValidatorData;
-    private _hasValidatorRegexMatchThenGet;
-    private _hasValidTypeThenGet;
-    private _extractValidatorPattern;
+    private _getValidatorRegexMatch;
+    private _getValidatorType;
+    private _getValidatorPattern;
     private _getZodCustomErrors;
     private _getZodCustomValidatorString;
     private _getZodValidatorString;

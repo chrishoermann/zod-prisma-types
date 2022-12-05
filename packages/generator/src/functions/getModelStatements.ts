@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { GetStatements, Statement } from '../types';
-import { writeConstStatement, writeHeading } from '../utils';
+import { writeConstStatement, writeHeading, writeJsDoc } from '../utils';
 
 /////////////////////////////////////////////////
 // FUNCTION
@@ -20,6 +20,10 @@ export const getModelStatements: GetStatements = (dmmf) => {
             initializer(writer) {
               writer.write(`z.object({`);
               [...model.enumFields, ...model.scalarFields].forEach((field) => {
+                if (field.clearedDocumentation) {
+                  writeJsDoc(writer, field.clearedDocumentation);
+                }
+
                 if (field.zodCustomValidatorString) {
                   return writer
                     .write(`${field.formattedNames.camelCase}: `)
@@ -43,7 +47,7 @@ export const getModelStatements: GetStatements = (dmmf) => {
                 if (field.isJsonType) {
                   return writer
                     .write(`${field.formattedNames.camelCase}: `)
-                    .write(`InputJsonValue`)
+                    .write(`JsonValue`)
                     .conditionalWrite(field.isList, `.array()`)
                     .conditionalWrite(field.isNullable, `.nullable()`)
                     .write(`,`)
@@ -70,7 +74,9 @@ export const getModelStatements: GetStatements = (dmmf) => {
                     )
                     .write(`)`)
                     .write(`.refine((v) => Decimal.isDecimal(v),`)
-                    .write(` { message: 'Must be a Decimal', `)
+                    .write(
+                      ` { message: 'Field "${field.formattedNames.original}" must be a Decimal', `,
+                    )
                     .write(
                       `path: ['Models', '${model.formattedNames.pascalCase}']`,
                     )

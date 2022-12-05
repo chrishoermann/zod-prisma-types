@@ -15,6 +15,8 @@ generator zod {
   output         = "./zod" // default is ./generated/zod
   useValidatorJs = true // default is false
   useDecimalJs   = true // default is true
+  // imports        = "import(import { myFunction } from 'mypackage').import(import { custom } from './myfolder')" // optional
+  imports        = "import(import { myFunction } from 'mypackage')"
 }
 
 enum MyValue {
@@ -49,6 +51,24 @@ model Test {
   // email String @unique
   // name  Float
   // posts Post[]
+}
+
+model MyPrismaScalarsType {
+  /// @zod.string({ invalid_type_error: "invalid type error" }).cuid()
+  id      String    @id @default(cuid())
+  /// Some comment about string @zod.string.min(3, { message: "min error" }).max(10, { message: "max error" })
+  string  String?
+  /// @zod.custom.use(z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }))
+  bic     String?
+  /// @zod.number({ error: "error", some_key: "error", wrong_type_error: "error" })
+  float   Float
+  decimal Decimal
+  date    DateTime? /// @zod.date.min(new Date('2020-01-01'))
+  bigInt  BigInt
+  json    Json
+  bytes   Bytes
+  /// @zod.custom.use(z.string().refine((val) => myFunction.validate(val), { message: 'Is not valid' }))
+  custom  String?
 }
 
 model User {

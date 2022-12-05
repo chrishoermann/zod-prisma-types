@@ -13,6 +13,9 @@ const getModelStatements = (dmmf) => {
                     initializer(writer) {
                         writer.write(`z.object({`);
                         [...model.enumFields, ...model.scalarFields].forEach((field) => {
+                            if (field.clearedDocumentation) {
+                                (0, utils_1.writeJsDoc)(writer, field.clearedDocumentation);
+                            }
                             if (field.zodCustomValidatorString) {
                                 return writer
                                     .write(`${field.formattedNames.camelCase}: `)
@@ -34,7 +37,7 @@ const getModelStatements = (dmmf) => {
                             if (field.isJsonType) {
                                 return writer
                                     .write(`${field.formattedNames.camelCase}: `)
-                                    .write(`InputJsonValue`)
+                                    .write(`JsonValue`)
                                     .conditionalWrite(field.isList, `.array()`)
                                     .conditionalWrite(field.isNullable, `.nullable()`)
                                     .write(`,`)
@@ -56,7 +59,7 @@ const getModelStatements = (dmmf) => {
                                     .conditionalWrite(!!field.zodCustomErrors, field.zodCustomErrors)
                                     .write(`)`)
                                     .write(`.refine((v) => Decimal.isDecimal(v),`)
-                                    .write(` { message: 'Must be a Decimal', `)
+                                    .write(` { message: 'Field "${field.formattedNames.original}" must be a Decimal', `)
                                     .write(`path: ['Models', '${model.formattedNames.pascalCase}']`)
                                     .write(` })`)
                                     .conditionalWrite(field.isList, `.array()`)

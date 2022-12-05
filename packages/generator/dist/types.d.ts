@@ -19,6 +19,7 @@ export type ZodValidatorType = Extract<ZodPrimitiveType, 'string' | 'number' | '
 export type ZodScalarType = Extract<ZodPrimitiveType, 'string' | 'number' | 'date' | 'boolean' | 'bigint' | 'unknown'>;
 export type PrismaScalarType = 'String' | 'Boolean' | 'Int' | 'BigInt' | 'Float' | 'Decimal' | 'DateTime' | 'Json' | 'Bytes';
 export type ZodPrismaScalarType = Exclude<PrismaScalarType, 'Json' | 'Bytes' | 'Decimal'>;
+export type ZodBasicValidatorKeys = 'refine' | 'transform' | 'superRefine';
 export type ZodStringValidatorKeys = 'min' | 'max' | 'length' | 'email' | 'url' | 'uuid' | 'cuid' | 'regex' | 'startsWith' | 'endsWith' | 'trim' | 'datetime';
 export type ZodNumberValidatorKeys = 'gt' | 'gte' | 'lt' | 'lte' | 'int' | 'positive' | 'nonpositive' | 'negative' | 'nonnegative' | 'multipleOf' | 'finite';
 export type ZodDateValidatorKeys = 'min' | 'max';

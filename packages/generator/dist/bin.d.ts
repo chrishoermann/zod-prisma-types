@@ -1,3 +1,3 @@
 #!/usr/bin/env node
-import './generator';
+import './generatorHandler';
 //# sourceMappingURL=bin.d.ts.map

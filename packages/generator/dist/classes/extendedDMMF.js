@@ -19,15 +19,12 @@ exports.configSchema = zod_1.default.object({
         .default('true')
         .transform((val) => val === 'true')
         .optional(),
-    import: zod_1.default
+    imports: zod_1.default
         .string()
-        .transform((val) => {
-        const valArray = val
-            .split(')')
-            .map((v) => v.replace(/import\(|.import\(/, ''))
-            .filter((v) => v !== '');
-        return valArray;
-    })
+        .transform((val) => val
+        .split(')')
+        .map((v) => v.replace(/import\(|.import\(/, ''))
+        .filter((v) => v !== ''))
         .optional(),
 });
 class ExtendedDMMF {
@@ -75,7 +72,7 @@ class ExtendedDMMF {
         return {
             useValidatorJs: Boolean(parsedConfig['useValidatorJs']),
             useDecimalJs: Boolean(parsedConfig['useDecimalJs']),
-            import: parsedConfig['import'],
+            imports: parsedConfig['imports'],
         };
     }
     useValidatorJs() {
@@ -85,7 +82,7 @@ class ExtendedDMMF {
         return Boolean(this.config.useDecimalJs);
     }
     hasCustomImports() {
-        return Boolean(this.config.import);
+        return Boolean(this.config.imports);
     }
 }
 exports.ExtendedDMMF = ExtendedDMMF;

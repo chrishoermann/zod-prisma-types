@@ -1,5 +1,6 @@
 export * from './getStringVariants';
 export * from './writeHeading';
+export * from './writeJsDoc';
 export * from './writeConstStatement';
 export * from './writeCustomType';
 export * from './writeScalarType';

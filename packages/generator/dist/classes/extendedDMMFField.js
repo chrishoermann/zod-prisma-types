@@ -144,7 +144,7 @@ class ExtendedDMMFField extends formattedNames_1.FormattedNames {
                 custom: (options) => this._validateRegexInMap(objectMaps_1.CUSTOM_VALIDATOR_REGEX_MAP, options),
             }
         });
-        Object.defineProperty(this, "clearedDocumentation", {
+        Object.defineProperty(this, "zodCustomErrors", {
             enumerable: true,
             configurable: true,
             writable: true,
@@ -156,13 +156,13 @@ class ExtendedDMMFField extends formattedNames_1.FormattedNames {
             writable: true,
             value: void 0
         });
-        Object.defineProperty(this, "zodCustomErrors", {
+        Object.defineProperty(this, "zodCustomValidatorString", {
             enumerable: true,
             configurable: true,
             writable: true,
             value: void 0
         });
-        Object.defineProperty(this, "zodCustomValidatorString", {
+        Object.defineProperty(this, "clearedDocumentation", {
             enumerable: true,
             configurable: true,
             writable: true,
@@ -179,25 +179,25 @@ class ExtendedDMMFField extends formattedNames_1.FormattedNames {
             configurable: true,
             writable: true,
             value: () => {
-                const matchArrary = this._hasValidatorRegexMatchThenGet();
+                const matchArrary = this._getValidatorRegexMatch();
                 if (!matchArrary)
                     return;
-                const type = this._hasValidTypeThenGet(matchArrary);
+                const type = this._getValidatorType(matchArrary);
                 if (!type)
                     return;
-                const pattern = this._extractValidatorPattern(matchArrary);
+                const pattern = this._getValidatorPattern(matchArrary);
                 if (!pattern)
                     return;
                 const options = { type, pattern };
                 return {
+                    zodCustomErrors: this._getZodCustomErrors(matchArrary),
                     zodValidatorString: this._getZodValidatorString(options),
                     zodCustomValidatorString: this._getZodCustomValidatorString(options),
-                    zodCustomErrors: this._getZodCustomErrors(matchArrary),
                     clearedDocumentation: this._removeValidatorPatternFromDocs(),
                 };
             }
         });
-        Object.defineProperty(this, "_hasValidatorRegexMatchThenGet", {
+        Object.defineProperty(this, "_getValidatorRegexMatch", {
             enumerable: true,
             configurable: true,
             writable: true,
@@ -253,10 +253,10 @@ class ExtendedDMMFField extends formattedNames_1.FormattedNames {
         this.isNullable = this._setIsNullable();
         this.modelName = modelName;
         const validatorData = this._getZodValidatorData();
-        this.clearedDocumentation = validatorData === null || validatorData === void 0 ? void 0 : validatorData.clearedDocumentation;
         this.zodCustomErrors = validatorData === null || validatorData === void 0 ? void 0 : validatorData.zodCustomErrors;
         this.zodValidatorString = validatorData === null || validatorData === void 0 ? void 0 : validatorData.zodValidatorString;
         this.zodCustomValidatorString = validatorData === null || validatorData === void 0 ? void 0 : validatorData.zodCustomValidatorString;
+        this.clearedDocumentation = validatorData === null || validatorData === void 0 ? void 0 : validatorData.clearedDocumentation;
         this.zodType = this._setZodType();
     }
     _setIsJsonType() {
@@ -279,7 +279,7 @@ class ExtendedDMMFField extends formattedNames_1.FormattedNames {
     _getZodTypeFromScalarType() {
         return (objectMaps_1.PRISMA_TO_ZOD_TYPE_MAP[this.type] || this.type);
     }
-    _hasValidTypeThenGet(matchArray) {
+    _getValidatorType(matchArray) {
         var _a;
         const validatorType = (_a = matchArray === null || matchArray === void 0 ? void 0 : matchArray.groups) === null || _a === void 0 ? void 0 : _a['type'];
         if (!validatorType)
@@ -289,7 +289,7 @@ class ExtendedDMMFField extends formattedNames_1.FormattedNames {
             throw new Error(`[@zod validator error]: Validator '${validatorType}' is not valid for type '${this.type}' @${this.modelName}.${this.name}`);
         return validatorType;
     }
-    _extractValidatorPattern(matchArray) {
+    _getValidatorPattern(matchArray) {
         var _a;
         if (!matchArray)
             return;
@@ -337,7 +337,7 @@ class ExtendedDMMFField extends formattedNames_1.FormattedNames {
     _removeValidatorPatternFromDocs() {
         if (!this.documentation)
             return;
-        return this.documentation.replace(regex_1.VALIDATOR_TYPE_REGEX, '');
+        return this.documentation.replace(regex_1.VALIDATOR_TYPE_REGEX, '').trim();
     }
 }
 exports.ExtendedDMMFField = ExtendedDMMFField;

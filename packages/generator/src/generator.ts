@@ -1,4 +1,4 @@
-import { generatorHandler } from '@prisma/generator-helper';
+import { GeneratorOptions } from '@prisma/generator-helper';
 import { Project } from 'ts-morph';
 
 import { DirectoryHelper } from './classes/directoryHelper';
@@ -13,58 +13,55 @@ import {
   getModelStatements,
 } from './functions';
 
-generatorHandler({
-  onManifest: () => {
-    return {
-      defaultOutput: './generated/zod',
-      prettyName: 'Zod Prisma Types',
-    };
-  },
-  onGenerate: async (options) => {
-    const path = options.generator.output;
-    const config = options.generator.config;
+export interface GeneratorConfig {
+  output: GeneratorOptions['generator']['output'];
+  config: GeneratorOptions['generator']['config'];
+  dmmf: GeneratorOptions['dmmf'];
+}
 
-    if (!path) throw new Error('No output path specified');
+export const generator = async ({ output, config, dmmf }: GeneratorConfig) => {
+  if (!output) throw new Error('No output path specified');
 
-    // extend the DMMF with custom functionality - check "classes" folder
-    const extendendDMMF = new ExtendedDMMF(options.dmmf, config);
+  console.log('config: ', config);
 
-    // create ts-morph project - see: https://ts-morph.com/
-    const project = new Project({
-      tsConfigFilePath: './tsconfig.json',
-      skipAddingFilesFromTsConfig: true,
-    });
+  // extend the DMMF with custom functionality - see "classes" folder
+  const extendendDMMF = new ExtendedDMMF(dmmf, config);
 
-    // Create the path specified in the generator output
-    DirectoryHelper.pathExistsElseCreate(path.value);
+  // create ts-morph project - see: https://ts-morph.com/
+  const project = new Project({
+    tsConfigFilePath: './tsconfig.json',
+    skipAddingFilesFromTsConfig: true,
+  });
 
-    // create the source file containing all zod types
-    const indexSource = project.createSourceFile(
-      `${path.value}/index.ts`,
-      {
-        statements: [
-          ...getImportStatements(extendendDMMF),
-          ...getEnumStatements(extendendDMMF),
-          ...getHelperStatements(extendendDMMF),
-          ...getModelStatements(extendendDMMF),
-          ...getIncludeSelectStatements(extendendDMMF),
-          ...getInputTypeStatements(extendendDMMF),
-          ...getArgTypeStatements(extendendDMMF),
-        ],
-      },
-      {
-        overwrite: true,
-      },
-    );
+  // Create the path specified in the generator output
+  DirectoryHelper.pathExistsElseCreate(output.value);
 
-    // format the source file
-    indexSource.formatText({
-      indentSize: 2,
-      convertTabsToSpaces: true,
-      ensureNewLineAtEndOfFile: true,
-    });
+  // create the source file containing all zod types
+  const indexSource = project.createSourceFile(
+    `${output.value}/index.ts`,
+    {
+      statements: [
+        ...getImportStatements(extendendDMMF),
+        ...getEnumStatements(extendendDMMF),
+        ...getHelperStatements(extendendDMMF),
+        ...getModelStatements(extendendDMMF),
+        ...getIncludeSelectStatements(extendendDMMF),
+        ...getInputTypeStatements(extendendDMMF),
+        ...getArgTypeStatements(extendendDMMF),
+      ],
+    },
+    {
+      overwrite: true,
+    },
+  );
 
-    // save the source file and apply all changes
-    return project.save();
-  },
-});
+  // format the source file
+  indexSource.formatText({
+    indentSize: 2,
+    convertTabsToSpaces: true,
+    ensureNewLineAtEndOfFile: true,
+  });
+
+  // save the source file and apply all changes
+  return project.save();
+};

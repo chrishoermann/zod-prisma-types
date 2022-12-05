@@ -309,6 +309,6 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
 
   private _removeValidatorPatternFromDocs() {
     if (!this.documentation) return;
-    return this.documentation.replace(VALIDATOR_TYPE_REGEX, '');
+    return this.documentation.replace(VALIDATOR_TYPE_REGEX, '').trim();
   }
 }

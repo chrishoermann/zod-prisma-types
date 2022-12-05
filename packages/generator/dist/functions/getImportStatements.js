@@ -13,8 +13,8 @@ const getImportStatements = (datamodel) => {
     if (datamodel.useValidatorJs()) {
         statements.push(importStatements_1.VALIDATOR_JS_IMPORT_STATEMENT);
     }
-    if (datamodel.config.import) {
-        statements.push(...datamodel.config.import);
+    if (datamodel.config.imports) {
+        statements.push(...datamodel.config.imports);
     }
     return statements;
 };

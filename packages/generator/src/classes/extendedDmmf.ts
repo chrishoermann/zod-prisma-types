@@ -21,7 +21,7 @@ export const configSchema = z.object({
     .default('true')
     .transform((val) => val === 'true')
     .optional(),
-  import: z
+  imports: z
     .string()
     .transform((val) =>
       val
@@ -68,7 +68,7 @@ export class ExtendedDMMF implements DMMF.Document {
     return {
       useValidatorJs: Boolean(parsedConfig['useValidatorJs']),
       useDecimalJs: Boolean(parsedConfig['useDecimalJs']),
-      import: parsedConfig['import'],
+      imports: parsedConfig['imports'],
     };
   }
 
@@ -81,6 +81,6 @@ export class ExtendedDMMF implements DMMF.Document {
   }
 
   hasCustomImports() {
-    return Boolean(this.config.import);
+    return Boolean(this.config.imports);
   }
 }
