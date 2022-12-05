@@ -139,7 +139,7 @@ It is possible to add zod validators in the comments of the `prisma.schema` file
 myField [prisma-scalar-type] /// @zod.[zod-type with optional[(zod-error-messages)]].[zod validators for scalar]
 ```
 
-This maybe looks a bit cryptc but to make it easier to undestand here is an example:
+This maybe looks a bit cryptc. To make it easier to undestand here is an example:
 
 ```prisma
 generator zod {
