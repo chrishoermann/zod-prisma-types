@@ -75,6 +75,8 @@ export type ZodPrismaScalarType = Exclude<
   'Json' | 'Bytes' | 'Decimal'
 >;
 
+export type ZodBasicValidatorKeys = 'refine' | 'transform' | 'superRefine';
+
 export type ZodStringValidatorKeys =
   | 'min'
   | 'max'

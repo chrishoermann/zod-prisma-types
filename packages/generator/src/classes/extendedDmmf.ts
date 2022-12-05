@@ -23,13 +23,12 @@ export const configSchema = z.object({
     .optional(),
   import: z
     .string()
-    .transform((val) => {
-      const valArray = val
+    .transform((val) =>
+      val
         .split(')')
         .map((v) => v.replace(/import\(|.import\(/, ''))
-        .filter((v) => v !== '');
-      return valArray;
-    })
+        .filter((v) => v !== ''),
+    )
     .optional(),
 });
 
