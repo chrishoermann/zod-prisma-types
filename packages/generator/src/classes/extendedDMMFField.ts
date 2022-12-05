@@ -73,10 +73,10 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
       this._validateRegexInMap(CUSTOM_VALIDATOR_REGEX_MAP, options),
   };
 
-  readonly clearedDocumentation?: string;
-  readonly zodValidatorString?: string;
   readonly zodCustomErrors?: string;
+  readonly zodValidatorString?: string;
   readonly zodCustomValidatorString?: string;
+  readonly clearedDocumentation?: string;
   readonly zodType: string;
 
   constructor(field: DMMF.Field, modelName: string) {
@@ -107,10 +107,10 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
 
     const validatorData = this._getZodValidatorData();
 
-    this.clearedDocumentation = validatorData?.clearedDocumentation;
     this.zodCustomErrors = validatorData?.zodCustomErrors;
     this.zodValidatorString = validatorData?.zodValidatorString;
     this.zodCustomValidatorString = validatorData?.zodCustomValidatorString;
+    this.clearedDocumentation = validatorData?.clearedDocumentation;
 
     this.zodType = this._setZodType();
   }
@@ -149,21 +149,21 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   /////////////////////////////////////////////////
 
   private _getZodValidatorData = () => {
-    const matchArrary = this._hasValidatorRegexMatchThenGet();
+    const matchArrary = this._getValidatorRegexMatch();
     if (!matchArrary) return;
 
-    const type = this._hasValidTypeThenGet(matchArrary);
+    const type = this._getValidatorType(matchArrary);
     if (!type) return;
 
-    const pattern = this._extractValidatorPattern(matchArrary);
+    const pattern = this._getValidatorPattern(matchArrary);
     if (!pattern) return;
 
     const options = { type, pattern };
 
     return {
+      zodCustomErrors: this._getZodCustomErrors(matchArrary),
       zodValidatorString: this._getZodValidatorString(options),
       zodCustomValidatorString: this._getZodCustomValidatorString(options),
-      zodCustomErrors: this._getZodCustomErrors(matchArrary),
       clearedDocumentation: this._removeValidatorPatternFromDocs(),
     };
   };
@@ -171,7 +171,7 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   // MATCH VALIDATOR AGAINST REGEX
   // ----------------------------------------------
 
-  private _hasValidatorRegexMatchThenGet = () => {
+  private _getValidatorRegexMatch = () => {
     if (!this.documentation) return;
     return this.documentation.match(VALIDATOR_TYPE_REGEX) ?? undefined;
   };
@@ -179,7 +179,7 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   // EXTRACT VALIDATOR TYPE
   // ----------------------------------------------
 
-  private _hasValidTypeThenGet(matchArray: RegExpMatchArray) {
+  private _getValidatorType(matchArray: RegExpMatchArray) {
     const validatorType = matchArray?.groups?.['type'];
     if (!validatorType) return;
 
@@ -198,7 +198,7 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   // EXTRACT VALIDATOR PATTERN
   // ----------------------------------------------
 
-  private _extractValidatorPattern(matchArray: RegExpMatchArray) {
+  private _getValidatorPattern(matchArray: RegExpMatchArray) {
     if (!matchArray) return;
     return matchArray?.groups?.['validatorPattern'];
   }
