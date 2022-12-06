@@ -25,6 +25,11 @@ enum MyValue {
   C
 }
 
+model MyModel {
+  id     Int     @id @default(autoincrement())
+  custom String? /// @zod.custom.use(z.string().refine(val => validator.isBIC(val)).transform(val => val.toUpperCase()))
+}
+
 model Test {
   /// @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid()
   id         String    @id @default(cuid())
@@ -60,10 +65,10 @@ model MyPrismaScalarsType {
   string  String?
   /// @zod.custom.use(z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }))
   bic     String?
-  /// @zod.number({ error: "error", some_key: "error", wrong_type_error: "error" })
+  /// @zod.number.lt(10, { message: "lt error" }).gt(5, { message: "gt error" })
   float   Float
   decimal Decimal
-  date    DateTime? /// @zod.date.min(new Date('2020-01-01'))
+  date    DateTime? /// @zod.date.min(new Date('2020-01-01')).max(new Date('2020-12-31'))
   bigInt  BigInt
   json    Json
   bytes   Bytes

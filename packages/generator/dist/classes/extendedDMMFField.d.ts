@@ -3,7 +3,7 @@ import { ZodValidatorType } from '../types';
 import { FormattedNames } from './formattedNames';
 export interface GetValidator {
     type: ZodValidatorType;
-    pattern: string;
+    pattern?: string;
 }
 export declare class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
     readonly kind: DMMF.Field['kind'];
@@ -27,6 +27,7 @@ export declare class ExtendedDMMFField extends FormattedNames implements DMMF.Fi
     readonly isBytesType: boolean;
     readonly isDecimalType: boolean;
     readonly modelName: string;
+    readonly errorLocation: string;
     private _validatorMap;
     readonly zodCustomErrors?: string;
     readonly zodValidatorString?: string;
@@ -40,6 +41,7 @@ export declare class ExtendedDMMFField extends FormattedNames implements DMMF.Fi
     private _setIsNullable;
     private _setZodType;
     private _getZodTypeFromScalarType;
+    private _setErrorLocation;
     private _getZodValidatorData;
     private _getValidatorRegexMatch;
     private _getValidatorType;

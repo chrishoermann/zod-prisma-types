@@ -133,6 +133,12 @@ class ExtendedDMMFField extends formattedNames_1.FormattedNames {
             writable: true,
             value: void 0
         });
+        Object.defineProperty(this, "errorLocation", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         Object.defineProperty(this, "_validatorMap", {
             enumerable: true,
             configurable: true,
@@ -186,8 +192,6 @@ class ExtendedDMMFField extends formattedNames_1.FormattedNames {
                 if (!type)
                     return;
                 const pattern = this._getValidatorPattern(matchArrary);
-                if (!pattern)
-                    return;
                 const options = { type, pattern };
                 return {
                     zodCustomErrors: this._getZodCustomErrors(matchArrary),
@@ -215,18 +219,18 @@ class ExtendedDMMFField extends formattedNames_1.FormattedNames {
             value: (validationMap, { pattern, key }) => {
                 const validate = validationMap[key];
                 if (!validate) {
-                    throw new Error(`[@zod validator error]: Could not find regex for validator '${key}' in regexMap @${this.modelName}.${this.name}`);
+                    throw new Error(`[@zod generator error]: Validator '${key}' is not valid for type '${this.type}'. ${this.errorLocation}`);
                 }
                 if (typeof validate === 'function') {
                     const validPattern = validate(pattern);
                     if (!validPattern) {
-                        throw new Error(`[@zod validator error]: Validator '${key}' is not valid for type '${this.type}' @${this.modelName}.${this.name}`);
+                        throw new Error(`[@zod generator error]: Validator '${key}' is not valid for type '${this.type}'. ${this.errorLocation}`);
                     }
                     return validPattern;
                 }
                 const match = pattern.match(validate);
                 if (!match) {
-                    throw new Error(`[@zod validator error]: Could not match validator '${key}' with validatorPattern ${pattern} @${this.modelName}.${this.name}`);
+                    throw new Error(`[@zod generator error]: Could not match validator '${key}' with validatorPattern ${pattern}. Please check for typos! ${this.errorLocation}`);
                 }
                 return match[0];
             }
@@ -252,6 +256,7 @@ class ExtendedDMMFField extends formattedNames_1.FormattedNames {
         this.isDecimalType = this._setIsDecimalType();
         this.isNullable = this._setIsNullable();
         this.modelName = modelName;
+        this.errorLocation = this._setErrorLocation();
         const validatorData = this._getZodValidatorData();
         this.zodCustomErrors = validatorData === null || validatorData === void 0 ? void 0 : validatorData.zodCustomErrors;
         this.zodValidatorString = validatorData === null || validatorData === void 0 ? void 0 : validatorData.zodValidatorString;
@@ -279,6 +284,9 @@ class ExtendedDMMFField extends formattedNames_1.FormattedNames {
     _getZodTypeFromScalarType() {
         return (objectMaps_1.PRISMA_TO_ZOD_TYPE_MAP[this.type] || this.type);
     }
+    _setErrorLocation() {
+        return `[Error Location]: Model: '${this.modelName}', Field: '${this.name}'.`;
+    }
     _getValidatorType(matchArray) {
         var _a;
         const validatorType = (_a = matchArray === null || matchArray === void 0 ? void 0 : matchArray.groups) === null || _a === void 0 ? void 0 : _a['type'];
@@ -286,7 +294,7 @@ class ExtendedDMMFField extends formattedNames_1.FormattedNames {
             return;
         const isValidType = objectMaps_1.PRISMA_TO_VALIDATOR_TYPE_MAP[validatorType].includes(this.type);
         if (!isValidType)
-            throw new Error(`[@zod validator error]: Validator '${validatorType}' is not valid for type '${this.type}' @${this.modelName}.${this.name}`);
+            throw new Error(`[@zod generator error]: Validator '${validatorType}' is not valid for type '${this.type}'. ${this.errorLocation}`);
         return validatorType;
     }
     _getValidatorPattern(matchArray) {
@@ -307,22 +315,24 @@ class ExtendedDMMFField extends formattedNames_1.FormattedNames {
         return `{ ${validErrorMessages.join(', ')} }`;
     }
     _getZodCustomValidatorString({ type, pattern }) {
-        if (type !== 'custom')
+        if (type !== 'custom' || !pattern)
             return;
         const key = this._getValidatorKeyFromPattern(pattern);
+        if (key !== 'use')
+            throw new Error(`[@zod generator error]: Please use the '.use()' key on '@zod.custom.use(...yourCode)'. ${this.errorLocation}`);
         return this._validatorMap[type]({ pattern, key });
     }
     _getZodValidatorString({ type, pattern }) {
-        if (type === 'custom')
+        if (type === 'custom' || !pattern)
             return;
         const validatorList = pattern === null || pattern === void 0 ? void 0 : pattern.match(regex_1.SPLIT_VALIDATOR_PATTERN_REGEX);
         if (!validatorList) {
-            throw new Error(`[@zod validator error]: no validators found in pattern: ${pattern} in field ${this.modelName}.${this.name}`);
+            throw new Error(`[@zod generator error]: no validators found in pattern: ${pattern}. ${this.errorLocation}`);
         }
         validatorList.forEach((pattern) => {
             const key = this._getValidatorKeyFromPattern(pattern);
             if (!type)
-                throw new Error(`[@zod validator error]: No validator type set in class 'ExtendedDMMFField' of: ${this.modelName}.${this.name}`);
+                throw new Error(`[@zod generator error]: No validator type set in class 'ExtendedDMMFField'. ${this.errorLocation}`);
             return this._validatorMap[type]({ pattern, key });
         });
         return pattern;
@@ -331,7 +341,7 @@ class ExtendedDMMFField extends formattedNames_1.FormattedNames {
         var _a, _b;
         const key = (_b = (_a = pattern === null || pattern === void 0 ? void 0 : pattern.match(regex_1.VALIDATOR_KEY_REGEX)) === null || _a === void 0 ? void 0 : _a.groups) === null || _b === void 0 ? void 0 : _b['validatorKey'];
         if (!key)
-            throw new Error(`[@zod validator error]: no matching validator key found in field: ${this.modelName}.${this.name}`);
+            throw new Error(`[@zod generator error]: no matching validator key found. ${this.errorLocation}`);
         return key;
     }
     _removeValidatorPatternFromDocs() {

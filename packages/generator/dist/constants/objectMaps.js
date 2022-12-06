@@ -5,7 +5,7 @@ const formattedNames_1 = require("../classes/formattedNames");
 const regex_1 = require("./regex");
 exports.PRISMA_TO_VALIDATOR_TYPE_MAP = {
     string: ['String'],
-    number: ['Float', 'Int', 'Decimal'],
+    number: ['Float', 'Int'],
     date: ['DateTime'],
     custom: [
         'String',

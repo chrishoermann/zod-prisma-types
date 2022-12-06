@@ -8,7 +8,6 @@ const functions_1 = require("./functions");
 const generator = async ({ output, config, dmmf }) => {
     if (!output)
         throw new Error('No output path specified');
-    console.log('config: ', config);
     const extendendDMMF = new extendedDMMF_1.ExtendedDMMF(dmmf, config);
     const project = new ts_morph_1.Project({
         tsConfigFilePath: './tsconfig.json',

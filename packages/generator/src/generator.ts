@@ -22,8 +22,6 @@ export interface GeneratorConfig {
 export const generator = async ({ output, config, dmmf }: GeneratorConfig) => {
   if (!output) throw new Error('No output path specified');
 
-  console.log('config: ', config);
-
   // extend the DMMF with custom functionality - see "classes" folder
   const extendendDMMF = new ExtendedDMMF(dmmf, config);
 

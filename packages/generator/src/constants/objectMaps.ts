@@ -43,7 +43,7 @@ export const PRISMA_TO_VALIDATOR_TYPE_MAP: KeyValueMap<
   PrismaScalarType[]
 > = {
   string: ['String'],
-  number: ['Float', 'Int', 'Decimal'],
+  number: ['Float', 'Int'],
   date: ['DateTime'],
   custom: [
     'String',
@@ -204,11 +204,3 @@ export const PRISMA_ACTION_ARRAY: FilterdPrismaAction[] = [
   'aggregate',
   'groupBy',
 ];
-
-// type CustomErrorKeys = 'invalid_type_error' | 'required_error' | 'description';
-
-// export const CUSTOM_ERROR_MAP: CustomErrorKeys[] = [
-//   'invalid_type_error',
-//   'required_error',
-//   'description',
-// ];

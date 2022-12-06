@@ -31,7 +31,7 @@ import { FormattedNames } from './formattedNames';
 
 export interface GetValidator {
   type: ZodValidatorType;
-  pattern: string;
+  pattern?: string;
 }
 
 /////////////////////////////////////////////////
@@ -61,6 +61,7 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   readonly isBytesType: boolean;
   readonly isDecimalType: boolean;
   readonly modelName: string;
+  readonly errorLocation: string;
 
   private _validatorMap: ValidatorFunctionMap = {
     string: (options) =>
@@ -104,6 +105,7 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
     this.isDecimalType = this._setIsDecimalType();
     this.isNullable = this._setIsNullable();
     this.modelName = modelName;
+    this.errorLocation = this._setErrorLocation();
 
     const validatorData = this._getZodValidatorData();
 
@@ -144,6 +146,11 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
       PRISMA_TO_ZOD_TYPE_MAP[this.type as ZodPrismaScalarType] || this.type
     );
   }
+
+  private _setErrorLocation() {
+    return `[Error Location]: Model: '${this.modelName}', Field: '${this.name}'.`;
+  }
+
   /////////////////////////////////////////////////
   // EXTRACT VALIDATORS
   /////////////////////////////////////////////////
@@ -156,9 +163,7 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
     if (!type) return;
 
     const pattern = this._getValidatorPattern(matchArrary);
-    if (!pattern) return;
-
-    const options = { type, pattern };
+    const options: GetValidator = { type, pattern };
 
     return {
       zodCustomErrors: this._getZodCustomErrors(matchArrary),
@@ -189,7 +194,7 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
 
     if (!isValidType)
       throw new Error(
-        `[@zod validator error]: Validator '${validatorType}' is not valid for type '${this.type}' @${this.modelName}.${this.name}`,
+        `[@zod generator error]: Validator '${validatorType}' is not valid for type '${this.type}'. ${this.errorLocation}`,
       );
 
     return validatorType as ZodValidatorType;
@@ -225,13 +230,19 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   // ----------------------------------------------
 
   private _getZodCustomValidatorString({ type, pattern }: GetValidator) {
-    if (type !== 'custom') return;
+    if (type !== 'custom' || !pattern) return;
     const key = this._getValidatorKeyFromPattern(pattern);
+
+    if (key !== 'use')
+      throw new Error(
+        `[@zod generator error]: Please use the '.use()' key on '@zod.custom.use(...yourCode)'. ${this.errorLocation}`,
+      );
+
     return this._validatorMap[type]({ pattern, key });
   }
 
   private _getZodValidatorString({ type, pattern }: GetValidator) {
-    if (type === 'custom') return;
+    if (type === 'custom' || !pattern) return;
 
     // If pattern consists of multiple validators (e.g. .min(1).max(10))
     // the pattern is split into an array for further processing
@@ -239,7 +250,7 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
 
     if (!validatorList) {
       throw new Error(
-        `[@zod validator error]: no validators found in pattern: ${pattern} in field ${this.modelName}.${this.name}`,
+        `[@zod generator error]: no validators found in pattern: ${pattern}. ${this.errorLocation}`,
       );
     }
 
@@ -249,7 +260,7 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
 
       if (!type)
         throw new Error(
-          `[@zod validator error]: No validator type set in class 'ExtendedDMMFField' of: ${this.modelName}.${this.name}`,
+          `[@zod generator error]: No validator type set in class 'ExtendedDMMFField'. ${this.errorLocation}`,
         );
 
       return this._validatorMap[type]({ pattern, key });
@@ -263,7 +274,7 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
 
     if (!key)
       throw new Error(
-        `[@zod validator error]: no matching validator key found in field: ${this.modelName}.${this.name}`,
+        `[@zod generator error]: no matching validator key found. ${this.errorLocation}`,
       );
 
     return key;
@@ -277,7 +288,7 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
 
     if (!validate) {
       throw new Error(
-        `[@zod validator error]: Could not find regex for validator '${key}' in regexMap @${this.modelName}.${this.name}`,
+        `[@zod generator error]: Validator '${key}' is not valid for type '${this.type}'. ${this.errorLocation}`,
       );
     }
 
@@ -286,7 +297,7 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
 
       if (!validPattern) {
         throw new Error(
-          `[@zod validator error]: Validator '${key}' is not valid for type '${this.type}' @${this.modelName}.${this.name}`,
+          `[@zod generator error]: Validator '${key}' is not valid for type '${this.type}'. ${this.errorLocation}`,
         );
       }
 
@@ -297,7 +308,7 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
 
     if (!match) {
       throw new Error(
-        `[@zod validator error]: Could not match validator '${key}' with validatorPattern ${pattern} @${this.modelName}.${this.name}`,
+        `[@zod generator error]: Could not match validator '${key}' with validatorPattern ${pattern}. Please check for typos! ${this.errorLocation}`,
       );
     }
 
