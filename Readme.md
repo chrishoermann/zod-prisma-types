@@ -1,7 +1,7 @@
 
 # zod-prisma-types
 
-`zod-prisma-types` is a generator for [prisma](www.prisma.io) that mirrors the prisma type structure as closly as possible using [zod](https://github.com/colinhacks/zod). It also provides options to write advanced zod validators directly in the prisma schema comments.
+`zod-prisma-types` is a generator for [prisma](www.prisma.io) that generates [zod](https://github.com/colinhacks/zod) schemas from your prisma models. This includes schemas of model, enums, inputTypes, argTypes, filters and so on. It also provides options to write advanced zod validators directly in the prisma schema comments.
 
 # Table of content
 
@@ -12,10 +12,13 @@
   - [useValidatorJs](#usevalidatorjs)
   - [imports](#imports)
 * [Field validators](#field-validators)
+  - [Custom type error messages](#custom-type-error-messages)
+  - [String validators](#string-validators)
+  - [Number validators](#number-validators)
+  - [Date validators](#date-validators)
+  - [Custom validators](#custom-validators)
+  - [Validation errors](#validation-errors)
 * [Naming of zod schemas](#naming-of-zod-schemas)
-
-
-
 
 # Installation
 
@@ -152,7 +155,7 @@ generator zod {
 model MyPrismaScalarsType {
   /// @zod.string({ invalid_type_error: "invalid type error" }).cuid()
   id      String    @id @default(cuid())
-  /// Some comment about string @zod.string.min(3, { message: "min error" }).max(10, { message: "max error" })
+  /// comment about string @zod.string.min(3, { message: "min error" }).max(10, { message: "max error" })
   string  String?
   /// @zod.custom.use(z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }))
   bic     String?
@@ -189,7 +192,7 @@ export const JsonValue: z.ZodType<Prisma.Prisma.JsonValue> = z
 export const MyPrismaScalarsType = z.object({
   id: z.string({ invalid_type_error: 'invalid type error' }).cuid(),
   /**
-   * Some comment about string
+   * comment about string
    */
   string: z
     .string()
@@ -220,6 +223,154 @@ export const MyPrismaScalarsType = z.object({
 ```
 Additionally all the prisma input-, enum-, filter-, orderby-, select-, include and all other necessary types are generated ready to be used in e.g. `trpc` inputs.
 
+## Custom type error messages
+
+To add custom zod type error messages to your validator you can add them via `@zod.[key]({ ...custom type error messages }).[validators]`. The custom error messages must adhere to the following type: 
+
+```ts
+type RawCreateParams = {
+  invalid_type_error?: string;
+  required_error?: string;
+  description?: string;
+} | undefined
+```
+
+So they should look like this:
+
+```prisma
+/// @zod.string({ invalid_type_error: "invalid type error", required_error: "is required", description: "describe the error" })
+```
+
+This would result in an output like:
+
+```ts
+ string: z.string({
+    invalid_type_error: 'invalid type error',
+    required_error: 'is required',
+    description: 'describe the error',
+  }),
+```
+
+All keys that do not match keys of the `RawCreateParams` type will be filterd out and are not written to the zod type. Currently no error is thrown when an invalid key is used but I intend to implement this behaviour in a future release. So if you have a typo or an invalid key in your custom type error string
+
+```prisma
+/// @zod.string({ invalid_type_error: "invalid type error", my_invalid_key: "is required", description: "describe the error" })
+```
+
+the result would look like this (`my_invalid_key` got filtered out):
+
+```ts
+ string: z.string({
+    invalid_type_error: 'invalid type error',
+    description: 'describe the error',
+  }),
+```
+
+
+## String validators
+
+To add custom validators to the prisma `String` field you should use the `@zod.string` key. On this key you can use all string-specific validators that are mentioned in the [`zod-docs`](https://github.com/colinhacks/zod#strings). You can also add a custom error message to each validator as stated in the docs.
+
+```prisma
+/// @zod.string.min(3, { message: "min error" }).max(10, { message: "max error" }).[...chain more validators]
+```
+
+## Number validators
+
+To add custom validators to the prisma `Int` or `Float` field you should use the `@zod.number` key. On this key you can use all number-specific validators that are mentioned in the [`zod-docs`](https://github.com/colinhacks/zod#numbers). You can also add a custom error message to each validator as stated in the docs.
+
+```prisma
+/// @zod.number.lt(10, { message: "lt error" }).gt(5, { message: "gt error" }).[...chain more validators]
+```
+
+## Date validators
+
+To add custom validators to the prisma `DateTime` field you should use the `@zod.date` key. On this key you can use all date-specific validators that are mentioned in the [`zod-docs`](https://github.com/colinhacks/zod#dates). You can also add a custom error message to each validator as stated in the docs.
+
+```prisma
+///  @zod.date.min(new Date('2020-01-01')).max(new Date('2020-12-31'))
+```
+
+## Custom validators
+
+To add custom validators to any [`Prisma Scalar`](https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#model-field-scalar-types) field you can use the `@zod.custom.use()` key. This key allows only the `use(...your custom code here)` validator. This code overwrites all other standard implementations so you have to specify the `zod type` exectly how it should be written by the generator. Only  `.optional()` and `.nullable()` are added automatically based on your schema type. This field is inteded to writethings like zod `.refine` or `.transform` validators on your fields.
+
+```prisma
+model MyModel {
+  id     Int     @id @default(autoincrement())
+  custom String? /// @zod.custom.use(z.string().refine(val => validator.isBIC(val)).transform(val => val.toUpperCase()))
+}
+```
+
+This would generate
+
+```ts
+export const MyModel = z.object({
+  id: z.number(),
+  custom: z
+    .string()
+    .refine((val) => validator.isBIC(val))
+    .transform((val) => val.toUpperCase())
+    .nullable(),
+});
+```
+
+## Validation errors
+
+To ease the developer experience the generator checks if the provided `@zod.[key]` can be used on the respective type of the model field 
+It also checks if the `@zod.[key].[validator]` can be used on the `@zod.[key]` 
+
+#### `Wrong zod type`
+The generator throws an error if you use a validator key like `@zod.string` on the wrong prisma type.
+
+```prisma
+model MyModel {
+  string String /// @zod.string.min(3) -> valid - `string` can be used on `String`
+  number Number /// @zod.string.min(3) -> invalid - `string` can not be used on `Number`
+}
+```
+
+For the above example the Error message would look like this:
+
+```
+[@zod validator error]: Validator 'string' is not valid for type 'Int'. [Error Location]: Model: 'MyModel', Field: 'number'
+```
+As you can see the generator gives you the exact location, what went wrong and where the error happend. In big prisma schemas with hundreds of models and hundreds of custom validation strings this can be a very helpful information.
+
+#### `Wrong validator`
+
+The generator throws an error if you use a validator  `.min` on the wrong validator key.
+
+```prisma
+model MyModel {
+  number Int /// @zod.number.min(3) -> invalid - `min` can not be used on `number`
+}
+```
+
+The above example would throw the following error:
+
+```
+[@zod generator error]: Validator 'min' is not valid for type 'Int'. [Error Location]: Model: 'MyModel', Field: 'number'.
+```
+
+#### `Typo Errors`
+
+If you have typos in your validator strings like
+
+```prisma
+model MyModel {
+  string String /// @zod.string.min(3, { mussage: 'Must be at least 3 characters' })
+}
+```
+
+that  the generator would throw the following error:
+
+```
+[@zod generator error]: Could not match validator 'min' with validatorPattern 
+.min(3, { mussage: 'Must be at least 3 characters' }). Please check for typos! [Error Location]: Model: 'MyModel', Field: 'string'.
+```
+
+
 # Naming of zod schemas
 
 The zod types are named after the generated prisma types so you just need to hover over a prisma function and you know which type to import. The result would look something like this for trpc v.10:
@@ -244,28 +395,4 @@ const appRouter = t.router({
   // rest of implementation ...
 });
 ```
-
-
-#### `prisma-scalar-type`
-Any prisma scalar type as mentioned in the [prisma docs](https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#model-field-scalar-types). The customized validation oly works on prisma scalars.
-
-#### `zod-type`
-The [zod primitive types](https://github.com/colinhacks/zod#primitives) `string`, `number` and `date` and a `custom` key to add a completly custom validation logic.
-
-#### `zod-error-messages`
-Any object that adheres to the `RawCreateParams` type. A
-
-```ts
-type RawCreateParams = {
-  invalid_type_error?: string;
-  required_error?: string;
-  description?: string;
-} | undefined
-```
-Any key that does not match the keys of `RawCreateParams` is filterd out and will not be printed in the generated zod schema
-
-### String
-
-e.g. if the zod scalar is `string` and you want to use `.min(3)` and `.max(10)` on a string field you can add the following to your prisma.schema
-
 
