@@ -1,7 +1,7 @@
 
 # zod-prisma-types
 
-`zod-prisma-types` is a generator for [prisma](www.prisma.io) that mirrors the prisma type structure as closly as possible using [zod](https://github.com/colinhacks/zod). It also provides options to write advanced zod validators directly in the prisma schema comments.
+`zod-prisma-types` is a generator for [prisma](www.prisma.io) that generates [zod](https://github.com/colinhacks/zod) schemas from your prisma models. This includes schemas of model, enums, inputTypes, argTypes, filters and so on. It also provides options to write advanced zod validators directly in the prisma schema comments.
 
 # Table of content
 
@@ -19,9 +19,6 @@
   - [Custom validators](#custom-validators)
   - [Validation errors](#validation-errors)
 * [Naming of zod schemas](#naming-of-zod-schemas)
-
-
-
 
 # Installation
 
@@ -158,7 +155,7 @@ generator zod {
 model MyPrismaScalarsType {
   /// @zod.string({ invalid_type_error: "invalid type error" }).cuid()
   id      String    @id @default(cuid())
-  /// Some comment about string @zod.string.min(3, { message: "min error" }).max(10, { message: "max error" })
+  /// comment about string @zod.string.min(3, { message: "min error" }).max(10, { message: "max error" })
   string  String?
   /// @zod.custom.use(z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }))
   bic     String?
@@ -195,7 +192,7 @@ export const JsonValue: z.ZodType<Prisma.Prisma.JsonValue> = z
 export const MyPrismaScalarsType = z.object({
   id: z.string({ invalid_type_error: 'invalid type error' }).cuid(),
   /**
-   * Some comment about string
+   * comment about string
    */
   string: z
     .string()
@@ -296,14 +293,34 @@ To add custom validators to the prisma `DateTime` field you should use the `@zod
 
 ## Custom validators
 
-To add custom validators to any the prisma `Scalar` field you should use the `@zod.custom` key.
+To add custom validators to any [`Prisma Scalar`](https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#model-field-scalar-types) field you can use the `@zod.custom.use()` key. This key allows only the `use(...your custom code here)` validator. This code overwrites all other standard implementations so you have to specify the `zod type` exectly how it should be written by the generator. Only  `.optional()` and `.nullable()` are added automatically based on your schema type. This field is inteded to writethings like zod `.refine` or `.transform` validators on your fields.
+
+```prisma
+model MyModel {
+  id     Int     @id @default(autoincrement())
+  custom String? /// @zod.custom.use(z.string().refine(val => validator.isBIC(val)).transform(val => val.toUpperCase()))
+}
+```
+
+This would generate
+
+```ts
+export const MyModel = z.object({
+  id: z.number(),
+  custom: z
+    .string()
+    .refine((val) => validator.isBIC(val))
+    .transform((val) => val.toUpperCase())
+    .nullable(),
+});
+```
 
 ## Validation errors
 
 To ease the developer experience the generator checks if the provided `@zod.[key]` can be used on the respective type of the model field 
 It also checks if the `@zod.[key].[validator]` can be used on the `@zod.[key]` 
 
-### `Wrong zod type`
+#### `Wrong zod type`
 The generator throws an error if you use a validator key like `@zod.string` on the wrong prisma type.
 
 ```prisma
@@ -320,7 +337,7 @@ For the above example the Error message would look like this:
 ```
 As you can see the generator gives you the exact location, what went wrong and where the error happend. In big prisma schemas with hundreds of models and hundreds of custom validation strings this can be a very helpful information.
 
-### `Wrong validator`
+#### `Wrong validator`
 
 The generator throws an error if you use a validator  `.min` on the wrong validator key.
 
@@ -336,7 +353,7 @@ The above example would throw the following error:
 [@zod generator error]: Validator 'min' is not valid for type 'Int'. [Error Location]: Model: 'MyModel', Field: 'number'.
 ```
 
-### `Typos`
+#### `Typo Errors`
 
 If you have typos in your validator strings like
 
