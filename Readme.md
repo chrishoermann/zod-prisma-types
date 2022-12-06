@@ -22,6 +22,8 @@
 
 # Installation
 
+tba
+
 # Usage
 
 Just add the following code to your `prisma.schema` file to create a single `index.ts` file in the `./generated/zod` output folder containing all the zod prisma schemas.
