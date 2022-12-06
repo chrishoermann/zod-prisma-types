@@ -1,7 +1,7 @@
 {
   "name": "zod-prisma-types",
-  "version": "0.1.0",
-  "description": "Generates Zod schemas from Prisma models",
+  "version": "1.0.0",
+  "description": "Generates zod schemas from Prisma models",
   "author": "Chris Hörmann",
   "license": "ISC",
   "main": ".",

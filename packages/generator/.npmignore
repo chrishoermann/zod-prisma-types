@@ -1,8 +1,9 @@
 # src
 node_modules
 tsconfig.json
+.eslintrc.json
 README.md
-jest.config.js
+vite.config.ts
 yarn.lock
 yarn-error.log
 .pnpm-debug.log

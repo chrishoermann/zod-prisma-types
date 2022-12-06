@@ -24,6 +24,6 @@
     "prisma-zod-generator": "^0.7.4",
     "validator": "^13.7.0",
     "zod": "^3.19.1",
-    "zod-prisma-types": "workspace:^0.1.0"
+    "zod-prisma-types": "workspace:^1.0.0"
   }
 }
