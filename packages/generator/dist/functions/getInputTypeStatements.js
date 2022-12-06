@@ -9,7 +9,7 @@ const getInputTypeStatements = (dmmf) => {
             leadingTrivia: (writer) => writer.newLine(),
             declarations: [
                 {
-                    name: `${inputType.name}`,
+                    name: `${inputType.name}Schema`,
                     type: `z.ZodType<Prisma.Prisma.${inputType.name}>`,
                     initializer: (writer) => {
                         writer.write(`z.object(`);

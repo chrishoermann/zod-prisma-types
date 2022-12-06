@@ -23,18 +23,18 @@ export const getArgTypeStatements: GetStatements = (datamodel) => {
             leadingTrivia: (writer) => writer.newLine(),
             declarations: [
               {
-                name: `${field.argName}`,
+                name: `${field.argName}Schema`,
                 type: `z.ZodType<Prisma.Prisma.${field.argName}>`,
                 initializer: (writer) => {
                   writer.write(`z.object(`);
                   writer.inlineBlock(() => {
                     writer
                       .writeLine(
-                        `select: z.lazy(() => ${field.modelType}Select).optional(),`,
+                        `select: z.lazy(() => ${field.modelType}SelectSchema).optional(),`,
                       )
                       .conditionalWriteLine(
                         field.linkedModel?.hasRelationFields,
-                        `include: z.lazy(() => ${field.modelType}Include).optional(),`,
+                        `include: z.lazy(() => ${field.modelType}IncludeSchema).optional(),`,
                       );
                     field.args.forEach((arg) => {
                       writer.write(`${arg.name}: `);

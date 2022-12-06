@@ -11,7 +11,7 @@ const getEnumStatements = ({ schema, datamodel }) => {
                 leadingTrivia: (writer) => writer.newLine(),
                 declarations: [
                     {
-                        name: `${formattedNames.pascalCase}`,
+                        name: `${formattedNames.pascalCase}Schema`,
                         initializer(writer) {
                             writer.write(`z.nativeEnum(Prisma.Prisma.${formattedNames.pascalCase})`);
                         },
@@ -24,7 +24,7 @@ const getEnumStatements = ({ schema, datamodel }) => {
                 leadingTrivia: (writer) => writer.newLine(),
                 declarations: [
                     {
-                        name: `${formattedNames.pascalCase}`,
+                        name: `${formattedNames.pascalCase}Schema`,
                         initializer(writer) {
                             writer.write(`z.enum([`);
                             values.forEach((value) => {
@@ -43,7 +43,7 @@ const getEnumStatements = ({ schema, datamodel }) => {
             leadingTrivia: (writer) => writer.newLine(),
             declarations: [
                 {
-                    name: `${formattedNames.pascalCase}`,
+                    name: `${formattedNames.pascalCase}Schema`,
                     initializer(writer) {
                         writer.write(`z.nativeEnum(Prisma.${formattedNames.pascalCase})`);
                     },

@@ -12,15 +12,15 @@ const getArgTypeStatements = (datamodel) => {
                 leadingTrivia: (writer) => writer.newLine(),
                 declarations: [
                     {
-                        name: `${field.argName}`,
+                        name: `${field.argName}Schema`,
                         type: `z.ZodType<Prisma.Prisma.${field.argName}>`,
                         initializer: (writer) => {
                             writer.write(`z.object(`);
                             writer.inlineBlock(() => {
                                 var _a;
                                 writer
-                                    .writeLine(`select: z.lazy(() => ${field.modelType}Select).optional(),`)
-                                    .conditionalWriteLine((_a = field.linkedModel) === null || _a === void 0 ? void 0 : _a.hasRelationFields, `include: z.lazy(() => ${field.modelType}Include).optional(),`);
+                                    .writeLine(`select: z.lazy(() => ${field.modelType}SelectSchema).optional(),`)
+                                    .conditionalWriteLine((_a = field.linkedModel) === null || _a === void 0 ? void 0 : _a.hasRelationFields, `include: z.lazy(() => ${field.modelType}IncludeSchema).optional(),`);
                                 field.args.forEach((arg) => {
                                     writer.write(`${arg.name}: `);
                                     const { isOptional, isNullable } = arg;

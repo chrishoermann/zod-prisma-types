@@ -11,16 +11,16 @@ const getIncludeSelectStatements = ({ datamodel }) => {
                 leadingTrivia: (writer) => writer.newLine(),
                 declarations: [
                     {
-                        name: `${model.formattedNames.pascalCase}Args`,
+                        name: `${model.formattedNames.pascalCase}ArgsSchema`,
                         type: `z.ZodType<Prisma.Prisma.${model.formattedNames.pascalCase}Args>`,
                         initializer(writer) {
                             writer
                                 .writeLine(`z.object({`)
                                 .write(`select: `)
-                                .write(`z.lazy(() => ${model.formattedNames.pascalCase}Select).optional(),`)
+                                .write(`z.lazy(() => ${model.formattedNames.pascalCase}SelectSchema).optional(),`)
                                 .newLine()
                                 .conditionalWrite(model.hasRelationFields, `include: `)
-                                .conditionalWrite(model.hasRelationFields, `z.lazy(() => ${model.formattedNames.pascalCase}Include).optional(),`)
+                                .conditionalWrite(model.hasRelationFields, `z.lazy(() => ${model.formattedNames.pascalCase}IncludeSchema).optional(),`)
                                 .newLine()
                                 .write(`})`)
                                 .write(`.strict()`);
@@ -33,7 +33,7 @@ const getIncludeSelectStatements = ({ datamodel }) => {
             leadingTrivia: (writer) => writer.newLine(),
             declarations: [
                 {
-                    name: `${model.formattedNames.pascalCase}Select`,
+                    name: `${model.formattedNames.pascalCase}SelectSchema`,
                     type: `z.ZodType<Prisma.Prisma.${model.formattedNames.pascalCase}Select>`,
                     initializer(writer) {
                         writer.write(`z.object({`);
@@ -48,7 +48,7 @@ const getIncludeSelectStatements = ({ datamodel }) => {
                                 .write(`${field.formattedNames.camelCase}: `)
                                 .write(`z.union([`)
                                 .write(`z.boolean(),`)
-                                .write(`z.lazy(() => ${field.type}Args)`)
+                                .write(`z.lazy(() => ${field.type}ArgsSchema)`)
                                 .write(`]).optional(),`)
                                 .newLine();
                         });
@@ -62,7 +62,7 @@ const getIncludeSelectStatements = ({ datamodel }) => {
                 leadingTrivia: (writer) => writer.newLine(),
                 declarations: [
                     {
-                        name: `${model.formattedNames.pascalCase}Include`,
+                        name: `${model.formattedNames.pascalCase}IncludeSchema`,
                         type: `z.ZodType<Prisma.Prisma.${model.formattedNames.pascalCase}Include>`,
                         initializer(writer) {
                             writer.write(`z.object({`);
@@ -71,7 +71,7 @@ const getIncludeSelectStatements = ({ datamodel }) => {
                                     .write(`${field.formattedNames.camelCase}: `)
                                     .write(`z.union([`)
                                     .write(`z.boolean(),`)
-                                    .write(`z.lazy(() => ${field.type}Args)`)
+                                    .write(`z.lazy(() => ${field.type}ArgsSchema)`)
                                     .write(`]).optional(),`)
                                     .newLine();
                             });

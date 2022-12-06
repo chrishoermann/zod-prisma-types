@@ -16,7 +16,7 @@ export const getModelStatements: GetStatements = (dmmf) => {
         leadingTrivia: (writer) => writer.newLine(),
         declarations: [
           {
-            name: `${model.formattedNames.pascalCase}`,
+            name: `${model.formattedNames.pascalCase}Schema`,
             initializer(writer) {
               writer.write(`z.object({`);
               [...model.enumFields, ...model.scalarFields].forEach((field) => {
@@ -37,7 +37,7 @@ export const getModelStatements: GetStatements = (dmmf) => {
                 if (field.kind === 'enum') {
                   return writer
                     .write(`${field.formattedNames.camelCase}: `)
-                    .write(field.zodType)
+                    .write(`${field.zodType}Schema`)
                     .conditionalWrite(field.isList, `.array()`)
                     .conditionalWrite(field.isNullable, `.nullable()`)
                     .write(`,`)

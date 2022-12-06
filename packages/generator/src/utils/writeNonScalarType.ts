@@ -23,8 +23,8 @@ export const writeNonScalarType: WriteTypeFunction = (
   if (!nonScalarType) return;
 
   return writer
-    .conditionalWrite(writeLazy, `z.lazy(() => ${nonScalarType})`)
-    .conditionalWrite(!writeLazy, `${nonScalarType}`)
+    .conditionalWrite(writeLazy, `z.lazy(() => ${nonScalarType}Schema)`)
+    .conditionalWrite(!writeLazy, `${nonScalarType}Schema`)
     .conditionalWrite(inputType.isList, `.array()`)
     .conditionalWrite(isOptional, `.optional()`)
     .conditionalWrite(isNullable, `.nullable()`)
