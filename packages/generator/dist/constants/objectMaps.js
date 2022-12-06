@@ -6,6 +6,7 @@ const regex_1 = require("./regex");
 exports.PRISMA_TO_VALIDATOR_TYPE_MAP = {
     string: ['String'],
     number: ['Float', 'Int'],
+    bigint: ['BigInt'],
     date: ['DateTime'],
     custom: [
         'String',

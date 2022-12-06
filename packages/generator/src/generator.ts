@@ -27,7 +27,7 @@ export const generator = async ({ output, config, dmmf }: GeneratorConfig) => {
 
   // create ts-morph project - see: https://ts-morph.com/
   const project = new Project({
-    tsConfigFilePath: './tsconfig.json',
+    // tsConfigFilePath: './tsconfig.json',
     skipAddingFilesFromTsConfig: true,
   });
 

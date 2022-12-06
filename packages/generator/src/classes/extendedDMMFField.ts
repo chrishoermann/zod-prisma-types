@@ -72,6 +72,7 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
       this._validateRegexInMap(DATE_VALIDATOR_REGEX_MAP, options),
     custom: (options) =>
       this._validateRegexInMap(CUSTOM_VALIDATOR_REGEX_MAP, options),
+    bigint: () => undefined,
   };
 
   readonly zodCustomErrors?: string;
@@ -263,7 +264,12 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
           `[@zod generator error]: No validator type set in class 'ExtendedDMMFField'. ${this.errorLocation}`,
         );
 
-      return this._validatorMap[type]({ pattern, key });
+      const isValid = this._validatorMap[type]({ pattern, key });
+
+      if (!isValid)
+        throw new Error(
+          `[@zod generator error]: Validator '${key}' is not valid for type '${this.type}'. ${this.errorLocation}`,
+        );
     });
 
     return pattern;

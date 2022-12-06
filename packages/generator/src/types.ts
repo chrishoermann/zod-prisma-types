@@ -17,7 +17,7 @@ export interface ScalarValidatorFunctionOptions {
 
 export type ValidatorFunction = (
   options: ScalarValidatorFunctionOptions,
-) => string;
+) => string | undefined;
 
 export type ValidatorFunctionMap = KeyValueMap<
   ZodValidatorType,
@@ -49,7 +49,7 @@ export type ZodPrimitiveType =
   | 'any';
 
 export type ZodValidatorType =
-  | Extract<ZodPrimitiveType, 'string' | 'number' | 'date'>
+  | Extract<ZodPrimitiveType, 'string' | 'number' | 'date' | 'bigint'>
   | 'custom';
 
 export type ZodScalarType = Extract<

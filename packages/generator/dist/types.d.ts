@@ -7,7 +7,7 @@ export interface ScalarValidatorFunctionOptions {
     key: string;
     pattern: string;
 }
-export type ValidatorFunction = (options: ScalarValidatorFunctionOptions) => string;
+export type ValidatorFunction = (options: ScalarValidatorFunctionOptions) => string | undefined;
 export type ValidatorFunctionMap = KeyValueMap<ZodValidatorType, ValidatorFunction>;
 export type KeyValueMap<TKey extends string, TValue> = {
     [key in TKey]: TValue;
@@ -15,7 +15,7 @@ export type KeyValueMap<TKey extends string, TValue> = {
 export type ZodValidatorTypeMap = KeyValueMap<ZodValidatorType, PrismaScalarType[]>;
 export type PrismaScalarTypeMap<T> = KeyValueMap<PrismaScalarType, T>;
 export type ZodPrimitiveType = 'string' | 'number' | 'bigint' | 'boolean' | 'date' | 'symbol' | 'undefined' | 'null' | 'void' | 'unknown' | 'never' | 'any';
-export type ZodValidatorType = Extract<ZodPrimitiveType, 'string' | 'number' | 'date'> | 'custom';
+export type ZodValidatorType = Extract<ZodPrimitiveType, 'string' | 'number' | 'date' | 'bigint'> | 'custom';
 export type ZodScalarType = Extract<ZodPrimitiveType, 'string' | 'number' | 'date' | 'boolean' | 'bigint' | 'unknown'>;
 export type PrismaScalarType = 'String' | 'Boolean' | 'Int' | 'BigInt' | 'Float' | 'Decimal' | 'DateTime' | 'Json' | 'Bytes';
 export type ZodPrismaScalarType = Exclude<PrismaScalarType, 'Json' | 'Bytes' | 'Decimal'>;

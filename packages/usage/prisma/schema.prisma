@@ -46,8 +46,8 @@ model Test {
   decimal    Decimal
   decimalOpt Decimal?
   date       DateTime  @default(now())
-  dateOpt    DateTime?
-  bigInt     BigInt
+  dateOpt    DateTime? /// @zod.date({ invalid_type_error: "wrong date type" })
+  bigInt     BigInt /// @zod.bigint({ invalid_type_error: "error" })
   bigIntOpt  BigInt?
   json       Json
   jsonOpt    Json?
@@ -80,7 +80,7 @@ model User {
   id      String      @id @default(cuid()) /// @zod.string.cuid()
   email   String      @unique /// @zod.string.email({ message: "Invalid email address" })
   /// some other comment 
-  /// @zod.string.min(1).max(100) 
+  /// @zod.string.min(1).max(100) some message after
   name    String?
   posts   Post[]
   profile Profile?

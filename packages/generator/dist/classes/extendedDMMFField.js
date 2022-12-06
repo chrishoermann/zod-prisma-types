@@ -148,6 +148,7 @@ class ExtendedDMMFField extends formattedNames_1.FormattedNames {
                 number: (options) => this._validateRegexInMap(objectMaps_1.NUMBER_VALIDATOR_REGEX_MAP, options),
                 date: (options) => this._validateRegexInMap(objectMaps_1.DATE_VALIDATOR_REGEX_MAP, options),
                 custom: (options) => this._validateRegexInMap(objectMaps_1.CUSTOM_VALIDATOR_REGEX_MAP, options),
+                bigint: () => undefined,
             }
         });
         Object.defineProperty(this, "zodCustomErrors", {
@@ -333,7 +334,9 @@ class ExtendedDMMFField extends formattedNames_1.FormattedNames {
             const key = this._getValidatorKeyFromPattern(pattern);
             if (!type)
                 throw new Error(`[@zod generator error]: No validator type set in class 'ExtendedDMMFField'. ${this.errorLocation}`);
-            return this._validatorMap[type]({ pattern, key });
+            const isValid = this._validatorMap[type]({ pattern, key });
+            if (!isValid)
+                throw new Error(`[@zod generator error]: Validator '${key}' is not valid for type '${this.type}'. ${this.errorLocation}`);
         });
         return pattern;
     }

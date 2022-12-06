@@ -44,6 +44,7 @@ export const PRISMA_TO_VALIDATOR_TYPE_MAP: KeyValueMap<
 > = {
   string: ['String'],
   number: ['Float', 'Int'],
+  bigint: ['BigInt'],
   date: ['DateTime'],
   custom: [
     'String',

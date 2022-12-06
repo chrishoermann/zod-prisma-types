@@ -7,7 +7,7 @@
 // ----------------------------------------
 
 export const VALIDATOR_TYPE_REGEX =
-  /@zod\.(?<type>string|number|bigint|date|custom){1}(?<customErrors>\({[\w (),'":+\-*#!§$%&\/{}\[\]=?~><°^]+}\))?(?<validatorPattern>[\w (),.'":+\-*#!§$%&\/{}\[\]=?~><°^]+)?/;
+  /@zod\.(?<type>string|number|bigint|date|custom){1}(?<customErrors>\({[\w (),'":+\-*#!§$%&\/{}\[\]=?~><°^]+}\))?(?<validatorPattern>[\w (),.'":+\-*#!§$%&\/{}\[\]=?~><°^]+[)])?/;
 
 export const SPLIT_VALIDATOR_PATTERN_REGEX =
   /(\.[\w (),'":+\-*#!§$%&\/{}\[\]=?~><°^]+)/g;
