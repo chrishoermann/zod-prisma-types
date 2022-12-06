@@ -373,26 +373,26 @@ that  the generator would throw the following error:
 
 # Naming of zod schemas
 
-The zod types are named after the generated prisma types so you just need to hover over a prisma function and you know which type to import. The result would look something like this for trpc v.10:
+The zod types are named after the generated prisma types with an added `"Schema"` string so you just need to hover over a prisma function and you know which type to import. The result would look something like this for trpc v.10:
 
 ```ts
 import {
-  UserFindFirstArgs,
-  UserFindManyArgs,
-  UserFindUniqueArgs,
-} from './prisma/generated/zod';
+  UserFindFirstArgsSchema,
+  UserFindManyArgsSchema,
+  UserFindUniqueArgsSchema,
+} from './prisma/zod';
 
 const appRouter = t.router({
-  findManyUser: t.procedure.input(UserFindManyArgs).query(({ input }) => {
+  findManyUser: t.procedure.input(UserFindManyArgsSchema).query(({ input }) => {
     return prisma.user.findMany(input);
   }),
-  findUniqueUser: t.procedure.input(UserFindUniqueArgs).query(({ input }) => {
+  findUniqueUser: t.procedure.input(UserFindUniqueArgsSchema).query(({ input }) => {
     return prisma.user.findUnique(input);
   }),
-  findFirstUser: t.procedure.input(UserFindFirstArgs).query(({ input }) => {
+
+  findFirstUser: t.procedure.input(UserFindFirstArgsSchema).query(({ input }) => {
     return prisma.user.findFirst(input);
   }),
-  // rest of implementation ...
 });
 ```
 
