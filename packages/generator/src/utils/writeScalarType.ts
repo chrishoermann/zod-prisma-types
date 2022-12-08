@@ -24,25 +24,32 @@ export const writeScalarType: WriteTypeFunction = (
     zodCustomErrors,
     zodValidatorString,
     zodCustomValidatorString,
+    writeValidation = true,
   },
 ) => {
   const zodType = inputType.getZodScalarType();
   if (!zodType) return;
 
   if (zodCustomValidatorString) {
-    return writer
-      .write(zodCustomValidatorString)
-      .conditionalWrite(inputType.isList, `.array()`)
-      .conditionalWrite(isOptional, `.optional()`)
-      .conditionalWrite(isNullable, `.nullable()`)
-      .conditionalWrite(writeComma, `,`);
+    return (
+      writer
+        .write(zodCustomValidatorString)
+        // .conditionalWrite(!writeValidation, `z.${zodType}()`)
+        .conditionalWrite(inputType.isList, `.array()`)
+        .conditionalWrite(isOptional, `.optional()`)
+        .conditionalWrite(isNullable, `.nullable()`)
+        .conditionalWrite(writeComma, `,`)
+    );
   }
 
   return writer
     .write(`z.${zodType}(`)
-    .conditionalWrite(!!zodCustomErrors, zodCustomErrors!) // assertion because we know it's not undefined
+    .conditionalWrite(writeValidation && !!zodCustomErrors, zodCustomErrors!) // assertion because we know it's not undefined
     .write(`)`)
-    .conditionalWrite(!!zodValidatorString, zodValidatorString!) // assertion because we know it's not undefined
+    .conditionalWrite(
+      writeValidation && !!zodValidatorString,
+      zodValidatorString!,
+    ) // assertion because we know it's not undefined
     .conditionalWrite(inputType.isList, `.array()`)
     .conditionalWrite(isOptional, `.optional()`)
     .conditionalWrite(isNullable, `.nullable()`)

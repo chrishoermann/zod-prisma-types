@@ -1,1 +1,1 @@
-{"version":3,"file":"writeScalarType.d.ts","sourceRoot":"","sources":["../../src/utils/writeScalarType.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,iBAAiB,EAAE,MAAM,UAAU,CAAC;AAe7C,eAAO,MAAM,eAAe,EAAE,iBAiC7B,CAAC"}
+{"version":3,"file":"writeScalarType.d.ts","sourceRoot":"","sources":["../../src/utils/writeScalarType.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,iBAAiB,EAAE,MAAM,UAAU,CAAC;AAe7C,eAAO,MAAM,eAAe,EAAE,iBAwC7B,CAAC"}

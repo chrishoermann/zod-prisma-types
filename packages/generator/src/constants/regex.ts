@@ -7,10 +7,15 @@
 // ----------------------------------------
 
 export const VALIDATOR_TYPE_REGEX =
-  /@zod\.(?<type>string|number|bigint|date|custom){1}(?<customErrors>\({[\w (),'":+\-*#!§$%&\/{}\[\]=?~><°^]+}\))?(?<validatorPattern>[\w (),.'":+\-*#!§$%&\/{}\[\]=?~><°^]+[)])?/;
+  /@zod\.(?<type>[\w]+){1}(?<customErrors>\({[\w (),'":+\-*#!§$%&\/{}\[\]=?~><°^]+}\))?(?<validatorPattern>[\w (),.'":+\-*#!§$%&\/{}\[\]=?~><°^]+[)])?/;
+
+// export const VALIDATOR_TYPE_REGEX =
+//   /@zod\.(?<type>string|number|bigint|date|custom){1}(?<customErrors>\({[\w (),'":+\-*#!§$%&\/{}\[\]=?~><°^]+}\))?(?<validatorPattern>[\w (),.'":+\-*#!§$%&\/{}\[\]=?~><°^]+[)])?/;
+
+export const VALIDATOR_TYPE_IS_VALID_REGEX = /string|number|bigint|date|custom/;
 
 export const SPLIT_VALIDATOR_PATTERN_REGEX =
-  /(\.[\w (),'":+\-*#!§$%&\/{}\[\]=?~><°^]+)/g;
+  /(?<pattern>\.[\w]+[\(]([\w ,.'":+()\-*#!§$%&\/{}\[\]=?~><°^]+)?[\)])/g;
 
 export const VALIDATOR_KEY_REGEX = /(\.(?<validatorKey>[\w]+))/;
 
@@ -30,7 +35,7 @@ export const STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
   /.(?<validator>min|max|length)(?<number>\([\d]+([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\))/;
 
 export const STRING_VALIDATOR_MESSAGE_REGEX =
-  /.(?<validator>email|url|uuid|cuid|trim|datetime)(\((?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\))/;
+  /(?<validator>email|url|uuid|cuid|trim|datetime)(\((?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\))/;
 
 export const STRING_VALIDATOR_REGEX = /.(regex)(\((?<message>.*)\))/;
 

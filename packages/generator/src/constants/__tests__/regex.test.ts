@@ -19,7 +19,7 @@ describe('test VALIDATOR_TYPE_REGEX', () => {
     const TYPE = 'string';
     const CUSTOM_ERROR = "({ error: 'someError' })";
     const VALIDATOR =
-      ".min(3, { message: 'some string' }).max(10).email({ message: 'some string' })";
+      ".min(3, { message: 'some string' }).max(10).email({ message: 'some string.' })";
     const STRING = `@zod.${TYPE}${CUSTOM_ERROR}${VALIDATOR}`;
 
     const validator = STRING.match(VALIDATOR_TYPE_REGEX);

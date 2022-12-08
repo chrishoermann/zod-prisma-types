@@ -3,7 +3,7 @@ import { ZodValidatorType } from '../types';
 import { FormattedNames } from './formattedNames';
 export interface GetValidator {
     type: ZodValidatorType;
-    pattern?: string;
+    pattern: string;
 }
 export declare class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
     readonly kind: DMMF.Field['kind'];

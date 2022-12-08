@@ -1,4 +1,5 @@
 export declare const VALIDATOR_TYPE_REGEX: RegExp;
+export declare const VALIDATOR_TYPE_IS_VALID_REGEX: RegExp;
 export declare const SPLIT_VALIDATOR_PATTERN_REGEX: RegExp;
 export declare const VALIDATOR_KEY_REGEX: RegExp;
 export declare const VALIDATOR_CUSTOM_ERROR_REGEX: RegExp;

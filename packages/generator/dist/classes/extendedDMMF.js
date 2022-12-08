@@ -26,6 +26,16 @@ exports.configSchema = zod_1.default.object({
         .map((v) => v.replace(/import\(|.import\(/, ''))
         .filter((v) => v !== ''))
         .optional(),
+    createInputTypes: zod_1.default
+        .string()
+        .default('true')
+        .transform((val) => val === 'true')
+        .optional(),
+    addInputTypeValidation: zod_1.default
+        .string()
+        .default('true')
+        .transform((val) => val === 'true')
+        .optional(),
 });
 class ExtendedDMMF {
     constructor(dmmf, config) {
@@ -70,9 +80,19 @@ class ExtendedDMMF {
     _getExtendedConfig(config) {
         const parsedConfig = exports.configSchema.parse(config);
         return {
-            useValidatorJs: Boolean(parsedConfig['useValidatorJs']),
-            useDecimalJs: Boolean(parsedConfig['useDecimalJs']),
-            imports: parsedConfig['imports'],
+            useValidatorJs: parsedConfig['useValidatorJs'] !== undefined
+                ? Boolean(parsedConfig['useValidatorJs'])
+                : false,
+            useDecimalJs: parsedConfig['useDecimalJs'] !== undefined
+                ? Boolean(parsedConfig['useDecimalJs'])
+                : true,
+            imports: parsedConfig['imports'] || [],
+            createInputTypes: parsedConfig['createInputTypes'] !== undefined
+                ? Boolean(parsedConfig['createInputTypes'])
+                : true,
+            addInputTypeValidation: parsedConfig['addInputTypeValidation'] !== undefined
+                ? Boolean(parsedConfig['addInputTypeValidation'])
+                : true,
         };
     }
     useValidatorJs() {
@@ -80,6 +100,12 @@ class ExtendedDMMF {
     }
     useDecimalJs() {
         return Boolean(this.config.useDecimalJs);
+    }
+    createInputTypes() {
+        return Boolean(this.config.createInputTypes);
+    }
+    addInputTypeValidation() {
+        return Boolean(this.config.addInputTypeValidation);
     }
     hasCustomImports() {
         return Boolean(this.config.imports);

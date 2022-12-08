@@ -3,6 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getInputTypeStatements = void 0;
 const utils_1 = require("../utils");
 const getInputTypeStatements = (dmmf) => {
+    if (!dmmf.createInputTypes())
+        return [];
     const statements = [(0, utils_1.writeHeading)(`INPUT TYPES`, 'FAT')];
     dmmf.schema.inputObjectTypes.prisma.forEach((inputType) => {
         statements.push((0, utils_1.writeConstStatement)({
@@ -27,6 +29,7 @@ const getInputTypeStatements = (dmmf) => {
                                             zodValidatorString,
                                             zodCustomValidatorString,
                                             writeComma,
+                                            writeValidation: dmmf.addInputTypeValidation(),
                                         });
                                         (0, utils_1.writeNonScalarType)(writer, {
                                             inputType,
@@ -38,6 +41,7 @@ const getInputTypeStatements = (dmmf) => {
                                             zodCustomValidatorString,
                                             writeComma,
                                             useDecimalJS: dmmf.useDecimalJs(),
+                                            writeValidation: dmmf.addInputTypeValidation(),
                                         });
                                     });
                                     writer
@@ -55,6 +59,7 @@ const getInputTypeStatements = (dmmf) => {
                                         zodCustomErrors,
                                         zodValidatorString,
                                         zodCustomValidatorString,
+                                        writeValidation: dmmf.addInputTypeValidation(),
                                     });
                                     (0, utils_1.writeNonScalarType)(writer, {
                                         inputType,
@@ -68,6 +73,7 @@ const getInputTypeStatements = (dmmf) => {
                                         isNullable,
                                         isOptional,
                                         useDecimalJS: dmmf.useDecimalJs(),
+                                        writeValidation: dmmf.addInputTypeValidation(),
                                     });
                                 }
                                 writer.newLine();

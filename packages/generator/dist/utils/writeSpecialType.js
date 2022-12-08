@@ -5,12 +5,12 @@ const writeSpecialType = (writer, { inputType, isOptional, isNullable, writeComm
     if (!inputType.isSpecialType())
         return;
     if (zodCustomValidatorString) {
-        return writer
+        return (writer
             .write(zodCustomValidatorString)
             .conditionalWrite(inputType.isList, `.array()`)
             .conditionalWrite(isOptional, `.optional()`)
             .conditionalWrite(isNullable, `.nullable()`)
-            .conditionalWrite(writeComma, `,`);
+            .conditionalWrite(writeComma, `,`));
     }
     if (inputType.isDecimalType && useDecimalJS) {
         return writer

@@ -30,9 +30,20 @@ export const configSchema = z.object({
         .filter((v) => v !== ''),
     )
     .optional(),
+  createInputTypes: z
+    .string()
+    .default('true')
+    .transform((val) => val === 'true')
+    .optional(),
+  addInputTypeValidation: z
+    .string()
+    .default('true')
+    .transform((val) => val === 'true')
+    .optional(),
+  tsConfigFilePath: z.string().optional(),
 });
 
-export type ConfigSchema = z.infer<typeof configSchema>;
+export type ConfigSchema = z.infer<NonNullable<typeof configSchema>>;
 
 /////////////////////////////////////////////////
 // CLASS
@@ -63,12 +74,28 @@ export class ExtendedDMMF implements DMMF.Document {
     return new ExtendedDMMFMappings(dmmf.mappings);
   }
 
-  private _getExtendedConfig(config: Dictionary<string>) {
+  private _getExtendedConfig(config: Dictionary<string>): ConfigSchema {
     const parsedConfig = configSchema.parse(config);
+
     return {
-      useValidatorJs: Boolean(parsedConfig['useValidatorJs']),
-      useDecimalJs: Boolean(parsedConfig['useDecimalJs']),
-      imports: parsedConfig['imports'],
+      useValidatorJs:
+        parsedConfig['useValidatorJs'] !== undefined
+          ? Boolean(parsedConfig['useValidatorJs'])
+          : false,
+      useDecimalJs:
+        parsedConfig['useDecimalJs'] !== undefined
+          ? Boolean(parsedConfig['useDecimalJs'])
+          : true,
+      imports: parsedConfig['imports'] || [],
+      createInputTypes:
+        parsedConfig['createInputTypes'] !== undefined
+          ? Boolean(parsedConfig['createInputTypes'])
+          : true,
+      addInputTypeValidation:
+        parsedConfig['addInputTypeValidation'] !== undefined
+          ? Boolean(parsedConfig['addInputTypeValidation'])
+          : true,
+      tsConfigFilePath: parsedConfig['tsConfigFilePath'] || undefined,
     };
   }
 
@@ -78,6 +105,14 @@ export class ExtendedDMMF implements DMMF.Document {
 
   useDecimalJs() {
     return Boolean(this.config.useDecimalJs);
+  }
+
+  createInputTypes() {
+    return Boolean(this.config.createInputTypes);
+  }
+
+  addInputTypeValidation() {
+    return Boolean(this.config.addInputTypeValidation);
   }
 
   hasCustomImports() {

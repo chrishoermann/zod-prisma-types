@@ -84,9 +84,6 @@ export const MyModelSchema = z.object({
 export const TestSchema = z.object({
   value: MyValueSchema,
   id: z.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid(),
-  /**
-   * some comment
-   */
   name: z.string({ required_error: "error", invalid_type_error: "error" }).nullable(),
   bic: z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }).nullable(),
   intTwo: z.number(),
@@ -119,7 +116,7 @@ export const MyPrismaScalarsTypeSchema = z.object({
   decimal: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Field "decimal" must be a Decimal', path: ['Models', 'MyPrismaScalarsType'] }),
   date: z.date().min(new Date('2020-01-01')).max(new Date('2020-12-31')).nullable(),
   bigInt: z.bigint(),
-  json: JsonValue,
+  json: z.unknown().refine((val) => myFunction.validate(val), { message: 'Is not valid' }),
   bytes: z.instanceof(Buffer),
   custom: z.string().refine((val) => myFunction.validate(val), { message: 'Is not valid' }).nullable(),
 });
@@ -825,7 +822,7 @@ export const MyPrismaScalarsTypeCreateInputSchema: z.ZodType<Prisma.Prisma.MyPri
   decimal: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }),
   date: z.date().min(new Date('2020-01-01')).max(new Date('2020-12-31')).optional().nullable(),
   bigInt: z.bigint(),
-  json: z.union([z.lazy(() => JsonNullValueInputSchema), InputJsonValue]),
+  json: z.union([z.lazy(() => JsonNullValueInputSchema), z.unknown().refine((val) => myFunction.validate(val), { message: 'Is not valid' })]),
   bytes: z.instanceof(Buffer),
   custom: z.string().refine((val) => myFunction.validate(val), { message: 'Is not valid' }).optional().nullable(),
 }).strict();
@@ -838,7 +835,7 @@ export const MyPrismaScalarsTypeUncheckedCreateInputSchema: z.ZodType<Prisma.Pri
   decimal: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }),
   date: z.date().min(new Date('2020-01-01')).max(new Date('2020-12-31')).optional().nullable(),
   bigInt: z.bigint(),
-  json: z.union([z.lazy(() => JsonNullValueInputSchema), InputJsonValue]),
+  json: z.union([z.lazy(() => JsonNullValueInputSchema), z.unknown().refine((val) => myFunction.validate(val), { message: 'Is not valid' })]),
   bytes: z.instanceof(Buffer),
   custom: z.string().refine((val) => myFunction.validate(val), { message: 'Is not valid' }).optional().nullable(),
 }).strict();
@@ -851,7 +848,7 @@ export const MyPrismaScalarsTypeUpdateInputSchema: z.ZodType<Prisma.Prisma.MyPri
   decimal: z.union([z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => DecimalFieldUpdateOperationsInputSchema)]).optional(),
   date: z.union([z.date().min(new Date('2020-01-01')).max(new Date('2020-12-31')), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)]).optional().nullable(),
   bigInt: z.union([z.bigint(), z.lazy(() => BigIntFieldUpdateOperationsInputSchema)]).optional(),
-  json: z.union([z.lazy(() => JsonNullValueInputSchema), InputJsonValue]).optional(),
+  json: z.union([z.lazy(() => JsonNullValueInputSchema), z.unknown().refine((val) => myFunction.validate(val), { message: 'Is not valid' })]).optional(),
   bytes: z.union([z.instanceof(Buffer), z.lazy(() => BytesFieldUpdateOperationsInputSchema)]).optional(),
   custom: z.union([z.string().refine((val) => myFunction.validate(val), { message: 'Is not valid' }), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
 }).strict();
@@ -864,7 +861,7 @@ export const MyPrismaScalarsTypeUncheckedUpdateInputSchema: z.ZodType<Prisma.Pri
   decimal: z.union([z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => DecimalFieldUpdateOperationsInputSchema)]).optional(),
   date: z.union([z.date().min(new Date('2020-01-01')).max(new Date('2020-12-31')), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)]).optional().nullable(),
   bigInt: z.union([z.bigint(), z.lazy(() => BigIntFieldUpdateOperationsInputSchema)]).optional(),
-  json: z.union([z.lazy(() => JsonNullValueInputSchema), InputJsonValue]).optional(),
+  json: z.union([z.lazy(() => JsonNullValueInputSchema), z.unknown().refine((val) => myFunction.validate(val), { message: 'Is not valid' })]).optional(),
   bytes: z.union([z.instanceof(Buffer), z.lazy(() => BytesFieldUpdateOperationsInputSchema)]).optional(),
   custom: z.union([z.string().refine((val) => myFunction.validate(val), { message: 'Is not valid' }), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
 }).strict();
@@ -877,7 +874,7 @@ export const MyPrismaScalarsTypeCreateManyInputSchema: z.ZodType<Prisma.Prisma.M
   decimal: z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }),
   date: z.date().min(new Date('2020-01-01')).max(new Date('2020-12-31')).optional().nullable(),
   bigInt: z.bigint(),
-  json: z.union([z.lazy(() => JsonNullValueInputSchema), InputJsonValue]),
+  json: z.union([z.lazy(() => JsonNullValueInputSchema), z.unknown().refine((val) => myFunction.validate(val), { message: 'Is not valid' })]),
   bytes: z.instanceof(Buffer),
   custom: z.string().refine((val) => myFunction.validate(val), { message: 'Is not valid' }).optional().nullable(),
 }).strict();
@@ -890,7 +887,7 @@ export const MyPrismaScalarsTypeUpdateManyMutationInputSchema: z.ZodType<Prisma.
   decimal: z.union([z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => DecimalFieldUpdateOperationsInputSchema)]).optional(),
   date: z.union([z.date().min(new Date('2020-01-01')).max(new Date('2020-12-31')), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)]).optional().nullable(),
   bigInt: z.union([z.bigint(), z.lazy(() => BigIntFieldUpdateOperationsInputSchema)]).optional(),
-  json: z.union([z.lazy(() => JsonNullValueInputSchema), InputJsonValue]).optional(),
+  json: z.union([z.lazy(() => JsonNullValueInputSchema), z.unknown().refine((val) => myFunction.validate(val), { message: 'Is not valid' })]).optional(),
   bytes: z.union([z.instanceof(Buffer), z.lazy(() => BytesFieldUpdateOperationsInputSchema)]).optional(),
   custom: z.union([z.string().refine((val) => myFunction.validate(val), { message: 'Is not valid' }), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
 }).strict();
@@ -903,7 +900,7 @@ export const MyPrismaScalarsTypeUncheckedUpdateManyInputSchema: z.ZodType<Prisma
   decimal: z.union([z.number().refine((v) => Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => DecimalFieldUpdateOperationsInputSchema)]).optional(),
   date: z.union([z.date().min(new Date('2020-01-01')).max(new Date('2020-12-31')), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)]).optional().nullable(),
   bigInt: z.union([z.bigint(), z.lazy(() => BigIntFieldUpdateOperationsInputSchema)]).optional(),
-  json: z.union([z.lazy(() => JsonNullValueInputSchema), InputJsonValue]).optional(),
+  json: z.union([z.lazy(() => JsonNullValueInputSchema), z.unknown().refine((val) => myFunction.validate(val), { message: 'Is not valid' })]).optional(),
   bytes: z.union([z.instanceof(Buffer), z.lazy(() => BytesFieldUpdateOperationsInputSchema)]).optional(),
   custom: z.union([z.string().refine((val) => myFunction.validate(val), { message: 'Is not valid' }), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
 }).strict();

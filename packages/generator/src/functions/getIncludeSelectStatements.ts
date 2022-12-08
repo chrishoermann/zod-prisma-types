@@ -5,10 +5,12 @@ import { writeConstStatement, writeHeading } from '../utils';
 // FUNCTION
 /////////////////////////////////////////////////
 
-export const getIncludeSelectStatements: GetStatements = ({ datamodel }) => {
+export const getIncludeSelectStatements: GetStatements = (dmmf) => {
+  if (!dmmf.createInputTypes()) return [];
+
   const statements: Statement[] = [writeHeading(`SELECT & INCLUDE`, 'FAT')];
 
-  datamodel.models.forEach((model) => {
+  dmmf.datamodel.models.forEach((model) => {
     statements.push(
       writeHeading(`${model.formattedNames.upperCaseSpace}`, 'SLIM'),
     );

@@ -1,3 +1,4 @@
+import { DMMF } from '@prisma/generator-helper';
 import { CodeBlockWriter, StatementStructures, WriterFunction } from 'ts-morph';
 import { ExtendedDMMF, ExtendedDMMFSchemaArgInputType, ZodValidatorOptions } from './classes';
 export type StatementsArray = Statement[];
@@ -16,7 +17,7 @@ export type ZodValidatorTypeMap = KeyValueMap<ZodValidatorType, PrismaScalarType
 export type PrismaScalarTypeMap<T> = KeyValueMap<PrismaScalarType, T>;
 export type ZodPrimitiveType = 'string' | 'number' | 'bigint' | 'boolean' | 'date' | 'symbol' | 'undefined' | 'null' | 'void' | 'unknown' | 'never' | 'any';
 export type ZodValidatorType = Extract<ZodPrimitiveType, 'string' | 'number' | 'date' | 'bigint'> | 'custom';
-export type ZodScalarType = Extract<ZodPrimitiveType, 'string' | 'number' | 'date' | 'boolean' | 'bigint' | 'unknown'>;
+export type ZodScalarType = Extract<ZodPrimitiveType, 'string' | 'number' | 'date' | 'boolean' | 'bigint' | 'unknown' | 'any'>;
 export type PrismaScalarType = 'String' | 'Boolean' | 'Int' | 'BigInt' | 'Float' | 'Decimal' | 'DateTime' | 'Json' | 'Bytes';
 export type ZodPrismaScalarType = Exclude<PrismaScalarType, 'Json' | 'Bytes' | 'Decimal'>;
 export type ZodBasicValidatorKeys = 'refine' | 'transform' | 'superRefine';
@@ -35,6 +36,12 @@ export interface WriteTypeOptions extends ZodValidatorOptions {
     isNullable?: boolean;
     writeLazy?: boolean;
     writeComma?: boolean;
+    writeValidation?: boolean;
 }
 export type WriteTypeFunction<TOptions extends WriteTypeOptions = WriteTypeOptions> = (writer: CodeBlockWriter, options: TOptions) => CodeBlockWriter | undefined;
+export type TestFunction = (dmmf: DMMF.Document) => void;
+export interface TestConfig {
+    schemaPath: string;
+    tests: TestFunction;
+}
 //# sourceMappingURL=types.d.ts.map

@@ -11,10 +11,12 @@ import {
 // FUNCTION
 /////////////////////////////////////////////////
 
-export const getArgTypeStatements: GetStatements = (datamodel) => {
+export const getArgTypeStatements: GetStatements = (dmmf) => {
+  if (!dmmf.createInputTypes()) return [];
+
   const statements: Statement[] = [writeHeading(`ARGS`, 'FAT')];
 
-  datamodel.schema.outputObjectTypes.prisma
+  dmmf.schema.outputObjectTypes.prisma
     .filter((type) => type.name === 'Query' || type.name === 'Mutation')
     .forEach((outputType) => {
       outputType.fields.forEach((field) => {
@@ -58,7 +60,7 @@ export const getArgTypeStatements: GetStatements = (datamodel) => {
                             writeComma,
                           });
                           writeSpecialType(writer, {
-                            useDecimalJS: datamodel.useDecimalJs(),
+                            useDecimalJS: dmmf.useDecimalJs(),
                             inputType,
                             writeLazy: false,
                             writeComma,
@@ -84,7 +86,7 @@ export const getArgTypeStatements: GetStatements = (datamodel) => {
                           isOptional,
                         });
                         writeSpecialType(writer, {
-                          useDecimalJS: datamodel.useDecimalJs(),
+                          useDecimalJS: dmmf.useDecimalJs(),
                           inputType: arg.inputTypes[0],
                           writeLazy: false,
                           isNullable,

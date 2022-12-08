@@ -7,16 +7,22 @@ export declare const configSchema: z.ZodObject<{
     useValidatorJs: z.ZodOptional<z.ZodEffects<z.ZodDefault<z.ZodString>, boolean, string | undefined>>;
     useDecimalJs: z.ZodOptional<z.ZodEffects<z.ZodDefault<z.ZodString>, boolean, string | undefined>>;
     imports: z.ZodOptional<z.ZodEffects<z.ZodString, string[], string>>;
+    createInputTypes: z.ZodOptional<z.ZodEffects<z.ZodDefault<z.ZodString>, boolean, string | undefined>>;
+    addInputTypeValidation: z.ZodOptional<z.ZodEffects<z.ZodDefault<z.ZodString>, boolean, string | undefined>>;
 }, "strip", z.ZodTypeAny, {
     useValidatorJs?: boolean | undefined;
     useDecimalJs?: boolean | undefined;
     imports?: string[] | undefined;
+    createInputTypes?: boolean | undefined;
+    addInputTypeValidation?: boolean | undefined;
 }, {
     useValidatorJs?: string | undefined;
     useDecimalJs?: string | undefined;
     imports?: string | undefined;
+    createInputTypes?: string | undefined;
+    addInputTypeValidation?: string | undefined;
 }>;
-export type ConfigSchema = z.infer<typeof configSchema>;
+export type ConfigSchema = z.infer<NonNullable<typeof configSchema>>;
 export declare class ExtendedDMMF implements DMMF.Document {
     readonly datamodel: ExtendedDMMFDatamodel;
     readonly schema: ExtendedDMMFSchema;
@@ -29,6 +35,8 @@ export declare class ExtendedDMMF implements DMMF.Document {
     private _getExtendedConfig;
     useValidatorJs(): boolean;
     useDecimalJs(): boolean;
+    createInputTypes(): boolean;
+    addInputTypeValidation(): boolean;
     hasCustomImports(): boolean;
 }
 //# sourceMappingURL=extendedDMMF.d.ts.map

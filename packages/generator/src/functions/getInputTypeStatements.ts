@@ -13,6 +13,8 @@ import {
 /////////////////////////////////////////////////
 
 export const getInputTypeStatements: GetStatements = (dmmf) => {
+  if (!dmmf.createInputTypes()) return [];
+
   // GENERATE INPUT TYPES
   // ---------------------------------------------------------------------
 
@@ -51,6 +53,7 @@ export const getInputTypeStatements: GetStatements = (dmmf) => {
                         zodValidatorString,
                         zodCustomValidatorString,
                         writeComma,
+                        writeValidation: dmmf.addInputTypeValidation(),
                       });
                       writeNonScalarType(writer, {
                         inputType,
@@ -62,6 +65,7 @@ export const getInputTypeStatements: GetStatements = (dmmf) => {
                         zodCustomValidatorString,
                         writeComma,
                         useDecimalJS: dmmf.useDecimalJs(),
+                        writeValidation: dmmf.addInputTypeValidation(),
                       });
                     });
 
@@ -79,6 +83,7 @@ export const getInputTypeStatements: GetStatements = (dmmf) => {
                       zodCustomErrors,
                       zodValidatorString,
                       zodCustomValidatorString,
+                      writeValidation: dmmf.addInputTypeValidation(),
                     });
                     writeNonScalarType(writer, {
                       inputType,
@@ -92,6 +97,7 @@ export const getInputTypeStatements: GetStatements = (dmmf) => {
                       isNullable,
                       isOptional,
                       useDecimalJS: dmmf.useDecimalJs(),
+                      writeValidation: dmmf.addInputTypeValidation(),
                     });
                   }
 

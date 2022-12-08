@@ -26,17 +26,21 @@ export const writeSpecialType: WriteTypeFunction<
     zodCustomErrors,
     useDecimalJS,
     zodCustomValidatorString,
+    // writeValidation = true,
   },
 ) => {
   if (!inputType.isSpecialType()) return;
 
   if (zodCustomValidatorString) {
-    return writer
-      .write(zodCustomValidatorString)
-      .conditionalWrite(inputType.isList, `.array()`)
-      .conditionalWrite(isOptional, `.optional()`)
-      .conditionalWrite(isNullable, `.nullable()`)
-      .conditionalWrite(writeComma, `,`);
+    return (
+      writer
+        .write(zodCustomValidatorString)
+        // .conditionalWrite(!writeValidation, `z.any()`)
+        .conditionalWrite(inputType.isList, `.array()`)
+        .conditionalWrite(isOptional, `.optional()`)
+        .conditionalWrite(isNullable, `.nullable()`)
+        .conditionalWrite(writeComma, `,`)
+    );
   }
 
   if (inputType.isDecimalType && useDecimalJS) {

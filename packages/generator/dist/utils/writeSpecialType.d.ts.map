@@ -1,1 +1,1 @@
-{"version":3,"file":"writeSpecialType.d.ts","sourceRoot":"","sources":["../../src/utils/writeSpecialType.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,iBAAiB,EAAE,gBAAgB,EAAE,MAAM,UAAU,CAAC;AAe/D,eAAO,MAAM,gBAAgB,EAAE,iBAAiB,CAC9C,gBAAgB,GAAG;IAAE,YAAY,EAAE,OAAO,CAAA;CAAE,CAsE7C,CAAC"}
+{"version":3,"file":"writeSpecialType.d.ts","sourceRoot":"","sources":["../../src/utils/writeSpecialType.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,iBAAiB,EAAE,gBAAgB,EAAE,MAAM,UAAU,CAAC;AAe/D,eAAO,MAAM,gBAAgB,EAAE,iBAAiB,CAC9C,gBAAgB,GAAG;IAAE,YAAY,EAAE,OAAO,CAAA;CAAE,CA0E7C,CAAC"}

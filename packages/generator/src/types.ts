@@ -1,3 +1,4 @@
+import { DMMF } from '@prisma/generator-helper';
 import { CodeBlockWriter, StatementStructures, WriterFunction } from 'ts-morph';
 
 import {
@@ -54,7 +55,7 @@ export type ZodValidatorType =
 
 export type ZodScalarType = Extract<
   ZodPrimitiveType,
-  'string' | 'number' | 'date' | 'boolean' | 'bigint' | 'unknown'
+  'string' | 'number' | 'date' | 'boolean' | 'bigint' | 'unknown' | 'any'
 >;
 // | 'JsonValue'; // allow jsonSchema as a type
 
@@ -135,8 +136,16 @@ export interface WriteTypeOptions extends ZodValidatorOptions {
   isNullable?: boolean;
   writeLazy?: boolean;
   writeComma?: boolean;
+  writeValidation?: boolean;
 }
 
 export type WriteTypeFunction<
   TOptions extends WriteTypeOptions = WriteTypeOptions,
 > = (writer: CodeBlockWriter, options: TOptions) => CodeBlockWriter | undefined;
+
+export type TestFunction = (dmmf: DMMF.Document) => void;
+
+export interface TestConfig {
+  schemaPath: string;
+  tests: TestFunction;
+}

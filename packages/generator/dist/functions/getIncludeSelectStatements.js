@@ -2,9 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getIncludeSelectStatements = void 0;
 const utils_1 = require("../utils");
-const getIncludeSelectStatements = ({ datamodel }) => {
+const getIncludeSelectStatements = (dmmf) => {
+    if (!dmmf.createInputTypes())
+        return [];
     const statements = [(0, utils_1.writeHeading)(`SELECT & INCLUDE`, 'FAT')];
-    datamodel.models.forEach((model) => {
+    dmmf.datamodel.models.forEach((model) => {
         statements.push((0, utils_1.writeHeading)(`${model.formattedNames.upperCaseSpace}`, 'SLIM'));
         if (model.hasRelationFields) {
             statements.push((0, utils_1.writeConstStatement)({

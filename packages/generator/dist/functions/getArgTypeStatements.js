@@ -2,9 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getArgTypeStatements = void 0;
 const utils_1 = require("../utils");
-const getArgTypeStatements = (datamodel) => {
+const getArgTypeStatements = (dmmf) => {
+    if (!dmmf.createInputTypes())
+        return [];
     const statements = [(0, utils_1.writeHeading)(`ARGS`, 'FAT')];
-    datamodel.schema.outputObjectTypes.prisma
+    dmmf.schema.outputObjectTypes.prisma
         .filter((type) => type.name === 'Query' || type.name === 'Mutation')
         .forEach((outputType) => {
         outputType.fields.forEach((field) => {
@@ -39,7 +41,7 @@ const getArgTypeStatements = (datamodel) => {
                                                 writeComma,
                                             });
                                             (0, utils_1.writeSpecialType)(writer, {
-                                                useDecimalJS: datamodel.useDecimalJs(),
+                                                useDecimalJS: dmmf.useDecimalJs(),
                                                 inputType,
                                                 writeLazy: false,
                                                 writeComma,
@@ -65,7 +67,7 @@ const getArgTypeStatements = (datamodel) => {
                                             isOptional,
                                         });
                                         (0, utils_1.writeSpecialType)(writer, {
-                                            useDecimalJS: datamodel.useDecimalJs(),
+                                            useDecimalJS: dmmf.useDecimalJs(),
                                             inputType: arg.inputTypes[0],
                                             writeLazy: false,
                                             isNullable,
