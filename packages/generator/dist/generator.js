@@ -10,6 +10,7 @@ const generator = async ({ output, config, dmmf }) => {
         throw new Error('No output path specified');
     const extendendDMMF = new extendedDMMF_1.ExtendedDMMF(dmmf, config);
     const project = new ts_morph_1.Project({
+        tsConfigFilePath: extendendDMMF.config.tsConfigFilePath,
         skipAddingFilesFromTsConfig: true,
     });
     directoryHelper_1.DirectoryHelper.pathExistsElseCreate(output.value);

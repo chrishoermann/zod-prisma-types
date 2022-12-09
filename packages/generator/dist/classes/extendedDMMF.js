@@ -36,6 +36,7 @@ exports.configSchema = zod_1.default.object({
         .default('true')
         .transform((val) => val === 'true')
         .optional(),
+    tsConfigFilePath: zod_1.default.string().optional(),
 });
 class ExtendedDMMF {
     constructor(dmmf, config) {
@@ -93,6 +94,7 @@ class ExtendedDMMF {
             addInputTypeValidation: parsedConfig['addInputTypeValidation'] !== undefined
                 ? Boolean(parsedConfig['addInputTypeValidation'])
                 : true,
+            tsConfigFilePath: parsedConfig['tsConfigFilePath'] || undefined,
         };
     }
     useValidatorJs() {

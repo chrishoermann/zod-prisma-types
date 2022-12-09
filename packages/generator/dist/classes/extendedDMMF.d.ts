@@ -9,18 +9,21 @@ export declare const configSchema: z.ZodObject<{
     imports: z.ZodOptional<z.ZodEffects<z.ZodString, string[], string>>;
     createInputTypes: z.ZodOptional<z.ZodEffects<z.ZodDefault<z.ZodString>, boolean, string | undefined>>;
     addInputTypeValidation: z.ZodOptional<z.ZodEffects<z.ZodDefault<z.ZodString>, boolean, string | undefined>>;
+    tsConfigFilePath: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     useValidatorJs?: boolean | undefined;
     useDecimalJs?: boolean | undefined;
     imports?: string[] | undefined;
     createInputTypes?: boolean | undefined;
     addInputTypeValidation?: boolean | undefined;
+    tsConfigFilePath?: string | undefined;
 }, {
     useValidatorJs?: string | undefined;
     useDecimalJs?: string | undefined;
     imports?: string | undefined;
     createInputTypes?: string | undefined;
     addInputTypeValidation?: string | undefined;
+    tsConfigFilePath?: string | undefined;
 }>;
 export type ConfigSchema = z.infer<NonNullable<typeof configSchema>>;
 export declare class ExtendedDMMF implements DMMF.Document {
