@@ -1,5 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 
+import { ConfigSchema } from '.';
 import { PRISMA_ACTION_ARRAY } from '../constants/objectMaps';
 import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
 import { ExtendedDMMFSchemaField } from './extendedDMMFSchemaField';
@@ -17,8 +18,13 @@ export class ExtendedDMMFOutputType
   readonly fields: ExtendedDMMFSchemaField[];
   readonly fieldMap?: DMMF.OutputType['fieldMap'];
 
-  constructor(type: DMMF.OutputType, datamodel: ExtendedDMMFDatamodel) {
+  constructor(
+    readonly generatorConfig: ConfigSchema,
+    type: DMMF.OutputType,
+    datamodel: ExtendedDMMFDatamodel,
+  ) {
     super(type.name);
+    this.generatorConfig = generatorConfig;
     this.name = type.name;
     this.fields = this._setFields(type.fields, datamodel);
     this.fieldMap = type.fieldMap;
@@ -38,7 +44,10 @@ export class ExtendedDMMFOutputType
             PRISMA_ACTION_ARRAY.find((elem) => field.name.includes(elem)) &&
             !field.name.includes('OrThrow'),
         )
-        .map((field) => new ExtendedDMMFSchemaField(field, datamodel))
+        .map(
+          (field) =>
+            new ExtendedDMMFSchemaField(this.generatorConfig, field, datamodel),
+        )
     );
   }
 }

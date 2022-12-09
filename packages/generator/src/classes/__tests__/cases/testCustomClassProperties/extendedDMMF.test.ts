@@ -12,11 +12,13 @@ describe('testSimpleModelNoValidators', async () => {
     expect(extendedDMMF.useValidatorJs()).toBe(false);
     expect(extendedDMMF.createInputTypes()).toStrictEqual(true);
     expect(extendedDMMF.addInputTypeValidation()).toStrictEqual(true);
-    expect(extendedDMMF.config.useDecimalJs).toStrictEqual(true);
-    expect(extendedDMMF.config.useValidatorJs).toStrictEqual(false);
-    expect(extendedDMMF.config.imports).toStrictEqual([]);
-    expect(extendedDMMF.config.createInputTypes).toStrictEqual(true);
-    expect(extendedDMMF.config.addInputTypeValidation).toStrictEqual(true);
+    expect(extendedDMMF.generatorConfig.useDecimalJs).toStrictEqual(true);
+    expect(extendedDMMF.generatorConfig.useValidatorJs).toStrictEqual(false);
+    expect(extendedDMMF.generatorConfig.imports).toStrictEqual([]);
+    expect(extendedDMMF.generatorConfig.createInputTypes).toStrictEqual(true);
+    expect(extendedDMMF.generatorConfig.addInputTypeValidation).toStrictEqual(
+      true,
+    );
   });
 
   it('should set default values in ExtendedDMMF class with config', async () => {
@@ -34,13 +36,15 @@ describe('testSimpleModelNoValidators', async () => {
     expect(extendedDMMF.useValidatorJs()).toBe(true);
     expect(extendedDMMF.createInputTypes()).toStrictEqual(false);
     expect(extendedDMMF.addInputTypeValidation()).toStrictEqual(false);
-    expect(extendedDMMF.config.useDecimalJs).toStrictEqual(false);
-    expect(extendedDMMF.config.useValidatorJs).toStrictEqual(true);
-    expect(extendedDMMF.config.imports).toStrictEqual([
+    expect(extendedDMMF.generatorConfig.useDecimalJs).toStrictEqual(false);
+    expect(extendedDMMF.generatorConfig.useValidatorJs).toStrictEqual(true);
+    expect(extendedDMMF.generatorConfig.imports).toStrictEqual([
       "import { myFunction } from 'mypackage'",
       "import { custom } from './myfolder'",
     ]);
-    expect(extendedDMMF.config.createInputTypes).toStrictEqual(false);
-    expect(extendedDMMF.config.addInputTypeValidation).toStrictEqual(false);
+    expect(extendedDMMF.generatorConfig.createInputTypes).toStrictEqual(false);
+    expect(extendedDMMF.generatorConfig.addInputTypeValidation).toStrictEqual(
+      false,
+    );
   });
 });

@@ -5,6 +5,7 @@ import {
   PRISMA_ACTION_ARG_MAP,
   PRISMA_ACTION_ARRAY,
 } from '../constants/objectMaps';
+import { ConfigSchema } from './extendedDMMF';
 import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
 import { ExtendedDMMFModel } from './extendedDMMFModel';
 import { ExtendedDMMFSchemaArg } from './extendedDMMFSchemaArg';
@@ -49,8 +50,13 @@ export class ExtendedDMMFSchemaField
    */
   readonly linkedModel?: ExtendedDMMFModel;
 
-  constructor(field: DMMF.SchemaField, datamodel: ExtendedDMMFDatamodel) {
+  constructor(
+    readonly generatorConfig: ConfigSchema,
+    field: DMMF.SchemaField,
+    datamodel: ExtendedDMMFDatamodel,
+  ) {
     super(field.name);
+    this.generatorConfig = generatorConfig;
     this.name = field.name;
     this.isNullable = field.isNullable;
     this.outputType = field.outputType;
@@ -68,7 +74,7 @@ export class ExtendedDMMFSchemaField
       const linkedField = this.linkedModel?.fields.find(
         (field) => field.name === arg.name,
       );
-      return new ExtendedDMMFSchemaArg(arg, linkedField);
+      return new ExtendedDMMFSchemaArg(this.generatorConfig, arg, linkedField);
     });
   }
 

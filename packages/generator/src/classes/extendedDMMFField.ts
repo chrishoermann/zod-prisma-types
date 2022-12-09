@@ -1,5 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 
+import { ConfigSchema } from '.';
 import {
   DATE_VALIDATOR_REGEX_MAP,
   NUMBER_VALIDATOR_REGEX_MAP,
@@ -81,8 +82,14 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   readonly clearedDocumentation?: string;
   readonly zodType: string;
 
-  constructor(field: DMMF.Field, modelName: string) {
+  constructor(
+    readonly generatorConfig: ConfigSchema,
+    field: DMMF.Field,
+    modelName: string,
+  ) {
     super(field.name);
+
+    this.generatorConfig = generatorConfig;
 
     this.kind = field.kind;
     this.name = field.name;

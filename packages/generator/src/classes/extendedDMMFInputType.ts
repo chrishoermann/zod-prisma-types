@@ -1,5 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 
+import { ConfigSchema } from '.';
 import { PRISMA_FUNCTION_TYPES_WITH_VALIDATORS } from '../constants/regex';
 import { ExtendedDMMFModel } from './extendedDMMFModel';
 import {
@@ -26,8 +27,13 @@ export class ExtendedDMMFInputType
   readonly isBytesField: boolean;
   readonly isDecimalField: boolean;
 
-  constructor(type: DMMF.InputType, model?: ExtendedDMMFModel) {
+  constructor(
+    readonly generatorConfig: ConfigSchema,
+    type: DMMF.InputType,
+    model?: ExtendedDMMFModel,
+  ) {
     super(type.name);
+    this.generatorConfig = generatorConfig;
     this.linkedModel = model;
     this.name = type.name;
     this.constraints = type.constraints;
@@ -60,6 +66,7 @@ export class ExtendedDMMFInputType
       );
 
       return new ExtendedDMMFSchemaArg(
+        this.generatorConfig,
         { ...field, ...optionalValidators },
         linkedField,
       );

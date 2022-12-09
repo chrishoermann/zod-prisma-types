@@ -1,5 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 
+import { ConfigSchema } from '.';
 import { ExtendedDMMFField } from './extendedDMMFField';
 import { FormattedNames } from './formattedNames';
 
@@ -8,6 +9,7 @@ import { FormattedNames } from './formattedNames';
 /////////////////////////////////////////////////
 
 export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
+  readonly generatorConfig: ConfigSchema;
   readonly name: DMMF.Model['name'];
   readonly dbName: DMMF.Model['dbName'];
   readonly fields: ExtendedDMMFField[];
@@ -20,8 +22,9 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
   readonly enumFields: ExtendedDMMFField[];
   readonly hasRelationFields: boolean;
 
-  constructor(model: DMMF.Model) {
+  constructor(generatorConfig: ConfigSchema, model: DMMF.Model) {
     super(model.name);
+    this.generatorConfig = generatorConfig;
     this.name = model.name;
     this.dbName = model.dbName;
     this.fields = this._getExtendedFields(model);
@@ -36,7 +39,9 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
   }
 
   private _getExtendedFields(model: DMMF.Model) {
-    return model.fields.map((field) => new ExtendedDMMFField(field, this.name));
+    return model.fields.map(
+      (field) => new ExtendedDMMFField(this.generatorConfig, field, this.name),
+    );
   }
 
   private _setScalarFields() {

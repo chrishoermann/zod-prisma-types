@@ -10,6 +10,23 @@ import { ExtendedDMMFSchema } from './extendedDMMFSchema';
 // GENERATOR CONFIG
 /////////////////////////////////////////////////
 
+export interface ConfigSchema {
+  useValidatorJs: boolean;
+  useDecimalJs: boolean;
+  imports: string[];
+  createInputTypes: boolean;
+  addInputTypeValidation: boolean;
+  tsConfigFilePath?: string;
+}
+
+export const CONFIG_SCHEMA_DEFAULTS: ConfigSchema = {
+  useValidatorJs: false,
+  useDecimalJs: true,
+  imports: [],
+  createInputTypes: true,
+  addInputTypeValidation: true,
+};
+
 export const configSchema = z.object({
   useValidatorJs: z
     .string()
@@ -43,79 +60,63 @@ export const configSchema = z.object({
   tsConfigFilePath: z.string().optional(),
 });
 
-export type ConfigSchema = z.infer<NonNullable<typeof configSchema>>;
-
 /////////////////////////////////////////////////
 // CLASS
 /////////////////////////////////////////////////
 
 export class ExtendedDMMF implements DMMF.Document {
+  readonly generatorConfig: ConfigSchema;
   readonly datamodel: ExtendedDMMFDatamodel;
   readonly schema: ExtendedDMMFSchema;
   readonly mappings: DMMF.Mappings;
-  readonly config: ConfigSchema;
 
   constructor(dmmf: DMMF.Document, config: Dictionary<string>) {
+    this.generatorConfig = this._setGeneratorConfig(config);
     this.datamodel = this._getExtendedDatamodel(dmmf);
     this.schema = this._getExtendedSchema(dmmf);
     this.mappings = this._getExtendedMappings(dmmf);
-    this.config = this._getExtendedConfig(config);
   }
 
-  private _getExtendedDatamodel(dmmf: DMMF.Document) {
-    return new ExtendedDMMFDatamodel(dmmf.datamodel);
+  private _getExtendedDatamodel({ datamodel }: DMMF.Document) {
+    return new ExtendedDMMFDatamodel(this.generatorConfig, datamodel);
   }
 
   private _getExtendedSchema(dmmf: DMMF.Document) {
-    return new ExtendedDMMFSchema(dmmf.schema, this.datamodel);
+    return new ExtendedDMMFSchema(
+      this.generatorConfig,
+      dmmf.schema,
+      this.datamodel,
+    );
   }
 
   private _getExtendedMappings(dmmf: DMMF.Document) {
-    return new ExtendedDMMFMappings(dmmf.mappings);
+    return new ExtendedDMMFMappings(this.generatorConfig, dmmf.mappings);
   }
 
-  private _getExtendedConfig(config: Dictionary<string>): ConfigSchema {
-    const parsedConfig = configSchema.parse(config);
-
+  private _setGeneratorConfig(config: Dictionary<string>): ConfigSchema {
     return {
-      useValidatorJs:
-        parsedConfig['useValidatorJs'] !== undefined
-          ? Boolean(parsedConfig['useValidatorJs'])
-          : false,
-      useDecimalJs:
-        parsedConfig['useDecimalJs'] !== undefined
-          ? Boolean(parsedConfig['useDecimalJs'])
-          : true,
-      imports: parsedConfig['imports'] || [],
-      createInputTypes:
-        parsedConfig['createInputTypes'] !== undefined
-          ? Boolean(parsedConfig['createInputTypes'])
-          : true,
-      addInputTypeValidation:
-        parsedConfig['addInputTypeValidation'] !== undefined
-          ? Boolean(parsedConfig['addInputTypeValidation'])
-          : true,
-      tsConfigFilePath: parsedConfig['tsConfigFilePath'] || undefined,
+      ...CONFIG_SCHEMA_DEFAULTS,
+      ...configSchema.parse(config),
     };
   }
 
   useValidatorJs() {
-    return Boolean(this.config.useValidatorJs);
+    return Boolean(this.generatorConfig.useValidatorJs);
   }
 
   useDecimalJs() {
-    return Boolean(this.config.useDecimalJs);
+    return Boolean(this.generatorConfig.useDecimalJs);
   }
 
   createInputTypes() {
-    return Boolean(this.config.createInputTypes);
+    return Boolean(this.generatorConfig.createInputTypes);
   }
 
   addInputTypeValidation() {
-    return Boolean(this.config.addInputTypeValidation);
+    return Boolean(this.generatorConfig.addInputTypeValidation);
   }
 
   hasCustomImports() {
-    return Boolean(this.config.imports);
+    return Boolean(this.generatorConfig.imports);
   }
 }

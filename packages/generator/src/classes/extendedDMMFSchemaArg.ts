@@ -1,6 +1,10 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { ExtendedDMMFField, ExtendedDMMFSchemaArgInputType } from '.';
+import {
+  ConfigSchema,
+  ExtendedDMMFField,
+  ExtendedDMMFSchemaArgInputType,
+} from '.';
 import { FormattedNames } from './formattedNames';
 
 export interface ExtendedDMMFSchemaArgOptions
@@ -39,10 +43,12 @@ export class ExtendedDMMFSchemaArg
   readonly linkedField?: ExtendedDMMFField;
 
   constructor(
+    readonly generatorConfig: ConfigSchema,
     arg: ExtendedDMMFSchemaArgOptions,
     linkedField?: ExtendedDMMFField,
   ) {
     super(arg.name);
+    this.generatorConfig = generatorConfig;
     this.name = arg.name;
     this.comment = arg.comment;
     this.isNullable = arg.isNullable;
@@ -74,12 +80,18 @@ export class ExtendedDMMFSchemaArg
       return nonNullTypes
         .filter((inputType) => inputType.isList === true)
         .map((inputType) => {
-          return new ExtendedDMMFSchemaArgInputType(inputType);
+          return new ExtendedDMMFSchemaArgInputType(
+            this.generatorConfig,
+            inputType,
+          );
         });
     }
 
     return nonNullTypes.map((inputType) => {
-      return new ExtendedDMMFSchemaArgInputType(inputType);
+      return new ExtendedDMMFSchemaArgInputType(
+        this.generatorConfig,
+        inputType,
+      );
     });
   };
 

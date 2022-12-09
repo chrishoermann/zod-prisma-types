@@ -1,11 +1,18 @@
 import { DMMF } from '@prisma/generator-helper';
 
 import {
+  ConfigSchema,
   ExtendedDMMFDatamodel,
   ExtendedDMMFInputType,
   ExtendedDMMFOutputType,
   ExtendedDMMFSchemaEnum,
 } from '.';
+
+export interface ExtendedDMMFSchemaOptions {
+  schema: DMMF.Schema;
+  datamodel: ExtendedDMMFDatamodel;
+  generatorConfig: ConfigSchema;
+}
 
 /////////////////////////////////////////////////
 // CLASS
@@ -33,7 +40,13 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
   readonly hasBytesTypes: boolean;
   readonly hasDecimalTypes: boolean;
 
-  constructor(schema: DMMF.Schema, datamodel: ExtendedDMMFDatamodel) {
+  constructor(
+    readonly generatorConfig: ConfigSchema,
+    schema: DMMF.Schema,
+    datamodel: ExtendedDMMFDatamodel,
+  ) {
+    this.generatorConfig = generatorConfig;
+
     this.rootQueryType = schema.rootQueryType;
     this.rootMutationType = schema.rootMutationType;
     this.inputObjectTypes = this._setExtendedInputObjectTypes(
@@ -65,7 +78,11 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
           return type.name.match(model.name);
         });
 
-        return new ExtendedDMMFInputType(type, matchingDatamodel);
+        return new ExtendedDMMFInputType(
+          this.generatorConfig,
+          type,
+          matchingDatamodel,
+        );
       }),
     };
   }
@@ -77,7 +94,8 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
     return {
       ...schema.outputObjectTypes,
       prisma: schema.outputObjectTypes.prisma.map(
-        (type) => new ExtendedDMMFOutputType(type, datamodel),
+        (type) =>
+          new ExtendedDMMFOutputType(this.generatorConfig, type, datamodel),
       ),
     };
   }
@@ -86,7 +104,7 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
     return {
       ...schema.enumTypes,
       prisma: schema.enumTypes.prisma.map(
-        (type) => new ExtendedDMMFSchemaEnum(type),
+        (type) => new ExtendedDMMFSchemaEnum(this.generatorConfig, type),
       ),
     };
   }
