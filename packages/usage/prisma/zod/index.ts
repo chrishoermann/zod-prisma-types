@@ -72,8 +72,8 @@ export const InputJsonValue: z.ZodType<PrismaClient.Prisma.InputJsonValue> = z.u
 //------------------------------------------------------
 
 /**
- * Docuemtnation on my model
- * multiline docs
+ * comment line one
+ * comment line two
  */
 export const MyModelSchema = z.object({
   id: z.number(),
@@ -227,7 +227,7 @@ export const UserSelectSchema: z.ZodType<PrismaClient.Prisma.UserSelect> = z.obj
   name: z.boolean().optional(),
   role: z.boolean().optional(),
   enum: z.boolean().optional(),
-  posts: z.union([z.boolean(), z.lazy(() => PostArgsSchema)]).optional(),
+  posts: z.union([z.boolean(), z.lazy(() => PostFindManyArgsSchema)]).optional(),
   profile: z.union([z.boolean(), z.lazy(() => ProfileArgsSchema)]).optional(),
 }).strict();
 
@@ -277,6 +277,396 @@ export const ProfileSelectSchema: z.ZodType<PrismaClient.Prisma.ProfileSelect> =
 
 export const ProfileIncludeSchema: z.ZodType<PrismaClient.Prisma.ProfileInclude> = z.object({
   user: z.union([z.boolean(), z.lazy(() => UserArgsSchema)]).optional(),
+}).strict();
+
+/////////////////////////////////////////
+// ARGS
+/////////////////////////////////////////
+
+export const AggregateMyModelSchema: z.ZodType<PrismaClient.Prisma.AggregateMyModel> = z.object({
+  _count: z.lazy(() => MyModelCountAggregateOutputTypeSchema).nullable(),
+  _avg: z.lazy(() => MyModelAvgAggregateOutputTypeSchema).nullable(),
+  _sum: z.lazy(() => MyModelSumAggregateOutputTypeSchema).nullable(),
+  _min: z.lazy(() => MyModelMinAggregateOutputTypeSchema).nullable(),
+  _max: z.lazy(() => MyModelMaxAggregateOutputTypeSchema).nullable(),
+}).strict();
+
+export const MyModelGroupByOutputTypeSchema: z.ZodType<PrismaClient.Prisma.MyModelGroupByOutputType> = z.object({
+  id: z.number(),
+  custom: z.string().nullable(),
+  _count: z.lazy(() => MyModelCountAggregateOutputTypeSchema).nullable(),
+  _avg: z.lazy(() => MyModelAvgAggregateOutputTypeSchema).nullable(),
+  _sum: z.lazy(() => MyModelSumAggregateOutputTypeSchema).nullable(),
+  _min: z.lazy(() => MyModelMinAggregateOutputTypeSchema).nullable(),
+  _max: z.lazy(() => MyModelMaxAggregateOutputTypeSchema).nullable(),
+}).strict();
+
+export const AggregateTestSchema: z.ZodType<PrismaClient.Prisma.AggregateTest> = z.object({
+  _count: z.lazy(() => TestCountAggregateOutputTypeSchema).nullable(),
+  _avg: z.lazy(() => TestAvgAggregateOutputTypeSchema).nullable(),
+  _sum: z.lazy(() => TestSumAggregateOutputTypeSchema).nullable(),
+  _min: z.lazy(() => TestMinAggregateOutputTypeSchema).nullable(),
+  _max: z.lazy(() => TestMaxAggregateOutputTypeSchema).nullable(),
+}).strict();
+
+export const TestGroupByOutputTypeSchema: z.ZodType<PrismaClient.Prisma.TestGroupByOutputType> = z.object({
+  id: z.string(),
+  name: z.string().nullable(),
+  value: z.lazy(() => MyValueSchema),
+  bic: z.string().nullable(),
+  intTwo: z.number(),
+  int: z.number().nullable(),
+  floatOpt: z.number().nullable(),
+  float: z.number(),
+  decimal: z.instanceof(PrismaClient.Prisma.Decimal),
+  decimalOpt: z.instanceof(PrismaClient.Prisma.Decimal).nullable(),
+  date: z.date(),
+  dateOpt: z.date().nullable(),
+  bigInt: z.bigint(),
+  bigIntOpt: z.bigint().nullable(),
+  json: JsonValue,
+  jsonOpt: JsonValue.nullable(),
+  bytes: z.instanceof(Buffer),
+  bytesOpt: z.instanceof(Buffer).nullable(),
+  _count: z.lazy(() => TestCountAggregateOutputTypeSchema).nullable(),
+  _avg: z.lazy(() => TestAvgAggregateOutputTypeSchema).nullable(),
+  _sum: z.lazy(() => TestSumAggregateOutputTypeSchema).nullable(),
+  _min: z.lazy(() => TestMinAggregateOutputTypeSchema).nullable(),
+  _max: z.lazy(() => TestMaxAggregateOutputTypeSchema).nullable(),
+}).strict();
+
+export const AggregateMyPrismaScalarsTypeSchema: z.ZodType<PrismaClient.Prisma.AggregateMyPrismaScalarsType> = z.object({
+  _count: z.lazy(() => MyPrismaScalarsTypeCountAggregateOutputTypeSchema).nullable(),
+  _avg: z.lazy(() => MyPrismaScalarsTypeAvgAggregateOutputTypeSchema).nullable(),
+  _sum: z.lazy(() => MyPrismaScalarsTypeSumAggregateOutputTypeSchema).nullable(),
+  _min: z.lazy(() => MyPrismaScalarsTypeMinAggregateOutputTypeSchema).nullable(),
+  _max: z.lazy(() => MyPrismaScalarsTypeMaxAggregateOutputTypeSchema).nullable(),
+}).strict();
+
+export const MyPrismaScalarsTypeGroupByOutputTypeSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeGroupByOutputType> = z.object({
+  id: z.string(),
+  string: z.string().nullable(),
+  bic: z.string().nullable(),
+  float: z.number(),
+  decimal: z.instanceof(PrismaClient.Prisma.Decimal),
+  date: z.date().nullable(),
+  bigInt: z.bigint(),
+  json: JsonValue,
+  bytes: z.instanceof(Buffer),
+  custom: z.string().nullable(),
+  _count: z.lazy(() => MyPrismaScalarsTypeCountAggregateOutputTypeSchema).nullable(),
+  _avg: z.lazy(() => MyPrismaScalarsTypeAvgAggregateOutputTypeSchema).nullable(),
+  _sum: z.lazy(() => MyPrismaScalarsTypeSumAggregateOutputTypeSchema).nullable(),
+  _min: z.lazy(() => MyPrismaScalarsTypeMinAggregateOutputTypeSchema).nullable(),
+  _max: z.lazy(() => MyPrismaScalarsTypeMaxAggregateOutputTypeSchema).nullable(),
+}).strict();
+
+export const AggregateUserSchema: z.ZodType<PrismaClient.Prisma.AggregateUser> = z.object({
+  _count: z.lazy(() => UserCountAggregateOutputTypeSchema).nullable(),
+  _min: z.lazy(() => UserMinAggregateOutputTypeSchema).nullable(),
+  _max: z.lazy(() => UserMaxAggregateOutputTypeSchema).nullable(),
+}).strict();
+
+export const UserGroupByOutputTypeSchema: z.ZodType<PrismaClient.Prisma.UserGroupByOutputType> = z.object({
+  id: z.string(),
+  email: z.string(),
+  name: z.string().nullable(),
+  role: z.lazy(() => RoleSchema).array(),
+  enum: z.lazy(() => AnotherEnumSchema),
+  _count: z.lazy(() => UserCountAggregateOutputTypeSchema).nullable(),
+  _min: z.lazy(() => UserMinAggregateOutputTypeSchema).nullable(),
+  _max: z.lazy(() => UserMaxAggregateOutputTypeSchema).nullable(),
+}).strict();
+
+export const AggregatePostSchema: z.ZodType<PrismaClient.Prisma.AggregatePost> = z.object({
+  _count: z.lazy(() => PostCountAggregateOutputTypeSchema).nullable(),
+  _avg: z.lazy(() => PostAvgAggregateOutputTypeSchema).nullable(),
+  _sum: z.lazy(() => PostSumAggregateOutputTypeSchema).nullable(),
+  _min: z.lazy(() => PostMinAggregateOutputTypeSchema).nullable(),
+  _max: z.lazy(() => PostMaxAggregateOutputTypeSchema).nullable(),
+}).strict();
+
+export const PostGroupByOutputTypeSchema: z.ZodType<PrismaClient.Prisma.PostGroupByOutputType> = z.object({
+  id: z.number(),
+  title: z.string(),
+  content: z.string().nullable(),
+  published: z.boolean(),
+  authorId: z.string(),
+  anotherEnum: z.lazy(() => AnotherEnumSchema).array(),
+  _count: z.lazy(() => PostCountAggregateOutputTypeSchema).nullable(),
+  _avg: z.lazy(() => PostAvgAggregateOutputTypeSchema).nullable(),
+  _sum: z.lazy(() => PostSumAggregateOutputTypeSchema).nullable(),
+  _min: z.lazy(() => PostMinAggregateOutputTypeSchema).nullable(),
+  _max: z.lazy(() => PostMaxAggregateOutputTypeSchema).nullable(),
+}).strict();
+
+export const AggregateProfileSchema: z.ZodType<PrismaClient.Prisma.AggregateProfile> = z.object({
+  _count: z.lazy(() => ProfileCountAggregateOutputTypeSchema).nullable(),
+  _avg: z.lazy(() => ProfileAvgAggregateOutputTypeSchema).nullable(),
+  _sum: z.lazy(() => ProfileSumAggregateOutputTypeSchema).nullable(),
+  _min: z.lazy(() => ProfileMinAggregateOutputTypeSchema).nullable(),
+  _max: z.lazy(() => ProfileMaxAggregateOutputTypeSchema).nullable(),
+}).strict();
+
+export const ProfileGroupByOutputTypeSchema: z.ZodType<PrismaClient.Prisma.ProfileGroupByOutputType> = z.object({
+  id: z.number(),
+  bio: z.string(),
+  userId: z.string(),
+  role: z.lazy(() => RoleSchema).array(),
+  second: z.lazy(() => SecondEnumSchema),
+  _count: z.lazy(() => ProfileCountAggregateOutputTypeSchema).nullable(),
+  _avg: z.lazy(() => ProfileAvgAggregateOutputTypeSchema).nullable(),
+  _sum: z.lazy(() => ProfileSumAggregateOutputTypeSchema).nullable(),
+  _min: z.lazy(() => ProfileMinAggregateOutputTypeSchema).nullable(),
+  _max: z.lazy(() => ProfileMaxAggregateOutputTypeSchema).nullable(),
+}).strict();
+
+export const MyModelCountAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.MyModelCountAggregateOutputType> = z.object({
+  id: z.number(),
+  custom: z.number(),
+  _all: z.number(),
+}).strict();
+
+export const MyModelAvgAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.MyModelAvgAggregateOutputType> = z.object({
+  id: z.number().nullable(),
+}).strict();
+
+export const MyModelSumAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.MyModelSumAggregateOutputType> = z.object({
+  id: z.number().nullable(),
+}).strict();
+
+export const MyModelMinAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.MyModelMinAggregateOutputType> = z.object({
+  id: z.number().nullable(),
+  custom: z.string().nullable(),
+}).strict();
+
+export const MyModelMaxAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.MyModelMaxAggregateOutputType> = z.object({
+  id: z.number().nullable(),
+  custom: z.string().nullable(),
+}).strict();
+
+export const TestCountAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.TestCountAggregateOutputType> = z.object({
+  id: z.number(),
+  name: z.number(),
+  value: z.number(),
+  bic: z.number(),
+  intTwo: z.number(),
+  int: z.number(),
+  floatOpt: z.number(),
+  float: z.number(),
+  decimal: z.number(),
+  decimalOpt: z.number(),
+  date: z.number(),
+  dateOpt: z.number(),
+  bigInt: z.number(),
+  bigIntOpt: z.number(),
+  json: z.number(),
+  jsonOpt: z.number(),
+  bytes: z.number(),
+  bytesOpt: z.number(),
+  _all: z.number(),
+}).strict();
+
+export const TestAvgAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.TestAvgAggregateOutputType> = z.object({
+  intTwo: z.number().nullable(),
+  int: z.number().nullable(),
+  floatOpt: z.number().nullable(),
+  float: z.number().nullable(),
+  decimal: z.instanceof(PrismaClient.Prisma.Decimal).nullable(),
+  decimalOpt: z.instanceof(PrismaClient.Prisma.Decimal).nullable(),
+  bigInt: z.number().nullable(),
+  bigIntOpt: z.number().nullable(),
+}).strict();
+
+export const TestSumAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.TestSumAggregateOutputType> = z.object({
+  intTwo: z.number().nullable(),
+  int: z.number().nullable(),
+  floatOpt: z.number().nullable(),
+  float: z.number().nullable(),
+  decimal: z.instanceof(PrismaClient.Prisma.Decimal).nullable(),
+  decimalOpt: z.instanceof(PrismaClient.Prisma.Decimal).nullable(),
+  bigInt: z.bigint().nullable(),
+  bigIntOpt: z.bigint().nullable(),
+}).strict();
+
+export const TestMinAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.TestMinAggregateOutputType> = z.object({
+  id: z.string().nullable(),
+  name: z.string().nullable(),
+  value: z.lazy(() => MyValueSchema).nullable(),
+  bic: z.string().nullable(),
+  intTwo: z.number().nullable(),
+  int: z.number().nullable(),
+  floatOpt: z.number().nullable(),
+  float: z.number().nullable(),
+  decimal: z.instanceof(PrismaClient.Prisma.Decimal).nullable(),
+  decimalOpt: z.instanceof(PrismaClient.Prisma.Decimal).nullable(),
+  date: z.date().nullable(),
+  dateOpt: z.date().nullable(),
+  bigInt: z.bigint().nullable(),
+  bigIntOpt: z.bigint().nullable(),
+  bytes: z.instanceof(Buffer).nullable(),
+  bytesOpt: z.instanceof(Buffer).nullable(),
+}).strict();
+
+export const TestMaxAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.TestMaxAggregateOutputType> = z.object({
+  id: z.string().nullable(),
+  name: z.string().nullable(),
+  value: z.lazy(() => MyValueSchema).nullable(),
+  bic: z.string().nullable(),
+  intTwo: z.number().nullable(),
+  int: z.number().nullable(),
+  floatOpt: z.number().nullable(),
+  float: z.number().nullable(),
+  decimal: z.instanceof(PrismaClient.Prisma.Decimal).nullable(),
+  decimalOpt: z.instanceof(PrismaClient.Prisma.Decimal).nullable(),
+  date: z.date().nullable(),
+  dateOpt: z.date().nullable(),
+  bigInt: z.bigint().nullable(),
+  bigIntOpt: z.bigint().nullable(),
+  bytes: z.instanceof(Buffer).nullable(),
+  bytesOpt: z.instanceof(Buffer).nullable(),
+}).strict();
+
+export const MyPrismaScalarsTypeCountAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeCountAggregateOutputType> = z.object({
+  id: z.number(),
+  string: z.number(),
+  bic: z.number(),
+  float: z.number(),
+  decimal: z.number(),
+  date: z.number(),
+  bigInt: z.number(),
+  json: z.number(),
+  bytes: z.number(),
+  custom: z.number(),
+  _all: z.number(),
+}).strict();
+
+export const MyPrismaScalarsTypeAvgAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeAvgAggregateOutputType> = z.object({
+  float: z.number().nullable(),
+  decimal: z.instanceof(PrismaClient.Prisma.Decimal).nullable(),
+  bigInt: z.number().nullable(),
+}).strict();
+
+export const MyPrismaScalarsTypeSumAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeSumAggregateOutputType> = z.object({
+  float: z.number().nullable(),
+  decimal: z.instanceof(PrismaClient.Prisma.Decimal).nullable(),
+  bigInt: z.bigint().nullable(),
+}).strict();
+
+export const MyPrismaScalarsTypeMinAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeMinAggregateOutputType> = z.object({
+  id: z.string().nullable(),
+  string: z.string().nullable(),
+  bic: z.string().nullable(),
+  float: z.number().nullable(),
+  decimal: z.instanceof(PrismaClient.Prisma.Decimal).nullable(),
+  date: z.date().nullable(),
+  bigInt: z.bigint().nullable(),
+  bytes: z.instanceof(Buffer).nullable(),
+  custom: z.string().nullable(),
+}).strict();
+
+export const MyPrismaScalarsTypeMaxAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeMaxAggregateOutputType> = z.object({
+  id: z.string().nullable(),
+  string: z.string().nullable(),
+  bic: z.string().nullable(),
+  float: z.number().nullable(),
+  decimal: z.instanceof(PrismaClient.Prisma.Decimal).nullable(),
+  date: z.date().nullable(),
+  bigInt: z.bigint().nullable(),
+  bytes: z.instanceof(Buffer).nullable(),
+  custom: z.string().nullable(),
+}).strict();
+
+export const UserCountOutputTypeSchema: z.ZodType<PrismaClient.Prisma.UserCountOutputType> = z.object({
+  posts: z.number(),
+}).strict();
+
+export const UserCountAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.UserCountAggregateOutputType> = z.object({
+  id: z.number(),
+  email: z.number(),
+  name: z.number(),
+  role: z.number(),
+  enum: z.number(),
+  _all: z.number(),
+}).strict();
+
+export const UserMinAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.UserMinAggregateOutputType> = z.object({
+  id: z.string().nullable(),
+  email: z.string().nullable(),
+  name: z.string().nullable(),
+  enum: z.lazy(() => AnotherEnumSchema).nullable(),
+}).strict();
+
+export const UserMaxAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.UserMaxAggregateOutputType> = z.object({
+  id: z.string().nullable(),
+  email: z.string().nullable(),
+  name: z.string().nullable(),
+  enum: z.lazy(() => AnotherEnumSchema).nullable(),
+}).strict();
+
+export const PostCountAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.PostCountAggregateOutputType> = z.object({
+  id: z.number(),
+  title: z.number(),
+  content: z.number(),
+  published: z.number(),
+  authorId: z.number(),
+  anotherEnum: z.number(),
+  _all: z.number(),
+}).strict();
+
+export const PostAvgAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.PostAvgAggregateOutputType> = z.object({
+  id: z.number().nullable(),
+}).strict();
+
+export const PostSumAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.PostSumAggregateOutputType> = z.object({
+  id: z.number().nullable(),
+}).strict();
+
+export const PostMinAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.PostMinAggregateOutputType> = z.object({
+  id: z.number().nullable(),
+  title: z.string().nullable(),
+  content: z.string().nullable(),
+  published: z.boolean().nullable(),
+  authorId: z.string().nullable(),
+}).strict();
+
+export const PostMaxAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.PostMaxAggregateOutputType> = z.object({
+  id: z.number().nullable(),
+  title: z.string().nullable(),
+  content: z.string().nullable(),
+  published: z.boolean().nullable(),
+  authorId: z.string().nullable(),
+}).strict();
+
+export const ProfileCountAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.ProfileCountAggregateOutputType> = z.object({
+  id: z.number(),
+  bio: z.number(),
+  userId: z.number(),
+  role: z.number(),
+  second: z.number(),
+  _all: z.number(),
+}).strict();
+
+export const ProfileAvgAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.ProfileAvgAggregateOutputType> = z.object({
+  id: z.number().nullable(),
+}).strict();
+
+export const ProfileSumAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.ProfileSumAggregateOutputType> = z.object({
+  id: z.number().nullable(),
+}).strict();
+
+export const ProfileMinAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.ProfileMinAggregateOutputType> = z.object({
+  id: z.number().nullable(),
+  bio: z.string().nullable(),
+  userId: z.string().nullable(),
+  second: z.lazy(() => SecondEnumSchema).nullable(),
+}).strict();
+
+export const ProfileMaxAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.ProfileMaxAggregateOutputType> = z.object({
+  id: z.number().nullable(),
+  bio: z.string().nullable(),
+  userId: z.string().nullable(),
+  second: z.lazy(() => SecondEnumSchema).nullable(),
 }).strict();
 
 /////////////////////////////////////////
@@ -2773,6 +3163,16 @@ export const MyModelFindFirstArgsSchema: z.ZodType<PrismaClient.Prisma.MyModelFi
   distinct: MyModelScalarFieldEnumSchema.array().optional(),
 }).strict();
 
+export const MyModelFindFirstOrThrowArgsSchema: z.ZodType<PrismaClient.Prisma.MyModelFindFirstOrThrowArgs> = z.object({
+  select: z.lazy(() => MyModelSelectSchema).optional(),
+  where: MyModelWhereInputSchema.optional(),
+  orderBy: z.union([MyModelOrderByWithRelationInputSchema.array(), MyModelOrderByWithRelationInputSchema]).optional(),
+  cursor: MyModelWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: MyModelScalarFieldEnumSchema.array().optional(),
+}).strict();
+
 export const MyModelFindManyArgsSchema: z.ZodType<PrismaClient.Prisma.MyModelFindManyArgs> = z.object({
   select: z.lazy(() => MyModelSelectSchema).optional(),
   where: MyModelWhereInputSchema.optional(),
@@ -2807,7 +3207,22 @@ export const MyModelFindUniqueArgsSchema: z.ZodType<PrismaClient.Prisma.MyModelF
   where: MyModelWhereUniqueInputSchema,
 }).strict();
 
+export const MyModelFindUniqueOrThrowArgsSchema: z.ZodType<PrismaClient.Prisma.MyModelFindUniqueOrThrowArgs> = z.object({
+  select: z.lazy(() => MyModelSelectSchema).optional(),
+  where: MyModelWhereUniqueInputSchema,
+}).strict();
+
 export const TestFindFirstArgsSchema: z.ZodType<PrismaClient.Prisma.TestFindFirstArgs> = z.object({
+  select: z.lazy(() => TestSelectSchema).optional(),
+  where: TestWhereInputSchema.optional(),
+  orderBy: z.union([TestOrderByWithRelationInputSchema.array(), TestOrderByWithRelationInputSchema]).optional(),
+  cursor: TestWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: TestScalarFieldEnumSchema.array().optional(),
+}).strict();
+
+export const TestFindFirstOrThrowArgsSchema: z.ZodType<PrismaClient.Prisma.TestFindFirstOrThrowArgs> = z.object({
   select: z.lazy(() => TestSelectSchema).optional(),
   where: TestWhereInputSchema.optional(),
   orderBy: z.union([TestOrderByWithRelationInputSchema.array(), TestOrderByWithRelationInputSchema]).optional(),
@@ -2851,7 +3266,22 @@ export const TestFindUniqueArgsSchema: z.ZodType<PrismaClient.Prisma.TestFindUni
   where: TestWhereUniqueInputSchema,
 }).strict();
 
+export const TestFindUniqueOrThrowArgsSchema: z.ZodType<PrismaClient.Prisma.TestFindUniqueOrThrowArgs> = z.object({
+  select: z.lazy(() => TestSelectSchema).optional(),
+  where: TestWhereUniqueInputSchema,
+}).strict();
+
 export const MyPrismaScalarsTypeFindFirstArgsSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeFindFirstArgs> = z.object({
+  select: z.lazy(() => MyPrismaScalarsTypeSelectSchema).optional(),
+  where: MyPrismaScalarsTypeWhereInputSchema.optional(),
+  orderBy: z.union([MyPrismaScalarsTypeOrderByWithRelationInputSchema.array(), MyPrismaScalarsTypeOrderByWithRelationInputSchema]).optional(),
+  cursor: MyPrismaScalarsTypeWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: MyPrismaScalarsTypeScalarFieldEnumSchema.array().optional(),
+}).strict();
+
+export const MyPrismaScalarsTypeFindFirstOrThrowArgsSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeFindFirstOrThrowArgs> = z.object({
   select: z.lazy(() => MyPrismaScalarsTypeSelectSchema).optional(),
   where: MyPrismaScalarsTypeWhereInputSchema.optional(),
   orderBy: z.union([MyPrismaScalarsTypeOrderByWithRelationInputSchema.array(), MyPrismaScalarsTypeOrderByWithRelationInputSchema]).optional(),
@@ -2895,7 +3325,23 @@ export const MyPrismaScalarsTypeFindUniqueArgsSchema: z.ZodType<PrismaClient.Pri
   where: MyPrismaScalarsTypeWhereUniqueInputSchema,
 }).strict();
 
+export const MyPrismaScalarsTypeFindUniqueOrThrowArgsSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeFindUniqueOrThrowArgs> = z.object({
+  select: z.lazy(() => MyPrismaScalarsTypeSelectSchema).optional(),
+  where: MyPrismaScalarsTypeWhereUniqueInputSchema,
+}).strict();
+
 export const UserFindFirstArgsSchema: z.ZodType<PrismaClient.Prisma.UserFindFirstArgs> = z.object({
+  select: z.lazy(() => UserSelectSchema).optional(),
+  include: z.lazy(() => UserIncludeSchema).optional(),
+  where: UserWhereInputSchema.optional(),
+  orderBy: z.union([UserOrderByWithRelationInputSchema.array(), UserOrderByWithRelationInputSchema]).optional(),
+  cursor: UserWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: UserScalarFieldEnumSchema.array().optional(),
+}).strict();
+
+export const UserFindFirstOrThrowArgsSchema: z.ZodType<PrismaClient.Prisma.UserFindFirstOrThrowArgs> = z.object({
   select: z.lazy(() => UserSelectSchema).optional(),
   include: z.lazy(() => UserIncludeSchema).optional(),
   where: UserWhereInputSchema.optional(),
@@ -2944,7 +3390,24 @@ export const UserFindUniqueArgsSchema: z.ZodType<PrismaClient.Prisma.UserFindUni
   where: UserWhereUniqueInputSchema,
 }).strict();
 
+export const UserFindUniqueOrThrowArgsSchema: z.ZodType<PrismaClient.Prisma.UserFindUniqueOrThrowArgs> = z.object({
+  select: z.lazy(() => UserSelectSchema).optional(),
+  include: z.lazy(() => UserIncludeSchema).optional(),
+  where: UserWhereUniqueInputSchema,
+}).strict();
+
 export const PostFindFirstArgsSchema: z.ZodType<PrismaClient.Prisma.PostFindFirstArgs> = z.object({
+  select: z.lazy(() => PostSelectSchema).optional(),
+  include: z.lazy(() => PostIncludeSchema).optional(),
+  where: PostWhereInputSchema.optional(),
+  orderBy: z.union([PostOrderByWithRelationInputSchema.array(), PostOrderByWithRelationInputSchema]).optional(),
+  cursor: PostWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: PostScalarFieldEnumSchema.array().optional(),
+}).strict();
+
+export const PostFindFirstOrThrowArgsSchema: z.ZodType<PrismaClient.Prisma.PostFindFirstOrThrowArgs> = z.object({
   select: z.lazy(() => PostSelectSchema).optional(),
   include: z.lazy(() => PostIncludeSchema).optional(),
   where: PostWhereInputSchema.optional(),
@@ -2993,7 +3456,24 @@ export const PostFindUniqueArgsSchema: z.ZodType<PrismaClient.Prisma.PostFindUni
   where: PostWhereUniqueInputSchema,
 }).strict();
 
+export const PostFindUniqueOrThrowArgsSchema: z.ZodType<PrismaClient.Prisma.PostFindUniqueOrThrowArgs> = z.object({
+  select: z.lazy(() => PostSelectSchema).optional(),
+  include: z.lazy(() => PostIncludeSchema).optional(),
+  where: PostWhereUniqueInputSchema,
+}).strict();
+
 export const ProfileFindFirstArgsSchema: z.ZodType<PrismaClient.Prisma.ProfileFindFirstArgs> = z.object({
+  select: z.lazy(() => ProfileSelectSchema).optional(),
+  include: z.lazy(() => ProfileIncludeSchema).optional(),
+  where: ProfileWhereInputSchema.optional(),
+  orderBy: z.union([ProfileOrderByWithRelationInputSchema.array(), ProfileOrderByWithRelationInputSchema]).optional(),
+  cursor: ProfileWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: ProfileScalarFieldEnumSchema.array().optional(),
+}).strict();
+
+export const ProfileFindFirstOrThrowArgsSchema: z.ZodType<PrismaClient.Prisma.ProfileFindFirstOrThrowArgs> = z.object({
   select: z.lazy(() => ProfileSelectSchema).optional(),
   include: z.lazy(() => ProfileIncludeSchema).optional(),
   where: ProfileWhereInputSchema.optional(),
@@ -3037,6 +3517,12 @@ export const ProfileGroupByArgsSchema: z.ZodType<PrismaClient.Prisma.ProfileGrou
 }).strict();
 
 export const ProfileFindUniqueArgsSchema: z.ZodType<PrismaClient.Prisma.ProfileFindUniqueArgs> = z.object({
+  select: z.lazy(() => ProfileSelectSchema).optional(),
+  include: z.lazy(() => ProfileIncludeSchema).optional(),
+  where: ProfileWhereUniqueInputSchema,
+}).strict();
+
+export const ProfileFindUniqueOrThrowArgsSchema: z.ZodType<PrismaClient.Prisma.ProfileFindUniqueOrThrowArgs> = z.object({
   select: z.lazy(() => ProfileSelectSchema).optional(),
   include: z.lazy(() => ProfileIncludeSchema).optional(),
   where: ProfileWhereUniqueInputSchema,

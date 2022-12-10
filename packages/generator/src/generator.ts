@@ -12,6 +12,7 @@ import {
   getInputTypeStatements,
   getImportStatements,
   getModelStatements,
+  getAggregateAndCountStatements,
 } from './functions';
 import { skipGenerator } from './utils';
 
@@ -54,6 +55,7 @@ export const generator = async ({ output, config, dmmf }: GeneratorConfig) => {
         ...getHelperStatements(extendendDMMF),
         ...getModelStatements(extendendDMMF),
         ...getIncludeSelectStatements(extendendDMMF),
+        ...getAggregateAndCountStatements(extendendDMMF),
         ...getInputTypeStatements(extendendDMMF),
         ...getArgTypeStatements(extendendDMMF),
       ],

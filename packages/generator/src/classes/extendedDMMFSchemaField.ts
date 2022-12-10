@@ -36,7 +36,7 @@ export class ExtendedDMMFSchemaField
    * String that contains the arg name according to prisma types.
    * @example "UserFindManyArgs"
    */
-  readonly argName: string;
+  readonly argName?: string;
 
   /**
    * Type of the model according to the prisma action.
@@ -72,8 +72,9 @@ export class ExtendedDMMFSchemaField
   private _setArgs({ args }: DMMF.SchemaField) {
     return args.map((arg) => {
       const linkedField = this.linkedModel?.fields.find(
-        (field) => field.name === arg.name,
+        (field) => field?.name === arg?.name,
       );
+
       return new ExtendedDMMFSchemaArg(this.generatorConfig, arg, linkedField);
     });
   }
@@ -95,7 +96,9 @@ export class ExtendedDMMFSchemaField
    * @returns type of the model extracted from string
    */
   private _setModelType() {
-    return this.name.replace(this.prismaAction as string, '');
+    return this.name
+      .replace(this.prismaAction as string, '')
+      .replace('OrThrow', '');
   }
 
   /**
@@ -104,8 +107,14 @@ export class ExtendedDMMFSchemaField
    * @returns name of the argType used in prisma types
    */
   private _setArgName() {
-    const argName = PRISMA_ACTION_ARG_MAP[this.prismaAction];
-    return `${this.modelType}${argName.formattedNames.pascalCase}Args`;
+    const argName: FormattedNames | undefined =
+      PRISMA_ACTION_ARG_MAP[this.prismaAction];
+
+    if (this.name.includes('OrThrow')) {
+      return `${this.modelType}${argName?.formattedNames.pascalCase}OrThrowArgs`;
+    }
+
+    return `${this.modelType}${argName?.formattedNames.pascalCase}Args`;
   }
 
   /**

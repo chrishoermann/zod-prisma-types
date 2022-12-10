@@ -10,6 +10,64 @@ export const getIncludeSelectStatements: GetStatements = (dmmf) => {
 
   const statements: Statement[] = [writeHeading(`SELECT & INCLUDE`, 'FAT')];
 
+  // dmmf.schema.outputObjectTypes.model.forEach((model) => {
+  //   statements.push(
+  //     writeHeading(`${model.formattedNames.upperCaseSpace}`, 'SLIM'),
+  //   );
+
+  //   statements.push(
+  //     writeConstStatement({
+  //       leadingTrivia: (writer) => writer.newLine(),
+  //       declarations: [
+  //         {
+  //           name: `${model.formattedNames.pascalCase}SelectSchema`,
+  //           type: `z.ZodType<PrismaClient.Prisma.${model.formattedNames.pascalCase}Select>`,
+  //           initializer(writer) {
+  //             writer.write(`z.object({`);
+  //             model.fields.forEach((field) => {
+  //               if (field.outputType.isList) {
+  //                 return writer
+  //                   .write(`${field.formattedNames.camelCase}: `)
+  //                   .write(`z.union([`)
+  //                   .write(`z.boolean(),`)
+  //                   .write(`z.lazy(() => ${field.outputType.type}ArgsSchema)`)
+  //                   .write(`z.boolean()`)
+  //                   .write(`.optional(),`)
+  //                   .newLine();
+  //               }
+
+  //               return writer
+  //                 .write(`${field.formattedNames.camelCase}: `)
+  //                 .write(`z.boolean()`)
+  //                 .write(`.optional(),`)
+  //                 .newLine();
+  //             });
+
+  //             model.relationFields.forEach((field) => {
+  //               writer
+  //                 .write(`${field.formattedNames.camelCase}: `)
+  //                 .write(`z.union([`)
+  //                 .write(`z.boolean(),`)
+  //                 .conditionalWrite(
+  //                   !field.isList,
+  //                   `z.lazy(() => ${field.type}ArgsSchema)`,
+  //                 )
+  //                 .conditionalWrite(
+  //                   field.isList,
+  //                   `z.lazy(() => ${field.type}FindManyArgsSchema)`,
+  //                 )
+  //                 .write(`]).optional(),`)
+  //                 .newLine();
+  //             });
+
+  //             writer.write(`})`).write(`.strict()`);
+  //           },
+  //         },
+  //       ],
+  //     }),
+  //   );
+  // });
+
   dmmf.datamodel.models.forEach((model) => {
     statements.push(
       writeHeading(`${model.formattedNames.upperCaseSpace}`, 'SLIM'),
@@ -67,7 +125,14 @@ export const getIncludeSelectStatements: GetStatements = (dmmf) => {
                   .write(`${field.formattedNames.camelCase}: `)
                   .write(`z.union([`)
                   .write(`z.boolean(),`)
-                  .write(`z.lazy(() => ${field.type}ArgsSchema)`)
+                  .conditionalWrite(
+                    !field.isList,
+                    `z.lazy(() => ${field.type}ArgsSchema)`,
+                  )
+                  .conditionalWrite(
+                    field.isList,
+                    `z.lazy(() => ${field.type}FindManyArgsSchema)`,
+                  )
                   .write(`]).optional(),`)
                   .newLine();
               });

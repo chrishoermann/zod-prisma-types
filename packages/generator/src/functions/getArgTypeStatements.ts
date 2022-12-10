@@ -19,7 +19,7 @@ export const getArgTypeStatements: GetStatements = (dmmf) => {
   dmmf.schema.outputObjectTypes.prisma
     .filter((type) => type.name === 'Query' || type.name === 'Mutation')
     .forEach((outputType) => {
-      outputType.fields.forEach((field) => {
+      outputType.prismaActionFields.forEach((field) => {
         statements.push(
           writeConstStatement({
             leadingTrivia: (writer) => writer.newLine(),

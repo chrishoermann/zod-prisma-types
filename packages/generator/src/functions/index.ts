@@ -1,3 +1,4 @@
+export * from './getAggregateAndCountStatements';
 export * from './getArgTypeStatements';
 export * from './getEnumStatements';
 export * from './getHelperStatements';

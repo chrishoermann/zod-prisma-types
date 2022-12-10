@@ -26,6 +26,8 @@ enum MyValue {
   C
 }
 
+/// comment line one
+/// comment line two
 model MyModel {
   id     Int     @id @default(autoincrement())
   custom String? /// @zod.custom.use(z.string().refine(val => validator.isBIC(val)).transform(val => val.toUpperCase()))

@@ -23,10 +23,14 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
   readonly rootMutationType?: DMMF.Schema['rootMutationType'];
   readonly inputObjectTypes: {
     readonly model?: DMMF.InputType[];
+    // Contains information about the prisma where, orderBy, and other input types.
     readonly prisma: ExtendedDMMFInputType[];
   };
   readonly outputObjectTypes: {
-    readonly model: DMMF.OutputType[];
+    // Contains information about the prisma select, include and so on types.
+    // TODO: Merge in the datamodel information.
+    readonly model: ExtendedDMMFOutputType[];
+    // Contains information about the prisma args, aggregate, count, groupBy and so on types.
     readonly prisma: ExtendedDMMFOutputType[];
   };
   readonly enumTypes: {
@@ -45,6 +49,7 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
     schema: DMMF.Schema,
     datamodel: ExtendedDMMFDatamodel,
   ) {
+    console.log();
     this.generatorConfig = generatorConfig;
 
     this.rootQueryType = schema.rootQueryType;
@@ -62,6 +67,16 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
     this.hasJsonTypes = this._setHasJsonTypes();
     this.hasBytesTypes = this._setHasBytesTypes();
     this.hasDecimalTypes = this._setHasDecimalTypes();
+
+    this.outputObjectTypes.model.forEach((type) => {
+      if (type.name === 'User') {
+        console.log(type.name, type.linkedModel?.name);
+
+        // type.fields.forEach((field) => {
+        //   console.log(field.name, field);
+        // });
+      }
+    });
   }
 
   private _setExtendedInputObjectTypes(
@@ -92,11 +107,20 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
     datamodel: ExtendedDMMFDatamodel,
   ) {
     return {
-      ...schema.outputObjectTypes,
-      prisma: schema.outputObjectTypes.prisma.map(
-        (type) =>
-          new ExtendedDMMFOutputType(this.generatorConfig, type, datamodel),
-      ),
+      model: schema.outputObjectTypes.model.map((type) => {
+        return new ExtendedDMMFOutputType(
+          this.generatorConfig,
+          type,
+          datamodel,
+        );
+      }),
+      prisma: schema.outputObjectTypes.prisma.map((type) => {
+        return new ExtendedDMMFOutputType(
+          this.generatorConfig,
+          type,
+          datamodel,
+        );
+      }),
     };
   }
 
