@@ -5,6 +5,7 @@ import {
   UserFindUniqueArgsSchema,
 } from './prisma/zod';
 import { initTRPC } from '@trpc/server';
+import z from 'zod';
 
 const prisma = new PrismaClient();
 
@@ -26,3 +27,9 @@ const appRouter = t.router({
       return prisma.user.findFirst(input);
     }),
 });
+
+const schema = z.object({
+  title: z.string(),
+  content: z.string().nullish(),
+  published: z.boolean().optional(),
+}) satisfies z.ZodType<Prisma.PostCreateInput>;

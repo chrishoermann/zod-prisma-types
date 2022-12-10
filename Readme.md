@@ -10,6 +10,7 @@
   - [useDecimalJs](#usedecimaljs)
   - [useValidatorJs](#usevalidatorjs)
   - [imports](#imports)
+- [Skip schema generation]('skip-schema-generation)
 - [Field validators](#field-validators)
   - [Custom type error messages](#custom-type-error-messages)
   - [String validators](#string-validators)
@@ -139,6 +140,37 @@ This config adds the following imports to the file:
 import { myFunction } from 'mypackage';
 import { custom } from './myfolder';
 ```
+
+# Skip schema generation
+
+For me it is inevitable to skip the generation of the zod schemas based on the environment. For example I only want to generate the schemas when I'm in `development` but not when I run generation in `production`. Because in `production` the schemas would already hav been created and pushed to the server via my git repo.
+
+Since Prisma only lets us define `strings` in the generator config we cannot use the `env(MY_ENV_VARIABLE)` method that is used when e.g. the `url` under `datasource db` is loaded like
+
+```prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+```
+
+Therefore I choose a another approach to load environment variables into the generator. Just create a `zodGenConfig.js` in your root directory (where the `node_modules` folder is located) and add the following code to this file:
+
+```ts
+module.exports = {
+  skipGenerator: process.env['SKIP_ZOD_PRISMA'],
+};
+```
+
+Then add
+
+`SKIP_ZOD_PRISMA="true"`
+
+or
+
+`SKIP_ZOD_PRISMA="false"`
+
+to your respective `.env` file. This will load the value of the `SKIP_ZOD_PRISMA` environment variable that will then be consumed by the generator. You can choose to name this variable wahtever you like just make shure that you load the right variable in `zodGenConfig.js`.
 
 # Field validators
 

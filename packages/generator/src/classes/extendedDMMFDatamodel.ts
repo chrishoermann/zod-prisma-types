@@ -1,12 +1,12 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { ConfigSchema } from '.';
+import { GeneratorConfig } from '.';
 import { ExtendedDMMFEnum } from './extendedDMMFEnum';
 import { ExtendedDMMFModel } from './extendedDMMFModel';
 
 export interface ExtendedDMMFDatamodelOptions {
   datamodel: DMMF.Datamodel;
-  config: ConfigSchema;
+  config: GeneratorConfig;
 }
 
 /////////////////////////////////////////////////
@@ -19,7 +19,7 @@ export class ExtendedDMMFDatamodel {
   readonly types: DMMF.Model[];
 
   constructor(
-    readonly generatorConfig: ConfigSchema,
+    readonly generatorConfig: GeneratorConfig,
     datamodel: DMMF.Datamodel,
   ) {
     this.generatorConfig = generatorConfig;

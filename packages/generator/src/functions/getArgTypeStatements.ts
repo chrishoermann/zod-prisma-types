@@ -26,7 +26,7 @@ export const getArgTypeStatements: GetStatements = (dmmf) => {
             declarations: [
               {
                 name: `${field.argName}Schema`,
-                type: `z.ZodType<Prisma.Prisma.${field.argName}>`,
+                type: `z.ZodType<PrismaClient.Prisma.${field.argName}>`,
                 initializer: (writer) => {
                   writer.write(`z.object(`);
                   writer.inlineBlock(() => {
@@ -60,7 +60,7 @@ export const getArgTypeStatements: GetStatements = (dmmf) => {
                             writeComma,
                           });
                           writeSpecialType(writer, {
-                            useDecimalJS: dmmf.useDecimalJs(),
+                            useDecimalJS: dmmf.useDecimalAsNumber(),
                             inputType,
                             writeLazy: false,
                             writeComma,
@@ -86,7 +86,7 @@ export const getArgTypeStatements: GetStatements = (dmmf) => {
                           isOptional,
                         });
                         writeSpecialType(writer, {
-                          useDecimalJS: dmmf.useDecimalJs(),
+                          useDecimalJS: dmmf.useDecimalAsNumber(),
                           inputType: arg.inputTypes[0],
                           writeLazy: false,
                           isNullable,

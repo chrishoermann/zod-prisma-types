@@ -1,7 +1,7 @@
 import { DMMF } from '@prisma/generator-helper';
 
 import {
-  ConfigSchema,
+  GeneratorConfig,
   ExtendedDMMFDatamodel,
   ExtendedDMMFInputType,
   ExtendedDMMFOutputType,
@@ -11,7 +11,7 @@ import {
 export interface ExtendedDMMFSchemaOptions {
   schema: DMMF.Schema;
   datamodel: ExtendedDMMFDatamodel;
-  generatorConfig: ConfigSchema;
+  generatorConfig: GeneratorConfig;
 }
 
 /////////////////////////////////////////////////
@@ -41,7 +41,7 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
   readonly hasDecimalTypes: boolean;
 
   constructor(
-    readonly generatorConfig: ConfigSchema,
+    readonly generatorConfig: GeneratorConfig,
     schema: DMMF.Schema,
     datamodel: ExtendedDMMFDatamodel,
   ) {

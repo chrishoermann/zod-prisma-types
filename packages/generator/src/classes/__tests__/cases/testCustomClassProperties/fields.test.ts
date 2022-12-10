@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
 
 import { getStringVariants } from '../../../../utils/getStringVariants';
-import { CONFIG_SCHEMA_DEFAULTS, ExtendedDMMF } from '../../../ExtendedDMMF';
+import { ExtendedDMMF } from '../../../ExtendedDMMF';
+import { GeneratorConfig } from '../../../generatorConfig';
 import { loadDMMF } from '../../utils/loadDMMF';
 describe('testSimpleModelNoValidators', async () => {
   const dmmf = await loadDMMF(`${__dirname}/fields.prisma`);
@@ -10,7 +11,7 @@ describe('testSimpleModelNoValidators', async () => {
   const fields = extendedDMMF.datamodel.models[0].fields;
 
   it(`should set expected values in field ${fields[0].name}`, () => {
-    expect(fields[0].generatorConfig).toStrictEqual(CONFIG_SCHEMA_DEFAULTS);
+    expect(fields[0].generatorConfig).toBeInstanceOf(GeneratorConfig);
     expect(fields[0].formattedNames).toStrictEqual(
       getStringVariants(fields[0].name),
     );
@@ -50,7 +51,7 @@ describe('testSimpleModelNoValidators', async () => {
   });
 
   it(`should set expected values in field ${fields[1].name}`, () => {
-    expect(fields[1].generatorConfig).toStrictEqual(CONFIG_SCHEMA_DEFAULTS);
+    expect(fields[1].generatorConfig).toBeInstanceOf(GeneratorConfig);
     expect(fields[1].formattedNames).toStrictEqual(
       getStringVariants(fields[1].name),
     );
@@ -90,7 +91,7 @@ describe('testSimpleModelNoValidators', async () => {
   });
 
   it(`should set expected values in field ${fields[2].name}`, () => {
-    expect(fields[2].generatorConfig).toStrictEqual(CONFIG_SCHEMA_DEFAULTS);
+    expect(fields[2].generatorConfig).toBeInstanceOf(GeneratorConfig);
     expect(fields[2].formattedNames).toStrictEqual(
       getStringVariants(fields[2].name),
     );
@@ -130,7 +131,7 @@ describe('testSimpleModelNoValidators', async () => {
   });
 
   it(`should set expected values in field ${fields[3].name}`, () => {
-    expect(fields[3].generatorConfig).toStrictEqual(CONFIG_SCHEMA_DEFAULTS);
+    expect(fields[3].generatorConfig).toBeInstanceOf(GeneratorConfig);
     expect(fields[3].formattedNames).toStrictEqual(
       getStringVariants(fields[3].name),
     );
@@ -170,7 +171,7 @@ describe('testSimpleModelNoValidators', async () => {
   });
 
   it(`should set expected values in field ${fields[4].name}`, () => {
-    expect(fields[4].generatorConfig).toStrictEqual(CONFIG_SCHEMA_DEFAULTS);
+    expect(fields[4].generatorConfig).toBeInstanceOf(GeneratorConfig);
     expect(fields[4].formattedNames).toStrictEqual(
       getStringVariants(fields[4].name),
     );
@@ -206,7 +207,7 @@ describe('testSimpleModelNoValidators', async () => {
   });
 
   it(`should set expected values in field ${fields[5].name}`, () => {
-    expect(fields[5].generatorConfig).toStrictEqual(CONFIG_SCHEMA_DEFAULTS);
+    expect(fields[5].generatorConfig).toBeInstanceOf(GeneratorConfig);
     expect(fields[5].formattedNames).toStrictEqual(
       getStringVariants(fields[5].name),
     );
@@ -246,7 +247,7 @@ describe('testSimpleModelNoValidators', async () => {
   });
 
   it(`should set expected values in field ${fields[6].name}`, () => {
-    expect(fields[6].generatorConfig).toStrictEqual(CONFIG_SCHEMA_DEFAULTS);
+    expect(fields[6].generatorConfig).toBeInstanceOf(GeneratorConfig);
     expect(fields[6].formattedNames).toStrictEqual(
       getStringVariants(fields[6].name),
     );
@@ -282,7 +283,7 @@ describe('testSimpleModelNoValidators', async () => {
   });
 
   it(`should set expected values in field ${fields[7].name}`, () => {
-    expect(fields[7].generatorConfig).toStrictEqual(CONFIG_SCHEMA_DEFAULTS);
+    expect(fields[7].generatorConfig).toBeInstanceOf(GeneratorConfig);
     expect(fields[7].formattedNames).toStrictEqual(
       getStringVariants(fields[7].name),
     );
@@ -318,7 +319,7 @@ describe('testSimpleModelNoValidators', async () => {
   });
 
   it(`should set expected values in field ${fields[8].name}`, () => {
-    expect(fields[8].generatorConfig).toStrictEqual(CONFIG_SCHEMA_DEFAULTS);
+    expect(fields[8].generatorConfig).toBeInstanceOf(GeneratorConfig);
     expect(fields[8].formattedNames).toStrictEqual(
       getStringVariants(fields[8].name),
     );
@@ -354,7 +355,7 @@ describe('testSimpleModelNoValidators', async () => {
   });
 
   it(`should set expected values in field ${fields[9].name}`, () => {
-    expect(fields[9].generatorConfig).toStrictEqual(CONFIG_SCHEMA_DEFAULTS);
+    expect(fields[9].generatorConfig).toBeInstanceOf(GeneratorConfig);
     expect(fields[9].formattedNames).toStrictEqual(
       getStringVariants(fields[9].name),
     );

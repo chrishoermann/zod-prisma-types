@@ -1,7 +1,7 @@
 import { DMMF } from '@prisma/generator-helper';
 
 import {
-  ConfigSchema,
+  GeneratorConfig,
   ExtendedDMMFField,
   ExtendedDMMFSchemaArgInputType,
 } from '.';
@@ -43,7 +43,7 @@ export class ExtendedDMMFSchemaArg
   readonly linkedField?: ExtendedDMMFField;
 
   constructor(
-    readonly generatorConfig: ConfigSchema,
+    readonly generatorConfig: GeneratorConfig,
     arg: ExtendedDMMFSchemaArgOptions,
     linkedField?: ExtendedDMMFField,
   ) {

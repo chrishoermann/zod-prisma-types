@@ -1,6 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { ConfigSchema } from '.';
+import { GeneratorConfig } from '.';
 import { PRISMA_TO_ZOD_TYPE_MAP } from '../constants/objectMaps';
 import { ZodPrismaScalarType } from '../types';
 
@@ -19,7 +19,7 @@ export class ExtendedDMMFSchemaArgInputType implements DMMF.SchemaArgInputType {
   readonly namespace?: DMMF.SchemaArgInputType['namespace'];
 
   constructor(
-    readonly generatorConfig: ConfigSchema,
+    readonly generatorConfig: GeneratorConfig,
     arg: DMMF.SchemaArgInputType,
   ) {
     this.generatorConfig = generatorConfig;

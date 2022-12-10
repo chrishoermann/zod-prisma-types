@@ -10,22 +10,26 @@ import { GetStatements, Statement } from '../types';
 // FUNCTION
 /////////////////////////////////////////////////
 
-export const getImportStatements: GetStatements = (datamodel) => {
+export const getImportStatements: GetStatements = (dmmf) => {
   const statements: Statement[] = [
     ZOD_IMPORT_STATEMENT,
     PRIMSA_IMPORT_STATEMENT,
   ];
 
-  if (datamodel.useDecimalJs()) {
+  if (dmmf.useDecimalJs()) {
     statements.push(DECIMAL_JS_IMPORT_STATEMENT);
   }
 
-  if (datamodel.useValidatorJs()) {
+  // if (dmmf.useDecimalAsNumber()) {
+  //   statements.push(DECIMAL_JS_IMPORT_STATEMENT);
+  // }
+
+  if (dmmf.useValidatorJs()) {
     statements.push(VALIDATOR_JS_IMPORT_STATEMENT);
   }
 
-  if (datamodel.generatorConfig.imports) {
-    statements.push(...datamodel.generatorConfig.imports);
+  if (dmmf.generatorConfig.imports) {
+    statements.push(...dmmf.generatorConfig.imports);
   }
 
   return statements;

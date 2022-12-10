@@ -1,11 +1,11 @@
 import { DMMF } from '@prisma/generator-helper';
 
+import { GeneratorConfig } from '.';
 import {
   FilterdPrismaAction,
   PRISMA_ACTION_ARG_MAP,
   PRISMA_ACTION_ARRAY,
 } from '../constants/objectMaps';
-import { ConfigSchema } from './extendedDMMF';
 import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
 import { ExtendedDMMFModel } from './extendedDMMFModel';
 import { ExtendedDMMFSchemaArg } from './extendedDMMFSchemaArg';
@@ -51,7 +51,7 @@ export class ExtendedDMMFSchemaField
   readonly linkedModel?: ExtendedDMMFModel;
 
   constructor(
-    readonly generatorConfig: ConfigSchema,
+    readonly generatorConfig: GeneratorConfig,
     field: DMMF.SchemaField,
     datamodel: ExtendedDMMFDatamodel,
   ) {

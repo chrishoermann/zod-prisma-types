@@ -1,4 +1,5 @@
 export * from './getStringVariants';
+export * from './skipGenerator';
 export * from './writeHeading';
 export * from './writeJsDoc';
 export * from './writeConstStatement';

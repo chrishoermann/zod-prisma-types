@@ -1,4 +1,5 @@
 import { GeneratorOptions } from '@prisma/generator-helper';
+// import fs from 'fs';
 import { Project } from 'ts-morph';
 
 import { DirectoryHelper } from './classes/directoryHelper';
@@ -12,6 +13,7 @@ import {
   getImportStatements,
   getModelStatements,
 } from './functions';
+import { skipGenerator } from './utils';
 
 export interface GeneratorConfig {
   output: GeneratorOptions['generator']['output'];
@@ -21,6 +23,14 @@ export interface GeneratorConfig {
 
 export const generator = async ({ output, config, dmmf }: GeneratorConfig) => {
   if (!output) throw new Error('No output path specified');
+
+  if (await skipGenerator()) {
+    return console.log(
+      '\x1b[33m',
+      'Generation of zod schemas skipped! Generator is disabled via environment variable in "zodGenConfig.js"',
+      '\x1b[37m',
+    );
+  }
 
   // extend the DMMF with custom functionality - see "classes" folder
   const extendendDMMF = new ExtendedDMMF(dmmf, config);

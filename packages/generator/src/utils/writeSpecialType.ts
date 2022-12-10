@@ -24,7 +24,6 @@ export const writeSpecialType: WriteTypeFunction<
     isNullable,
     writeComma = true,
     zodCustomErrors,
-    useDecimalJS,
     zodCustomValidatorString,
     // writeValidation = true,
   },
@@ -43,11 +42,19 @@ export const writeSpecialType: WriteTypeFunction<
     );
   }
 
-  if (inputType.isDecimalType && useDecimalJS) {
+  if (inputType.isDecimalType && !inputType.generatorConfig.decimalAsNumber) {
     return writer
       .write(`z.number(`)
       .conditionalWrite(!!zodCustomErrors, zodCustomErrors!)
-      .write(`).refine((v) => Decimal.isDecimal(v),`)
+      .write(`).refine((v) => `)
+      .conditionalWrite(
+        inputType.generatorConfig.useDecimalJs,
+        `Decimal.isDecimal(v),`,
+      )
+      .conditionalWrite(
+        !inputType.generatorConfig.useDecimalJs,
+        `PrismaClient.Prisma.Decimal.isDecimal(v),`,
+      )
       .write(` { message: 'Must be a Decimal' })`)
       .conditionalWrite(inputType.isList, `.array()`)
       .conditionalWrite(isOptional, `.optional()`)
@@ -55,7 +62,7 @@ export const writeSpecialType: WriteTypeFunction<
       .conditionalWrite(writeComma, `,`);
   }
 
-  if (inputType.isDecimalType && !useDecimalJS) {
+  if (inputType.isDecimalType && inputType.generatorConfig.decimalAsNumber) {
     return writer
       .write(`z.number(`)
       .conditionalWrite(!!zodCustomErrors, zodCustomErrors!)

@@ -14,9 +14,9 @@ generator zod {
   provider               = "zod-prisma-types"
   output                 = "./zod" // default is ./generated/zod
   useValidatorJs         = true // default is false
-  useDecimalJs           = true // default is true
+  useDecimalJs           = false // default is true
   // imports        = "import(import { myFunction } from 'mypackage').import(import { custom } from './myfolder')" // optional
-  imports                = "import(import { myFunction } from 'mypackage')"
+  // imports                = "import(import { myFunction } from 'mypackage')"
   addInputTypeValidation = true // default is true
 }
 
@@ -71,10 +71,10 @@ model MyPrismaScalarsType {
   decimal Decimal
   date    DateTime? /// @zod.date.min(new Date('2020-01-01')).max(new Date('2020-12-31'))
   bigInt  BigInt
-  /// @zod.custom.use(z.unknown().refine((val) => myFunction.validate(val), { message: 'Is not valid' }))
+  // @zod.custom.use(z.unknown().refine((val) => myFunction.validate(val), { message: 'Is not valid' }))
   json    Json
   bytes   Bytes
-  /// @zod.custom.use(z.string().refine((val) => myFunction.validate(val), { message: 'Is not valid' }))
+  // @zod.custom.use(z.string().refine((val) => myFunction.validate(val), { message: 'Is not valid' }))
   custom  String?
 }
 

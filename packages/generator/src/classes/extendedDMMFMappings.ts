@@ -1,6 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { ConfigSchema } from '.';
+import { GeneratorConfig } from '.';
 
 /////////////////////////////////////////////////
 // CLASS
@@ -13,7 +13,10 @@ export class ExtendedDMMFMappings implements DMMF.Mappings {
     readonly write: string[];
   };
 
-  constructor(readonly generatorConfig: ConfigSchema, mappings: DMMF.Mappings) {
+  constructor(
+    readonly generatorConfig: GeneratorConfig,
+    mappings: DMMF.Mappings,
+  ) {
     this.modelOperations = mappings.modelOperations;
     this.otherOperations = mappings.otherOperations;
   }

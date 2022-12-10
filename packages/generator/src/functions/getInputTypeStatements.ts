@@ -27,7 +27,7 @@ export const getInputTypeStatements: GetStatements = (dmmf) => {
         declarations: [
           {
             name: `${inputType.name}Schema`,
-            type: `z.ZodType<Prisma.Prisma.${inputType.name}>`,
+            type: `z.ZodType<PrismaClient.Prisma.${inputType.name}>`,
             initializer: (writer) => {
               writer.write(`z.object(`);
               writer.inlineBlock(() => {
@@ -64,7 +64,7 @@ export const getInputTypeStatements: GetStatements = (dmmf) => {
                         zodCustomErrors,
                         zodCustomValidatorString,
                         writeComma,
-                        useDecimalJS: dmmf.useDecimalJs(),
+                        useDecimalJS: dmmf.useDecimalAsNumber(),
                         writeValidation: dmmf.addInputTypeValidation(),
                       });
                     });
@@ -96,7 +96,7 @@ export const getInputTypeStatements: GetStatements = (dmmf) => {
                       zodCustomValidatorString,
                       isNullable,
                       isOptional,
-                      useDecimalJS: dmmf.useDecimalJs(),
+                      useDecimalJS: dmmf.useDecimalAsNumber(),
                       writeValidation: dmmf.addInputTypeValidation(),
                     });
                   }

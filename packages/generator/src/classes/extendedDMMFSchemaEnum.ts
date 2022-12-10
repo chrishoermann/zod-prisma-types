@@ -1,6 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { ConfigSchema } from '.';
+import { GeneratorConfig } from '.';
 import { FormattedNames } from './formattedNames';
 
 /////////////////////////////////////////////////
@@ -16,7 +16,7 @@ export class ExtendedDMMFSchemaEnum
   readonly useNativeEnum: boolean;
 
   constructor(
-    readonly generatorConfig: ConfigSchema,
+    readonly generatorConfig: GeneratorConfig,
     enumType: DMMF.SchemaEnum,
   ) {
     super(enumType.name);

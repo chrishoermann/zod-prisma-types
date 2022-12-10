@@ -13,7 +13,10 @@ export const getModelStatements: GetStatements = (dmmf) => {
     statements.push(
       writeHeading(`${model.formattedNames.upperCaseSpace}`, 'SLIM'),
       writeConstStatement({
-        leadingTrivia: (writer) => writer.newLine(),
+        leadingTrivia: (writer) => {
+          writer.newLine();
+          writeJsDoc(writer, model.documentation);
+        },
         declarations: [
           {
             name: `${model.formattedNames.pascalCase}Schema`,
@@ -29,7 +32,7 @@ export const getModelStatements: GetStatements = (dmmf) => {
                     .write(`${field.formattedNames.camelCase}: `)
                     .write(field.zodCustomValidatorString!)
                     .conditionalWrite(field.isList, `.array()`)
-                    .conditionalWrite(field.isNullable, `.nullable()`)
+                    .conditionalWrite(field.isNullable, `.nullish()`)
                     .write(`,`)
                     .newLine();
                 }
@@ -39,7 +42,7 @@ export const getModelStatements: GetStatements = (dmmf) => {
                     .write(`${field.formattedNames.camelCase}: `)
                     .write(`${field.zodType}Schema`)
                     .conditionalWrite(field.isList, `.array()`)
-                    .conditionalWrite(field.isNullable, `.nullable()`)
+                    .conditionalWrite(field.isNullable, `.nullish()`)
                     .write(`,`)
                     .newLine();
                 }
@@ -49,7 +52,7 @@ export const getModelStatements: GetStatements = (dmmf) => {
                     .write(`${field.formattedNames.camelCase}: `)
                     .write(`JsonValue`)
                     .conditionalWrite(field.isList, `.array()`)
-                    .conditionalWrite(field.isNullable, `.nullable()`)
+                    .conditionalWrite(field.isNullable, `.nullish()`)
                     .write(`,`)
                     .newLine();
                 }
@@ -59,12 +62,12 @@ export const getModelStatements: GetStatements = (dmmf) => {
                     .write(`${field.formattedNames.camelCase}: `)
                     .write(`z.instanceof(Buffer)`)
                     .conditionalWrite(field.isList, `.array()`)
-                    .conditionalWrite(field.isNullable, `.nullable()`)
+                    .conditionalWrite(field.isNullable, `.nullish()`)
                     .write(`,`)
                     .newLine();
                 }
 
-                if (field.isDecimalType && dmmf.useDecimalJs()) {
+                if (field.isDecimalType && !dmmf.useDecimalAsNumber()) {
                   return writer
                     .write(`${field.formattedNames.camelCase}: `)
                     .write(`z.number(`)
@@ -73,7 +76,15 @@ export const getModelStatements: GetStatements = (dmmf) => {
                       field.zodCustomErrors!,
                     )
                     .write(`)`)
-                    .write(`.refine((v) => Decimal.isDecimal(v),`)
+                    .write(`.refine((v) => `)
+                    .conditionalWrite(
+                      dmmf.generatorConfig.useDecimalJs,
+                      `Decimal.isDecimal(v),`,
+                    )
+                    .conditionalWrite(
+                      !dmmf.generatorConfig.useDecimalJs,
+                      `PrismaClient.Prisma.Decimal.isDecimal(v),`,
+                    )
                     .write(
                       ` { message: 'Field "${field.formattedNames.original}" must be a Decimal', `,
                     )
@@ -82,12 +93,12 @@ export const getModelStatements: GetStatements = (dmmf) => {
                     )
                     .write(` })`)
                     .conditionalWrite(field.isList, `.array()`)
-                    .conditionalWrite(field.isNullable, `.nullable()`)
+                    .conditionalWrite(field.isNullable, `.nullish()`)
                     .write(`,`)
                     .newLine();
                 }
 
-                if (field.isDecimalType && !dmmf.useDecimalJs()) {
+                if (field.isDecimalType && !dmmf.useDecimalAsNumber()) {
                   return writer
                     .write(`${field.formattedNames.camelCase}: `)
                     .write(`z.number(`)
@@ -97,7 +108,7 @@ export const getModelStatements: GetStatements = (dmmf) => {
                     )
                     .write(`)`)
                     .conditionalWrite(field.isList, `.array()`)
-                    .conditionalWrite(field.isNullable, `.nullable()`)
+                    .conditionalWrite(field.isNullable, `.nullish()`)
                     .write(`,`)
                     .newLine();
                 }
@@ -115,7 +126,7 @@ export const getModelStatements: GetStatements = (dmmf) => {
                     field.zodValidatorString!,
                   )
                   .conditionalWrite(field.isList, `.array()`)
-                  .conditionalWrite(field.isNullable, `.nullable()`)
+                  .conditionalWrite(field.isNullable, `.nullish()`)
                   .write(`,`)
                   .newLine();
               });

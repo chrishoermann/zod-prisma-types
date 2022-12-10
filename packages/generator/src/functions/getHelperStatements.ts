@@ -16,7 +16,7 @@ export const getHelperStatements: GetStatements = ({ schema }) => {
         declarations: [
           {
             name: `JsonValue`,
-            type: 'z.ZodType<Prisma.Prisma.JsonValue>',
+            type: 'z.ZodType<PrismaClient.Prisma.JsonValue>',
             initializer(writer) {
               writer.writeLine(`z.union([`);
               writer.writeLine(`z.string(),`);
@@ -34,7 +34,7 @@ export const getHelperStatements: GetStatements = ({ schema }) => {
         declarations: [
           {
             name: `InputJsonValue`,
-            type: 'z.ZodType<Prisma.Prisma.InputJsonValue>',
+            type: 'z.ZodType<PrismaClient.Prisma.InputJsonValue>',
             initializer(writer) {
               writer.writeLine(`z.union([`);
               writer.writeLine(`z.string(),`);

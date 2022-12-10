@@ -22,7 +22,7 @@ export const getIncludeSelectStatements: GetStatements = (dmmf) => {
           declarations: [
             {
               name: `${model.formattedNames.pascalCase}ArgsSchema`,
-              type: `z.ZodType<Prisma.Prisma.${model.formattedNames.pascalCase}Args>`,
+              type: `z.ZodType<PrismaClient.Prisma.${model.formattedNames.pascalCase}Args>`,
               initializer(writer) {
                 writer
                   .writeLine(`z.object({`)
@@ -52,7 +52,7 @@ export const getIncludeSelectStatements: GetStatements = (dmmf) => {
         declarations: [
           {
             name: `${model.formattedNames.pascalCase}SelectSchema`,
-            type: `z.ZodType<Prisma.Prisma.${model.formattedNames.pascalCase}Select>`,
+            type: `z.ZodType<PrismaClient.Prisma.${model.formattedNames.pascalCase}Select>`,
             initializer(writer) {
               writer.write(`z.object({`);
               [...model.scalarFields, ...model.enumFields].forEach((field) => {
@@ -86,7 +86,7 @@ export const getIncludeSelectStatements: GetStatements = (dmmf) => {
           declarations: [
             {
               name: `${model.formattedNames.pascalCase}IncludeSchema`,
-              type: `z.ZodType<Prisma.Prisma.${model.formattedNames.pascalCase}Include>`,
+              type: `z.ZodType<PrismaClient.Prisma.${model.formattedNames.pascalCase}Include>`,
               initializer(writer) {
                 writer.write(`z.object({`);
                 model.relationFields.forEach((field) => {

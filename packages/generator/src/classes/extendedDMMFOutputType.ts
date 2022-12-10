@@ -1,6 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { ConfigSchema } from '.';
+import { GeneratorConfig } from '.';
 import { PRISMA_ACTION_ARRAY } from '../constants/objectMaps';
 import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
 import { ExtendedDMMFSchemaField } from './extendedDMMFSchemaField';
@@ -19,7 +19,7 @@ export class ExtendedDMMFOutputType
   readonly fieldMap?: DMMF.OutputType['fieldMap'];
 
   constructor(
-    readonly generatorConfig: ConfigSchema,
+    readonly generatorConfig: GeneratorConfig,
     type: DMMF.OutputType,
     datamodel: ExtendedDMMFDatamodel,
   ) {
