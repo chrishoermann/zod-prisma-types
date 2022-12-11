@@ -136,6 +136,7 @@ export const UserSchema = z.object({
    * some message after
    */
   name: z.string().min(1).max(100).nullish(),
+  scalarList: z.string().array(),
 });
 
 // POST
@@ -179,6 +180,7 @@ export const MyModelSelectSchema: z.ZodType<PrismaClient.Prisma.MyModelSelect> =
 export const TestSelectSchema: z.ZodType<PrismaClient.Prisma.TestSelect> = z.object({
   id: z.boolean().optional(),
   name: z.boolean().optional(),
+  value: z.boolean().optional(),
   bic: z.boolean().optional(),
   intTwo: z.boolean().optional(),
   int: z.boolean().optional(),
@@ -194,7 +196,6 @@ export const TestSelectSchema: z.ZodType<PrismaClient.Prisma.TestSelect> = z.obj
   jsonOpt: z.boolean().optional(),
   bytes: z.boolean().optional(),
   bytesOpt: z.boolean().optional(),
-  value: z.boolean().optional(),
 }).strict();
 
 // MY PRISMA SCALARS TYPE
@@ -221,19 +222,30 @@ export const UserArgsSchema: z.ZodType<PrismaClient.Prisma.UserArgs> = z.object(
   include: z.lazy(() => UserIncludeSchema).optional(),
 }).strict();
 
+export const UserIncludeSchema: z.ZodType<PrismaClient.Prisma.UserInclude> = z.object({
+  posts: z.union([z.boolean(), z.lazy(() => PostFindManyArgsSchema)]).optional(),
+  profile: z.union([z.boolean(), z.lazy(() => ProfileArgsSchema)]).optional(),
+  _count: z.union([z.boolean(), z.lazy(() => UserCountOutputTypeArgsSchema)]).optional(),
+}).strict();
+
+export const UserCountOutputTypeArgsSchema: z.ZodType<PrismaClient.Prisma.UserCountOutputTypeArgs> = z.object({
+  select: z.lazy(() => UserCountOutputTypeSelectSchema).nullish(),
+}).strict();
+
+export const UserCountOutputTypeSelectSchema: z.ZodType<PrismaClient.Prisma.UserCountOutputTypeSelect> = z.object({
+  posts: z.boolean().optional(),
+}).strict();
+
 export const UserSelectSchema: z.ZodType<PrismaClient.Prisma.UserSelect> = z.object({
   id: z.boolean().optional(),
   email: z.boolean().optional(),
   name: z.boolean().optional(),
-  role: z.boolean().optional(),
-  enum: z.boolean().optional(),
   posts: z.union([z.boolean(), z.lazy(() => PostFindManyArgsSchema)]).optional(),
   profile: z.union([z.boolean(), z.lazy(() => ProfileArgsSchema)]).optional(),
-}).strict();
-
-export const UserIncludeSchema: z.ZodType<PrismaClient.Prisma.UserInclude> = z.object({
-  posts: z.union([z.boolean(), z.lazy(() => PostArgsSchema)]).optional(),
-  profile: z.union([z.boolean(), z.lazy(() => ProfileArgsSchema)]).optional(),
+  role: z.boolean().optional(),
+  enum: z.boolean().optional(),
+  scalarList: z.boolean().optional(),
+  _count: z.union([z.boolean(), z.lazy(() => UserCountOutputTypeArgsSchema)]).optional(),
 }).strict();
 
 // POST
@@ -244,18 +256,18 @@ export const PostArgsSchema: z.ZodType<PrismaClient.Prisma.PostArgs> = z.object(
   include: z.lazy(() => PostIncludeSchema).optional(),
 }).strict();
 
+export const PostIncludeSchema: z.ZodType<PrismaClient.Prisma.PostInclude> = z.object({
+  author: z.union([z.boolean(), z.lazy(() => UserArgsSchema)]).optional(),
+}).strict();
+
 export const PostSelectSchema: z.ZodType<PrismaClient.Prisma.PostSelect> = z.object({
   id: z.boolean().optional(),
   title: z.boolean().optional(),
   content: z.boolean().optional(),
   published: z.boolean().optional(),
+  author: z.union([z.boolean(), z.lazy(() => UserArgsSchema)]).optional(),
   authorId: z.boolean().optional(),
   anotherEnum: z.boolean().optional(),
-  author: z.union([z.boolean(), z.lazy(() => UserArgsSchema)]).optional(),
-}).strict();
-
-export const PostIncludeSchema: z.ZodType<PrismaClient.Prisma.PostInclude> = z.object({
-  author: z.union([z.boolean(), z.lazy(() => UserArgsSchema)]).optional(),
 }).strict();
 
 // PROFILE
@@ -266,17 +278,17 @@ export const ProfileArgsSchema: z.ZodType<PrismaClient.Prisma.ProfileArgs> = z.o
   include: z.lazy(() => ProfileIncludeSchema).optional(),
 }).strict();
 
-export const ProfileSelectSchema: z.ZodType<PrismaClient.Prisma.ProfileSelect> = z.object({
-  id: z.boolean().optional(),
-  bio: z.boolean().optional(),
-  userId: z.boolean().optional(),
-  role: z.boolean().optional(),
-  second: z.boolean().optional(),
+export const ProfileIncludeSchema: z.ZodType<PrismaClient.Prisma.ProfileInclude> = z.object({
   user: z.union([z.boolean(), z.lazy(() => UserArgsSchema)]).optional(),
 }).strict();
 
-export const ProfileIncludeSchema: z.ZodType<PrismaClient.Prisma.ProfileInclude> = z.object({
+export const ProfileSelectSchema: z.ZodType<PrismaClient.Prisma.ProfileSelect> = z.object({
+  id: z.boolean().optional(),
+  bio: z.boolean().optional(),
   user: z.union([z.boolean(), z.lazy(() => UserArgsSchema)]).optional(),
+  userId: z.boolean().optional(),
+  role: z.boolean().optional(),
+  second: z.boolean().optional(),
 }).strict();
 
 /////////////////////////////////////////
@@ -373,6 +385,7 @@ export const UserGroupByOutputTypeSchema: z.ZodType<PrismaClient.Prisma.UserGrou
   name: z.string().nullable(),
   role: z.lazy(() => RoleSchema).array(),
   enum: z.lazy(() => AnotherEnumSchema),
+  scalarList: z.string().array(),
   _count: z.lazy(() => UserCountAggregateOutputTypeSchema).nullable(),
   _min: z.lazy(() => UserMinAggregateOutputTypeSchema).nullable(),
   _max: z.lazy(() => UserMaxAggregateOutputTypeSchema).nullable(),
@@ -587,6 +600,7 @@ export const UserCountAggregateOutputTypeSchema: z.ZodType<PrismaClient.Prisma.U
   name: z.number(),
   role: z.number(),
   enum: z.number(),
+  scalarList: z.number(),
   _all: z.number(),
 }).strict();
 
@@ -885,6 +899,7 @@ export const UserWhereInputSchema: z.ZodType<PrismaClient.Prisma.UserWhereInput>
   profile: z.union([z.lazy(() => ProfileRelationFilterSchema), z.lazy(() => ProfileWhereInputSchema)]).optional().nullable(),
   role: z.lazy(() => EnumRoleNullableListFilterSchema).optional(),
   enum: z.union([z.lazy(() => EnumAnotherEnumFilterSchema), z.lazy(() => AnotherEnumSchema)]).optional(),
+  scalarList: z.lazy(() => StringNullableListFilterSchema).optional(),
 }).strict();
 
 export const UserOrderByWithRelationInputSchema: z.ZodType<PrismaClient.Prisma.UserOrderByWithRelationInput> = z.object({
@@ -895,6 +910,7 @@ export const UserOrderByWithRelationInputSchema: z.ZodType<PrismaClient.Prisma.U
   profile: z.lazy(() => ProfileOrderByWithRelationInputSchema).optional(),
   role: z.lazy(() => SortOrderSchema).optional(),
   enum: z.lazy(() => SortOrderSchema).optional(),
+  scalarList: z.lazy(() => SortOrderSchema).optional(),
 }).strict();
 
 export const UserWhereUniqueInputSchema: z.ZodType<PrismaClient.Prisma.UserWhereUniqueInput> = z.object({
@@ -908,6 +924,7 @@ export const UserOrderByWithAggregationInputSchema: z.ZodType<PrismaClient.Prism
   name: z.lazy(() => SortOrderSchema).optional(),
   role: z.lazy(() => SortOrderSchema).optional(),
   enum: z.lazy(() => SortOrderSchema).optional(),
+  scalarList: z.lazy(() => SortOrderSchema).optional(),
   _count: z.lazy(() => UserCountOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => UserMaxOrderByAggregateInputSchema).optional(),
   _min: z.lazy(() => UserMinOrderByAggregateInputSchema).optional(),
@@ -922,6 +939,7 @@ export const UserScalarWhereWithAggregatesInputSchema: z.ZodType<PrismaClient.Pr
   name: z.union([z.lazy(() => StringNullableWithAggregatesFilterSchema), z.string()]).optional().nullable(),
   role: z.lazy(() => EnumRoleNullableListFilterSchema).optional(),
   enum: z.union([z.lazy(() => EnumAnotherEnumWithAggregatesFilterSchema), z.lazy(() => AnotherEnumSchema)]).optional(),
+  scalarList: z.lazy(() => StringNullableListFilterSchema).optional(),
 }).strict();
 
 export const PostWhereInputSchema: z.ZodType<PrismaClient.Prisma.PostWhereInput> = z.object({
@@ -1305,6 +1323,7 @@ export const UserCreateInputSchema: z.ZodType<PrismaClient.Prisma.UserCreateInpu
   profile: z.lazy(() => ProfileCreateNestedOneWithoutUserInputSchema).optional(),
   role: z.union([z.lazy(() => UserCreateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.lazy(() => AnotherEnumSchema).optional(),
+  scalarList: z.union([z.lazy(() => UserCreatescalarListInputSchema), z.string().array()]).optional(),
 }).strict();
 
 export const UserUncheckedCreateInputSchema: z.ZodType<PrismaClient.Prisma.UserUncheckedCreateInput> = z.object({
@@ -1315,6 +1334,7 @@ export const UserUncheckedCreateInputSchema: z.ZodType<PrismaClient.Prisma.UserU
   profile: z.lazy(() => ProfileUncheckedCreateNestedOneWithoutUserInputSchema).optional(),
   role: z.union([z.lazy(() => UserCreateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.lazy(() => AnotherEnumSchema).optional(),
+  scalarList: z.union([z.lazy(() => UserCreatescalarListInputSchema), z.string().array()]).optional(),
 }).strict();
 
 export const UserUpdateInputSchema: z.ZodType<PrismaClient.Prisma.UserUpdateInput> = z.object({
@@ -1325,6 +1345,7 @@ export const UserUpdateInputSchema: z.ZodType<PrismaClient.Prisma.UserUpdateInpu
   profile: z.lazy(() => ProfileUpdateOneWithoutUserNestedInputSchema).optional(),
   role: z.union([z.lazy(() => UserUpdateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.union([z.lazy(() => AnotherEnumSchema), z.lazy(() => EnumAnotherEnumFieldUpdateOperationsInputSchema)]).optional(),
+  scalarList: z.union([z.lazy(() => UserUpdatescalarListInputSchema), z.string().array()]).optional(),
 }).strict();
 
 export const UserUncheckedUpdateInputSchema: z.ZodType<PrismaClient.Prisma.UserUncheckedUpdateInput> = z.object({
@@ -1335,6 +1356,7 @@ export const UserUncheckedUpdateInputSchema: z.ZodType<PrismaClient.Prisma.UserU
   profile: z.lazy(() => ProfileUncheckedUpdateOneWithoutUserNestedInputSchema).optional(),
   role: z.union([z.lazy(() => UserUpdateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.union([z.lazy(() => AnotherEnumSchema), z.lazy(() => EnumAnotherEnumFieldUpdateOperationsInputSchema)]).optional(),
+  scalarList: z.union([z.lazy(() => UserUpdatescalarListInputSchema), z.string().array()]).optional(),
 }).strict();
 
 export const UserCreateManyInputSchema: z.ZodType<PrismaClient.Prisma.UserCreateManyInput> = z.object({
@@ -1343,6 +1365,7 @@ export const UserCreateManyInputSchema: z.ZodType<PrismaClient.Prisma.UserCreate
   name: z.string().min(1).max(100).optional().nullable(),
   role: z.union([z.lazy(() => UserCreateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.lazy(() => AnotherEnumSchema).optional(),
+  scalarList: z.union([z.lazy(() => UserCreatescalarListInputSchema), z.string().array()]).optional(),
 }).strict();
 
 export const UserUpdateManyMutationInputSchema: z.ZodType<PrismaClient.Prisma.UserUpdateManyMutationInput> = z.object({
@@ -1351,6 +1374,7 @@ export const UserUpdateManyMutationInputSchema: z.ZodType<PrismaClient.Prisma.Us
   name: z.union([z.string().min(1).max(100), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
   role: z.union([z.lazy(() => UserUpdateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.union([z.lazy(() => AnotherEnumSchema), z.lazy(() => EnumAnotherEnumFieldUpdateOperationsInputSchema)]).optional(),
+  scalarList: z.union([z.lazy(() => UserUpdatescalarListInputSchema), z.string().array()]).optional(),
 }).strict();
 
 export const UserUncheckedUpdateManyInputSchema: z.ZodType<PrismaClient.Prisma.UserUncheckedUpdateManyInput> = z.object({
@@ -1359,6 +1383,7 @@ export const UserUncheckedUpdateManyInputSchema: z.ZodType<PrismaClient.Prisma.U
   name: z.union([z.string().min(1).max(100), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
   role: z.union([z.lazy(() => UserUpdateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.union([z.lazy(() => AnotherEnumSchema), z.lazy(() => EnumAnotherEnumFieldUpdateOperationsInputSchema)]).optional(),
+  scalarList: z.union([z.lazy(() => UserUpdatescalarListInputSchema), z.string().array()]).optional(),
 }).strict();
 
 export const PostCreateInputSchema: z.ZodType<PrismaClient.Prisma.PostCreateInput> = z.object({
@@ -2104,6 +2129,14 @@ export const EnumAnotherEnumFilterSchema: z.ZodType<PrismaClient.Prisma.EnumAnot
   not: z.union([z.lazy(() => AnotherEnumSchema), z.lazy(() => NestedEnumAnotherEnumFilterSchema)]).optional(),
 }).strict();
 
+export const StringNullableListFilterSchema: z.ZodType<PrismaClient.Prisma.StringNullableListFilter> = z.object({
+  equals: z.string().array().optional().nullable(),
+  has: z.string().optional().nullable(),
+  hasEvery: z.string().array().optional(),
+  hasSome: z.string().array().optional(),
+  isEmpty: z.boolean().optional(),
+}).strict();
+
 export const PostOrderByRelationAggregateInputSchema: z.ZodType<PrismaClient.Prisma.PostOrderByRelationAggregateInput> = z.object({
   _count: z.lazy(() => SortOrderSchema).optional(),
 }).strict();
@@ -2114,6 +2147,7 @@ export const UserCountOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma
   name: z.lazy(() => SortOrderSchema).optional(),
   role: z.lazy(() => SortOrderSchema).optional(),
   enum: z.lazy(() => SortOrderSchema).optional(),
+  scalarList: z.lazy(() => SortOrderSchema).optional(),
 }).strict();
 
 export const UserMaxOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.UserMaxOrderByAggregateInput> = z.object({
@@ -2355,6 +2389,10 @@ export const UserCreateroleInputSchema: z.ZodType<PrismaClient.Prisma.UserCreate
   set: z.lazy(() => RoleSchema).array(),
 }).strict();
 
+export const UserCreatescalarListInputSchema: z.ZodType<PrismaClient.Prisma.UserCreatescalarListInput> = z.object({
+  set: z.string().array(),
+}).strict();
+
 export const PostUncheckedCreateNestedManyWithoutAuthorInputSchema: z.ZodType<PrismaClient.Prisma.PostUncheckedCreateNestedManyWithoutAuthorInput> = z.object({
   create: z.union([z.lazy(() => PostCreateWithoutAuthorInputSchema), z.lazy(() => PostCreateWithoutAuthorInputSchema).array(), z.lazy(() => PostUncheckedCreateWithoutAuthorInputSchema), z.lazy(() => PostUncheckedCreateWithoutAuthorInputSchema).array()]).optional(),
   connectOrCreate: z.union([z.lazy(() => PostCreateOrConnectWithoutAuthorInputSchema), z.lazy(() => PostCreateOrConnectWithoutAuthorInputSchema).array()]).optional(),
@@ -2399,6 +2437,11 @@ export const UserUpdateroleInputSchema: z.ZodType<PrismaClient.Prisma.UserUpdate
 
 export const EnumAnotherEnumFieldUpdateOperationsInputSchema: z.ZodType<PrismaClient.Prisma.EnumAnotherEnumFieldUpdateOperationsInput> = z.object({
   set: z.lazy(() => AnotherEnumSchema).optional(),
+}).strict();
+
+export const UserUpdatescalarListInputSchema: z.ZodType<PrismaClient.Prisma.UserUpdatescalarListInput> = z.object({
+  set: z.string().array().optional(),
+  push: z.union([z.string(), z.string().array()]).optional(),
 }).strict();
 
 export const PostUncheckedUpdateManyWithoutAuthorNestedInputSchema: z.ZodType<PrismaClient.Prisma.PostUncheckedUpdateManyWithoutAuthorNestedInput> = z.object({
@@ -3033,6 +3076,7 @@ export const UserCreateWithoutPostsInputSchema: z.ZodType<PrismaClient.Prisma.Us
   profile: z.lazy(() => ProfileCreateNestedOneWithoutUserInputSchema).optional(),
   role: z.union([z.lazy(() => UserCreateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.lazy(() => AnotherEnumSchema).optional(),
+  scalarList: z.union([z.lazy(() => UserCreatescalarListInputSchema), z.string().array()]).optional(),
 }).strict();
 
 export const UserUncheckedCreateWithoutPostsInputSchema: z.ZodType<PrismaClient.Prisma.UserUncheckedCreateWithoutPostsInput> = z.object({
@@ -3042,6 +3086,7 @@ export const UserUncheckedCreateWithoutPostsInputSchema: z.ZodType<PrismaClient.
   profile: z.lazy(() => ProfileUncheckedCreateNestedOneWithoutUserInputSchema).optional(),
   role: z.union([z.lazy(() => UserCreateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.lazy(() => AnotherEnumSchema).optional(),
+  scalarList: z.union([z.lazy(() => UserCreatescalarListInputSchema), z.string().array()]).optional(),
 }).strict();
 
 export const UserCreateOrConnectWithoutPostsInputSchema: z.ZodType<PrismaClient.Prisma.UserCreateOrConnectWithoutPostsInput> = z.object({
@@ -3061,6 +3106,7 @@ export const UserUpdateWithoutPostsInputSchema: z.ZodType<PrismaClient.Prisma.Us
   profile: z.lazy(() => ProfileUpdateOneWithoutUserNestedInputSchema).optional(),
   role: z.union([z.lazy(() => UserUpdateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.union([z.lazy(() => AnotherEnumSchema), z.lazy(() => EnumAnotherEnumFieldUpdateOperationsInputSchema)]).optional(),
+  scalarList: z.union([z.lazy(() => UserUpdatescalarListInputSchema), z.string().array()]).optional(),
 }).strict();
 
 export const UserUncheckedUpdateWithoutPostsInputSchema: z.ZodType<PrismaClient.Prisma.UserUncheckedUpdateWithoutPostsInput> = z.object({
@@ -3070,6 +3116,7 @@ export const UserUncheckedUpdateWithoutPostsInputSchema: z.ZodType<PrismaClient.
   profile: z.lazy(() => ProfileUncheckedUpdateOneWithoutUserNestedInputSchema).optional(),
   role: z.union([z.lazy(() => UserUpdateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.union([z.lazy(() => AnotherEnumSchema), z.lazy(() => EnumAnotherEnumFieldUpdateOperationsInputSchema)]).optional(),
+  scalarList: z.union([z.lazy(() => UserUpdatescalarListInputSchema), z.string().array()]).optional(),
 }).strict();
 
 export const UserCreateWithoutProfileInputSchema: z.ZodType<PrismaClient.Prisma.UserCreateWithoutProfileInput> = z.object({
@@ -3079,6 +3126,7 @@ export const UserCreateWithoutProfileInputSchema: z.ZodType<PrismaClient.Prisma.
   posts: z.lazy(() => PostCreateNestedManyWithoutAuthorInputSchema).optional(),
   role: z.union([z.lazy(() => UserCreateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.lazy(() => AnotherEnumSchema).optional(),
+  scalarList: z.union([z.lazy(() => UserCreatescalarListInputSchema), z.string().array()]).optional(),
 }).strict();
 
 export const UserUncheckedCreateWithoutProfileInputSchema: z.ZodType<PrismaClient.Prisma.UserUncheckedCreateWithoutProfileInput> = z.object({
@@ -3088,6 +3136,7 @@ export const UserUncheckedCreateWithoutProfileInputSchema: z.ZodType<PrismaClien
   posts: z.lazy(() => PostUncheckedCreateNestedManyWithoutAuthorInputSchema).optional(),
   role: z.union([z.lazy(() => UserCreateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.lazy(() => AnotherEnumSchema).optional(),
+  scalarList: z.union([z.lazy(() => UserCreatescalarListInputSchema), z.string().array()]).optional(),
 }).strict();
 
 export const UserCreateOrConnectWithoutProfileInputSchema: z.ZodType<PrismaClient.Prisma.UserCreateOrConnectWithoutProfileInput> = z.object({
@@ -3107,6 +3156,7 @@ export const UserUpdateWithoutProfileInputSchema: z.ZodType<PrismaClient.Prisma.
   posts: z.lazy(() => PostUpdateManyWithoutAuthorNestedInputSchema).optional(),
   role: z.union([z.lazy(() => UserUpdateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.union([z.lazy(() => AnotherEnumSchema), z.lazy(() => EnumAnotherEnumFieldUpdateOperationsInputSchema)]).optional(),
+  scalarList: z.union([z.lazy(() => UserUpdatescalarListInputSchema), z.string().array()]).optional(),
 }).strict();
 
 export const UserUncheckedUpdateWithoutProfileInputSchema: z.ZodType<PrismaClient.Prisma.UserUncheckedUpdateWithoutProfileInput> = z.object({
@@ -3116,6 +3166,7 @@ export const UserUncheckedUpdateWithoutProfileInputSchema: z.ZodType<PrismaClien
   posts: z.lazy(() => PostUncheckedUpdateManyWithoutAuthorNestedInputSchema).optional(),
   role: z.union([z.lazy(() => UserUpdateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.union([z.lazy(() => AnotherEnumSchema), z.lazy(() => EnumAnotherEnumFieldUpdateOperationsInputSchema)]).optional(),
+  scalarList: z.union([z.lazy(() => UserUpdatescalarListInputSchema), z.string().array()]).optional(),
 }).strict();
 
 export const PostCreateManyAuthorInputSchema: z.ZodType<PrismaClient.Prisma.PostCreateManyAuthorInput> = z.object({

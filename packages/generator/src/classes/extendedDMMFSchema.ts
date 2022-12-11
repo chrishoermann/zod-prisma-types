@@ -23,15 +23,28 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
   readonly rootMutationType?: DMMF.Schema['rootMutationType'];
   readonly inputObjectTypes: {
     readonly model?: DMMF.InputType[];
-    // Contains information about the prisma where, orderBy, and other input types.
+    /**
+     * Contains information about the prisma where, orderBy, and other input types.
+     */
     readonly prisma: ExtendedDMMFInputType[];
   };
   readonly outputObjectTypes: {
-    // Contains information about the prisma select, include and so on types.
-    // TODO: Merge in the datamodel information.
+    /**
+     * Contains information about the prisma select, include and so on types.
+     */
     readonly model: ExtendedDMMFOutputType[];
-    // Contains information about the prisma args, aggregate, count, groupBy and so on types.
+    /**
+     * Contains information about the prisma args, aggregate, count, groupBy and so on types.
+     */
     readonly prisma: ExtendedDMMFOutputType[];
+    /**
+     * Contains information about the prisma  aggregate and count types.
+     */
+    readonly aggregateAndCountTypes: ExtendedDMMFOutputType[];
+    /**
+     * Contains information about the prisma args, groupBy and so on types.
+     */
+    readonly argTypes: ExtendedDMMFOutputType[];
   };
   readonly enumTypes: {
     readonly model?: DMMF.SchemaEnum[];
@@ -49,9 +62,7 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
     schema: DMMF.Schema,
     datamodel: ExtendedDMMFDatamodel,
   ) {
-    console.log();
     this.generatorConfig = generatorConfig;
-
     this.rootQueryType = schema.rootQueryType;
     this.rootMutationType = schema.rootMutationType;
     this.inputObjectTypes = this._setExtendedInputObjectTypes(
@@ -67,16 +78,6 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
     this.hasJsonTypes = this._setHasJsonTypes();
     this.hasBytesTypes = this._setHasBytesTypes();
     this.hasDecimalTypes = this._setHasDecimalTypes();
-
-    this.outputObjectTypes.model.forEach((type) => {
-      if (type.name === 'User') {
-        console.log(type.name, type.linkedModel?.name);
-
-        // type.fields.forEach((field) => {
-        //   console.log(field.name, field);
-        // });
-      }
-    });
   }
 
   private _setExtendedInputObjectTypes(
@@ -85,20 +86,10 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
   ) {
     return {
       ...schema.inputObjectTypes,
-      prisma: schema.inputObjectTypes.prisma.map((type) => {
-        // find the datamodel that matches the input type.
-        // This way the documentation and the validator strings
-        // from the datamodel can be added to the input types.
-        const matchingDatamodel = datamodel.models.find((model) => {
-          return type.name.match(model.name);
-        });
-
-        return new ExtendedDMMFInputType(
-          this.generatorConfig,
-          type,
-          matchingDatamodel,
-        );
-      }),
+      prisma: schema.inputObjectTypes.prisma.map(
+        (type) =>
+          new ExtendedDMMFInputType(this.generatorConfig, type, datamodel),
+      ),
     };
   }
 
@@ -121,6 +112,23 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
           datamodel,
         );
       }),
+      aggregateAndCountTypes: schema.outputObjectTypes.prisma
+        .filter(
+          (type) =>
+            type.name !== 'Query' &&
+            type.name !== 'Mutation' &&
+            !type.name.includes('AffectedRows'),
+        )
+        .map(
+          (type) =>
+            new ExtendedDMMFOutputType(this.generatorConfig, type, datamodel),
+        ),
+      argTypes: schema.outputObjectTypes.prisma
+        .filter((type) => type.name === 'Query' || type.name === 'Mutation')
+        .map(
+          (type) =>
+            new ExtendedDMMFOutputType(this.generatorConfig, type, datamodel),
+        ),
     };
   }
 

@@ -1,6 +1,6 @@
 # zod-prisma-types
 
-`zod-prisma-types` is a generator for [prisma](www.prisma.io) that generates [zod](https://github.com/colinhacks/zod) schemas from your prisma models. This includes schemas of model, enums, inputTypes, argTypes, filters and so on. It also provides options to write advanced zod validators directly in the prisma schema comments.
+`zod-prisma-types` is a generator for [prisma](www.prisma.io) that generates [zod](https://github.com/colinhacks/zod) schemas from your prisma models. This includes schemas of models, enums, inputTypes, argTypes, filters and so on. It also provides options to write advanced zod validators directly in the prisma schema comments.
 
 # Table of content
 
@@ -10,7 +10,9 @@
   - [useDecimalJs](#usedecimaljs)
   - [useValidatorJs](#usevalidatorjs)
   - [imports](#imports)
-- [Skip schema generation]('skip-schema-generation)
+  - [addInputTypeValidation](#addinputtypevalidation)
+  - [tsConfigFilePath](#tsconfigfilepath)
+- [Skip schema generation](#skip-schema-generation)
 - [Field validators](#field-validators)
   - [Custom type error messages](#custom-type-error-messages)
   - [String validators](#string-validators)
@@ -39,11 +41,13 @@ If you want to customize the behaviour of the generator you can use the followin
 
 ```prisma
 generator zod {
-  provider       = "zod-prisma-types"
-  output         = "./zod" // optional - default is ./generated/zod
-  useValidatorJs = true // optional - default is false
-  useDecimalJs   = false // optional - default is true
+  provider               = "zod-prisma-types"
+  output                 = "./zod" // default is ./generated/zod
+  useValidatorJs         = true // default is false
+  useDecimalJs           = false // default is true
   imports        = "import(import { myFunction } from 'mypackage').import(import { custom } from './myfolder')" // optional
+  addInputTypeValidation = true // default is true
+  tsConfigFilePath = "config/tsconfig.json" // optional - used by ts-morph
 }
 ```
 
@@ -141,9 +145,27 @@ import { myFunction } from 'mypackage';
 import { custom } from './myfolder';
 ```
 
+## `tsConfigFilePath`
+
+If your `tsconfig.json` file resides in another folder than your root (where the `node_modules` folder is located) you can specify the path like
+
+```prisma
+
+
+
+```
+
+## `addInputTypeValidation`
+
+```prisma
+
+
+
+```
+
 # Skip schema generation
 
-For me it is inevitable to skip the generation of the zod schemas based on the environment. For example I only want to generate the schemas when I'm in `development` but not when I run generation in `production`. Because in `production` the schemas would already hav been created and pushed to the server via my git repo.
+You can skip schema generation based on the environment you are in. For example you only want to generate the schemas when you're in `development` but not when you run generation in `production` (because in `production` the schemas would already hav been created and pushed to the server via my git repo).
 
 Since Prisma only lets us define `strings` in the generator config we cannot use the `env(MY_ENV_VARIABLE)` method that is used when e.g. the `url` under `datasource db` is loaded like
 
@@ -154,7 +176,7 @@ datasource db {
 }
 ```
 
-Therefore I choose a another approach to load environment variables into the generator. Just create a `zodGenConfig.js` in your root directory (where the `node_modules` folder is located) and add the following code to this file:
+To still be able to load environment variables into the generator, just create a `zodGenConfig.js` in your root directory (where the `node_modules` folder is located) and add the following code:
 
 ```ts
 module.exports = {
@@ -170,7 +192,9 @@ or
 
 `SKIP_ZOD_PRISMA="false"`
 
-to your respective `.env` file. This will load the value of the `SKIP_ZOD_PRISMA` environment variable that will then be consumed by the generator. You can choose to name this variable wahtever you like just make shure that you load the right variable in `zodGenConfig.js`.
+to your respective `.env` file. This will load the value of the `SKIP_ZOD_PRISMA` environment variable on the `skipGenerator` prop that will then be consumed by the generator.
+
+> You can choose to name your environment variable wahtever you wish - just make shure to load the right variable in `zodGenConfig.js`.
 
 # Field validators
 

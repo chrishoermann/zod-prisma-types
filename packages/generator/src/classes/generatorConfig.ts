@@ -79,6 +79,8 @@ export class GeneratorConfig {
     this.createInputTypes = configSchema.createInputTypes;
     this.addInputTypeValidation = configSchema.addInputTypeValidation;
     this.tsConfigFilePath = configSchema.tsConfigFilePath;
+
+    console.log('tsConfigFilePath: ', this.tsConfigFilePath);
   }
 
   private _getConfigSchema(config: Dictionary<string>) {

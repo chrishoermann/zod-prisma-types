@@ -129,4 +129,24 @@ export class ExtendedDMMFSchemaField
         : false,
     );
   }
+
+  isEnumOutputType() {
+    return this.outputType?.location === 'enumTypes';
+  }
+
+  isListOutputType() {
+    return this.outputType.isList;
+  }
+
+  isObjectOutputType() {
+    return this.outputType?.location === 'outputObjectTypes';
+  }
+
+  isScalarOutputType() {
+    return this.outputType?.location === 'scalar';
+  }
+
+  isCountField() {
+    return this.name.includes('_count');
+  }
 }

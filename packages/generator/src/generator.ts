@@ -1,5 +1,4 @@
 import { GeneratorOptions } from '@prisma/generator-helper';
-// import fs from 'fs';
 import { Project } from 'ts-morph';
 
 import { DirectoryHelper } from './classes/directoryHelper';
@@ -14,7 +13,7 @@ import {
   getModelStatements,
   getAggregateAndCountStatements,
 } from './functions';
-import { skipGenerator } from './utils';
+import { skipGenerator, usesCustomTsConfigFilePath } from './utils';
 
 export interface GeneratorConfig {
   output: GeneratorOptions['generator']['output'];
@@ -28,13 +27,17 @@ export const generator = async ({ output, config, dmmf }: GeneratorConfig) => {
   if (await skipGenerator()) {
     return console.log(
       '\x1b[33m',
-      'Generation of zod schemas skipped! Generator is disabled via environment variable in "zodGenConfig.js"',
+      '!!!! Generation of zod schemas skipped! Generator is disabled in "zodGenConfig.js" !!!!',
       '\x1b[37m',
     );
   }
 
   // extend the DMMF with custom functionality - see "classes" folder
   const extendendDMMF = new ExtendedDMMF(dmmf, config);
+
+  await usesCustomTsConfigFilePath(
+    extendendDMMF.generatorConfig.tsConfigFilePath,
+  );
 
   // create ts-morph project - see: https://ts-morph.com/
   const project = new Project({

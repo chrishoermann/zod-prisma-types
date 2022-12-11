@@ -1,5 +1,6 @@
 export * from './getStringVariants';
 export * from './skipGenerator';
+export * from './usesCustomTsConfigFilePath';
 export * from './writeHeading';
 export * from './writeJsDoc';
 export * from './writeConstStatement';

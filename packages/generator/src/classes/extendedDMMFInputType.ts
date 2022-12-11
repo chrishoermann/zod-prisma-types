@@ -1,6 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { GeneratorConfig } from '.';
+import { ExtendedDMMFDatamodel, GeneratorConfig } from '.';
 import { PRISMA_FUNCTION_TYPES_WITH_VALIDATORS } from '../constants/regex';
 import { ExtendedDMMFModel } from './extendedDMMFModel';
 import {
@@ -30,12 +30,12 @@ export class ExtendedDMMFInputType
   constructor(
     readonly generatorConfig: GeneratorConfig,
     type: DMMF.InputType,
-    model?: ExtendedDMMFModel,
+    datamodel: ExtendedDMMFDatamodel,
   ) {
     super(type.name);
     this.generatorConfig = generatorConfig;
-    this.linkedModel = model;
     this.name = type.name;
+    this.linkedModel = this._setLinkedModel(datamodel);
     this.constraints = type.constraints;
     this.meta = type.meta;
     this.fields = this._setFields(type.fields);
@@ -43,6 +43,17 @@ export class ExtendedDMMFInputType
     this.isJsonField = this._setIsJsonField();
     this.isBytesField = this._setIsBytesField();
     this.isDecimalField = this._setIsDecimalField();
+  }
+
+  /**
+   * Finds the datamodel that matches the input type.
+   * This way the documentation ,validator strings and other information
+   * from the datamodel can be added to the input types.
+   */
+  private _setLinkedModel(datamodel: ExtendedDMMFDatamodel) {
+    return datamodel.models.find((model) => {
+      return this.name.match(model.name);
+    });
   }
 
   private _setFields(fields: DMMF.SchemaArg[]) {

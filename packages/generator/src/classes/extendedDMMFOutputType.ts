@@ -29,51 +29,58 @@ export class ExtendedDMMFOutputType
     super(type.name);
     this.generatorConfig = generatorConfig;
     this.name = type.name;
-
-    this.fields = this._setFields(type.fields, datamodel);
-    this.prismaActionFields = this._setFields(type.fields, datamodel, 'ACTION');
-    this.prismaOtherFields = this._setFields(type.fields, datamodel, 'OTHER');
-
-    this.linkedModel = datamodel.models.find((model) => {
-      return type.name.match(model.name);
-    });
-
     this.fieldMap = type.fieldMap;
+    this.fields = this._setFields(type.fields, datamodel);
+    this.prismaActionFields = this._setFields(
+      type.fields,
+      datamodel,
+      'PRISMA_ACTION',
+    );
+    this.prismaOtherFields = this._setFields(
+      type.fields,
+      datamodel,
+      'OTHER_FIELDS',
+    );
+    this.linkedModel = this._setLinkedModel(datamodel);
   }
 
+  /**
+   * Finds the datamodel that matches the input type.
+   * This way the documentation ,validator strings and other information
+   * from the datamodel can be added to the input types.
+   */
+  private _setLinkedModel(datamodel: ExtendedDMMFDatamodel) {
+    return datamodel.models.find((model) => {
+      return this.name.match(model.name);
+    });
+  }
+
+  /**
+   * Creates an array of ExtendedDMMFSchemaField objects.
+   * - Returns the fields that are in the `PRISMA_ACTION_ARRAY` if the fieldCategory is set to `PRISMA_ACTION`.
+   * - Returns all fields that are not in `PRISMA_ACTION_ARRAY` if the fieldCategory is set to `OTHER_FIELDS`.
+   */
   private _setFields(
     fields: DMMF.SchemaField[],
     datamodel: ExtendedDMMFDatamodel,
-    fieldCategory: 'ALL' | 'ACTION' | 'OTHER' = 'ALL',
+    fieldCategory?: 'PRISMA_ACTION' | 'OTHER_FIELDS',
   ) {
-    if (fieldCategory === 'ACTION') {
-      return (
-        fields
-          // filter all fields that are not in the PRISMA_ACTION_ARRAY
-          // and those fields that end with "OrThrow" because they
-          // use the same input types as the non "OrThrow" version
-          .filter(
-            (field) =>
-              PRISMA_ACTION_ARRAY.find((elem) => field.name.includes(elem)),
-            // !field.name.includes('OrThrow'),
-          )
-          .map(
-            (field) =>
-              new ExtendedDMMFSchemaField(
-                this.generatorConfig,
-                field,
-                datamodel,
-              ),
-          )
-      );
+    if (fieldCategory === 'PRISMA_ACTION') {
+      return fields
+        .filter((field) =>
+          PRISMA_ACTION_ARRAY.find((elem) => field.name.includes(elem)),
+        )
+        .map(
+          (field) =>
+            new ExtendedDMMFSchemaField(this.generatorConfig, field, datamodel),
+        );
     }
 
-    if (fieldCategory === 'OTHER') {
+    if (fieldCategory === 'OTHER_FIELDS') {
       return fields
         .filter(
           (field) =>
-            !PRISMA_ACTION_ARRAY.find((elem) => field.name.includes(elem)) &&
-            !field.name.includes('OrThrow'),
+            !PRISMA_ACTION_ARRAY.find((elem) => field.name.includes(elem)),
         )
         .map(
           (field) =>
@@ -88,5 +95,25 @@ export class ExtendedDMMFOutputType
         datamodel,
       );
     });
+  }
+
+  /**
+   * This function checks if the output type has a field with the name "_count".
+   * This information is necessary when generating the `include` and `select` arguments.
+   * @returns true if the output type has a field with the name "_count"
+   */
+  hasCountField() {
+    return this.fields.some((field) => field.name === '_count');
+  }
+
+  /**
+   * This function checks if the output type has fields that are relations to other models.
+   * This information is necessary when generating the `include` and `select` arguments.
+   * @returns true if the output type has fields that are relations to other models
+   */
+  hasRelationField() {
+    return this.fields.some(
+      (field) => field.outputType.location === 'outputObjectTypes',
+    );
   }
 }

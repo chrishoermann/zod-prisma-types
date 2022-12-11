@@ -16,8 +16,8 @@ generator zod {
   useValidatorJs         = true // default is false
   useDecimalJs           = false // default is true
   // imports        = "import(import { myFunction } from 'mypackage').import(import { custom } from './myfolder')" // optional
-  // imports                = "import(import { myFunction } from 'mypackage')"
   addInputTypeValidation = true // default is true
+  // tsConfigFilePath = "config/tsconfig.json" // optional
 }
 
 enum MyValue {
@@ -90,6 +90,7 @@ model User {
   profile Profile?
   role    Role[]      @default([USER, ADMIN])
   enum    AnotherEnum @default(ONE)
+  scalarList String[]
 }
 
 // Role enum is only used as list
