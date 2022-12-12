@@ -195,7 +195,8 @@ generator zod {
 
 model MyModel {
   id     Int     @id @default(autoincrement())
-  custom String? /// @zod.custom.use(z.string().refine((val) => myFunction(val), { message: 'Is not valid' }))
+  /// @zod.custom.use(z.string().refine((val) => myFunction(val), { message: 'Is not valid' }))
+  custom String?
 }
 ```
 
@@ -207,7 +208,7 @@ The above schema would add the following imports to the file:
 // your custom imports
 import { myFunction } from '../../myFunction';
 
-// your
+// imports are used in your custom validator
 export const MyModelSchema = z.object({
   id: z.number(),
   custom: z
@@ -219,7 +220,9 @@ export const MyModelSchema = z.object({
 
 ## `tsConfigFilePath`
 
-If your `tsconfig.json` file resides in another folder than your root (where the `node_modules` folder is located) you can specify a custom paht. This path is then consumed by the generator and passed on th `ts-morph` that is used for writing the files. Usually you don't have to provide this option.
+If your `tsconfig.json` file resides in another folder than your root (where the `node_modules` folder is located) you can specify a custom path. This path is then consumed by the generator and passed on to the `ts-morph` `Project` instance that is used to create the file. Usually you don't have to provide this option because it defaults in ts-morph to the base directory.
+
+> Don't add `./` or `/` at the beginning of the path!
 
 ```prisma
 generator zod {
@@ -230,7 +233,7 @@ generator zod {
 
 # Skip schema generation
 
-You can skip schema generation based on the environment you are in. For example you only want to generate the schemas when you're in `development` but not when you run generation in `production` (because in `production` the schemas would already hav been created and pushed to the server via my git repo).
+You can skip schema generation based on e.g. the environment you are currently working. For example you can only generate the schemas when you're in `development` but not when you run generation in `production` (because in `production` the schemas would already hav been created and pushed to the server via source code of git repo).
 
 Since Prisma only lets us define `strings` in the generator config we cannot use the `env(MY_ENV_VARIABLE)` method that is used when e.g. the `url` under `datasource db` is loaded like
 
@@ -251,11 +254,15 @@ module.exports = {
 
 Then add
 
-`SKIP_ZOD_PRISMA="true"`
+```js
+SKIP_ZOD_PRISMA = 'true';
+```
 
 or
 
-`SKIP_ZOD_PRISMA="false"`
+```js
+SKIP_ZOD_PRISMA = 'false';
+```
 
 to your respective `.env` file. This will load the value of the `SKIP_ZOD_PRISMA` environment variable on the `skipGenerator` prop that will then be consumed by the generator.
 
