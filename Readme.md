@@ -65,7 +65,7 @@ Provide an alternative output path.
 
 > default: `false`
 
-In Prisma `Decimal` fields are represented by the [decimal.js](https://mikemcl.github.io/decimal.js/) library as stated in the [prisma docs](https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields#working-with-decimal). So by default the `Prisma.Decimal` type is used to validate `Decimal` fields by using the built in typeguard `isDecimal(value)` to check if the field value is a `Decimal`.
+In Prisma `Decimal` fields are represented by the [decimal.js](https://mikemcl.github.io/decimal.js/) library as stated in the [prisma docs](https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields#working-with-decimal). By default the `Prisma.Decimal` type is used to validate `Decimal` fields by using the built in typeguard `isDecimal(value)` to check if the field value is a `Decimal`.
 
 ```prisma
 model MyModel {
@@ -75,7 +75,7 @@ model MyModel {
 }
 ```
 
-By default the above model generates the following output:
+By default The above model would generate the following output:
 
 ```ts
 export const MyModel = z.object({
@@ -94,7 +94,7 @@ export const MyModel = z.object({
 });
 ```
 
-If you want to validate `Decimal` with `z.instanceof(PrismaClient.Prisma.Decimal)` instead you can pass the following config option:
+If you want to validate `Decimal` with `z.instanceof(PrismaClient.Prisma.Decimal)` you can pass the following config option:
 
 ```prisma
 generator zod {
@@ -113,27 +113,46 @@ export const MyModel = z.object({
 });
 ```
 
-You can't opt out of using `z.instanceof(PrismaClient.Prisma.Decimal)` for `AvgAggregateOutput` or `GroupBy` types because they explicitly expect a `Decimal` type.
-But actually I have no idea where in the schema they are used exactly.
-
 ## `useValidatorJs`
 
 > default: `false`
 
 If `true` the [validator.js](https://github.com/validatorjs/validator.js) library is imported and can be used in custom zod validator functions for `String` types. If you want to use this option you need to install [validator.js](https://github.com/validatorjs/validator.js) to your dependencies.
 
+```prisma
+generator zod {
+  provider       = "zod-prisma-types"
+  useValidatorJs = true // default is false
+}
+
+model MyModel {
+  id     Int     @id @default(autoincrement())
+  custom String? /// @zod.custom.use(z.string().refine(val => validator.isBIC(val)).transform(val => val.toUpperCase()))
+}
+```
+
+The above schema would generate the following output:
+
 ```ts
 // adds import
 import validator from 'validator';
 
 // 'validator' can now be used in every zod.string validator
+export const MyModelSchema = z.object({
+  id: z.number(),
+  custom: z
+    .string()
+    .refine((val) => validator.isBIC(val))
+    .transform((val) => val.toUpperCase())
+    .nullish(),
+});
 ```
 
 ## `createInputTypes`
 
 > default: `true`
 
-If you just want to create zod schemas for your models and enums you can disable the creation of the corresponding input types. This may be useful if you just want to use the zod schemas for validating input types in `react-hook-form` or similar use cases.
+If you just want to create zod schemas for your models and enums you can disable the creation of the corresponding input types. This may be useful if you just want to use the zod schemas of your models for validating input types in `react-hook-form` or some similar use cases.
 
 ```prisma
 generator zod {
@@ -166,16 +185,36 @@ generator zod {
 }
 ```
 
-> The function-like syntax is used to easily split the string into an array and remove the unnecessary stuff
+> The function-like syntax is used to easily split the string into an array and remove the unnecessary stuff. To add multiple imports just chain the commands.
 
-This config adds the following imports to the file:
+```prisma
+generator zod {
+  provider = "zod-prisma-types"
+  imports  = "import(import { myFunction } from '../../myFunction';)" // optional
+}
+
+model MyModel {
+  id     Int     @id @default(autoincrement())
+  custom String? /// @zod.custom.use(z.string().refine((val) => myFunction(val), { message: 'Is not valid' }))
+}
+```
+
+The above schema would add the following imports to the file:
 
 ```ts
 // ...standard imports
 
 // your custom imports
-import { myFunction } from 'mypackage';
-import { custom } from './myfolder';
+import { myFunction } from '../../myFunction';
+
+// your
+export const MyModelSchema = z.object({
+  id: z.number(),
+  custom: z
+    .string()
+    .refine((val) => myFunction(val), { message: 'Is not valid' })
+    .nullish(),
+});
 ```
 
 ## `tsConfigFilePath`
