@@ -35,6 +35,7 @@ export const generator = async ({ output, config, dmmf }: GeneratorConfig) => {
   // extend the DMMF with custom functionality - see "classes" folder
   const extendendDMMF = new ExtendedDMMF(dmmf, config);
 
+  // check if a custom tsconfig file is used and log an info if so
   await usesCustomTsConfigFilePath(
     extendendDMMF.generatorConfig.tsConfigFilePath,
   );

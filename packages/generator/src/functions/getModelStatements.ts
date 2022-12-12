@@ -67,7 +67,7 @@ export const getModelStatements: GetStatements = (dmmf) => {
                     .newLine();
                 }
 
-                if (field.isDecimalType && !dmmf.useDecimalAsNumber()) {
+                if (field.isDecimalType && !dmmf.useInstanceOfForDecimal()) {
                   return writer
                     .write(`${field.formattedNames.camelCase}: `)
                     .write(`z.number(`)
@@ -77,14 +77,7 @@ export const getModelStatements: GetStatements = (dmmf) => {
                     )
                     .write(`)`)
                     .write(`.refine((v) => `)
-                    .conditionalWrite(
-                      dmmf.generatorConfig.useDecimalJs,
-                      `Decimal.isDecimal(v),`,
-                    )
-                    .conditionalWrite(
-                      !dmmf.generatorConfig.useDecimalJs,
-                      `PrismaClient.Prisma.Decimal.isDecimal(v),`,
-                    )
+                    .write(`PrismaClient.Prisma.Decimal.isDecimal(v),`)
                     .write(
                       ` { message: 'Field "${field.formattedNames.original}" must be a Decimal', `,
                     )
@@ -98,15 +91,10 @@ export const getModelStatements: GetStatements = (dmmf) => {
                     .newLine();
                 }
 
-                if (field.isDecimalType && !dmmf.useDecimalAsNumber()) {
+                if (field.isDecimalType && dmmf.useInstanceOfForDecimal()) {
                   return writer
                     .write(`${field.formattedNames.camelCase}: `)
-                    .write(`z.number(`)
-                    .conditionalWrite(
-                      !!field.zodCustomErrors,
-                      field.zodCustomErrors!,
-                    )
-                    .write(`)`)
+                    .write(`z.instanceof(PrismaClient.Prisma.Decimal)`)
                     .conditionalWrite(field.isList, `.array()`)
                     .conditionalWrite(field.isNullable, `.nullish()`)
                     .write(`,`)

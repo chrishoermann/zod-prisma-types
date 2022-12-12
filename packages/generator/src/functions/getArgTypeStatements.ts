@@ -58,7 +58,6 @@ export const getArgTypeStatements: GetStatements = (dmmf) => {
                           writeComma,
                         });
                         writeSpecialType(writer, {
-                          useDecimalJS: dmmf.useDecimalAsNumber(),
                           inputType,
                           writeLazy: false,
                           writeComma,
@@ -84,7 +83,6 @@ export const getArgTypeStatements: GetStatements = (dmmf) => {
                         isOptional,
                       });
                       writeSpecialType(writer, {
-                        useDecimalJS: dmmf.useDecimalAsNumber(),
                         inputType: arg.inputTypes[0],
                         writeLazy: false,
                         isNullable,

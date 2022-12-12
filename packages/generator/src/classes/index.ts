@@ -13,4 +13,3 @@ export * from './extendedDMMFSchemaArgInputType';
 export * from './extendedDMMFSchemaEnum';
 export * from './extendedDMMFSchemaField';
 export * from './formattedNames';
-export * from './generatorConfig';

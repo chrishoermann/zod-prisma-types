@@ -31,15 +31,20 @@ export const writeScalarType: WriteTypeFunction = (
   if (!zodType) return;
 
   if (zodCustomValidatorString) {
-    return (
-      writer
-        .write(zodCustomValidatorString)
-        // .conditionalWrite(!writeValidation, `z.${zodType}()`)
-        .conditionalWrite(inputType.isList, `.array()`)
-        .conditionalWrite(isOptional, `.optional()`)
-        .conditionalWrite(isNullable, `.nullable()`)
-        .conditionalWrite(writeComma, `,`)
-    );
+    // only writes the validator string if the user has not disabled input type validation
+    return writer
+      .conditionalWrite(
+        inputType.generatorConfig.addInputTypeValidation,
+        zodCustomValidatorString,
+      )
+      .conditionalWrite(
+        !inputType.generatorConfig.addInputTypeValidation,
+        `z.${zodType}()`,
+      )
+      .conditionalWrite(inputType.isList, `.array()`)
+      .conditionalWrite(isOptional, `.optional()`)
+      .conditionalWrite(isNullable, `.nullable()`)
+      .conditionalWrite(writeComma, `,`);
   }
 
   return writer

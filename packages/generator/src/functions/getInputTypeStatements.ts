@@ -64,7 +64,6 @@ export const getInputTypeStatements: GetStatements = (dmmf) => {
                         zodCustomErrors,
                         zodCustomValidatorString,
                         writeComma,
-                        useDecimalJS: dmmf.useDecimalAsNumber(),
                         writeValidation: dmmf.addInputTypeValidation(),
                       });
                     });
@@ -96,7 +95,6 @@ export const getInputTypeStatements: GetStatements = (dmmf) => {
                       zodCustomValidatorString,
                       isNullable,
                       isOptional,
-                      useDecimalJS: dmmf.useDecimalAsNumber(),
                       writeValidation: dmmf.addInputTypeValidation(),
                     });
                   }

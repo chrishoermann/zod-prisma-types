@@ -52,14 +52,7 @@ export const getAggregateAndCountStatements: GetStatements = (dmmf) => {
                   if (field.outputType.type === 'Decimal') {
                     return writer
                       .write(`z.instanceof(`)
-                      .conditionalWrite(
-                        dmmf.generatorConfig.useDecimalJs,
-                        `Decimal`,
-                      )
-                      .conditionalWrite(
-                        !dmmf.generatorConfig.useDecimalJs,
-                        `PrismaClient.Prisma.Decimal`,
-                      )
+                      .write(`PrismaClient.Prisma.Decimal`)
                       .write(`)`)
                       .conditionalWrite(field.outputType.isList, `.array()`)
                       .conditionalWrite(

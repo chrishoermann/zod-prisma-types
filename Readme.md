@@ -7,10 +7,11 @@
 - [Installation](#installation)
 - [Usage](#usage)
   - [output](#output)
-  - [useDecimalJs](#usedecimaljs)
+  - [useInstaceOfForDecimal](#useinstanceoffordecimal)
   - [useValidatorJs](#usevalidatorjs)
-  - [imports](#imports)
+  - [createInputTypes](#createinputtypes)
   - [addInputTypeValidation](#addinputtypevalidation)
+  - [imports](#imports)
   - [tsConfigFilePath](#tsconfigfilepath)
 - [Skip schema generation](#skip-schema-generation)
 - [Field validators](#field-validators)
@@ -44,14 +45,15 @@ generator zod {
   provider               = "zod-prisma-types"
   output                 = "./zod" // default is ./generated/zod
   useValidatorJs         = true // default is false
-  useDecimalJs           = false // default is true
-  imports        = "import(import { myFunction } from 'mypackage').import(import { custom } from './myfolder')" // optional
-  addInputTypeValidation = true // default is true
-  tsConfigFilePath = "config/tsconfig.json" // optional - used by ts-morph
+  useInstaceOfForDecimal = true // default is false
+  createInputTypes       = false // default is true
+  addInputTypeValidation = false // default is true
+  imports                = "import(import { myFunction } from 'mypackage').import(import { custom } from './myfolder')" // optional
+  tsConfigFilePath       = "config/tsconfig.json" // optional default is `undefined`
 }
 ```
 
-> As mentinned above this generator only creates a single `index.ts` file in the specified output folder containing all the zod prisma schemas. I decided to only create a single file because in [`ts-morph`](https://ts-morph.com/manipulation/performance) it is more efficient to write a bunch of statements to a single file at once than creating multiple files where only a few statements are added. This can be beneficial for generating zod schemas for big prisma schemas. Another point is that it makes the codebase of the generator more managable (...no need to create imports, simpler structure of the files) and it's easier to use custom imports (see below).
+> As mentioned above this generator only creates a single `index.ts` file in the specified output folder containing all the zod prisma schemas. I decided to only create a single file because in [`ts-morph`](https://ts-morph.com/manipulation/performance) it is more efficient to write a bunch of statements to a single file at once than creating multiple files where only a few statements are added. This can be beneficial for generating zod schemas for big prisma schemas. Another point is that it makes the codebase of the generator more managable (...no need to create imports, simpler structure of the files) and it's easier to use custom imports (see below).
 
 ## `output`
 
@@ -59,11 +61,11 @@ generator zod {
 
 Provide an alternative output path.
 
-## `useDecimalJs`
+## `useInstaceOfForDecimal`
 
-> default: `true`
+> default: `false`
 
-By default the [decimal.js](https://mikemcl.github.io/decimal.js/) library is used to validate the `Prisma.Decimal` type. In Prisma `Decimal` fields are represented by the [decimal.js](https://mikemcl.github.io/decimal.js/) library as stated in the [prisma docs](https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields#working-with-decimal). If you use the `Decimal` type somewhere in your `prisma.schema` and want to use the default implementation you need to install [decimal.js](https://mikemcl.github.io/decimal.js/) to your dependencies manually.
+In Prisma `Decimal` fields are represented by the [decimal.js](https://mikemcl.github.io/decimal.js/) library as stated in the [prisma docs](https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields#working-with-decimal). So by default the `Prisma.Decimal` type is used to validate `Decimal` fields by using the built in typeguard `isDecimal(value)` to check if the field value is a `Decimal`.
 
 ```prisma
 model MyModel {
@@ -76,19 +78,15 @@ model MyModel {
 By default the above model generates the following output:
 
 ```ts
-// import added
-import { Decimal } from 'decimal.js';
-
-// generated zod schema
 export const MyModel = z.object({
   id: z.number(),
-  decimal: z.number().refine((v) => Decimal.isDecimal(v), {
+  decimal: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
     message: 'Field "decimal" must be a Decimal',
     path: ['Models', 'MyModel'],
   }),
   decimalOpt: z
     .number()
-    .refine((v) => Decimal.isDecimal(v), {
+    .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
       message: 'Field "decimalOpt" must be a Decimal',
       path: ['Models', 'MyModel'],
     })
@@ -96,18 +94,17 @@ export const MyModel = z.object({
 });
 ```
 
-If you opt out of validating the `Decimal` type with `decimal.js` the generated output would look like this
+If you choose to validate `Decimal` with `z.instanceof(PrismaClient.Prisma.Decimal)` instead the generated output would look like this.
 
 ```ts
-// no import added
-
-// generated zod schema
 export const MyModel = z.object({
   id: z.number(),
-  decimal: z.number(),
-  decimalOpt: z.number().nullable(),
+  decimal: z.instanceof(PrismaClient.Prisma.Decimal),
+  decimalOpt: z.instanceof(PrismaClient.Prisma.Decimal).nullable(),
 });
 ```
+
+You can't opt out of the use of `z.instanceof(PrismaClient.Prisma.Decimal)` for `AvgAggregateOutput` or `GroupBy` types because they explicitly expect a `Decimal` type.
 
 ## `useValidatorJs`
 
@@ -120,6 +117,32 @@ If `true` the [validator.js](https://github.com/validatorjs/validator.js) librar
 import validator from 'validator';
 
 // 'validator' can now be used in every zod.string validator
+```
+
+## `createInputTypes`
+
+> default: `true`
+
+If you just want to create zod schemas for your models and enums you can disable the creation of the corresponding input types. This may be useful if you just want to use the zod schemas of the models e.g. for validating input types in `react-hook-form` or similar.
+
+```prisma
+generator zod {
+  // ...rest of config
+  createInputTypes = false
+}
+```
+
+## `addInputTypeValidation`
+
+> default: `true`
+
+If you don't want to use your custom validation logic on your input types like `UserCreateInput`, `UserUpdateManyInput` and so on you can disable this feature.
+
+```prisma
+generator zod {
+  // ...rest of config
+  addInputTypeValidation = false
+}
 ```
 
 ## `imports`
@@ -147,20 +170,13 @@ import { custom } from './myfolder';
 
 ## `tsConfigFilePath`
 
-If your `tsconfig.json` file resides in another folder than your root (where the `node_modules` folder is located) you can specify the path like
+If your `tsconfig.json` file resides in another folder than your root (where the `node_modules` folder is located) you can specify a custom paht. This path is then consumed by the generator and passed on th `ts-morph` that is used for writing the files. Usually you don't have to provide this option.
 
 ```prisma
-
-
-
-```
-
-## `addInputTypeValidation`
-
-```prisma
-
-
-
+generator zod {
+  // ...rest of config
+  tsConfigFilePath = "config/tsconfig.json"
+}
 ```
 
 # Skip schema generation

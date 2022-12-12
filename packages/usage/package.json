@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^18.11.11",
+    "@types/node": "^18.11.13",
     "prisma": "^4.7.1",
     "typescript": "^4.9.4"
   },
@@ -23,8 +23,8 @@
     "decimal.js": "^10.4.3",
     "prisma-zod-generator": "^0.7.4",
     "validator": "^13.7.0",
-    "vitest": "^0.25.5",
-    "zod": "^3.19.1",
+    "vitest": "^0.25.7",
+    "zod": "^3.20.0",
     "zod-prisma-types": "workspace:1.0.0"
   }
 }

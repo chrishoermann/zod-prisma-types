@@ -11,12 +11,13 @@ datasource db {
 }
 
 generator zod {
-  provider               = "zod-prisma-types"
-  output                 = "./zod" // default is ./generated/zod
-  useValidatorJs         = true // default is false
-  useDecimalJs           = false // default is true
+  provider                = "zod-prisma-types"
+  output                  = "./zod" // default is ./generated/zod
+  useValidatorJs          = true // default is false
+  useInstanceOfForDecimal = true // default is true
   // imports        = "import(import { myFunction } from 'mypackage').import(import { custom } from './myfolder')" // optional
-  addInputTypeValidation = true // default is true
+  addInputTypeValidation  = true // default is true
+  // createInputTypes       = true // default is true
   // tsConfigFilePath = "config/tsconfig.json" // optional
 }
 
@@ -54,7 +55,7 @@ model Test {
   bigIntOpt  BigInt?
   json       Json
   jsonOpt    Json?
-  bytes      Bytes
+  bytes      Bytes /// @zod.custom.use(z.instanceof(Buffer).refine((val) => val ? true : false, { message: 'Value is not valid' }))
   bytesOpt   Bytes?
   // email String @unique
   // name  Float
@@ -81,15 +82,15 @@ model MyPrismaScalarsType {
 }
 
 model User {
-  id      String      @id @default(cuid()) /// @zod.string.cuid()
-  email   String      @unique /// @zod.string.email({ message: "Invalid email address" })
+  id         String      @id @default(cuid()) /// @zod.string.cuid()
+  email      String      @unique /// @zod.string.email({ message: "Invalid email address" })
   /// some other comment 
   /// @zod.string.min(1).max(100) some message after
-  name    String?
-  posts   Post[]
-  profile Profile?
-  role    Role[]      @default([USER, ADMIN])
-  enum    AnotherEnum @default(ONE)
+  name       String?
+  posts      Post[]
+  profile    Profile?
+  role       Role[]      @default([USER, ADMIN])
+  enum       AnotherEnum @default(ONE)
   scalarList String[]
 }
 

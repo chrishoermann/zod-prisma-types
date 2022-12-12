@@ -1,7 +1,6 @@
 import {
   ZOD_IMPORT_STATEMENT,
   PRIMSA_IMPORT_STATEMENT,
-  DECIMAL_JS_IMPORT_STATEMENT,
   VALIDATOR_JS_IMPORT_STATEMENT,
 } from '../constants/importStatements';
 import { GetStatements, Statement } from '../types';
@@ -16,15 +15,7 @@ export const getImportStatements: GetStatements = (dmmf) => {
     PRIMSA_IMPORT_STATEMENT,
   ];
 
-  if (dmmf.useDecimalJs()) {
-    statements.push(DECIMAL_JS_IMPORT_STATEMENT);
-  }
-
-  // if (dmmf.useDecimalAsNumber()) {
-  //   statements.push(DECIMAL_JS_IMPORT_STATEMENT);
-  // }
-
-  if (dmmf.useValidatorJs()) {
+  if (dmmf.generatorConfig.useValidatorJs) {
     statements.push(VALIDATOR_JS_IMPORT_STATEMENT);
   }
 

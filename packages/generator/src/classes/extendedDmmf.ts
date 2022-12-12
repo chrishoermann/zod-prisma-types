@@ -1,10 +1,51 @@
 import { DMMF } from '@prisma/generator-helper';
 import { Dictionary } from '@prisma/internals';
+import { z } from 'zod';
 
 import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
 import { ExtendedDMMFMappings } from './extendedDMMFMappings';
 import { ExtendedDMMFSchema } from './extendedDMMFSchema';
-import { GeneratorConfig } from './generatorConfig';
+
+/////////////////////////////////////////////////
+// SCHEMA
+/////////////////////////////////////////////////
+
+export const configSchema = z.object({
+  useValidatorJs: z
+    .string()
+    .optional()
+    .default('false')
+    .transform((val) => val === 'true'),
+  useInstanceOfForDecimal: z
+    .string()
+    .optional()
+    .default('false')
+    .transform((val) => val === 'true'),
+  imports: z
+    .string()
+    .optional()
+    .transform((val) =>
+      val
+        ? val
+            .split(')')
+            .map((v) => v.replace(/import\(|.import\(/, ''))
+            .filter((v) => v !== '')
+        : [],
+    ),
+  createInputTypes: z
+    .string()
+    .optional()
+    .default('true')
+    .transform((val) => val === 'true'),
+  addInputTypeValidation: z
+    .string()
+    .optional()
+    .default('true')
+    .transform((val) => val === 'true'),
+  tsConfigFilePath: z.string().optional(),
+});
+
+export type GeneratorConfig = z.infer<typeof configSchema>;
 
 /////////////////////////////////////////////////
 // CLASS
@@ -40,19 +81,15 @@ export class ExtendedDMMF implements DMMF.Document {
   }
 
   private _setGeneratorConfig(config: Dictionary<string>): GeneratorConfig {
-    return new GeneratorConfig(config);
+    return configSchema.parse(config);
   }
 
   useValidatorJs() {
     return Boolean(this.generatorConfig.useValidatorJs);
   }
 
-  useDecimalJs() {
-    return Boolean(this.generatorConfig.useDecimalJs);
-  }
-
-  useDecimalAsNumber() {
-    return Boolean(this.generatorConfig.decimalAsNumber);
+  useInstanceOfForDecimal() {
+    return Boolean(this.generatorConfig.useInstanceOfForDecimal);
   }
 
   createInputTypes() {
