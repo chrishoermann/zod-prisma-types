@@ -23,6 +23,7 @@
   - [Custom validators](#custom-validators)
   - [Validation errors](#validation-errors)
 - [Naming of zod schemas](#naming-of-zod-schemas)
+- [Adding comments](#adding-comments)
 
 # Installation
 
@@ -570,3 +571,37 @@ const appRouter = t.router({
     }),
 });
 ```
+
+# Adding comments
+
+You can add [rich-comments](https://www.prisma.io/docs/concepts/components/prisma-schema#comments) to your models and fields that are then printed as jsDoc in your generated zod schema.
+
+```prisma
+/// comment line one
+/// comment line two
+model MyModel {
+  id     Int     @id @default(autoincrement())
+  /// comment before validator @zod.string.min(4).max(10)
+  /// comment after validator
+  string String?
+}
+```
+
+The above model would generate the following output where the validator is extracted from the rich-comments and added to the string field:
+
+```ts
+/**
+ * comment line one
+ * comment line two
+ */
+export const MyModelSchema = z.object({
+  id: z.number(),
+  /**
+   * comment before validator
+   * comment after validator
+   */
+  string: z.string().min(4).max(10).nullish(),
+});
+```
+
+The validator is extracted from the comments and added to the string
