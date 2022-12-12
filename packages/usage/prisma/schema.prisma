@@ -94,6 +94,8 @@ model MyPrismaScalarsType {
   bytes   Bytes
   /// @zod.custom.use(z.string().refine((val) => myFunction(val), { message: 'Is not valid' }))
   custom  String?
+
+  exclude String? /// @zod.custom.omit(["model", "input"])
 }
 
 model User {
@@ -107,6 +109,11 @@ model User {
   role       Role[]      @default([USER, ADMIN])
   enum       AnotherEnum @default(ONE)
   scalarList String[]
+
+  lat Float
+  lng Float
+
+  location Location? @relation(fields: [lat, lng], references: [lat, lng])
 }
 
 model Post {
@@ -126,4 +133,12 @@ model Profile {
   userId String     @unique
   role   Role[]     @default([USER, ADMIN])
   second SecondEnum @default(ONE)
+}
+
+model Location {
+  lat  Float
+  lng  Float
+  User User[]
+
+  @@id([lat, lng])
 }

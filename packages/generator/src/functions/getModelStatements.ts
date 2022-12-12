@@ -27,6 +27,17 @@ export const getModelStatements: GetStatements = (dmmf) => {
                   writeJsDoc(writer, field.clearedDocumentation);
                 }
 
+                if (
+                  field.zodOmitField === 'all' ||
+                  field.zodOmitField === 'model'
+                ) {
+                  return writer
+                    .write(
+                      `// omitted: ${field.formattedNames.camelCase}: ${field.zodType},`,
+                    )
+                    .newLine();
+                }
+
                 if (field.zodCustomValidatorString) {
                   return writer
                     .write(`${field.formattedNames.camelCase}: `)

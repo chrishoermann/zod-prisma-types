@@ -153,6 +153,9 @@ export const CUSTOM_VALIDATOR_REGEX_MAP: ValidatorMap<ZodCustomValidatorKeys> =
     use: (pattern) => {
       return pattern.match(CUSTOM_VALIDATOR_MESSAGE_REGEX)?.groups?.['custom'];
     },
+    omit: (pattern) => {
+      return pattern.match(CUSTOM_VALIDATOR_MESSAGE_REGEX)?.groups?.['custom'];
+    },
   };
 
 /////////////////////////////////////////////

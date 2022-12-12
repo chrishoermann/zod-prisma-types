@@ -14,6 +14,8 @@ export const JsonNullValueFilterSchema = z.enum(['DbNull', 'JsonNull', 'AnyNull'
 
 export const JsonNullValueInputSchema = z.enum(['JsonNull',]);
 
+export const LocationScalarFieldEnumSchema = z.nativeEnum(PrismaClient.Prisma.LocationScalarFieldEnum);
+
 export const MyModelScalarFieldEnumSchema = z.nativeEnum(PrismaClient.Prisma.MyModelScalarFieldEnum);
 
 export const MyPrismaScalarsTypeScalarFieldEnumSchema = z.nativeEnum(PrismaClient.Prisma.MyPrismaScalarsTypeScalarFieldEnum);
@@ -126,6 +128,7 @@ export const MyPrismaScalarsTypeSchema = z.object({
   json: z.lazy(() => InputJsonValue).refine((val) => myFunction(val), { message: 'Is not valid' }),
   bytes: z.instanceof(Buffer),
   custom: z.string().refine((val) => myFunction(val), { message: 'Is not valid' }).nullish(),
+  // omitted: exclude: string,
 });
 
 // USER
@@ -142,6 +145,8 @@ export const UserSchema = z.object({
    */
   name: z.string().min(1).max(100).nullish(),
   scalarList: z.string().array(),
+  lat: z.number(),
+  lng: z.number(),
 });
 
 // POST
@@ -165,6 +170,14 @@ export const ProfileSchema = z.object({
   id: z.number(),
   bio: z.string(),
   userId: z.string(),
+});
+
+// LOCATION
+//------------------------------------------------------
+
+export const LocationSchema = z.object({
+  lat: z.number(),
+  lng: z.number(),
 });
 
 /////////////////////////////////////////
@@ -217,6 +230,7 @@ export const MyPrismaScalarsTypeSelectSchema: z.ZodType<PrismaClient.Prisma.MyPr
   json: z.boolean().optional(),
   bytes: z.boolean().optional(),
   custom: z.boolean().optional(),
+  exclude: z.boolean().optional(),
 }).strict();
 
 // USER
@@ -230,6 +244,7 @@ export const UserArgsSchema: z.ZodType<PrismaClient.Prisma.UserArgs> = z.object(
 export const UserIncludeSchema: z.ZodType<PrismaClient.Prisma.UserInclude> = z.object({
   posts: z.union([z.boolean(), z.lazy(() => PostFindManyArgsSchema)]).optional(),
   profile: z.union([z.boolean(), z.lazy(() => ProfileArgsSchema)]).optional(),
+  location: z.union([z.boolean(), z.lazy(() => LocationArgsSchema)]).optional(),
   _count: z.union([z.boolean(), z.lazy(() => UserCountOutputTypeArgsSchema)]).optional(),
 }).strict();
 
@@ -250,6 +265,9 @@ export const UserSelectSchema: z.ZodType<PrismaClient.Prisma.UserSelect> = z.obj
   role: z.boolean().optional(),
   enum: z.boolean().optional(),
   scalarList: z.boolean().optional(),
+  lat: z.boolean().optional(),
+  lng: z.boolean().optional(),
+  location: z.union([z.boolean(), z.lazy(() => LocationArgsSchema)]).optional(),
   _count: z.union([z.boolean(), z.lazy(() => UserCountOutputTypeArgsSchema)]).optional(),
 }).strict();
 
@@ -294,6 +312,34 @@ export const ProfileSelectSchema: z.ZodType<PrismaClient.Prisma.ProfileSelect> =
   userId: z.boolean().optional(),
   role: z.boolean().optional(),
   second: z.boolean().optional(),
+}).strict();
+
+// LOCATION
+//------------------------------------------------------
+
+export const LocationArgsSchema: z.ZodType<PrismaClient.Prisma.LocationArgs> = z.object({
+  select: z.lazy(() => LocationSelectSchema).optional(),
+  include: z.lazy(() => LocationIncludeSchema).optional(),
+}).strict();
+
+export const LocationIncludeSchema: z.ZodType<PrismaClient.Prisma.LocationInclude> = z.object({
+  User: z.union([z.boolean(), z.lazy(() => UserFindManyArgsSchema)]).optional(),
+  _count: z.union([z.boolean(), z.lazy(() => LocationCountOutputTypeArgsSchema)]).optional(),
+}).strict();
+
+export const LocationCountOutputTypeArgsSchema: z.ZodType<PrismaClient.Prisma.LocationCountOutputTypeArgs> = z.object({
+  select: z.lazy(() => LocationCountOutputTypeSelectSchema).nullish(),
+}).strict();
+
+export const LocationCountOutputTypeSelectSchema: z.ZodType<PrismaClient.Prisma.LocationCountOutputTypeSelect> = z.object({
+  User: z.boolean().optional(),
+}).strict();
+
+export const LocationSelectSchema: z.ZodType<PrismaClient.Prisma.LocationSelect> = z.object({
+  lat: z.boolean().optional(),
+  lng: z.boolean().optional(),
+  User: z.union([z.boolean(), z.lazy(() => UserFindManyArgsSchema)]).optional(),
+  _count: z.union([z.boolean(), z.lazy(() => LocationCountOutputTypeArgsSchema)]).optional(),
 }).strict();
 
 /////////////////////////////////////////
@@ -448,6 +494,7 @@ export const MyPrismaScalarsTypeWhereInputSchema: z.ZodType<PrismaClient.Prisma.
   json: z.lazy(() => JsonFilterSchema).optional(),
   bytes: z.union([z.lazy(() => BytesFilterSchema), z.instanceof(Buffer)]).optional(),
   custom: z.union([z.lazy(() => StringNullableFilterSchema), z.string()]).optional().nullable(),
+  exclude: z.union([z.lazy(() => StringNullableFilterSchema), z.string()]).optional().nullable(),
 }).strict();
 
 export const MyPrismaScalarsTypeOrderByWithRelationInputSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeOrderByWithRelationInput> = z.object({
@@ -461,6 +508,7 @@ export const MyPrismaScalarsTypeOrderByWithRelationInputSchema: z.ZodType<Prisma
   json: z.lazy(() => SortOrderSchema).optional(),
   bytes: z.lazy(() => SortOrderSchema).optional(),
   custom: z.lazy(() => SortOrderSchema).optional(),
+  exclude: z.lazy(() => SortOrderSchema).optional(),
 }).strict();
 
 export const MyPrismaScalarsTypeWhereUniqueInputSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeWhereUniqueInput> = z.object({
@@ -478,6 +526,7 @@ export const MyPrismaScalarsTypeOrderByWithAggregationInputSchema: z.ZodType<Pri
   json: z.lazy(() => SortOrderSchema).optional(),
   bytes: z.lazy(() => SortOrderSchema).optional(),
   custom: z.lazy(() => SortOrderSchema).optional(),
+  exclude: z.lazy(() => SortOrderSchema).optional(),
   _count: z.lazy(() => MyPrismaScalarsTypeCountOrderByAggregateInputSchema).optional(),
   _avg: z.lazy(() => MyPrismaScalarsTypeAvgOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => MyPrismaScalarsTypeMaxOrderByAggregateInputSchema).optional(),
@@ -499,6 +548,7 @@ export const MyPrismaScalarsTypeScalarWhereWithAggregatesInputSchema: z.ZodType<
   json: z.lazy(() => JsonWithAggregatesFilterSchema).optional(),
   bytes: z.union([z.lazy(() => BytesWithAggregatesFilterSchema), z.instanceof(Buffer)]).optional(),
   custom: z.union([z.lazy(() => StringNullableWithAggregatesFilterSchema), z.string()]).optional().nullable(),
+  exclude: z.union([z.lazy(() => StringNullableWithAggregatesFilterSchema), z.string()]).optional().nullable(),
 }).strict();
 
 export const UserWhereInputSchema: z.ZodType<PrismaClient.Prisma.UserWhereInput> = z.object({
@@ -513,6 +563,9 @@ export const UserWhereInputSchema: z.ZodType<PrismaClient.Prisma.UserWhereInput>
   role: z.lazy(() => EnumRoleNullableListFilterSchema).optional(),
   enum: z.union([z.lazy(() => EnumAnotherEnumFilterSchema), z.lazy(() => AnotherEnumSchema)]).optional(),
   scalarList: z.lazy(() => StringNullableListFilterSchema).optional(),
+  lat: z.union([z.lazy(() => FloatFilterSchema), z.number()]).optional(),
+  lng: z.union([z.lazy(() => FloatFilterSchema), z.number()]).optional(),
+  location: z.union([z.lazy(() => LocationRelationFilterSchema), z.lazy(() => LocationWhereInputSchema)]).optional().nullable(),
 }).strict();
 
 export const UserOrderByWithRelationInputSchema: z.ZodType<PrismaClient.Prisma.UserOrderByWithRelationInput> = z.object({
@@ -524,6 +577,9 @@ export const UserOrderByWithRelationInputSchema: z.ZodType<PrismaClient.Prisma.U
   role: z.lazy(() => SortOrderSchema).optional(),
   enum: z.lazy(() => SortOrderSchema).optional(),
   scalarList: z.lazy(() => SortOrderSchema).optional(),
+  lat: z.lazy(() => SortOrderSchema).optional(),
+  lng: z.lazy(() => SortOrderSchema).optional(),
+  location: z.lazy(() => LocationOrderByWithRelationInputSchema).optional(),
 }).strict();
 
 export const UserWhereUniqueInputSchema: z.ZodType<PrismaClient.Prisma.UserWhereUniqueInput> = z.object({
@@ -538,9 +594,13 @@ export const UserOrderByWithAggregationInputSchema: z.ZodType<PrismaClient.Prism
   role: z.lazy(() => SortOrderSchema).optional(),
   enum: z.lazy(() => SortOrderSchema).optional(),
   scalarList: z.lazy(() => SortOrderSchema).optional(),
+  lat: z.lazy(() => SortOrderSchema).optional(),
+  lng: z.lazy(() => SortOrderSchema).optional(),
   _count: z.lazy(() => UserCountOrderByAggregateInputSchema).optional(),
+  _avg: z.lazy(() => UserAvgOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => UserMaxOrderByAggregateInputSchema).optional(),
   _min: z.lazy(() => UserMinOrderByAggregateInputSchema).optional(),
+  _sum: z.lazy(() => UserSumOrderByAggregateInputSchema).optional(),
 }).strict();
 
 export const UserScalarWhereWithAggregatesInputSchema: z.ZodType<PrismaClient.Prisma.UserScalarWhereWithAggregatesInput> = z.object({
@@ -553,6 +613,8 @@ export const UserScalarWhereWithAggregatesInputSchema: z.ZodType<PrismaClient.Pr
   role: z.lazy(() => EnumRoleNullableListFilterSchema).optional(),
   enum: z.union([z.lazy(() => EnumAnotherEnumWithAggregatesFilterSchema), z.lazy(() => AnotherEnumSchema)]).optional(),
   scalarList: z.lazy(() => StringNullableListFilterSchema).optional(),
+  lat: z.union([z.lazy(() => FloatWithAggregatesFilterSchema), z.number()]).optional(),
+  lng: z.union([z.lazy(() => FloatWithAggregatesFilterSchema), z.number()]).optional(),
 }).strict();
 
 export const PostWhereInputSchema: z.ZodType<PrismaClient.Prisma.PostWhereInput> = z.object({
@@ -656,6 +718,43 @@ export const ProfileScalarWhereWithAggregatesInputSchema: z.ZodType<PrismaClient
   userId: z.union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()]).optional(),
   role: z.lazy(() => EnumRoleNullableListFilterSchema).optional(),
   second: z.union([z.lazy(() => EnumSecondEnumWithAggregatesFilterSchema), z.lazy(() => SecondEnumSchema)]).optional(),
+}).strict();
+
+export const LocationWhereInputSchema: z.ZodType<PrismaClient.Prisma.LocationWhereInput> = z.object({
+  AND: z.union([z.lazy(() => LocationWhereInputSchema), z.lazy(() => LocationWhereInputSchema).array()]).optional(),
+  OR: z.lazy(() => LocationWhereInputSchema).array().optional(),
+  NOT: z.union([z.lazy(() => LocationWhereInputSchema), z.lazy(() => LocationWhereInputSchema).array()]).optional(),
+  lat: z.union([z.lazy(() => FloatFilterSchema), z.number()]).optional(),
+  lng: z.union([z.lazy(() => FloatFilterSchema), z.number()]).optional(),
+  User: z.lazy(() => UserListRelationFilterSchema).optional(),
+}).strict();
+
+export const LocationOrderByWithRelationInputSchema: z.ZodType<PrismaClient.Prisma.LocationOrderByWithRelationInput> = z.object({
+  lat: z.lazy(() => SortOrderSchema).optional(),
+  lng: z.lazy(() => SortOrderSchema).optional(),
+  User: z.lazy(() => UserOrderByRelationAggregateInputSchema).optional(),
+}).strict();
+
+export const LocationWhereUniqueInputSchema: z.ZodType<PrismaClient.Prisma.LocationWhereUniqueInput> = z.object({
+  lat_lng: z.lazy(() => LocationLatLngCompoundUniqueInputSchema).optional(),
+}).strict();
+
+export const LocationOrderByWithAggregationInputSchema: z.ZodType<PrismaClient.Prisma.LocationOrderByWithAggregationInput> = z.object({
+  lat: z.lazy(() => SortOrderSchema).optional(),
+  lng: z.lazy(() => SortOrderSchema).optional(),
+  _count: z.lazy(() => LocationCountOrderByAggregateInputSchema).optional(),
+  _avg: z.lazy(() => LocationAvgOrderByAggregateInputSchema).optional(),
+  _max: z.lazy(() => LocationMaxOrderByAggregateInputSchema).optional(),
+  _min: z.lazy(() => LocationMinOrderByAggregateInputSchema).optional(),
+  _sum: z.lazy(() => LocationSumOrderByAggregateInputSchema).optional(),
+}).strict();
+
+export const LocationScalarWhereWithAggregatesInputSchema: z.ZodType<PrismaClient.Prisma.LocationScalarWhereWithAggregatesInput> = z.object({
+  AND: z.union([z.lazy(() => LocationScalarWhereWithAggregatesInputSchema), z.lazy(() => LocationScalarWhereWithAggregatesInputSchema).array()]).optional(),
+  OR: z.lazy(() => LocationScalarWhereWithAggregatesInputSchema).array().optional(),
+  NOT: z.union([z.lazy(() => LocationScalarWhereWithAggregatesInputSchema), z.lazy(() => LocationScalarWhereWithAggregatesInputSchema).array()]).optional(),
+  lat: z.union([z.lazy(() => FloatWithAggregatesFilterSchema), z.number()]).optional(),
+  lng: z.union([z.lazy(() => FloatWithAggregatesFilterSchema), z.number()]).optional(),
 }).strict();
 
 export const MyModelCreateInputSchema: z.ZodType<PrismaClient.Prisma.MyModelCreateInput> = z.object({
@@ -848,6 +947,7 @@ export const MyPrismaScalarsTypeCreateInputSchema: z.ZodType<PrismaClient.Prisma
   json: z.union([z.lazy(() => JsonNullValueInputSchema), z.lazy(() => InputJsonValue).refine((val) => myFunction(val), { message: 'Is not valid' })]),
   bytes: z.instanceof(Buffer),
   custom: z.string().refine((val) => myFunction(val), { message: 'Is not valid' }).optional().nullable(),
+  exclude: z.string().optional().nullable(),
 }).strict();
 
 export const MyPrismaScalarsTypeUncheckedCreateInputSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeUncheckedCreateInput> = z.object({
@@ -861,6 +961,7 @@ export const MyPrismaScalarsTypeUncheckedCreateInputSchema: z.ZodType<PrismaClie
   json: z.union([z.lazy(() => JsonNullValueInputSchema), z.lazy(() => InputJsonValue).refine((val) => myFunction(val), { message: 'Is not valid' })]),
   bytes: z.instanceof(Buffer),
   custom: z.string().refine((val) => myFunction(val), { message: 'Is not valid' }).optional().nullable(),
+  exclude: z.string().optional().nullable(),
 }).strict();
 
 export const MyPrismaScalarsTypeUpdateInputSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeUpdateInput> = z.object({
@@ -874,6 +975,7 @@ export const MyPrismaScalarsTypeUpdateInputSchema: z.ZodType<PrismaClient.Prisma
   json: z.union([z.lazy(() => JsonNullValueInputSchema), z.lazy(() => InputJsonValue).refine((val) => myFunction(val), { message: 'Is not valid' })]).optional(),
   bytes: z.union([z.instanceof(Buffer), z.lazy(() => BytesFieldUpdateOperationsInputSchema)]).optional(),
   custom: z.union([z.string().refine((val) => myFunction(val), { message: 'Is not valid' }), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
+  exclude: z.union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
 }).strict();
 
 export const MyPrismaScalarsTypeUncheckedUpdateInputSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeUncheckedUpdateInput> = z.object({
@@ -887,6 +989,7 @@ export const MyPrismaScalarsTypeUncheckedUpdateInputSchema: z.ZodType<PrismaClie
   json: z.union([z.lazy(() => JsonNullValueInputSchema), z.lazy(() => InputJsonValue).refine((val) => myFunction(val), { message: 'Is not valid' })]).optional(),
   bytes: z.union([z.instanceof(Buffer), z.lazy(() => BytesFieldUpdateOperationsInputSchema)]).optional(),
   custom: z.union([z.string().refine((val) => myFunction(val), { message: 'Is not valid' }), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
+  exclude: z.union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
 }).strict();
 
 export const MyPrismaScalarsTypeCreateManyInputSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeCreateManyInput> = z.object({
@@ -900,6 +1003,7 @@ export const MyPrismaScalarsTypeCreateManyInputSchema: z.ZodType<PrismaClient.Pr
   json: z.union([z.lazy(() => JsonNullValueInputSchema), z.lazy(() => InputJsonValue).refine((val) => myFunction(val), { message: 'Is not valid' })]),
   bytes: z.instanceof(Buffer),
   custom: z.string().refine((val) => myFunction(val), { message: 'Is not valid' }).optional().nullable(),
+  exclude: z.string().optional().nullable(),
 }).strict();
 
 export const MyPrismaScalarsTypeUpdateManyMutationInputSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeUpdateManyMutationInput> = z.object({
@@ -913,6 +1017,7 @@ export const MyPrismaScalarsTypeUpdateManyMutationInputSchema: z.ZodType<PrismaC
   json: z.union([z.lazy(() => JsonNullValueInputSchema), z.lazy(() => InputJsonValue).refine((val) => myFunction(val), { message: 'Is not valid' })]).optional(),
   bytes: z.union([z.instanceof(Buffer), z.lazy(() => BytesFieldUpdateOperationsInputSchema)]).optional(),
   custom: z.union([z.string().refine((val) => myFunction(val), { message: 'Is not valid' }), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
+  exclude: z.union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
 }).strict();
 
 export const MyPrismaScalarsTypeUncheckedUpdateManyInputSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeUncheckedUpdateManyInput> = z.object({
@@ -926,6 +1031,7 @@ export const MyPrismaScalarsTypeUncheckedUpdateManyInputSchema: z.ZodType<Prisma
   json: z.union([z.lazy(() => JsonNullValueInputSchema), z.lazy(() => InputJsonValue).refine((val) => myFunction(val), { message: 'Is not valid' })]).optional(),
   bytes: z.union([z.instanceof(Buffer), z.lazy(() => BytesFieldUpdateOperationsInputSchema)]).optional(),
   custom: z.union([z.string().refine((val) => myFunction(val), { message: 'Is not valid' }), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
+  exclude: z.union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
 }).strict();
 
 export const UserCreateInputSchema: z.ZodType<PrismaClient.Prisma.UserCreateInput> = z.object({
@@ -937,6 +1043,7 @@ export const UserCreateInputSchema: z.ZodType<PrismaClient.Prisma.UserCreateInpu
   role: z.union([z.lazy(() => UserCreateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.lazy(() => AnotherEnumSchema).optional(),
   scalarList: z.union([z.lazy(() => UserCreatescalarListInputSchema), z.string().array()]).optional(),
+  location: z.lazy(() => LocationCreateNestedOneWithoutUserInputSchema).optional(),
 }).strict();
 
 export const UserUncheckedCreateInputSchema: z.ZodType<PrismaClient.Prisma.UserUncheckedCreateInput> = z.object({
@@ -948,6 +1055,8 @@ export const UserUncheckedCreateInputSchema: z.ZodType<PrismaClient.Prisma.UserU
   role: z.union([z.lazy(() => UserCreateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.lazy(() => AnotherEnumSchema).optional(),
   scalarList: z.union([z.lazy(() => UserCreatescalarListInputSchema), z.string().array()]).optional(),
+  lat: z.number(),
+  lng: z.number(),
 }).strict();
 
 export const UserUpdateInputSchema: z.ZodType<PrismaClient.Prisma.UserUpdateInput> = z.object({
@@ -959,6 +1068,7 @@ export const UserUpdateInputSchema: z.ZodType<PrismaClient.Prisma.UserUpdateInpu
   role: z.union([z.lazy(() => UserUpdateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.union([z.lazy(() => AnotherEnumSchema), z.lazy(() => EnumAnotherEnumFieldUpdateOperationsInputSchema)]).optional(),
   scalarList: z.union([z.lazy(() => UserUpdatescalarListInputSchema), z.string().array()]).optional(),
+  location: z.lazy(() => LocationUpdateOneWithoutUserNestedInputSchema).optional(),
 }).strict();
 
 export const UserUncheckedUpdateInputSchema: z.ZodType<PrismaClient.Prisma.UserUncheckedUpdateInput> = z.object({
@@ -970,6 +1080,8 @@ export const UserUncheckedUpdateInputSchema: z.ZodType<PrismaClient.Prisma.UserU
   role: z.union([z.lazy(() => UserUpdateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.union([z.lazy(() => AnotherEnumSchema), z.lazy(() => EnumAnotherEnumFieldUpdateOperationsInputSchema)]).optional(),
   scalarList: z.union([z.lazy(() => UserUpdatescalarListInputSchema), z.string().array()]).optional(),
+  lat: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
+  lng: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
 }).strict();
 
 export const UserCreateManyInputSchema: z.ZodType<PrismaClient.Prisma.UserCreateManyInput> = z.object({
@@ -979,6 +1091,8 @@ export const UserCreateManyInputSchema: z.ZodType<PrismaClient.Prisma.UserCreate
   role: z.union([z.lazy(() => UserCreateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.lazy(() => AnotherEnumSchema).optional(),
   scalarList: z.union([z.lazy(() => UserCreatescalarListInputSchema), z.string().array()]).optional(),
+  lat: z.number(),
+  lng: z.number(),
 }).strict();
 
 export const UserUpdateManyMutationInputSchema: z.ZodType<PrismaClient.Prisma.UserUpdateManyMutationInput> = z.object({
@@ -997,6 +1111,8 @@ export const UserUncheckedUpdateManyInputSchema: z.ZodType<PrismaClient.Prisma.U
   role: z.union([z.lazy(() => UserUpdateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.union([z.lazy(() => AnotherEnumSchema), z.lazy(() => EnumAnotherEnumFieldUpdateOperationsInputSchema)]).optional(),
   scalarList: z.union([z.lazy(() => UserUpdatescalarListInputSchema), z.string().array()]).optional(),
+  lat: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
+  lng: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
 }).strict();
 
 export const PostCreateInputSchema: z.ZodType<PrismaClient.Prisma.PostCreateInput> = z.object({
@@ -1108,6 +1224,45 @@ export const ProfileUncheckedUpdateManyInputSchema: z.ZodType<PrismaClient.Prism
   userId: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
   role: z.union([z.lazy(() => ProfileUpdateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   second: z.union([z.lazy(() => SecondEnumSchema), z.lazy(() => EnumSecondEnumFieldUpdateOperationsInputSchema)]).optional(),
+}).strict();
+
+export const LocationCreateInputSchema: z.ZodType<PrismaClient.Prisma.LocationCreateInput> = z.object({
+  lat: z.number(),
+  lng: z.number(),
+  User: z.lazy(() => UserCreateNestedManyWithoutLocationInputSchema).optional(),
+}).strict();
+
+export const LocationUncheckedCreateInputSchema: z.ZodType<PrismaClient.Prisma.LocationUncheckedCreateInput> = z.object({
+  lat: z.number(),
+  lng: z.number(),
+  User: z.lazy(() => UserUncheckedCreateNestedManyWithoutLocationInputSchema).optional(),
+}).strict();
+
+export const LocationUpdateInputSchema: z.ZodType<PrismaClient.Prisma.LocationUpdateInput> = z.object({
+  lat: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
+  lng: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
+  User: z.lazy(() => UserUpdateManyWithoutLocationNestedInputSchema).optional(),
+}).strict();
+
+export const LocationUncheckedUpdateInputSchema: z.ZodType<PrismaClient.Prisma.LocationUncheckedUpdateInput> = z.object({
+  lat: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
+  lng: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
+  User: z.lazy(() => UserUncheckedUpdateManyWithoutLocationNestedInputSchema).optional(),
+}).strict();
+
+export const LocationCreateManyInputSchema: z.ZodType<PrismaClient.Prisma.LocationCreateManyInput> = z.object({
+  lat: z.number(),
+  lng: z.number(),
+}).strict();
+
+export const LocationUpdateManyMutationInputSchema: z.ZodType<PrismaClient.Prisma.LocationUpdateManyMutationInput> = z.object({
+  lat: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
+  lng: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
+}).strict();
+
+export const LocationUncheckedUpdateManyInputSchema: z.ZodType<PrismaClient.Prisma.LocationUncheckedUpdateManyInput> = z.object({
+  lat: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
+  lng: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
 }).strict();
 
 export const IntFilterSchema: z.ZodType<PrismaClient.Prisma.IntFilter> = z.object({
@@ -1678,6 +1833,7 @@ export const MyPrismaScalarsTypeCountOrderByAggregateInputSchema: z.ZodType<Pris
   json: z.lazy(() => SortOrderSchema).optional(),
   bytes: z.lazy(() => SortOrderSchema).optional(),
   custom: z.lazy(() => SortOrderSchema).optional(),
+  exclude: z.lazy(() => SortOrderSchema).optional(),
 }).strict();
 
 export const MyPrismaScalarsTypeAvgOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeAvgOrderByAggregateInput> = z.object({
@@ -1696,6 +1852,7 @@ export const MyPrismaScalarsTypeMaxOrderByAggregateInputSchema: z.ZodType<Prisma
   bigInt: z.lazy(() => SortOrderSchema).optional(),
   bytes: z.lazy(() => SortOrderSchema).optional(),
   custom: z.lazy(() => SortOrderSchema).optional(),
+  exclude: z.lazy(() => SortOrderSchema).optional(),
 }).strict();
 
 export const MyPrismaScalarsTypeMinOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeMinOrderByAggregateInput> = z.object({
@@ -1708,6 +1865,7 @@ export const MyPrismaScalarsTypeMinOrderByAggregateInputSchema: z.ZodType<Prisma
   bigInt: z.lazy(() => SortOrderSchema).optional(),
   bytes: z.lazy(() => SortOrderSchema).optional(),
   custom: z.lazy(() => SortOrderSchema).optional(),
+  exclude: z.lazy(() => SortOrderSchema).optional(),
 }).strict();
 
 export const MyPrismaScalarsTypeSumOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeSumOrderByAggregateInput> = z.object({
@@ -1750,6 +1908,11 @@ export const StringNullableListFilterSchema: z.ZodType<PrismaClient.Prisma.Strin
   isEmpty: z.boolean().optional(),
 }).strict();
 
+export const LocationRelationFilterSchema: z.ZodType<PrismaClient.Prisma.LocationRelationFilter> = z.object({
+  is: z.lazy(() => LocationWhereInputSchema).optional().nullable(),
+  isNot: z.lazy(() => LocationWhereInputSchema).optional().nullable(),
+}).strict();
+
 export const PostOrderByRelationAggregateInputSchema: z.ZodType<PrismaClient.Prisma.PostOrderByRelationAggregateInput> = z.object({
   _count: z.lazy(() => SortOrderSchema).optional(),
 }).strict();
@@ -1761,6 +1924,13 @@ export const UserCountOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma
   role: z.lazy(() => SortOrderSchema).optional(),
   enum: z.lazy(() => SortOrderSchema).optional(),
   scalarList: z.lazy(() => SortOrderSchema).optional(),
+  lat: z.lazy(() => SortOrderSchema).optional(),
+  lng: z.lazy(() => SortOrderSchema).optional(),
+}).strict();
+
+export const UserAvgOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.UserAvgOrderByAggregateInput> = z.object({
+  lat: z.lazy(() => SortOrderSchema).optional(),
+  lng: z.lazy(() => SortOrderSchema).optional(),
 }).strict();
 
 export const UserMaxOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.UserMaxOrderByAggregateInput> = z.object({
@@ -1768,6 +1938,8 @@ export const UserMaxOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.U
   email: z.lazy(() => SortOrderSchema).optional(),
   name: z.lazy(() => SortOrderSchema).optional(),
   enum: z.lazy(() => SortOrderSchema).optional(),
+  lat: z.lazy(() => SortOrderSchema).optional(),
+  lng: z.lazy(() => SortOrderSchema).optional(),
 }).strict();
 
 export const UserMinOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.UserMinOrderByAggregateInput> = z.object({
@@ -1775,6 +1947,13 @@ export const UserMinOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.U
   email: z.lazy(() => SortOrderSchema).optional(),
   name: z.lazy(() => SortOrderSchema).optional(),
   enum: z.lazy(() => SortOrderSchema).optional(),
+  lat: z.lazy(() => SortOrderSchema).optional(),
+  lng: z.lazy(() => SortOrderSchema).optional(),
+}).strict();
+
+export const UserSumOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.UserSumOrderByAggregateInput> = z.object({
+  lat: z.lazy(() => SortOrderSchema).optional(),
+  lng: z.lazy(() => SortOrderSchema).optional(),
 }).strict();
 
 export const EnumAnotherEnumWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.EnumAnotherEnumWithAggregatesFilter> = z.object({
@@ -1893,6 +2072,46 @@ export const EnumSecondEnumWithAggregatesFilterSchema: z.ZodType<PrismaClient.Pr
   _max: z.lazy(() => NestedEnumSecondEnumFilterSchema).optional(),
 }).strict();
 
+export const UserListRelationFilterSchema: z.ZodType<PrismaClient.Prisma.UserListRelationFilter> = z.object({
+  every: z.lazy(() => UserWhereInputSchema).optional(),
+  some: z.lazy(() => UserWhereInputSchema).optional(),
+  none: z.lazy(() => UserWhereInputSchema).optional(),
+}).strict();
+
+export const UserOrderByRelationAggregateInputSchema: z.ZodType<PrismaClient.Prisma.UserOrderByRelationAggregateInput> = z.object({
+  _count: z.lazy(() => SortOrderSchema).optional(),
+}).strict();
+
+export const LocationLatLngCompoundUniqueInputSchema: z.ZodType<PrismaClient.Prisma.LocationLatLngCompoundUniqueInput> = z.object({
+  lat: z.number(),
+  lng: z.number(),
+}).strict();
+
+export const LocationCountOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.LocationCountOrderByAggregateInput> = z.object({
+  lat: z.lazy(() => SortOrderSchema).optional(),
+  lng: z.lazy(() => SortOrderSchema).optional(),
+}).strict();
+
+export const LocationAvgOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.LocationAvgOrderByAggregateInput> = z.object({
+  lat: z.lazy(() => SortOrderSchema).optional(),
+  lng: z.lazy(() => SortOrderSchema).optional(),
+}).strict();
+
+export const LocationMaxOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.LocationMaxOrderByAggregateInput> = z.object({
+  lat: z.lazy(() => SortOrderSchema).optional(),
+  lng: z.lazy(() => SortOrderSchema).optional(),
+}).strict();
+
+export const LocationMinOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.LocationMinOrderByAggregateInput> = z.object({
+  lat: z.lazy(() => SortOrderSchema).optional(),
+  lng: z.lazy(() => SortOrderSchema).optional(),
+}).strict();
+
+export const LocationSumOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.LocationSumOrderByAggregateInput> = z.object({
+  lat: z.lazy(() => SortOrderSchema).optional(),
+  lng: z.lazy(() => SortOrderSchema).optional(),
+}).strict();
+
 export const NullableStringFieldUpdateOperationsInputSchema: z.ZodType<PrismaClient.Prisma.NullableStringFieldUpdateOperationsInput> = z.object({
   set: z.string().optional().nullable(),
 }).strict();
@@ -2006,6 +2225,12 @@ export const UserCreatescalarListInputSchema: z.ZodType<PrismaClient.Prisma.User
   set: z.string().array(),
 }).strict();
 
+export const LocationCreateNestedOneWithoutUserInputSchema: z.ZodType<PrismaClient.Prisma.LocationCreateNestedOneWithoutUserInput> = z.object({
+  create: z.union([z.lazy(() => LocationCreateWithoutUserInputSchema), z.lazy(() => LocationUncheckedCreateWithoutUserInputSchema)]).optional(),
+  connectOrCreate: z.lazy(() => LocationCreateOrConnectWithoutUserInputSchema).optional(),
+  connect: z.lazy(() => LocationWhereUniqueInputSchema).optional(),
+}).strict();
+
 export const PostUncheckedCreateNestedManyWithoutAuthorInputSchema: z.ZodType<PrismaClient.Prisma.PostUncheckedCreateNestedManyWithoutAuthorInput> = z.object({
   create: z.union([z.lazy(() => PostCreateWithoutAuthorInputSchema), z.lazy(() => PostCreateWithoutAuthorInputSchema).array(), z.lazy(() => PostUncheckedCreateWithoutAuthorInputSchema), z.lazy(() => PostUncheckedCreateWithoutAuthorInputSchema).array()]).optional(),
   connectOrCreate: z.union([z.lazy(() => PostCreateOrConnectWithoutAuthorInputSchema), z.lazy(() => PostCreateOrConnectWithoutAuthorInputSchema).array()]).optional(),
@@ -2055,6 +2280,16 @@ export const EnumAnotherEnumFieldUpdateOperationsInputSchema: z.ZodType<PrismaCl
 export const UserUpdatescalarListInputSchema: z.ZodType<PrismaClient.Prisma.UserUpdatescalarListInput> = z.object({
   set: z.string().array().optional(),
   push: z.union([z.string(), z.string().array()]).optional(),
+}).strict();
+
+export const LocationUpdateOneWithoutUserNestedInputSchema: z.ZodType<PrismaClient.Prisma.LocationUpdateOneWithoutUserNestedInput> = z.object({
+  create: z.union([z.lazy(() => LocationCreateWithoutUserInputSchema), z.lazy(() => LocationUncheckedCreateWithoutUserInputSchema)]).optional(),
+  connectOrCreate: z.lazy(() => LocationCreateOrConnectWithoutUserInputSchema).optional(),
+  upsert: z.lazy(() => LocationUpsertWithoutUserInputSchema).optional(),
+  disconnect: z.boolean().optional(),
+  delete: z.boolean().optional(),
+  connect: z.lazy(() => LocationWhereUniqueInputSchema).optional(),
+  update: z.union([z.lazy(() => LocationUpdateWithoutUserInputSchema), z.lazy(() => LocationUncheckedUpdateWithoutUserInputSchema)]).optional(),
 }).strict();
 
 export const PostUncheckedUpdateManyWithoutAuthorNestedInputSchema: z.ZodType<PrismaClient.Prisma.PostUncheckedUpdateManyWithoutAuthorNestedInput> = z.object({
@@ -2133,6 +2368,48 @@ export const ProfileUpdateroleInputSchema: z.ZodType<PrismaClient.Prisma.Profile
 
 export const EnumSecondEnumFieldUpdateOperationsInputSchema: z.ZodType<PrismaClient.Prisma.EnumSecondEnumFieldUpdateOperationsInput> = z.object({
   set: z.lazy(() => SecondEnumSchema).optional(),
+}).strict();
+
+export const UserCreateNestedManyWithoutLocationInputSchema: z.ZodType<PrismaClient.Prisma.UserCreateNestedManyWithoutLocationInput> = z.object({
+  create: z.union([z.lazy(() => UserCreateWithoutLocationInputSchema), z.lazy(() => UserCreateWithoutLocationInputSchema).array(), z.lazy(() => UserUncheckedCreateWithoutLocationInputSchema), z.lazy(() => UserUncheckedCreateWithoutLocationInputSchema).array()]).optional(),
+  connectOrCreate: z.union([z.lazy(() => UserCreateOrConnectWithoutLocationInputSchema), z.lazy(() => UserCreateOrConnectWithoutLocationInputSchema).array()]).optional(),
+  createMany: z.lazy(() => UserCreateManyLocationInputEnvelopeSchema).optional(),
+  connect: z.union([z.lazy(() => UserWhereUniqueInputSchema), z.lazy(() => UserWhereUniqueInputSchema).array()]).optional(),
+}).strict();
+
+export const UserUncheckedCreateNestedManyWithoutLocationInputSchema: z.ZodType<PrismaClient.Prisma.UserUncheckedCreateNestedManyWithoutLocationInput> = z.object({
+  create: z.union([z.lazy(() => UserCreateWithoutLocationInputSchema), z.lazy(() => UserCreateWithoutLocationInputSchema).array(), z.lazy(() => UserUncheckedCreateWithoutLocationInputSchema), z.lazy(() => UserUncheckedCreateWithoutLocationInputSchema).array()]).optional(),
+  connectOrCreate: z.union([z.lazy(() => UserCreateOrConnectWithoutLocationInputSchema), z.lazy(() => UserCreateOrConnectWithoutLocationInputSchema).array()]).optional(),
+  createMany: z.lazy(() => UserCreateManyLocationInputEnvelopeSchema).optional(),
+  connect: z.union([z.lazy(() => UserWhereUniqueInputSchema), z.lazy(() => UserWhereUniqueInputSchema).array()]).optional(),
+}).strict();
+
+export const UserUpdateManyWithoutLocationNestedInputSchema: z.ZodType<PrismaClient.Prisma.UserUpdateManyWithoutLocationNestedInput> = z.object({
+  create: z.union([z.lazy(() => UserCreateWithoutLocationInputSchema), z.lazy(() => UserCreateWithoutLocationInputSchema).array(), z.lazy(() => UserUncheckedCreateWithoutLocationInputSchema), z.lazy(() => UserUncheckedCreateWithoutLocationInputSchema).array()]).optional(),
+  connectOrCreate: z.union([z.lazy(() => UserCreateOrConnectWithoutLocationInputSchema), z.lazy(() => UserCreateOrConnectWithoutLocationInputSchema).array()]).optional(),
+  upsert: z.union([z.lazy(() => UserUpsertWithWhereUniqueWithoutLocationInputSchema), z.lazy(() => UserUpsertWithWhereUniqueWithoutLocationInputSchema).array()]).optional(),
+  createMany: z.lazy(() => UserCreateManyLocationInputEnvelopeSchema).optional(),
+  set: z.union([z.lazy(() => UserWhereUniqueInputSchema), z.lazy(() => UserWhereUniqueInputSchema).array()]).optional(),
+  disconnect: z.union([z.lazy(() => UserWhereUniqueInputSchema), z.lazy(() => UserWhereUniqueInputSchema).array()]).optional(),
+  delete: z.union([z.lazy(() => UserWhereUniqueInputSchema), z.lazy(() => UserWhereUniqueInputSchema).array()]).optional(),
+  connect: z.union([z.lazy(() => UserWhereUniqueInputSchema), z.lazy(() => UserWhereUniqueInputSchema).array()]).optional(),
+  update: z.union([z.lazy(() => UserUpdateWithWhereUniqueWithoutLocationInputSchema), z.lazy(() => UserUpdateWithWhereUniqueWithoutLocationInputSchema).array()]).optional(),
+  updateMany: z.union([z.lazy(() => UserUpdateManyWithWhereWithoutLocationInputSchema), z.lazy(() => UserUpdateManyWithWhereWithoutLocationInputSchema).array()]).optional(),
+  deleteMany: z.union([z.lazy(() => UserScalarWhereInputSchema), z.lazy(() => UserScalarWhereInputSchema).array()]).optional(),
+}).strict();
+
+export const UserUncheckedUpdateManyWithoutLocationNestedInputSchema: z.ZodType<PrismaClient.Prisma.UserUncheckedUpdateManyWithoutLocationNestedInput> = z.object({
+  create: z.union([z.lazy(() => UserCreateWithoutLocationInputSchema), z.lazy(() => UserCreateWithoutLocationInputSchema).array(), z.lazy(() => UserUncheckedCreateWithoutLocationInputSchema), z.lazy(() => UserUncheckedCreateWithoutLocationInputSchema).array()]).optional(),
+  connectOrCreate: z.union([z.lazy(() => UserCreateOrConnectWithoutLocationInputSchema), z.lazy(() => UserCreateOrConnectWithoutLocationInputSchema).array()]).optional(),
+  upsert: z.union([z.lazy(() => UserUpsertWithWhereUniqueWithoutLocationInputSchema), z.lazy(() => UserUpsertWithWhereUniqueWithoutLocationInputSchema).array()]).optional(),
+  createMany: z.lazy(() => UserCreateManyLocationInputEnvelopeSchema).optional(),
+  set: z.union([z.lazy(() => UserWhereUniqueInputSchema), z.lazy(() => UserWhereUniqueInputSchema).array()]).optional(),
+  disconnect: z.union([z.lazy(() => UserWhereUniqueInputSchema), z.lazy(() => UserWhereUniqueInputSchema).array()]).optional(),
+  delete: z.union([z.lazy(() => UserWhereUniqueInputSchema), z.lazy(() => UserWhereUniqueInputSchema).array()]).optional(),
+  connect: z.union([z.lazy(() => UserWhereUniqueInputSchema), z.lazy(() => UserWhereUniqueInputSchema).array()]).optional(),
+  update: z.union([z.lazy(() => UserUpdateWithWhereUniqueWithoutLocationInputSchema), z.lazy(() => UserUpdateWithWhereUniqueWithoutLocationInputSchema).array()]).optional(),
+  updateMany: z.union([z.lazy(() => UserUpdateManyWithWhereWithoutLocationInputSchema), z.lazy(() => UserUpdateManyWithWhereWithoutLocationInputSchema).array()]).optional(),
+  deleteMany: z.union([z.lazy(() => UserScalarWhereInputSchema), z.lazy(() => UserScalarWhereInputSchema).array()]).optional(),
 }).strict();
 
 export const NestedIntFilterSchema: z.ZodType<PrismaClient.Prisma.NestedIntFilter> = z.object({
@@ -2636,6 +2913,21 @@ export const ProfileCreateOrConnectWithoutUserInputSchema: z.ZodType<PrismaClien
   create: z.union([z.lazy(() => ProfileCreateWithoutUserInputSchema), z.lazy(() => ProfileUncheckedCreateWithoutUserInputSchema)]),
 }).strict();
 
+export const LocationCreateWithoutUserInputSchema: z.ZodType<PrismaClient.Prisma.LocationCreateWithoutUserInput> = z.object({
+  lat: z.number(),
+  lng: z.number(),
+}).strict();
+
+export const LocationUncheckedCreateWithoutUserInputSchema: z.ZodType<PrismaClient.Prisma.LocationUncheckedCreateWithoutUserInput> = z.object({
+  lat: z.number(),
+  lng: z.number(),
+}).strict();
+
+export const LocationCreateOrConnectWithoutUserInputSchema: z.ZodType<PrismaClient.Prisma.LocationCreateOrConnectWithoutUserInput> = z.object({
+  where: z.lazy(() => LocationWhereUniqueInputSchema),
+  create: z.union([z.lazy(() => LocationCreateWithoutUserInputSchema), z.lazy(() => LocationUncheckedCreateWithoutUserInputSchema)]),
+}).strict();
+
 export const PostUpsertWithWhereUniqueWithoutAuthorInputSchema: z.ZodType<PrismaClient.Prisma.PostUpsertWithWhereUniqueWithoutAuthorInput> = z.object({
   where: z.lazy(() => PostWhereUniqueInputSchema),
   update: z.union([z.lazy(() => PostUpdateWithoutAuthorInputSchema), z.lazy(() => PostUncheckedUpdateWithoutAuthorInputSchema)]),
@@ -2682,6 +2974,21 @@ export const ProfileUncheckedUpdateWithoutUserInputSchema: z.ZodType<PrismaClien
   second: z.union([z.lazy(() => SecondEnumSchema), z.lazy(() => EnumSecondEnumFieldUpdateOperationsInputSchema)]).optional(),
 }).strict();
 
+export const LocationUpsertWithoutUserInputSchema: z.ZodType<PrismaClient.Prisma.LocationUpsertWithoutUserInput> = z.object({
+  update: z.union([z.lazy(() => LocationUpdateWithoutUserInputSchema), z.lazy(() => LocationUncheckedUpdateWithoutUserInputSchema)]),
+  create: z.union([z.lazy(() => LocationCreateWithoutUserInputSchema), z.lazy(() => LocationUncheckedCreateWithoutUserInputSchema)]),
+}).strict();
+
+export const LocationUpdateWithoutUserInputSchema: z.ZodType<PrismaClient.Prisma.LocationUpdateWithoutUserInput> = z.object({
+  lat: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
+  lng: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
+}).strict();
+
+export const LocationUncheckedUpdateWithoutUserInputSchema: z.ZodType<PrismaClient.Prisma.LocationUncheckedUpdateWithoutUserInput> = z.object({
+  lat: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
+  lng: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
+}).strict();
+
 export const UserCreateWithoutPostsInputSchema: z.ZodType<PrismaClient.Prisma.UserCreateWithoutPostsInput> = z.object({
   id: z.string().optional(),
   email: z.string(),
@@ -2690,6 +2997,7 @@ export const UserCreateWithoutPostsInputSchema: z.ZodType<PrismaClient.Prisma.Us
   role: z.union([z.lazy(() => UserCreateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.lazy(() => AnotherEnumSchema).optional(),
   scalarList: z.union([z.lazy(() => UserCreatescalarListInputSchema), z.string().array()]).optional(),
+  location: z.lazy(() => LocationCreateNestedOneWithoutUserInputSchema).optional(),
 }).strict();
 
 export const UserUncheckedCreateWithoutPostsInputSchema: z.ZodType<PrismaClient.Prisma.UserUncheckedCreateWithoutPostsInput> = z.object({
@@ -2700,6 +3008,8 @@ export const UserUncheckedCreateWithoutPostsInputSchema: z.ZodType<PrismaClient.
   role: z.union([z.lazy(() => UserCreateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.lazy(() => AnotherEnumSchema).optional(),
   scalarList: z.union([z.lazy(() => UserCreatescalarListInputSchema), z.string().array()]).optional(),
+  lat: z.number(),
+  lng: z.number(),
 }).strict();
 
 export const UserCreateOrConnectWithoutPostsInputSchema: z.ZodType<PrismaClient.Prisma.UserCreateOrConnectWithoutPostsInput> = z.object({
@@ -2720,6 +3030,7 @@ export const UserUpdateWithoutPostsInputSchema: z.ZodType<PrismaClient.Prisma.Us
   role: z.union([z.lazy(() => UserUpdateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.union([z.lazy(() => AnotherEnumSchema), z.lazy(() => EnumAnotherEnumFieldUpdateOperationsInputSchema)]).optional(),
   scalarList: z.union([z.lazy(() => UserUpdatescalarListInputSchema), z.string().array()]).optional(),
+  location: z.lazy(() => LocationUpdateOneWithoutUserNestedInputSchema).optional(),
 }).strict();
 
 export const UserUncheckedUpdateWithoutPostsInputSchema: z.ZodType<PrismaClient.Prisma.UserUncheckedUpdateWithoutPostsInput> = z.object({
@@ -2730,6 +3041,8 @@ export const UserUncheckedUpdateWithoutPostsInputSchema: z.ZodType<PrismaClient.
   role: z.union([z.lazy(() => UserUpdateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.union([z.lazy(() => AnotherEnumSchema), z.lazy(() => EnumAnotherEnumFieldUpdateOperationsInputSchema)]).optional(),
   scalarList: z.union([z.lazy(() => UserUpdatescalarListInputSchema), z.string().array()]).optional(),
+  lat: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
+  lng: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
 }).strict();
 
 export const UserCreateWithoutProfileInputSchema: z.ZodType<PrismaClient.Prisma.UserCreateWithoutProfileInput> = z.object({
@@ -2740,6 +3053,7 @@ export const UserCreateWithoutProfileInputSchema: z.ZodType<PrismaClient.Prisma.
   role: z.union([z.lazy(() => UserCreateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.lazy(() => AnotherEnumSchema).optional(),
   scalarList: z.union([z.lazy(() => UserCreatescalarListInputSchema), z.string().array()]).optional(),
+  location: z.lazy(() => LocationCreateNestedOneWithoutUserInputSchema).optional(),
 }).strict();
 
 export const UserUncheckedCreateWithoutProfileInputSchema: z.ZodType<PrismaClient.Prisma.UserUncheckedCreateWithoutProfileInput> = z.object({
@@ -2750,6 +3064,8 @@ export const UserUncheckedCreateWithoutProfileInputSchema: z.ZodType<PrismaClien
   role: z.union([z.lazy(() => UserCreateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.lazy(() => AnotherEnumSchema).optional(),
   scalarList: z.union([z.lazy(() => UserCreatescalarListInputSchema), z.string().array()]).optional(),
+  lat: z.number(),
+  lng: z.number(),
 }).strict();
 
 export const UserCreateOrConnectWithoutProfileInputSchema: z.ZodType<PrismaClient.Prisma.UserCreateOrConnectWithoutProfileInput> = z.object({
@@ -2770,6 +3086,7 @@ export const UserUpdateWithoutProfileInputSchema: z.ZodType<PrismaClient.Prisma.
   role: z.union([z.lazy(() => UserUpdateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.union([z.lazy(() => AnotherEnumSchema), z.lazy(() => EnumAnotherEnumFieldUpdateOperationsInputSchema)]).optional(),
   scalarList: z.union([z.lazy(() => UserUpdatescalarListInputSchema), z.string().array()]).optional(),
+  location: z.lazy(() => LocationUpdateOneWithoutUserNestedInputSchema).optional(),
 }).strict();
 
 export const UserUncheckedUpdateWithoutProfileInputSchema: z.ZodType<PrismaClient.Prisma.UserUncheckedUpdateWithoutProfileInput> = z.object({
@@ -2780,6 +3097,70 @@ export const UserUncheckedUpdateWithoutProfileInputSchema: z.ZodType<PrismaClien
   role: z.union([z.lazy(() => UserUpdateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
   enum: z.union([z.lazy(() => AnotherEnumSchema), z.lazy(() => EnumAnotherEnumFieldUpdateOperationsInputSchema)]).optional(),
   scalarList: z.union([z.lazy(() => UserUpdatescalarListInputSchema), z.string().array()]).optional(),
+  lat: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
+  lng: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
+}).strict();
+
+export const UserCreateWithoutLocationInputSchema: z.ZodType<PrismaClient.Prisma.UserCreateWithoutLocationInput> = z.object({
+  id: z.string().optional(),
+  email: z.string(),
+  name: z.string().optional().nullable(),
+  posts: z.lazy(() => PostCreateNestedManyWithoutAuthorInputSchema).optional(),
+  profile: z.lazy(() => ProfileCreateNestedOneWithoutUserInputSchema).optional(),
+  role: z.union([z.lazy(() => UserCreateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
+  enum: z.lazy(() => AnotherEnumSchema).optional(),
+  scalarList: z.union([z.lazy(() => UserCreatescalarListInputSchema), z.string().array()]).optional(),
+}).strict();
+
+export const UserUncheckedCreateWithoutLocationInputSchema: z.ZodType<PrismaClient.Prisma.UserUncheckedCreateWithoutLocationInput> = z.object({
+  id: z.string().optional(),
+  email: z.string(),
+  name: z.string().optional().nullable(),
+  posts: z.lazy(() => PostUncheckedCreateNestedManyWithoutAuthorInputSchema).optional(),
+  profile: z.lazy(() => ProfileUncheckedCreateNestedOneWithoutUserInputSchema).optional(),
+  role: z.union([z.lazy(() => UserCreateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
+  enum: z.lazy(() => AnotherEnumSchema).optional(),
+  scalarList: z.union([z.lazy(() => UserCreatescalarListInputSchema), z.string().array()]).optional(),
+}).strict();
+
+export const UserCreateOrConnectWithoutLocationInputSchema: z.ZodType<PrismaClient.Prisma.UserCreateOrConnectWithoutLocationInput> = z.object({
+  where: z.lazy(() => UserWhereUniqueInputSchema),
+  create: z.union([z.lazy(() => UserCreateWithoutLocationInputSchema), z.lazy(() => UserUncheckedCreateWithoutLocationInputSchema)]),
+}).strict();
+
+export const UserCreateManyLocationInputEnvelopeSchema: z.ZodType<PrismaClient.Prisma.UserCreateManyLocationInputEnvelope> = z.object({
+  data: z.lazy(() => UserCreateManyLocationInputSchema).array(),
+  skipDuplicates: z.boolean().optional(),
+}).strict();
+
+export const UserUpsertWithWhereUniqueWithoutLocationInputSchema: z.ZodType<PrismaClient.Prisma.UserUpsertWithWhereUniqueWithoutLocationInput> = z.object({
+  where: z.lazy(() => UserWhereUniqueInputSchema),
+  update: z.union([z.lazy(() => UserUpdateWithoutLocationInputSchema), z.lazy(() => UserUncheckedUpdateWithoutLocationInputSchema)]),
+  create: z.union([z.lazy(() => UserCreateWithoutLocationInputSchema), z.lazy(() => UserUncheckedCreateWithoutLocationInputSchema)]),
+}).strict();
+
+export const UserUpdateWithWhereUniqueWithoutLocationInputSchema: z.ZodType<PrismaClient.Prisma.UserUpdateWithWhereUniqueWithoutLocationInput> = z.object({
+  where: z.lazy(() => UserWhereUniqueInputSchema),
+  data: z.union([z.lazy(() => UserUpdateWithoutLocationInputSchema), z.lazy(() => UserUncheckedUpdateWithoutLocationInputSchema)]),
+}).strict();
+
+export const UserUpdateManyWithWhereWithoutLocationInputSchema: z.ZodType<PrismaClient.Prisma.UserUpdateManyWithWhereWithoutLocationInput> = z.object({
+  where: z.lazy(() => UserScalarWhereInputSchema),
+  data: z.union([z.lazy(() => UserUpdateManyMutationInputSchema), z.lazy(() => UserUncheckedUpdateManyWithoutUserInputSchema)]),
+}).strict();
+
+export const UserScalarWhereInputSchema: z.ZodType<PrismaClient.Prisma.UserScalarWhereInput> = z.object({
+  AND: z.union([z.lazy(() => UserScalarWhereInputSchema), z.lazy(() => UserScalarWhereInputSchema).array()]).optional(),
+  OR: z.lazy(() => UserScalarWhereInputSchema).array().optional(),
+  NOT: z.union([z.lazy(() => UserScalarWhereInputSchema), z.lazy(() => UserScalarWhereInputSchema).array()]).optional(),
+  id: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+  email: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+  name: z.union([z.lazy(() => StringNullableFilterSchema), z.string()]).optional().nullable(),
+  role: z.lazy(() => EnumRoleNullableListFilterSchema).optional(),
+  enum: z.union([z.lazy(() => EnumAnotherEnumFilterSchema), z.lazy(() => AnotherEnumSchema)]).optional(),
+  scalarList: z.lazy(() => StringNullableListFilterSchema).optional(),
+  lat: z.union([z.lazy(() => FloatFilterSchema), z.number()]).optional(),
+  lng: z.union([z.lazy(() => FloatFilterSchema), z.number()]).optional(),
 }).strict();
 
 export const PostCreateManyAuthorInputSchema: z.ZodType<PrismaClient.Prisma.PostCreateManyAuthorInput> = z.object({
@@ -2811,6 +3192,46 @@ export const PostUncheckedUpdateManyWithoutPostsInputSchema: z.ZodType<PrismaCli
   content: z.union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
   published: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
   anotherEnum: z.union([z.lazy(() => PostUpdateanotherEnumInputSchema), z.lazy(() => AnotherEnumSchema).array()]).optional(),
+}).strict();
+
+export const UserCreateManyLocationInputSchema: z.ZodType<PrismaClient.Prisma.UserCreateManyLocationInput> = z.object({
+  id: z.string().cuid().optional(),
+  email: z.string().email({ message: "Invalid email address" }),
+  name: z.string().min(1).max(100).optional().nullable(),
+  role: z.union([z.lazy(() => UserCreateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
+  enum: z.lazy(() => AnotherEnumSchema).optional(),
+  scalarList: z.union([z.lazy(() => UserCreatescalarListInputSchema), z.string().array()]).optional(),
+}).strict();
+
+export const UserUpdateWithoutLocationInputSchema: z.ZodType<PrismaClient.Prisma.UserUpdateWithoutLocationInput> = z.object({
+  id: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+  email: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+  name: z.union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
+  posts: z.lazy(() => PostUpdateManyWithoutAuthorNestedInputSchema).optional(),
+  profile: z.lazy(() => ProfileUpdateOneWithoutUserNestedInputSchema).optional(),
+  role: z.union([z.lazy(() => UserUpdateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
+  enum: z.union([z.lazy(() => AnotherEnumSchema), z.lazy(() => EnumAnotherEnumFieldUpdateOperationsInputSchema)]).optional(),
+  scalarList: z.union([z.lazy(() => UserUpdatescalarListInputSchema), z.string().array()]).optional(),
+}).strict();
+
+export const UserUncheckedUpdateWithoutLocationInputSchema: z.ZodType<PrismaClient.Prisma.UserUncheckedUpdateWithoutLocationInput> = z.object({
+  id: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+  email: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+  name: z.union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
+  posts: z.lazy(() => PostUncheckedUpdateManyWithoutAuthorNestedInputSchema).optional(),
+  profile: z.lazy(() => ProfileUncheckedUpdateOneWithoutUserNestedInputSchema).optional(),
+  role: z.union([z.lazy(() => UserUpdateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
+  enum: z.union([z.lazy(() => AnotherEnumSchema), z.lazy(() => EnumAnotherEnumFieldUpdateOperationsInputSchema)]).optional(),
+  scalarList: z.union([z.lazy(() => UserUpdatescalarListInputSchema), z.string().array()]).optional(),
+}).strict();
+
+export const UserUncheckedUpdateManyWithoutUserInputSchema: z.ZodType<PrismaClient.Prisma.UserUncheckedUpdateManyWithoutUserInput> = z.object({
+  id: z.union([z.string().cuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+  email: z.union([z.string().email({ message: "Invalid email address" }), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+  name: z.union([z.string().min(1).max(100), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
+  role: z.union([z.lazy(() => UserUpdateroleInputSchema), z.lazy(() => RoleSchema).array()]).optional(),
+  enum: z.union([z.lazy(() => AnotherEnumSchema), z.lazy(() => EnumAnotherEnumFieldUpdateOperationsInputSchema)]).optional(),
+  scalarList: z.union([z.lazy(() => UserUpdatescalarListInputSchema), z.string().array()]).optional(),
 }).strict();
 
 /////////////////////////////////////////
@@ -3192,6 +3613,72 @@ export const ProfileFindUniqueOrThrowArgsSchema: z.ZodType<PrismaClient.Prisma.P
   where: ProfileWhereUniqueInputSchema,
 }).strict();
 
+export const LocationFindFirstArgsSchema: z.ZodType<PrismaClient.Prisma.LocationFindFirstArgs> = z.object({
+  select: z.lazy(() => LocationSelectSchema).optional(),
+  include: z.lazy(() => LocationIncludeSchema).optional(),
+  where: LocationWhereInputSchema.optional(),
+  orderBy: z.union([LocationOrderByWithRelationInputSchema.array(), LocationOrderByWithRelationInputSchema]).optional(),
+  cursor: LocationWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: LocationScalarFieldEnumSchema.array().optional(),
+}).strict();
+
+export const LocationFindFirstOrThrowArgsSchema: z.ZodType<PrismaClient.Prisma.LocationFindFirstOrThrowArgs> = z.object({
+  select: z.lazy(() => LocationSelectSchema).optional(),
+  include: z.lazy(() => LocationIncludeSchema).optional(),
+  where: LocationWhereInputSchema.optional(),
+  orderBy: z.union([LocationOrderByWithRelationInputSchema.array(), LocationOrderByWithRelationInputSchema]).optional(),
+  cursor: LocationWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: LocationScalarFieldEnumSchema.array().optional(),
+}).strict();
+
+export const LocationFindManyArgsSchema: z.ZodType<PrismaClient.Prisma.LocationFindManyArgs> = z.object({
+  select: z.lazy(() => LocationSelectSchema).optional(),
+  include: z.lazy(() => LocationIncludeSchema).optional(),
+  where: LocationWhereInputSchema.optional(),
+  orderBy: z.union([LocationOrderByWithRelationInputSchema.array(), LocationOrderByWithRelationInputSchema]).optional(),
+  cursor: LocationWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: LocationScalarFieldEnumSchema.array().optional(),
+}).strict();
+
+export const LocationAggregateArgsSchema: z.ZodType<PrismaClient.Prisma.LocationAggregateArgs> = z.object({
+  select: z.lazy(() => LocationSelectSchema).optional(),
+  include: z.lazy(() => LocationIncludeSchema).optional(),
+  where: LocationWhereInputSchema.optional(),
+  orderBy: z.union([LocationOrderByWithRelationInputSchema.array(), LocationOrderByWithRelationInputSchema]).optional(),
+  cursor: LocationWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict();
+
+export const LocationGroupByArgsSchema: z.ZodType<PrismaClient.Prisma.LocationGroupByArgs> = z.object({
+  select: z.lazy(() => LocationSelectSchema).optional(),
+  include: z.lazy(() => LocationIncludeSchema).optional(),
+  where: LocationWhereInputSchema.optional(),
+  orderBy: z.union([LocationOrderByWithAggregationInputSchema.array(), LocationOrderByWithAggregationInputSchema]).optional(),
+  by: LocationScalarFieldEnumSchema.array(),
+  having: LocationScalarWhereWithAggregatesInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict();
+
+export const LocationFindUniqueArgsSchema: z.ZodType<PrismaClient.Prisma.LocationFindUniqueArgs> = z.object({
+  select: z.lazy(() => LocationSelectSchema).optional(),
+  include: z.lazy(() => LocationIncludeSchema).optional(),
+  where: LocationWhereUniqueInputSchema,
+}).strict();
+
+export const LocationFindUniqueOrThrowArgsSchema: z.ZodType<PrismaClient.Prisma.LocationFindUniqueOrThrowArgs> = z.object({
+  select: z.lazy(() => LocationSelectSchema).optional(),
+  include: z.lazy(() => LocationIncludeSchema).optional(),
+  where: LocationWhereUniqueInputSchema,
+}).strict();
+
 export const MyModelCreateArgsSchema: z.ZodType<PrismaClient.Prisma.MyModelCreateArgs> = z.object({
   select: z.lazy(() => MyModelSelectSchema).optional(),
   data: z.union([MyModelCreateInputSchema, MyModelUncheckedCreateInputSchema]),
@@ -3451,4 +3938,51 @@ export const ProfileDeleteManyArgsSchema: z.ZodType<PrismaClient.Prisma.ProfileD
   select: z.lazy(() => ProfileSelectSchema).optional(),
   include: z.lazy(() => ProfileIncludeSchema).optional(),
   where: ProfileWhereInputSchema.optional(),
+}).strict();
+
+export const LocationCreateArgsSchema: z.ZodType<PrismaClient.Prisma.LocationCreateArgs> = z.object({
+  select: z.lazy(() => LocationSelectSchema).optional(),
+  include: z.lazy(() => LocationIncludeSchema).optional(),
+  data: z.union([LocationCreateInputSchema, LocationUncheckedCreateInputSchema]),
+}).strict();
+
+export const LocationUpsertArgsSchema: z.ZodType<PrismaClient.Prisma.LocationUpsertArgs> = z.object({
+  select: z.lazy(() => LocationSelectSchema).optional(),
+  include: z.lazy(() => LocationIncludeSchema).optional(),
+  where: LocationWhereUniqueInputSchema,
+  create: z.union([LocationCreateInputSchema, LocationUncheckedCreateInputSchema]),
+  update: z.union([LocationUpdateInputSchema, LocationUncheckedUpdateInputSchema]),
+}).strict();
+
+export const LocationCreateManyArgsSchema: z.ZodType<PrismaClient.Prisma.LocationCreateManyArgs> = z.object({
+  select: z.lazy(() => LocationSelectSchema).optional(),
+  include: z.lazy(() => LocationIncludeSchema).optional(),
+  data: LocationCreateManyInputSchema.array(),
+  skipDuplicates: z.boolean().optional(),
+}).strict();
+
+export const LocationDeleteArgsSchema: z.ZodType<PrismaClient.Prisma.LocationDeleteArgs> = z.object({
+  select: z.lazy(() => LocationSelectSchema).optional(),
+  include: z.lazy(() => LocationIncludeSchema).optional(),
+  where: LocationWhereUniqueInputSchema,
+}).strict();
+
+export const LocationUpdateArgsSchema: z.ZodType<PrismaClient.Prisma.LocationUpdateArgs> = z.object({
+  select: z.lazy(() => LocationSelectSchema).optional(),
+  include: z.lazy(() => LocationIncludeSchema).optional(),
+  data: z.union([LocationUpdateInputSchema, LocationUncheckedUpdateInputSchema]),
+  where: LocationWhereUniqueInputSchema,
+}).strict();
+
+export const LocationUpdateManyArgsSchema: z.ZodType<PrismaClient.Prisma.LocationUpdateManyArgs> = z.object({
+  select: z.lazy(() => LocationSelectSchema).optional(),
+  include: z.lazy(() => LocationIncludeSchema).optional(),
+  data: z.union([LocationUpdateManyMutationInputSchema, LocationUncheckedUpdateManyInputSchema]),
+  where: LocationWhereInputSchema.optional(),
+}).strict();
+
+export const LocationDeleteManyArgsSchema: z.ZodType<PrismaClient.Prisma.LocationDeleteManyArgs> = z.object({
+  select: z.lazy(() => LocationSelectSchema).optional(),
+  include: z.lazy(() => LocationIncludeSchema).optional(),
+  where: LocationWhereInputSchema.optional(),
 }).strict();
