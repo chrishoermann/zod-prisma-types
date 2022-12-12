@@ -94,7 +94,16 @@ export const MyModel = z.object({
 });
 ```
 
-If you choose to validate `Decimal` with `z.instanceof(PrismaClient.Prisma.Decimal)` instead the generated output would look like this.
+If you want to validate `Decimal` with `z.instanceof(PrismaClient.Prisma.Decimal)` instead you can pass the following config option:
+
+```prisma
+generator zod {
+  // ...rest of config
+  useInstaceOfForDecimal = true
+}
+```
+
+the generated output would look like this:
 
 ```ts
 export const MyModel = z.object({
