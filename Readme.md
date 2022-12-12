@@ -299,7 +299,6 @@ This may look a bit cryptc so here is an example:
 generator zod {
   provider       = "zod-prisma-types"
   output         = "./zod"
-  useDecimalJs   = true
   imports        = "import(import { myFunction } from 'mypackage')"
 }
 
@@ -326,12 +325,11 @@ This example generates the following zod schema for the model in `prisma/zod/ind
 
 ```ts
 import { z } from 'zod';
-import * as Prisma from '@prisma/client';
-import { Decimal } from 'decimal.js';
+import * as PrismaClient from '@prisma/client';
 import validator from 'validator';
 import { myFunction } from 'mypackage';
 
-export const JsonValue: z.ZodType<Prisma.Prisma.JsonValue> = z
+export const JsonValue: z.ZodType<PrismaClient.Prisma.JsonValue> = z
   .union([
     z.string(),
     z.number(),
@@ -356,7 +354,7 @@ export const MyPrismaScalarsTypes = z.object({
     .refine((val) => validator.isBIC(val), { message: 'BIC is not valid' })
     .nullable(),
   float: z.number(),
-  decimal: z.number().refine((v) => Decimal.isDecimal(v), {
+  decimal: z.number().refine((v) => PrismClient.Prisma.Decimal.isDecimal(v), {
     message: 'Field "decimal" must be a Decimal',
     path: ['Models', 'MyPrismaScalarsType'],
   }),
