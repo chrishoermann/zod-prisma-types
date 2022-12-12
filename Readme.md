@@ -26,7 +26,23 @@
 
 # Installation
 
-tba
+via npm:
+
+```
+npm install zod-prisma-types
+```
+
+via yarn:
+
+```
+yarn add zod-prisma-types
+```
+
+via pnpm:
+
+```
+pnpm add zod-prisma-types
+```
 
 # Usage
 
@@ -270,7 +286,7 @@ to your respective `.env` file. This will load the `SKIP_ZOD_PRISMA` environment
 
 # Field validators
 
-It is possible to add zod validators in the comments of the `prisma.schema` file with the following syntax (use `///` instead of `//`).
+It is possible to add zod validators in the comments of the `prisma.schema` file with the following syntax (use [rich-comments](https://www.prisma.io/docs/concepts/components/prisma-schema#comments) `///` instead of `//`).
 
 ```prisma
 myField [prisma-scalar-type] /// @zod.[zod-type + optional[(zod-error-messages)]].[zod validators for scalar-type]

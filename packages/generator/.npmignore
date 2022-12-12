@@ -2,7 +2,7 @@
 node_modules
 tsconfig.json
 .eslintrc.json
-README.md
+# README.md
 vite.config.ts
 yarn.lock
 yarn-error.log

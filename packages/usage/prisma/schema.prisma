@@ -21,26 +21,26 @@ generator zod {
   // tsConfigFilePath = "tsconfig.json" // optional
 }
 
-// enum MyValue {
-//   A
-//   B
-//   C
-// }
+enum MyValue {
+  A
+  B
+  C
+}
 
-// enum Role {
-//   USER
-//   ADMIN
-// }
+enum Role {
+  USER
+  ADMIN
+}
 
-// enum SecondEnum {
-//   ONE
-//   TWO
-// }
+enum SecondEnum {
+  ONE
+  TWO
+}
 
-// enum AnotherEnum {
-//   ONE
-//   TWO
-// }
+enum AnotherEnum {
+  ONE
+  TWO
+}
 
 /// comment line one
 /// comment line two
