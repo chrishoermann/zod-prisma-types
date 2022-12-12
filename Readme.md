@@ -18,7 +18,7 @@
   - [Custom type error messages](#custom-type-error-messages)
   - [String validators](#string-validators)
   - [Number validators](#number-validators)
-  - [Biging validators](#bigint-validators)
+  - [BigInt validators](#bigint-validators)
   - [Date validators](#date-validators)
   - [Custom validators](#custom-validators)
   - [Validation errors](#validation-errors)
@@ -264,19 +264,19 @@ or
 SKIP_ZOD_PRISMA = 'false';
 ```
 
-to your respective `.env` file. This will load the value of the `SKIP_ZOD_PRISMA` environment variable on the `skipGenerator` prop that will then be consumed by the generator.
+to your respective `.env` file. This will load the `SKIP_ZOD_PRISMA` environment variable on the `skipGenerator` prop that will then be consumed by the generator.
 
-> You can choose to name your environment variable wahtever you wish - just make shure to load the right variable in `zodGenConfig.js`.
+> You can choose to name your environment variable whatever you want - just make shure to load the right variable in `zodGenConfig.js`.
 
 # Field validators
 
 It is possible to add zod validators in the comments of the `prisma.schema` file with the following syntax (use `///` instead of `//`).
 
 ```prisma
-myField [prisma-scalar-type] /// @zod.[zod-type with optional[(zod-error-messages)]].[zod validators for scalar]
+myField [prisma-scalar-type] /// @zod.[zod-type + optional[(zod-error-messages)]].[zod validators for scalar-type]
 ```
 
-This maybe looks a bit cryptc. To make it easier to undestand here is an example:
+This may look a bit cryptc so here is an example:
 
 ```prisma
 generator zod {
@@ -286,7 +286,7 @@ generator zod {
   imports        = "import(import { myFunction } from 'mypackage')"
 }
 
-model MyPrismaScalarsType {
+model MyPrismaScalarsTypes {
   /// @zod.string({ invalid_type_error: "invalid type error" }).cuid()
   id      String    @id @default(cuid())
   /// comment about string @zod.string.min(3, { message: "min error" }).max(10, { message: "max error" })
@@ -305,7 +305,7 @@ model MyPrismaScalarsType {
 }
 ```
 
-This example generates a zod schema in `prisma/zod/index.ts` that looks like this:
+This example generates the following zod schema for the model in `prisma/zod/index.ts`:
 
 ```ts
 import { z } from 'zod';
@@ -324,7 +324,7 @@ export const JsonValue: z.ZodType<Prisma.Prisma.JsonValue> = z
   ])
   .nullable();
 
-export const MyPrismaScalarsType = z.object({
+export const MyPrismaScalarsTypes = z.object({
   id: z.string({ invalid_type_error: 'invalid type error' }).cuid(),
   /**
    * comment about string
@@ -354,11 +354,11 @@ export const MyPrismaScalarsType = z.object({
 });
 ```
 
-Additionally all the prisma input-, enum-, filter-, orderby-, select-, include and all other necessary types are generated ready to be used in e.g. `trpc` inputs.
+> Additionally all the zod schemas for the prisma input-, enum-, filter-, orderby-, select-, include and other necessary types are generated ready to be used in e.g. `trpc` inputs.
 
 ## Custom type error messages
 
-To add custom zod type error messages to your validator you can add them via `@zod.[key]({ ...custom type error messages }).[validators]`. The custom error messages must adhere to the following type:
+To add custom zod-type error messages to your validator you can add them via `@zod.[key]({ ...customTypeErrorMessages }).[validator key]`. The custom error messages must adhere to the following type:
 
 ```ts
 type RawCreateParams =
@@ -370,10 +370,12 @@ type RawCreateParams =
   | undefined;
 ```
 
-So they should look like this:
+For example:
 
 ```prisma
-/// @zod.string({ invalid_type_error: "invalid type error", required_error: "is required", description: "describe the error" })
+model MyModel {
+  myField String /// @zod.string({ invalid_type_error: "invalid type error", required_error: "is required", description: "describe the error" })
+}
 ```
 
 This would result in an output like:
@@ -389,7 +391,9 @@ This would result in an output like:
 All keys that do not match keys of the `RawCreateParams` type will be filterd out and are not written to the zod type. Currently no error is thrown when an invalid key is used but I intend to implement this behaviour in a future release. So if you have a typo or an invalid key in your custom type error string
 
 ```prisma
-/// @zod.string({ invalid_type_error: "invalid type error", my_invalid_key: "is required", description: "describe the error" })
+model MyModel {
+  myField String  /// @zod.string({ invalid_type_error: "invalid type error", my_invalid_key: "is required", description: "describe the error" })
+}
 ```
 
 the result would look like this (`my_invalid_key` got filtered out):
@@ -406,7 +410,9 @@ the result would look like this (`my_invalid_key` got filtered out):
 To add custom validators to the prisma `String` field you should use the `@zod.string` key. On this key you can use all string-specific validators that are mentioned in the [`zod-docs`](https://github.com/colinhacks/zod#strings). You can also add a custom error message to each validator as stated in the docs.
 
 ```prisma
-/// @zod.string.min(3, { message: "min error" }).max(10, { message: "max error" }).[...chain more validators]
+model MyModel {
+  myField String /// @zod.string.min(3, { message: "min error" }).max(10, { message: "max error" }).[...chain more validators]
+}
 ```
 
 ## Number validators
@@ -414,15 +420,20 @@ To add custom validators to the prisma `String` field you should use the `@zod.s
 To add custom validators to the prisma `Int` or `Float` field you should use the `@zod.number` key. On this key you can use all number-specific validators that are mentioned in the [`zod-docs`](https://github.com/colinhacks/zod#numbers). You can also add a custom error message to each validator as stated in the docs.
 
 ```prisma
+model MyModel {
+  myField Int
 /// @zod.number.lt(10, { message: "lt error" }).gt(5, { message: "gt error" }).[...chain more validators]
+}
 ```
 
-## Bigint validators
+## BigInt validators
 
 To add custom validators to the prisma `BigInt` field you should use the `@zod.bigint` key. Due to the fact that there are no custom validators provided by `zod` on `z.bigint()` you can only add customized type errors to the field.
 
 ```prisma
-/// @zod.bigint({ invalid_type_error: "error", ... })
+model MyModel {
+  myField BigInt /// @zod.bigint({ invalid_type_error: "error", ... })
+}
 ```
 
 ## Date validators
@@ -430,7 +441,9 @@ To add custom validators to the prisma `BigInt` field you should use the `@zod.b
 To add custom validators to the prisma `DateTime` field you should use the `@zod.date` key. On this key you can use all date-specific validators that are mentioned in the [`zod-docs`](https://github.com/colinhacks/zod#dates). You can also add a custom error message to each validator as stated in the docs.
 
 ```prisma
-///  @zod.date.min(new Date('2020-01-01')).max(new Date('2020-12-31'))
+model MyModel {
+  myField DateTime ///  @zod.date.min(new Date('2020-01-01')).max(new Date('2020-12-31'))
+}
 ```
 
 ## Custom validators
