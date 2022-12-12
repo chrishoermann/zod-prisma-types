@@ -388,7 +388,7 @@ This would result in an output like:
   }),
 ```
 
-All keys that do not match keys of the `RawCreateParams` type will be filterd out and are not written to the zod type. Currently no error is thrown when an invalid key is used but I intend to implement this behaviour in a future release. So if you have a typo or an invalid key in your custom type error string
+All keys that do not match keys of the `RawCreateParams` type will be filterd out and are not written to the zod type. Currently no error is thrown when an invalid key is used but I intend to implement this behaviour in a future release. So if you have a typo or an invalid key in your custom type error string like:
 
 ```prisma
 model MyModel {
@@ -396,7 +396,7 @@ model MyModel {
 }
 ```
 
-the result would look like this (`my_invalid_key` got filtered out):
+The result would look like this (`my_invalid_key` got filtered out):
 
 ```ts
  string: z.string({
@@ -407,7 +407,7 @@ the result would look like this (`my_invalid_key` got filtered out):
 
 ## String validators
 
-To add custom validators to the prisma `String` field you should use the `@zod.string` key. On this key you can use all string-specific validators that are mentioned in the [`zod-docs`](https://github.com/colinhacks/zod#strings). You can also add a custom error message to each validator as stated in the docs.
+To add custom validators to the prisma `String` field you can use the `@zod.string` key. On this key you can use all string-specific validators that are mentioned in the [`zod-docs`](https://github.com/colinhacks/zod#strings). You can also add a custom error message to each validator as stated in the docs.
 
 ```prisma
 model MyModel {
@@ -417,7 +417,7 @@ model MyModel {
 
 ## Number validators
 
-To add custom validators to the prisma `Int` or `Float` field you should use the `@zod.number` key. On this key you can use all number-specific validators that are mentioned in the [`zod-docs`](https://github.com/colinhacks/zod#numbers). You can also add a custom error message to each validator as stated in the docs.
+To add custom validators to the prisma `Int` or `Float` field you can use the `@zod.number` key. On this key you can use all number-specific validators that are mentioned in the [`zod-docs`](https://github.com/colinhacks/zod#numbers). You can also add a custom error message to each validator as stated in the docs.
 
 ```prisma
 model MyModel {
@@ -428,7 +428,7 @@ model MyModel {
 
 ## BigInt validators
 
-To add custom validators to the prisma `BigInt` field you should use the `@zod.bigint` key. Due to the fact that there are no custom validators provided by `zod` on `z.bigint()` you can only add customized type errors to the field.
+To add custom validators to the prisma `BigInt` field you can use the `@zod.bigint` key. Due to the fact that there are no custom validators provided by `zod` on `z.bigint()` you can only add customized type errors to the field.
 
 ```prisma
 model MyModel {
@@ -438,7 +438,7 @@ model MyModel {
 
 ## Date validators
 
-To add custom validators to the prisma `DateTime` field you should use the `@zod.date` key. On this key you can use all date-specific validators that are mentioned in the [`zod-docs`](https://github.com/colinhacks/zod#dates). You can also add a custom error message to each validator as stated in the docs.
+To add custom validators to the prisma `DateTime` field you can use the `@zod.date` key. On this key you can use all date-specific validators that are mentioned in the [`zod-docs`](https://github.com/colinhacks/zod#dates). You can also add a custom error message to each validator as stated in the docs.
 
 ```prisma
 model MyModel {
@@ -448,7 +448,7 @@ model MyModel {
 
 ## Custom validators
 
-To add custom validators to any [`Prisma Scalar`](https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#model-field-scalar-types) field you can use the `@zod.custom.use()` key. This key allows only the `use(...your custom code here)` validator. This code overwrites all other standard implementations so you have to specify the `zod type` exectly how it should be written by the generator. Only `.optional()` and `.nullable()` are added automatically based on your schema type. This field is inteded to writethings like zod `.refine` or `.transform` validators on your fields.
+To add custom validators to any [`Prisma Scalar`](https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#model-field-scalar-types) field you can use the `@zod.custom.use()` key. This key has only the `.use(...your custom code here)` validator. This code overwrites all other standard implementations so you have to exectly specify the `zod type` how it should be written by the generator. Only `.optional()` and `.nullable()` are added automatically based on your prisma schema type definition. This field is inteded to provide validators like zod `.refine` or `.transform` on your fields.
 
 ```prisma
 model MyModel {
@@ -457,7 +457,7 @@ model MyModel {
 }
 ```
 
-This would generate
+The above model schema would generate the following zod schema:
 
 ```ts
 export const MyModel = z.object({
@@ -472,8 +472,7 @@ export const MyModel = z.object({
 
 ## Validation errors
 
-To ease the developer experience the generator checks if the provided `@zod.[key]` can be used on the respective type of the model field
-It also checks if the `@zod.[key].[validator]` can be used on the `@zod.[key]`
+To ease the developer experience the generator checks if the provided `@zod.[key]` can be used on the respective type of the model field. It also checks if the `@zod.[key].[validator]` can be used on the specified `@zod.[key]`
 
 #### `Wrong zod type`
 
@@ -492,7 +491,7 @@ For the above example the Error message would look like this:
 [@zod validator error]: Validator 'string' is not valid for type 'Int'. [Error Location]: Model: 'MyModel', Field: 'number'
 ```
 
-As you can see the generator gives you the exact location, what went wrong and where the error happend. In big prisma schemas with hundreds of models and hundreds of custom validation strings this can be a very helpful information.
+The generator provides the exact location, what went wrong and where the error happend. In big prisma schemas with hundreds of models and hundreds of custom validation strings this can come in handy.
 
 #### `Wrong validator`
 
@@ -524,12 +523,12 @@ that the generator would throw the following error:
 
 ```
 [@zod generator error]: Could not match validator 'min' with validatorPattern
-.min(3, { mussage: 'Must be at least 3 characters' }). Please check for typos! [Error Location]: Model: 'MyModel', Field: 'string'.
+'.min(3, { mussage: 'Must be at least 3 characters' })'. Please check for typos! [Error Location]: Model: 'MyModel', Field: 'string'.
 ```
 
 # Naming of zod schemas
 
-The zod types are named after the generated prisma types with an added `"Schema"` string so you just need to hover over a prisma function and you know which type to import. The result would look something like this for trpc v.10:
+The zod types are named after the generated prisma types with an appended `"Schema"` string. You just need to hover over a prisma function and you know which type to import. This would look something like this for trpc v.10:
 
 ```ts
 import {
