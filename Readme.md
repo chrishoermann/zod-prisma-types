@@ -42,14 +42,14 @@ If you want to customize the behaviour of the generator you can use the followin
 
 ```prisma
 generator zod {
-  provider               = "zod-prisma-types"
-  output                 = "./zod" // default is ./generated/zod
-  useValidatorJs         = true // default is false
-  useInstaceOfForDecimal = true // default is false
-  createInputTypes       = false // default is true
-  addInputTypeValidation = false // default is true
-  imports                = "import(import { myFunction } from 'mypackage').import(import { custom } from './myfolder')" // optional
-  tsConfigFilePath       = "config/tsconfig.json" // optional default is `undefined`
+  provider                = "zod-prisma-types"
+  output                  = "./zod" // default is ./generated/zod
+  useValidatorJs          = true // default is false
+  useInstanceOfForDecimal = true // default is false
+  createInputTypes        = false // default is true
+  addInputTypeValidation  = false // default is true
+  imports                 = "import(import { myFunction } from 'mypackage').import(...other import)" // optional
+  tsConfigFilePath        = "config/tsconfig.json" // optional
 }
 ```
 
@@ -99,11 +99,11 @@ If you want to validate `Decimal` with `z.instanceof(PrismaClient.Prisma.Decimal
 ```prisma
 generator zod {
   // ...rest of config
-  useInstaceOfForDecimal = true
+  useInstanceOfForDecimal = true
 }
 ```
 
-the generated output would look like this:
+The generated output would look like this:
 
 ```ts
 export const MyModel = z.object({
@@ -113,7 +113,8 @@ export const MyModel = z.object({
 });
 ```
 
-You can't opt out of the use of `z.instanceof(PrismaClient.Prisma.Decimal)` for `AvgAggregateOutput` or `GroupBy` types because they explicitly expect a `Decimal` type.
+You can't opt out of using `z.instanceof(PrismaClient.Prisma.Decimal)` for `AvgAggregateOutput` or `GroupBy` types because they explicitly expect a `Decimal` type.
+But actually I have no idea where in the schema they are used exactly.
 
 ## `useValidatorJs`
 

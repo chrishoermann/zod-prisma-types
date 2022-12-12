@@ -11,7 +11,7 @@ import {
   getInputTypeStatements,
   getImportStatements,
   getModelStatements,
-  getAggregateAndCountStatements,
+  // getAggregateAndCountStatements // currently not used in any input types
 } from './functions';
 import { skipGenerator, usesCustomTsConfigFilePath } from './utils';
 
@@ -59,7 +59,7 @@ export const generator = async ({ output, config, dmmf }: GeneratorConfig) => {
         ...getHelperStatements(extendendDMMF),
         ...getModelStatements(extendendDMMF),
         ...getIncludeSelectStatements(extendendDMMF),
-        ...getAggregateAndCountStatements(extendendDMMF),
+        // ...getAggregateAndCountStatements(extendendDMMF), // currently not used in any input types
         ...getInputTypeStatements(extendendDMMF),
         ...getArgTypeStatements(extendendDMMF),
       ],
