@@ -7,7 +7,7 @@
 - [Installation](#installation)
 - [Usage](#usage)
   - [output](#output)
-  - [useInstaceOfForDecimal](#useinstanceoffordecimal)
+  - [useInstanceOfForDecimal](#useinstanceoffordecimal)
   - [useValidatorJs](#usevalidatorjs)
   - [createInputTypes](#createinputtypes)
   - [addInputTypeValidation](#addinputtypevalidation)
@@ -61,7 +61,7 @@ generator zod {
 
 Provide an alternative output path.
 
-## `useInstaceOfForDecimal`
+## `useInstanceOfForDecimal`
 
 > default: `false`
 
@@ -123,7 +123,7 @@ import validator from 'validator';
 
 > default: `true`
 
-If you just want to create zod schemas for your models and enums you can disable the creation of the corresponding input types. This may be useful if you just want to use the zod schemas of the models e.g. for validating input types in `react-hook-form` or similar.
+If you just want to create zod schemas for your models and enums you can disable the creation of the corresponding input types. This may be useful if you just want to use the zod schemas for validating input types in `react-hook-form` or similar use cases.
 
 ```prisma
 generator zod {
