@@ -254,7 +254,7 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   // GET ZOD VALIDATOR STRINGS
   // ----------------------------------------------
 
-  private _getZodCustomValidatorString({ type, pattern }: GetValidator) {
+  private _getZodCustomValidatorKey({ type, pattern }: GetValidator) {
     if (type !== 'custom' || !pattern) return;
     const key = this._getValidatorKeyFromPattern(pattern);
 
@@ -263,37 +263,37 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
         `[@zod generator error]: Please use the '.use()' on '@zod.custom.use(...yourCode)' or the '.omit(["model", "input"])' key. ${this.errorLocation}`,
       );
 
-    const validatedString = this._validatorMap[type]({ pattern, key });
+    return key;
+  }
 
-    if (key === 'use') {
-      return validatedString;
-    }
-
-    return undefined;
+  private _getZodCustomValidatorString({ type, pattern }: GetValidator) {
+    const key = this._getZodCustomValidatorKey({ type, pattern });
+    if (key !== 'use') return;
+    return this._validatorMap[type]({ pattern, key });
   }
 
   private _getZodOmitField({ type, pattern }: GetValidator): OmitField {
-    if (type !== 'custom' || !pattern) return 'none';
-    const key = this._getValidatorKeyFromPattern(pattern);
-
-    if (key !== 'use' && key !== 'omit')
-      throw new Error(
-        `[@zod generator error]: Please use the '.use()' on '@zod.custom.use(...yourCode)' or the '.omit(["model", "input"])' key. ${this.errorLocation}`,
-      );
+    const key = this._getZodCustomValidatorKey({ type, pattern });
+    if (key !== 'omit') return 'none';
 
     const validatedString = this._validatorMap[type]({ pattern, key });
 
-    if (key !== 'omit' || !validatedString) {
-      return 'none';
-    }
-
+    // TODO: refactor this to use single regex for replace
     const omitField = validatedString
-      .replace('[', '')
+      ?.replace('[', '')
       .replace(']', '')
       .replace(/"/g, '')
       .split(',');
 
-    return omitField.length === 2 ? 'all' : (omitField[1] as OmitField);
+    console.log(omitField);
+
+    if (!omitField) return 'none';
+    if (omitField.length === 2) return 'all';
+    if (omitField.length > 2)
+      throw new Error(
+        `[@zod generator error]: unknown key in '.omit(). only 'model' and 'input' are allowed. ${this.errorLocation}`,
+      );
+    return omitField[0].trim() as OmitField;
   }
 
   private _getZodValidatorString({ type, pattern }: GetValidator) {
@@ -372,5 +372,13 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
     return (
       this.documentation.replace(VALIDATOR_TYPE_REGEX, '').trim() || undefined
     );
+  }
+
+  omitInModel() {
+    return this.zodOmitField === 'model' || this.zodOmitField === 'all';
+  }
+
+  omitInInputTypes() {
+    return this.zodOmitField === 'input' || this.zodOmitField === 'all';
   }
 }

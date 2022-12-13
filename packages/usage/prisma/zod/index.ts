@@ -128,7 +128,7 @@ export const MyPrismaScalarsTypeSchema = z.object({
   json: z.lazy(() => InputJsonValue).refine((val) => myFunction(val), { message: 'Is not valid' }),
   bytes: z.instanceof(Buffer),
   custom: z.string().refine((val) => myFunction(val), { message: 'Is not valid' }).nullish(),
-  // omitted: exclude: string,
+  // omitted: exclude: z.string().nullish(),
 });
 
 // USER

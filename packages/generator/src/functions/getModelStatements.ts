@@ -27,19 +27,9 @@ export const getModelStatements: GetStatements = (dmmf) => {
                   writeJsDoc(writer, field.clearedDocumentation);
                 }
 
-                if (
-                  field.zodOmitField === 'all' ||
-                  field.zodOmitField === 'model'
-                ) {
-                  return writer
-                    .write(
-                      `// omitted: ${field.formattedNames.camelCase}: ${field.zodType},`,
-                    )
-                    .newLine();
-                }
-
                 if (field.zodCustomValidatorString) {
                   return writer
+                    .conditionalWrite(field.omitInModel(), '// omitted: ')
                     .write(`${field.formattedNames.camelCase}: `)
                     .write(field.zodCustomValidatorString!)
                     .conditionalWrite(field.isList, `.array()`)
@@ -50,6 +40,7 @@ export const getModelStatements: GetStatements = (dmmf) => {
 
                 if (field.kind === 'enum') {
                   return writer
+                    .conditionalWrite(field.omitInModel(), '// omitted: ')
                     .write(`${field.formattedNames.camelCase}: `)
                     .write(`${field.zodType}Schema`)
                     .conditionalWrite(field.isList, `.array()`)
@@ -60,6 +51,7 @@ export const getModelStatements: GetStatements = (dmmf) => {
 
                 if (field.isJsonType) {
                   return writer
+                    .conditionalWrite(field.omitInModel(), '// omitted: ')
                     .write(`${field.formattedNames.camelCase}: `)
                     .write(`JsonValue`)
                     .conditionalWrite(field.isList, `.array()`)
@@ -70,6 +62,7 @@ export const getModelStatements: GetStatements = (dmmf) => {
 
                 if (field.isBytesType) {
                   return writer
+                    .conditionalWrite(field.omitInModel(), '// omitted: ')
                     .write(`${field.formattedNames.camelCase}: `)
                     .write(`z.instanceof(Buffer)`)
                     .conditionalWrite(field.isList, `.array()`)
@@ -80,6 +73,7 @@ export const getModelStatements: GetStatements = (dmmf) => {
 
                 if (field.isDecimalType && !dmmf.useInstanceOfForDecimal()) {
                   return writer
+                    .conditionalWrite(field.omitInModel(), '// omitted: ')
                     .write(`${field.formattedNames.camelCase}: `)
                     .write(`z.number(`)
                     .conditionalWrite(
@@ -104,6 +98,7 @@ export const getModelStatements: GetStatements = (dmmf) => {
 
                 if (field.isDecimalType && dmmf.useInstanceOfForDecimal()) {
                   return writer
+                    .conditionalWrite(field.omitInModel(), '// omitted: ')
                     .write(`${field.formattedNames.camelCase}: `)
                     .write(`z.instanceof(PrismaClient.Prisma.Decimal)`)
                     .conditionalWrite(field.isList, `.array()`)
@@ -113,6 +108,7 @@ export const getModelStatements: GetStatements = (dmmf) => {
                 }
 
                 return writer
+                  .conditionalWrite(field.omitInModel(), '// omitted: ')
                   .write(`${field.formattedNames.camelCase}: `)
                   .write(`z.${field.zodType}(`)
                   .conditionalWrite(
