@@ -21,6 +21,7 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
   readonly relationFields: ExtendedDMMFField[];
   readonly enumFields: ExtendedDMMFField[];
   readonly hasRelationFields: boolean;
+  readonly hasOmitFields: boolean;
 
   constructor(generatorConfig: GeneratorConfig, model: DMMF.Model) {
     super(model.name);
@@ -36,6 +37,7 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
     this.relationFields = this._setRelationFields();
     this.enumFields = this._setEnumfields();
     this.hasRelationFields = this._setHasRelationFields();
+    this.hasOmitFields = this._setHasOmitFields();
   }
 
   private _getExtendedFields(model: DMMF.Model) {
@@ -58,5 +60,9 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
 
   private _setHasRelationFields() {
     return this.relationFields.length > 0;
+  }
+
+  private _setHasOmitFields() {
+    return this.fields.some((field) => field.isOmitField());
   }
 }

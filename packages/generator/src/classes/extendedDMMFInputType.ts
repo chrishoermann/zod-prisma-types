@@ -1,6 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { ExtendedDMMFDatamodel, GeneratorConfig } from '.';
+import { ExtendedDMMFDatamodel, ExtendedDMMFField, GeneratorConfig } from '.';
 import { PRISMA_FUNCTION_TYPES_WITH_VALIDATORS } from '../constants/regex';
 import { ExtendedDMMFModel } from './extendedDMMFModel';
 import {
@@ -26,6 +26,7 @@ export class ExtendedDMMFInputType
   readonly isJsonField: boolean;
   readonly isBytesField: boolean;
   readonly isDecimalField: boolean;
+  readonly omitFields: string[] = [];
 
   constructor(
     readonly generatorConfig: GeneratorConfig,
@@ -43,6 +44,7 @@ export class ExtendedDMMFInputType
     this.isJsonField = this._setIsJsonField();
     this.isBytesField = this._setIsBytesField();
     this.isDecimalField = this._setIsDecimalField();
+    this.omitFields = this._setOmitFields();
   }
 
   /**
@@ -58,7 +60,11 @@ export class ExtendedDMMFInputType
 
   private _setFields(fields: DMMF.SchemaArg[]) {
     return fields.map((field) => {
-      // validators should only be written for create and update types.
+      const linkedField = this.linkedModel?.fields.find(
+        (modelField) => modelField.name === field.name,
+      );
+
+      // validators and omitField should only be written for create and update types.
       // this prevents validation in e.g. search queries in "where inputs",
       // where strings like email addresses can be incomplete.
       const optionalValidators: ZodValidatorOptions | undefined =
@@ -69,12 +75,9 @@ export class ExtendedDMMFInputType
               zodCustomValidatorString: this._getZodCustomValidatorString(
                 field.name,
               ),
+              zodOmitField: this._getZodOmitField(linkedField),
             }
           : undefined;
-
-      const linkedField = this.linkedModel?.fields.find(
-        (modelField) => modelField.name === field.name,
-      );
 
       return new ExtendedDMMFSchemaArg(
         this.generatorConfig,
@@ -83,6 +86,7 @@ export class ExtendedDMMFInputType
       );
     });
   }
+
   private _fieldIsPrismaFunctionType() {
     return this.name.match(PRISMA_FUNCTION_TYPES_WITH_VALIDATORS);
   }
@@ -102,6 +106,32 @@ export class ExtendedDMMFInputType
       ?.zodCustomValidatorString;
   }
 
+  private _getZodOmitField(linkedField?: ExtendedDMMFField) {
+    if (!linkedField) return undefined;
+
+    const shouldOmitField =
+      linkedField.zodOmitField === 'input' ||
+      linkedField.zodOmitField === 'all';
+
+    // If the field is required, it should not be omitted.
+    // Currently, the generator does not throw an error if a required field is marked to be omitted
+    // but logs a message to the console. This behaviour needs to be changed in the future
+    // To support omitting required fields in the future,
+    // all created arg types need to be aware of the omitted fields and
+    // then write use the correct type for e.g. "data" and "upsert" inputs.
+    // if (shouldOmitField && linkedField.isRequired) {
+    //   console.log(
+    //     '\x1b[33m',
+    //     `Field '${linkedField.name}' on '${linkedField.modelName}' is required! It is NOT omitted in '${this.name}Schema'. `,
+    //     '\x1b[37m',
+    //   );
+    //   return undefined;
+    // }
+
+    // return !linkedField.isRequired && shouldOmitField;
+    return shouldOmitField;
+  }
+
   private _setIsJsonField() {
     return this.fields.some((field) => field.isJsonType);
   }
@@ -112,5 +142,24 @@ export class ExtendedDMMFInputType
 
   private _setIsDecimalField() {
     return this.fields.some((field) => field.isDecimalType);
+  }
+
+  /**
+   * Filters all fields that should be omitted in the input type.
+   * This is used to create the "Omit" ts-type for the input type.
+   * @returns an array of field names that should be omitted in the input type
+   */
+  private _setOmitFields() {
+    return this.fields
+      .filter((field) => field.zodOmitField)
+      .map((field) => field.name);
+  }
+
+  hasOmitFields() {
+    return this.omitFields.length > 0;
+  }
+
+  getOmitFieldsUnion() {
+    return this.omitFields.map((field) => `"${field}"`).join(' | ');
   }
 }

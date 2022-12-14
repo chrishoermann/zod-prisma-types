@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { StructureKind } from 'ts-morph';
+
 import { GetStatements, Statement } from '../types';
 import {
   writeConstStatement,
@@ -21,19 +23,23 @@ export const getInputTypeStatements: GetStatements = (dmmf) => {
   const statements: Statement[] = [writeHeading(`INPUT TYPES`, 'FAT')];
 
   dmmf.schema.inputObjectTypes.prisma.forEach((inputType) => {
+    const type = inputType.hasOmitFields()
+      ? `z.ZodType<Omit<PrismaClient.Prisma.${
+          inputType.name
+        }, ${inputType.getOmitFieldsUnion()}>>`
+      : `z.ZodType<PrismaClient.Prisma.${inputType.name}>`;
+
     statements.push(
       writeConstStatement({
         leadingTrivia: (writer) => writer.newLine(),
         declarations: [
           {
             name: `${inputType.name}Schema`,
-            type: `z.ZodType<PrismaClient.Prisma.${inputType.name}>`,
+            type,
             initializer: (writer) => {
               writer.write(`z.object(`);
               writer.inlineBlock(() => {
                 inputType.fields.forEach((field) => {
-                  writer.write(`${field.name}: `);
-
                   const {
                     isNullable,
                     isOptional,
@@ -41,6 +47,12 @@ export const getInputTypeStatements: GetStatements = (dmmf) => {
                     zodValidatorString,
                     zodCustomValidatorString,
                   } = field;
+
+                  if (field.zodOmitField) {
+                    writer.write(`// omitted: `);
+                  }
+
+                  writer.write(`${field.name}: `);
 
                   if (field.hasMultipleTypes) {
                     writer.write(`z.union([ `);
@@ -108,6 +120,20 @@ export const getInputTypeStatements: GetStatements = (dmmf) => {
         ],
       }),
     );
+
+    // If the input type has omitted fields, create a type from the schema.
+    // This type is later used to create an arg type that supports the schema
+    // with the omitted fields.
+    // Otherwise it would be tricky to omit required fields.
+    if (inputType.hasOmitFields()) {
+      statements.push({
+        leadingTrivia: (writer) => writer.newLine(),
+        kind: StructureKind.TypeAlias,
+        name: `${inputType.name}OmitType`,
+        type: `z.infer<typeof ${inputType.name}Schema>`,
+        isExported: true,
+      });
+    }
   });
 
   return statements;

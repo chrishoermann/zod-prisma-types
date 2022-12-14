@@ -45,11 +45,13 @@ enum AnotherEnum {
 /// comment line one
 /// comment line two
 model MyModel {
-  id     Int     @id @default(autoincrement())
+  id           Int     @id @default(autoincrement())
   // custom String? /// @zod.custom.use(z.string().refine(val => validator.isBIC(val)).transform(val => val.toUpperCase()))
   /// comment before validator @zod.string.min(4).max(10) 
   /// comment after validator
-  string String?
+  string       String?
+  omitField    String? /// @zod.custom.omit([model, input])
+  omitRequired String /// @zod.custom.omit([model, input])
 }
 
 model Test {

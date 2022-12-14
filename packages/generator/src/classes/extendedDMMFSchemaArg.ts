@@ -15,6 +15,7 @@ export interface ZodValidatorOptions {
   zodValidatorString?: string;
   zodCustomErrors?: string;
   zodCustomValidatorString?: string;
+  zodOmitField?: boolean;
 }
 
 /////////////////////////////////////////////////
@@ -34,6 +35,7 @@ export class ExtendedDMMFSchemaArg
   readonly zodValidatorString?: string;
   readonly zodCustomErrors?: string;
   readonly zodCustomValidatorString?: string;
+  readonly zodOmitField?: boolean;
   readonly hasSingleType: boolean;
   readonly hasMultipleTypes: boolean;
   readonly isOptional: boolean;
@@ -41,6 +43,7 @@ export class ExtendedDMMFSchemaArg
   readonly isBytesType: boolean;
   readonly isDecimalType: boolean;
   readonly linkedField?: ExtendedDMMFField;
+  // readonly isOmitField: boolean;
 
   constructor(
     readonly generatorConfig: GeneratorConfig,
@@ -58,6 +61,7 @@ export class ExtendedDMMFSchemaArg
     this.zodValidatorString = arg.zodValidatorString;
     this.zodCustomErrors = arg.zodCustomErrors;
     this.zodCustomValidatorString = arg.zodCustomValidatorString;
+    this.zodOmitField = arg.zodOmitField;
     this.hasSingleType = this._setHasSingleType();
     this.hasMultipleTypes = this._setHasMultipleTypes();
     this.isOptional = this._setIsOptional();
@@ -65,6 +69,7 @@ export class ExtendedDMMFSchemaArg
     this.isBytesType = this._setIsBytesType();
     this.isDecimalType = this._setIsDecimalType();
     this.linkedField = linkedField;
+    // this.isOmitField = this._setIsOmitField();
   }
 
   private _setInputTypes = (inputTypes: DMMF.SchemaArgInputType[]) => {
@@ -94,6 +99,10 @@ export class ExtendedDMMFSchemaArg
       );
     });
   };
+
+  // private _setIsOmitField() {
+  //   return this.zodOmitField === true;
+  // }
 
   private _setHasSingleType() {
     return this.inputTypes.length === 1;

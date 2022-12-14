@@ -50,6 +50,8 @@ export class ExtendedDMMFSchemaField
    */
   readonly linkedModel?: ExtendedDMMFModel;
 
+  readonly hasOmitFields: boolean;
+
   constructor(
     readonly generatorConfig: GeneratorConfig,
     field: DMMF.SchemaField,
@@ -67,6 +69,7 @@ export class ExtendedDMMFSchemaField
     this.argName = this._setArgName();
     this.linkedModel = this._setLinkedModel(datamodel);
     this.args = this._setArgs(field);
+    this.hasOmitFields = this._setHasOmitFields();
   }
 
   private _setArgs({ args }: DMMF.SchemaField) {
@@ -128,6 +131,12 @@ export class ExtendedDMMFSchemaField
         ? this.modelType.includes(model.name)
         : false,
     );
+  }
+
+  private _setHasOmitFields() {
+    const writeOmit = this.name.match(/create|upsert|update|delete/);
+    if (writeOmit) return Boolean(this.linkedModel?.hasOmitFields);
+    return false;
   }
 
   isEnumOutputType() {

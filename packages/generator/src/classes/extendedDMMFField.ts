@@ -11,6 +11,7 @@ import {
   ValidatorMap,
 } from '../constants/objectMaps';
 import {
+  PRISMA_FUNCTION_TYPES_WITH_VALIDATORS,
   VALIDATOR_CUSTOM_ERROR_KEYS_REGEX,
   VALIDATOR_CUSTOM_ERROR_REGEX,
   VALIDATOR_KEY_REGEX,
@@ -127,8 +128,6 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
     this.clearedDocumentation = validatorData?.clearedDocumentation;
 
     this.zodType = this._setZodType();
-
-    console.log('this', this.zodOmitField);
   }
 
   // INITIALIZERS
@@ -278,21 +277,28 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
 
     const validatedString = this._validatorMap[type]({ pattern, key });
 
-    // TODO: refactor this to use single regex for replace
-    const omitField = validatedString
-      ?.replace('[', '')
-      .replace(']', '')
-      .replace(/"/g, '')
-      .split(',');
+    if (!validatedString)
+      throw new Error(
+        `[@zod generator error]: Please use the '.omit(["model", "input"])' key. ${this.errorLocation}`,
+      );
 
-    console.log(omitField);
+    // extract the keys from the string
+    const omitField = validatedString?.match(/[\w]+/g);
+
+    // check if only valid strings are used
+    omitField?.forEach((field) => {
+      const isValid = field.match(/model|input/);
+
+      if (!isValid)
+        throw new Error(
+          `[@zod generator error]: unknown key '${field}' in '.omit()'. only 'model' and 'input' are allowed. ${this.errorLocation}`,
+        );
+    });
 
     if (!omitField) return 'none';
+
     if (omitField.length === 2) return 'all';
-    if (omitField.length > 2)
-      throw new Error(
-        `[@zod generator error]: unknown key in '.omit(). only 'model' and 'input' are allowed. ${this.errorLocation}`,
-      );
+
     return omitField[0].trim() as OmitField;
   }
 
@@ -337,7 +343,7 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
 
     if (!validate) {
       throw new Error(
-        `[@zod generator error]: Validator '${key}' is not valid for type '${this.type}'. ${this.errorLocation}`,
+        `[@zod generator error]: Validator '${key}' is not valid for type '${this.type}' or for specified '@zod.[key]'. ${this.errorLocation}`,
       );
     }
 
@@ -346,7 +352,7 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
 
       if (!validPattern) {
         throw new Error(
-          `[@zod generator error]: Validator '${key}' is not valid for type '${this.type}'. ${this.errorLocation}`,
+          `[@zod generator error]: Validator '${key}' is not valid for type '${this.type}' or for specified '@zod.[key]'. ${this.errorLocation}`,
         );
       }
 
@@ -378,7 +384,18 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
     return this.zodOmitField === 'model' || this.zodOmitField === 'all';
   }
 
-  omitInInputTypes() {
-    return this.zodOmitField === 'input' || this.zodOmitField === 'all';
+  omitInInputTypes(inputTypeName: string) {
+    const isInputType = inputTypeName.match(
+      PRISMA_FUNCTION_TYPES_WITH_VALIDATORS,
+    );
+
+    return (
+      isInputType &&
+      (this.zodOmitField === 'input' || this.zodOmitField === 'all')
+    );
+  }
+
+  isOmitField() {
+    return this.zodOmitField !== 'none';
   }
 }

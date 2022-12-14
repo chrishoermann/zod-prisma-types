@@ -21,6 +21,7 @@
   - [BigInt validators](#bigint-validators)
   - [Date validators](#date-validators)
   - [Custom validators](#custom-validators)
+  - [Omit fields](#omit-fields)
   - [Validation errors](#validation-errors)
 - [Naming of zod schemas](#naming-of-zod-schemas)
 - [Adding comments](#adding-comments)
@@ -483,6 +484,63 @@ export const MyModel = z.object({
     .transform((val) => val.toUpperCase())
     .nullable(),
 });
+```
+
+## Omit Fields
+
+It is possible to omit fields in the generated zod schemas by using `@zod.custom.omit(["model", "input"])`. When passing both keys `"model"` and `"input"` the field is omitted in both, the generated model schema and the generated input types (see example below). If you just want to omit the field in one of the schemas just provide the matching key. You can also write the keys without `"` or `'`.
+
+> Currntly fields in `input types` can only be omitted when they are `optional`. This is because to write recursive types with zod, a type needs to be providerd - in this case this is the corresponding prisma type e.g. `z.ZodType<PrismaClient.Prisma.[MyModelInputType]>`. When a `required` field would then be omitted in the above input type the generated zod schema would not match the type of the prisma model anymore and typescript would complain. So if you mark a required field to be omitted in the input types the generator would ignore this and log a warning.
+
+```prisma
+model MyModel {
+  id     Int     @id @default(autoincrement())
+  string    String?
+  omitField String? /// @zod.custom.omit(["model", "input"])
+}
+```
+
+The above model would generate the following zod schemas (the omitted keys are left in the model but are commented out so you see which fields are omitted when looking on the zod schema):
+
+```ts
+export const MyModelSchema = z.object({
+  id: z.number(),
+  string: z.string().min(4).max(10).nullish(),
+  // omitted: omitField: z.string().nullish(),
+});
+
+export const MyModelCreateInputSchema: z.ZodType<PrismaClient.Prisma.MyModelCreateInput> =
+  z
+    .object({
+      string: z.string().min(4).max(10).optional().nullable(),
+      // omitted: omitField: z.string().optional().nullable(),
+    })
+    .strict();
+
+export const MyModelUncheckedCreateInputSchema: z.ZodType<PrismaClient.Prisma.MyModelUncheckedCreateInput> =
+  z
+    .object({
+      id: z.number().optional(),
+      string: z.string().min(4).max(10).optional().nullable(),
+      // omitted: omitField: z.string().optional().nullable(),
+    })
+    .strict();
+
+export const MyModelUpdateInputSchema: z.ZodType<PrismaClient.Prisma.MyModelUpdateInput> =
+  z
+    .object({
+      string: z
+        .union([
+          z.string().min(4).max(10),
+          z.lazy(() => NullableStringFieldUpdateOperationsInputSchema),
+        ])
+        .optional()
+        .nullable(),
+      // omitted: omitField: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+    })
+    .strict();
+
+// AND SO ON...
 ```
 
 ## Validation errors
