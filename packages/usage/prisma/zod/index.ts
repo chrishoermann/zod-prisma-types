@@ -1,7 +1,7 @@
 import { z } from "zod";
 import * as PrismaClient from "@prisma/client";
-import validator from "validator";
 import { myFunction } from '../../myFunction';
+import validator from 'validator';
 
 /////////////////////////////////////////
 // ENUMS

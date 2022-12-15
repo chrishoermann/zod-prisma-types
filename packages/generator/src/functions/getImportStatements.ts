@@ -1,7 +1,6 @@
 import {
   ZOD_IMPORT_STATEMENT,
   PRIMSA_IMPORT_STATEMENT,
-  VALIDATOR_JS_IMPORT_STATEMENT,
 } from '../constants/importStatements';
 import { GetStatements, Statement } from '../types';
 
@@ -14,10 +13,6 @@ export const getImportStatements: GetStatements = (dmmf) => {
     ZOD_IMPORT_STATEMENT,
     PRIMSA_IMPORT_STATEMENT,
   ];
-
-  if (dmmf.generatorConfig.useValidatorJs) {
-    statements.push(VALIDATOR_JS_IMPORT_STATEMENT);
-  }
 
   if (dmmf.generatorConfig.imports) {
     statements.push(...dmmf.generatorConfig.imports);

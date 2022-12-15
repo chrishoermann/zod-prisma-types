@@ -11,11 +11,6 @@ import { ExtendedDMMFSchema } from './extendedDMMFSchema';
 /////////////////////////////////////////////////
 
 export const configSchema = z.object({
-  useValidatorJs: z
-    .string()
-    .optional()
-    .default('false')
-    .transform((val) => val === 'true'),
   useInstanceOfForDecimal: z
     .string()
     .optional()
@@ -82,10 +77,6 @@ export class ExtendedDMMF implements DMMF.Document {
 
   private _setGeneratorConfig(config: Dictionary<string>): GeneratorConfig {
     return configSchema.parse(config);
-  }
-
-  useValidatorJs() {
-    return Boolean(this.generatorConfig.useValidatorJs);
   }
 
   useInstanceOfForDecimal() {

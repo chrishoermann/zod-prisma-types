@@ -8,7 +8,6 @@
 - [Usage](#usage)
   - [output](#output)
   - [useInstanceOfForDecimal](#useinstanceoffordecimal)
-  - [useValidatorJs](#usevalidatorjs)
   - [createInputTypes](#createinputtypes)
   - [addInputTypeValidation](#addinputtypevalidation)
   - [imports](#imports)
@@ -47,6 +46,8 @@ pnpm add zod-prisma-types
 ```
 
 # Usage
+
+> Supports prisma 4.x
 
 Just add the following code to your `prisma.schema` file to create a single `index.ts` file in the `./generated/zod` output folder containing all the zod prisma schemas.
 
@@ -128,41 +129,6 @@ export const MyModel = z.object({
   id: z.number(),
   decimal: z.instanceof(PrismaClient.Prisma.Decimal),
   decimalOpt: z.instanceof(PrismaClient.Prisma.Decimal).nullable(),
-});
-```
-
-## `useValidatorJs`
-
-> default: `false`
-
-If `true` the [validator.js](https://github.com/validatorjs/validator.js) library is imported and can be used in custom zod validator functions for `String` types. If you want to use this option you need to install [validator.js](https://github.com/validatorjs/validator.js) to your dependencies.
-
-```prisma
-generator zod {
-  provider       = "zod-prisma-types"
-  useValidatorJs = true // default is false
-}
-
-model MyModel {
-  id     Int     @id @default(autoincrement())
-  custom String? /// @zod.custom.use(z.string().refine(val => validator.isBIC(val)).transform(val => val.toUpperCase()))
-}
-```
-
-The above schema would generate the following output:
-
-```ts
-// adds import
-import validator from 'validator';
-
-// 'validator' can now be used in every zod.string validator
-export const MyModelSchema = z.object({
-  id: z.number(),
-  custom: z
-    .string()
-    .refine((val) => validator.isBIC(val))
-    .transform((val) => val.toUpperCase())
-    .nullish(),
 });
 ```
 

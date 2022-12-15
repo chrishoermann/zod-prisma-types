@@ -11,13 +11,12 @@ datasource db {
 }
 
 generator zod {
-  provider       = "zod-prisma-types"
-  output         = "./zod" // default is ./generated/zod
-  useValidatorJs = true // default is false
+  provider = "zod-prisma-types"
+  output   = "./zod" // default is ./generated/zod
   // useInstanceOfForDecimal = true // default is false
   // createInputTypes        = false // default is true
   // addInputTypeValidation  = false // default is true
-  imports        = "import(import { myFunction } from '../../myFunction';)" // optional
+  imports  = "import(import { myFunction } from '../../myFunction';).import(import validator from 'validator';)" // optional
   // tsConfigFilePath = "tsconfig.json" // optional
 }
 
