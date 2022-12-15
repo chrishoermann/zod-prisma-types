@@ -36,7 +36,7 @@ export interface GetValidator {
   pattern: string;
 }
 
-export type OmitField = 'model' | 'input' | 'all' | 'none';
+export type OmitFieldMode = 'model' | 'input' | 'all' | 'none';
 
 /////////////////////////////////////////////////
 // CLASS
@@ -82,7 +82,7 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   readonly zodCustomErrors?: string;
   readonly zodValidatorString?: string;
   readonly zodCustomValidatorString?: string;
-  readonly zodOmitField: OmitField = 'none';
+  readonly zodOmitField: OmitFieldMode = 'none';
   readonly clearedDocumentation?: string;
   readonly zodType: string;
 
@@ -168,6 +168,11 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   // EXTRACT VALIDATORS
   /////////////////////////////////////////////////
 
+  /**
+   * Extracts the validator pattern from the field's documentation
+   * and splits the pattern into the different subpatterns.
+   * @returns Object of subpatterns to be set in constructor
+   */
   private _getZodValidatorData = () => {
     const matchArrary = this._getValidatorRegexMatch();
     if (!matchArrary) return;
@@ -196,6 +201,10 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   // MATCH VALIDATOR AGAINST REGEX
   // ----------------------------------------------
 
+  /**
+   * Checks if the field's documentation contains a matching validator pattern.
+   * @returns The match array from the regex match or undefined if no match.
+   */
   private _getValidatorRegexMatch = () => {
     if (!this.documentation) return;
     return this.documentation.match(VALIDATOR_TYPE_REGEX) ?? undefined;
@@ -204,6 +213,12 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   // EXTRACT VALIDATOR TYPE
   // ----------------------------------------------
 
+  /**
+   * Extracts the validator type from the match array. This type is used to
+   * further check if the validators are valid for the field's type.
+   * @param matchArray match array extracted from the field's documentation
+   * @returns type of the validator e.g. "string", "number", "date", as `ZodValidatorType`
+   */
   private _getValidatorType(matchArray: RegExpMatchArray) {
     const validatorType = matchArray?.groups?.['type'];
 
@@ -227,6 +242,11 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   // EXTRACT VALIDATOR PATTERN
   // ----------------------------------------------
 
+  /**
+   * Extracts the validator pattern e.g. '.min(2).max(10)' from the match array.
+   * @param matchArray match array extracted from the field's documentation
+   * @returns returns the validator pattern as a string or undefined if no pattern is found
+   */
   private _getValidatorPattern(matchArray: RegExpMatchArray) {
     if (!matchArray) return;
     return matchArray?.groups?.['validatorPattern'];
@@ -235,6 +255,11 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   // EXTRACT CUSTOM ERROR MESSAGES
   // ----------------------------------------------
 
+  /**
+   * Extracts the custom error messages from the match array.
+   * @param matchArray match array extracted from the field's documentation
+   * @returns returns the custom error messages as a string or undefined if no custom error messages are found
+   */
   private _getZodCustomErrors(matchArray: RegExpMatchArray) {
     const customErrors = matchArray?.groups?.['customErrors'];
     if (!customErrors) return;
@@ -250,9 +275,15 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
     return `{ ${validErrorMessages.join(', ')} }`;
   }
 
-  // GET ZOD VALIDATOR STRINGS
+  // GET ZOD CUSTOM VALIDATOR
   // ----------------------------------------------
 
+  /**
+   * Extracts the `custom` validator key e.g. `use` or `omit` from the validator pattern.
+   * @param pattern validator pattern as string
+   * @returns returns the custom validator key as a string or undefined if no custom validator key is found
+   * @throws Error if the custom validator key is not `use` or `omit`
+   */
   private _getZodCustomValidatorKey({ type, pattern }: GetValidator) {
     if (type !== 'custom' || !pattern) return;
     const key = this._getValidatorKeyFromPattern(pattern);
@@ -265,13 +296,25 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
     return key;
   }
 
+  /**
+   * Extract the string provided via the `use` key from the validator pattern.
+   * @param pattern validator pattern as string
+   * @returns returns the string provided via the `use` key as a string or undefined if no string is found
+   */
   private _getZodCustomValidatorString({ type, pattern }: GetValidator) {
     const key = this._getZodCustomValidatorKey({ type, pattern });
     if (key !== 'use') return;
     return this._validatorMap[type]({ pattern, key });
   }
 
-  private _getZodOmitField({ type, pattern }: GetValidator): OmitField {
+  /**
+   * Extract the string provided via the `omit` key from the validator pattern.
+   * @param pattern validator pattern as string
+   * @returns returns the string provided via the `omit` key as type 'OmitFieldMode' or `all` if no matching string is found
+   * @throws Error if the string provided via the `omit` key is not a valid pattern
+   * @throws Error if the string provided via the `omit` key is not `model` or `input`
+   */
+  private _getZodOmitField({ type, pattern }: GetValidator): OmitFieldMode {
     const key = this._getZodCustomValidatorKey({ type, pattern });
     if (key !== 'omit') return 'none';
 
@@ -299,9 +342,18 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
 
     if (omitField.length === 2) return 'all';
 
-    return omitField[0].trim() as OmitField;
+    return omitField[0].trim() as OmitFieldMode;
   }
 
+  // GET ZOD TYPE VALIDATORS
+  // ----------------------------------------------
+
+  /**
+   * Checks if the validator pattern is valid for the field type.
+   * @param param0 validator type and pattern
+   * @returns the validator pattern as a string
+   * @throws Error if the validator pattern is not valid for the field type
+   */
   private _getZodValidatorString({ type, pattern }: GetValidator) {
     if (type === 'custom') return;
 
@@ -324,6 +376,12 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
     return pattern;
   }
 
+  /**
+   * Extracts the validator key from the validator pattern.
+   * @param pattern validator pattern as string
+   * @returns the validator key as a string
+   * @throws Error if no matching validator key is found
+   */
   private _getValidatorKeyFromPattern(pattern: string) {
     const key = pattern.match(VALIDATOR_KEY_REGEX)?.groups?.['validatorKey'];
 
@@ -335,6 +393,17 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
     return key;
   }
 
+  // VALIDATE REGEX IN MAPS
+  // ----------------------------------------------
+
+  /**
+   * Helper function to validate a regex pattern against a map of regex validators.
+   * @param validationMap map of regex validators for each type
+   * @param param1 key and pattern of the validator
+   * @returns validated pattern as a string
+   * @throws Error if the validator key is not valid for the field type
+   * @throws Error if the validator pattern is not valid for the field type
+   */
   private _validateRegexInMap = <TKeys extends string>(
     validationMap: ValidatorMap<TKeys>,
     { pattern, key }: ScalarValidatorFunctionOptions,
@@ -373,6 +442,10 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   // GET CLEARED DOCUMENTATION
   // ----------------------------------------------
 
+  /**
+   * Removes the validator pattern from the documentation.
+   * @returns the documentation without the validator pattern
+   */
   private _removeValidatorPatternFromDocs() {
     if (!this.documentation) return;
     return (
@@ -380,10 +453,17 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
     );
   }
 
+  /**
+   * Checks if the field should be omitted in the model schemas.
+   */
   omitInModel() {
     return this.zodOmitField === 'model' || this.zodOmitField === 'all';
   }
 
+  /**
+   * Checks if the field should be omitted in the inputType schemas.
+   * @param inputTypeName name of the input type
+   */
   omitInInputTypes(inputTypeName: string) {
     const isInputType = inputTypeName.match(
       PRISMA_FUNCTION_TYPES_WITH_VALIDATORS,
@@ -395,6 +475,9 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
     );
   }
 
+  /**
+   * Checks if the field should be omitted in any of the schemas.
+   */
   isOmitField() {
     return this.zodOmitField !== 'none';
   }

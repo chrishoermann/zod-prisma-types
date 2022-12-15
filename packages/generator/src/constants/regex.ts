@@ -9,13 +9,7 @@
 export const VALIDATOR_TYPE_REGEX =
   /@zod\.(?<type>[\w]+){1}(?<customErrors>\({[\w (),'":+\-*#!§$%&\/{}\[\]=?~><°^]+}\))?(?<validatorPattern>[\w (),.'":+\-*#!§$%&\/{}\[\]=?~><°^]+[)])?/;
 
-// export const VALIDATOR_TYPE_REGEX =
-//   /@zod\.(?<type>string|number|bigint|date|custom){1}(?<customErrors>\({[\w (),'":+\-*#!§$%&\/{}\[\]=?~><°^]+}\))?(?<validatorPattern>[\w (),.'":+\-*#!§$%&\/{}\[\]=?~><°^]+[)])?/;
-
 export const VALIDATOR_TYPE_IS_VALID_REGEX = /string|number|bigint|date|custom/;
-
-export const SPLIT_VALIDATOR_PATTERN_REGEX =
-  /(?<pattern>\.[\w]+[\(]([\w ,.'":+()\-*#!§$%&\/{}\[\]=?~><°^]+)?[\)])/g;
 
 export const VALIDATOR_KEY_REGEX = /(\.(?<validatorKey>[\w]+))/;
 

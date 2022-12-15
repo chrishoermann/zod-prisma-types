@@ -63,7 +63,6 @@ If you want to customize the behaviour of the generator you can use the followin
 generator zod {
   provider                = "zod-prisma-types"
   output                  = "./zod" // default is ./generated/zod
-  useValidatorJs          = true // default is false
   useInstanceOfForDecimal = true // default is false
   createInputTypes        = false // default is true
   addInputTypeValidation  = false // default is true

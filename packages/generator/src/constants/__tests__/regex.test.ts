@@ -1,7 +1,6 @@
 import { it, expect, describe } from 'vitest';
 
 import {
-  SPLIT_VALIDATOR_PATTERN_REGEX,
   STRING_VALIDATOR_MESSAGE_REGEX,
   STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
   STRING_VALIDATOR_REGEX,
@@ -46,27 +45,6 @@ describe('test VALIDATOR_TYPE_REGEX', () => {
 
     expect(validatorType).toBe(TYPE);
     expect(validatorPattern).toBe(VALIDATOR);
-  });
-});
-
-/////////////////////////////////////////////
-// VALIDATOR PATTERN
-/////////////////////////////////////////////
-
-describe('test SPLIT_VALIDATOR_PATTERN_REGEX', () => {
-  it('should split validatorPatterns via "SPLIT_VALIDATOR_PATTERN_REGEX"', () => {
-    const SPLIT_VALIDATOR = [
-      ".min(3, { message: 'some string' })",
-      '.max(10)',
-      ".email({ message: 'some string' })",
-    ];
-
-    const STRING = SPLIT_VALIDATOR.join('');
-
-    const validator = STRING.match(SPLIT_VALIDATOR_PATTERN_REGEX);
-
-    expect(validator).toHaveLength(SPLIT_VALIDATOR.length);
-    expect(validator).toEqual(SPLIT_VALIDATOR);
   });
 });
 

@@ -92,6 +92,6 @@ export class ExtendedDMMF implements DMMF.Document {
   }
 
   hasCustomImports() {
-    return Boolean(this.generatorConfig.imports);
+    return this.generatorConfig.imports.length > 0;
   }
 }
