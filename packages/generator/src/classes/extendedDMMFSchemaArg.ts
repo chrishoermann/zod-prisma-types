@@ -43,7 +43,6 @@ export class ExtendedDMMFSchemaArg
   readonly isBytesType: boolean;
   readonly isDecimalType: boolean;
   readonly linkedField?: ExtendedDMMFField;
-  // readonly isOmitField: boolean;
 
   constructor(
     readonly generatorConfig: GeneratorConfig,
@@ -69,7 +68,6 @@ export class ExtendedDMMFSchemaArg
     this.isBytesType = this._setIsBytesType();
     this.isDecimalType = this._setIsDecimalType();
     this.linkedField = linkedField;
-    // this.isOmitField = this._setIsOmitField();
   }
 
   private _setInputTypes = (inputTypes: DMMF.SchemaArgInputType[]) => {
@@ -100,10 +98,6 @@ export class ExtendedDMMFSchemaArg
     });
   };
 
-  // private _setIsOmitField() {
-  //   return this.zodOmitField === true;
-  // }
-
   private _setHasSingleType() {
     return this.inputTypes.length === 1;
   }
@@ -126,5 +120,14 @@ export class ExtendedDMMFSchemaArg
 
   private _setIsDecimalType() {
     return this.inputTypes.some((inputType) => inputType.isDecimalType);
+  }
+
+  /**
+   * Used to check if the arg contains a property name that should be omitted in base type
+   * to then be added as new property with updated type information.
+   * @returns `true` if the arg.name matches one of `create|update|upsert|delete|data`
+   */
+  rewriteArgWithNewType() {
+    return !!this.name.match(/create|update|upsert|delete|data/);
   }
 }

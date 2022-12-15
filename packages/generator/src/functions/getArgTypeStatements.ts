@@ -1,4 +1,5 @@
-import { StructureKind } from 'ts-morph';
+// import { StructureKind } from 'ts-morph';
+
 import { GetStatements, Statement } from '../types';
 import {
   writeConstStatement,
@@ -19,67 +20,57 @@ export const getArgTypeStatements: GetStatements = (dmmf) => {
 
   dmmf.schema.outputObjectTypes.argTypes.forEach((outputType) => {
     outputType.prismaActionFields.forEach((field) => {
-      // if field has an omit field the type needs to be recreated
-      // otherwise required fields would show a type error
-      if (field.hasOmitFields) {
-        statements.push({
-          leadingTrivia: (writer) => writer.newLine(),
-          kind: StructureKind.TypeAlias,
-          name: `${field.argName}OmitType`,
-          type: (writer) => {
-            writer.inlineBlock(() => {
-              writer
-                .writeLine(
-                  `select?: PrismaClient.Prisma.${field.linkedModel?.formattedNames.pascalCase}Select | null`,
-                )
-                .conditionalWriteLine(
-                  field.linkedModel?.hasRelationFields,
-                  `include: PrismaClient.Prisma.${field.linkedModel?.formattedNames.pascalCase}Include | null`,
-                );
-              field.args.forEach((arg) => {
-                writer.write(`${arg.name}${arg.isRequired ? '' : '?'}: `);
-                if (!arg.name.match(/create|update|upsert|delete|data/)) {
-                  if (arg.inputTypes[0].type === 'Boolean') {
-                    return writer.write(`boolean`).newLine();
-                  }
-
-                  return writer
-                    .write(`PrismaClient.Prisma.${arg.inputTypes[0].type}`)
-                    .newLine();
-                }
-
-                if (arg.hasMultipleTypes) {
-                  arg.inputTypes.forEach((inputType, idx) => {
-                    const writeSeperator = idx !== arg.inputTypes.length - 1;
-                    writer
-                      .write(`${inputType.type}OmitType`)
-                      .conditionalWrite(writeSeperator, ` | `);
-                  });
-                  return writer.newLine();
-                }
-
-                return writer
-                  .write(`${arg.inputTypes[0].type}OmitType`)
-                  .conditionalWrite(arg.inputTypes[0].isList, `[]`)
-                  .newLine();
-              });
-            });
-          },
-          isExported: true,
-        });
-      }
-
-      const type = field.hasOmitFields
-        ? `z.ZodType<${field.argName}OmitType>`
-        : `z.ZodType<PrismaClient.Prisma.${field.argName}>`;
-
       statements.push(
         writeConstStatement({
           leadingTrivia: (writer) => writer.newLine(),
           declarations: [
             {
               name: `${field.argName}Schema`,
-              type,
+
+              // if the model contains fields that should be omitted,
+              // the type information passed to the zod schema needs to be updated.
+              // By default, the type is just the prisma client type.
+              // But if the model has fields that are required and should be omitted,
+              // tha type needs to be updated to reflect that.
+              // Otherwise typescript will complain that the required fields are missing.
+
+              type: field.createCustomOmitFieldType()
+                ? (writer) => {
+                    writer.write(
+                      `z.ZodType<Omit<PrismaClient.Prisma.${
+                        field.argName
+                      }, ${field.getOmitUnionForCustomType()}> & { `,
+                    );
+
+                    field.args.forEach((arg, idx) => {
+                      if (!arg.rewriteArgWithNewType()) return;
+
+                      const writeComma = idx < field.args.length - 1;
+
+                      writer.write(`${arg.name}${arg.isRequired ? '' : '?'}: `);
+
+                      if (arg.hasMultipleTypes) {
+                        arg.inputTypes.forEach((inputType, idx) => {
+                          const writeSeperator =
+                            idx !== arg.inputTypes.length - 1;
+                          writer
+                            .write(`z.infer<typeof ${inputType.type}Schema>`)
+                            .conditionalWrite(writeSeperator, ` | `);
+                        });
+                        return writer.conditionalWrite(writeComma, `,`);
+                      }
+
+                      return writer
+                        .write(
+                          `z.infer<typeof ${arg.inputTypes[0].type}Schema>`,
+                        )
+                        .conditionalWrite(arg.inputTypes[0].isList, `[]`)
+                        .newLine();
+                    });
+
+                    writer.write(` }>`);
+                  }
+                : `z.ZodType<PrismaClient.Prisma.${field.argName}>`,
               initializer: (writer) => {
                 writer.write(`z.object(`);
                 writer.inlineBlock(() => {

@@ -490,57 +490,110 @@ export const MyModel = z.object({
 
 It is possible to omit fields in the generated zod schemas by using `@zod.custom.omit(["model", "input"])`. When passing both keys `"model"` and `"input"` the field is omitted in both, the generated model schema and the generated input types (see example below). If you just want to omit the field in one of the schemas just provide the matching key. You can also write the keys without `"` or `'`.
 
-> Currntly fields in `input types` can only be omitted when they are `optional`. This is because to write recursive types with zod, a type needs to be providerd - in this case this is the corresponding prisma type e.g. `z.ZodType<PrismaClient.Prisma.[MyModelInputType]>`. When a `required` field would then be omitted in the above input type the generated zod schema would not match the type of the prisma model anymore and typescript would complain. So if you mark a required field to be omitted in the input types the generator would ignore this and log a warning.
-
 ```prisma
 model MyModel {
-  id     Int     @id @default(autoincrement())
-  string    String?
-  omitField String? /// @zod.custom.omit(["model", "input"])
+  id           Int     @id @default(autoincrement())
+  string       String? /// @zod.string.min(4).max(10)
+  omitField    String? /// @zod.custom.omit([model, input])
+  omitRequired String /// @zod.custom.omit([model, input])
 }
 ```
 
-The above model would generate the following zod schemas (the omitted keys are left in the model but are commented out so you see which fields are omitted when looking on the zod schema):
+The above model would generate the following zod schemas (the omitted keys are left in the model but are commented out so you see at a glance which fields are omitted when looking on the zod schema):
 
 ```ts
+// MODEL TYPES
+// ---------------------------------------
+
 export const MyModelSchema = z.object({
   id: z.number(),
   string: z.string().min(4).max(10).nullish(),
   // omitted: omitField: z.string().nullish(),
+  // omitted: omitRequired: z.string(),
 });
 
-export const MyModelCreateInputSchema: z.ZodType<PrismaClient.Prisma.MyModelCreateInput> =
-  z
-    .object({
-      string: z.string().min(4).max(10).optional().nullable(),
-      // omitted: omitField: z.string().optional().nullable(),
-    })
-    .strict();
+// INPUT TYPES
+// ---------------------------------------
 
-export const MyModelUncheckedCreateInputSchema: z.ZodType<PrismaClient.Prisma.MyModelUncheckedCreateInput> =
-  z
-    .object({
-      id: z.number().optional(),
-      string: z.string().min(4).max(10).optional().nullable(),
-      // omitted: omitField: z.string().optional().nullable(),
-    })
-    .strict();
+export const MyModelCreateInputSchema: z.ZodType<
+  Omit<PrismaClient.Prisma.MyModelCreateInput, 'omitField' | 'omitRequired'>
+> = z
+  .object({
+    string: z.string().min(4).max(10).optional().nullable(),
+    // omitted: omitField: z.string().optional().nullable(),
+    // omitted: omitRequired: z.string(),
+  })
+  .strict();
 
-export const MyModelUpdateInputSchema: z.ZodType<PrismaClient.Prisma.MyModelUpdateInput> =
-  z
-    .object({
-      string: z
-        .union([
-          z.string().min(4).max(10),
-          z.lazy(() => NullableStringFieldUpdateOperationsInputSchema),
-        ])
-        .optional()
-        .nullable(),
-      // omitted: omitField: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-    })
-    .strict();
+export const MyModelUncheckedCreateInputSchema: z.ZodType<
+  Omit<
+    PrismaClient.Prisma.MyModelUncheckedCreateInput,
+    'omitField' | 'omitRequired'
+  >
+> = z
+  .object({
+    id: z.number().optional(),
+    string: z.string().min(4).max(10).optional().nullable(),
+    // omitted: omitField: z.string().optional().nullable(),
+    // omitted: omitRequired: z.string(),
+  })
+  .strict();
+
+export const MyModelUpdateInputSchema: z.ZodType<
+  Omit<PrismaClient.Prisma.MyModelUpdateInput, 'omitField' | 'omitRequired'>
+> = z
+  .object({
+    string: z
+      .union([
+        z.string().min(4).max(10),
+        z.lazy(() => NullableStringFieldUpdateOperationsInputSchema),
+      ])
+      .optional()
+      .nullable(),
+    // omitted: omitField: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+    // omitted: omitRequired: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  })
+  .strict();
 
 // AND SO ON...
+
+// ARG TYPES
+// ---------------------------------------
+
+// To be compatible with the inputTypes the type of the `ArgSchema` is updated accordingly
+export const MyModelCreateArgsSchema: z.ZodType<
+  Omit<PrismaClient.Prisma.MyModelCreateArgs, 'data'> & {
+    data:
+      | z.infer<typeof MyModelCreateInputSchema>
+      | z.infer<typeof MyModelUncheckedCreateInputSchema>;
+  }
+> = z
+  .object({
+    select: MyModelSelectSchema.optional(),
+    data: z.union([
+      MyModelCreateInputSchema,
+      MyModelUncheckedCreateInputSchema,
+    ]),
+  })
+  .strict();
+```
+
+> When a `required` field is omitted the field needs to be added manually in the respective prisma function like `create`, `update`, `createMany` and so on. Otherwise Typescript would complain.
+
+```ts
+const appRouter = t.router({
+  createMyModel: t.procedure
+    .input(MyModelCreateArgsSchema) // field `omitRequired` is not included in `data`
+    .query(({ input }) => {
+      return prisma.myModel.create({
+        ...input,
+        data: {
+          ...input.data,
+          omitRequired: 'foo', // field needs to be added manually
+        },
+      });
+    }),
+});
 ```
 
 ## Validation errors

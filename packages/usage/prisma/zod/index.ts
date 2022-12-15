@@ -775,8 +775,6 @@ export const MyModelCreateInputSchema: z.ZodType<Omit<PrismaClient.Prisma.MyMode
   // omitted: omitRequired: z.string(),
 }).strict();
 
-export type MyModelCreateInputOmitType = z.infer<typeof MyModelCreateInputSchema>;
-
 export const MyModelUncheckedCreateInputSchema: z.ZodType<Omit<PrismaClient.Prisma.MyModelUncheckedCreateInput, "omitField" | "omitRequired">> = z.object({
   id: z.number().optional(),
   string: z.string().min(4).max(10).optional().nullable(),
@@ -784,15 +782,11 @@ export const MyModelUncheckedCreateInputSchema: z.ZodType<Omit<PrismaClient.Pris
   // omitted: omitRequired: z.string(),
 }).strict();
 
-export type MyModelUncheckedCreateInputOmitType = z.infer<typeof MyModelUncheckedCreateInputSchema>;
-
 export const MyModelUpdateInputSchema: z.ZodType<Omit<PrismaClient.Prisma.MyModelUpdateInput, "omitField" | "omitRequired">> = z.object({
   string: z.union([z.string().min(4).max(10), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
   // omitted: omitField: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   // omitted: omitRequired: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
-
-export type MyModelUpdateInputOmitType = z.infer<typeof MyModelUpdateInputSchema>;
 
 export const MyModelUncheckedUpdateInputSchema: z.ZodType<Omit<PrismaClient.Prisma.MyModelUncheckedUpdateInput, "omitField" | "omitRequired">> = z.object({
   id: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
@@ -801,8 +795,6 @@ export const MyModelUncheckedUpdateInputSchema: z.ZodType<Omit<PrismaClient.Pris
   // omitted: omitRequired: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
-export type MyModelUncheckedUpdateInputOmitType = z.infer<typeof MyModelUncheckedUpdateInputSchema>;
-
 export const MyModelCreateManyInputSchema: z.ZodType<Omit<PrismaClient.Prisma.MyModelCreateManyInput, "omitField" | "omitRequired">> = z.object({
   id: z.number().optional(),
   string: z.string().min(4).max(10).optional().nullable(),
@@ -810,15 +802,11 @@ export const MyModelCreateManyInputSchema: z.ZodType<Omit<PrismaClient.Prisma.My
   // omitted: omitRequired: z.string(),
 }).strict();
 
-export type MyModelCreateManyInputOmitType = z.infer<typeof MyModelCreateManyInputSchema>;
-
 export const MyModelUpdateManyMutationInputSchema: z.ZodType<Omit<PrismaClient.Prisma.MyModelUpdateManyMutationInput, "omitField" | "omitRequired">> = z.object({
   string: z.union([z.string().min(4).max(10), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
   // omitted: omitField: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   // omitted: omitRequired: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
-
-export type MyModelUpdateManyMutationInputOmitType = z.infer<typeof MyModelUpdateManyMutationInputSchema>;
 
 export const MyModelUncheckedUpdateManyInputSchema: z.ZodType<Omit<PrismaClient.Prisma.MyModelUncheckedUpdateManyInput, "omitField" | "omitRequired">> = z.object({
   id: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
@@ -826,8 +814,6 @@ export const MyModelUncheckedUpdateManyInputSchema: z.ZodType<Omit<PrismaClient.
   // omitted: omitField: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   // omitted: omitRequired: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
-
-export type MyModelUncheckedUpdateManyInputOmitType = z.infer<typeof MyModelUncheckedUpdateManyInputSchema>;
 
 export const TestCreateInputSchema: z.ZodType<PrismaClient.Prisma.TestCreateInput> = z.object({
   id: z.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid().optional(),
@@ -990,8 +976,6 @@ export const MyPrismaScalarsTypeCreateInputSchema: z.ZodType<Omit<PrismaClient.P
   // omitted: exclude: z.string().optional().nullable(),
 }).strict();
 
-export type MyPrismaScalarsTypeCreateInputOmitType = z.infer<typeof MyPrismaScalarsTypeCreateInputSchema>;
-
 export const MyPrismaScalarsTypeUncheckedCreateInputSchema: z.ZodType<Omit<PrismaClient.Prisma.MyPrismaScalarsTypeUncheckedCreateInput, "exclude">> = z.object({
   id: z.string({ invalid_type_error: "invalid type error" }).cuid().optional(),
   string: z.string().min(3, { message: "min error" }).max(10, { message: "max error" }).optional().nullable(),
@@ -1005,8 +989,6 @@ export const MyPrismaScalarsTypeUncheckedCreateInputSchema: z.ZodType<Omit<Prism
   custom: z.string().refine((val) => myFunction(val), { message: 'Is not valid' }).optional().nullable(),
   // omitted: exclude: z.string().optional().nullable(),
 }).strict();
-
-export type MyPrismaScalarsTypeUncheckedCreateInputOmitType = z.infer<typeof MyPrismaScalarsTypeUncheckedCreateInputSchema>;
 
 export const MyPrismaScalarsTypeUpdateInputSchema: z.ZodType<Omit<PrismaClient.Prisma.MyPrismaScalarsTypeUpdateInput, "exclude">> = z.object({
   id: z.union([z.string({ invalid_type_error: "invalid type error" }).cuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
@@ -1022,8 +1004,6 @@ export const MyPrismaScalarsTypeUpdateInputSchema: z.ZodType<Omit<PrismaClient.P
   // omitted: exclude: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
-export type MyPrismaScalarsTypeUpdateInputOmitType = z.infer<typeof MyPrismaScalarsTypeUpdateInputSchema>;
-
 export const MyPrismaScalarsTypeUncheckedUpdateInputSchema: z.ZodType<Omit<PrismaClient.Prisma.MyPrismaScalarsTypeUncheckedUpdateInput, "exclude">> = z.object({
   id: z.union([z.string({ invalid_type_error: "invalid type error" }).cuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
   string: z.union([z.string().min(3, { message: "min error" }).max(10, { message: "max error" }), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
@@ -1037,8 +1017,6 @@ export const MyPrismaScalarsTypeUncheckedUpdateInputSchema: z.ZodType<Omit<Prism
   custom: z.union([z.string().refine((val) => myFunction(val), { message: 'Is not valid' }), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
   // omitted: exclude: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
-
-export type MyPrismaScalarsTypeUncheckedUpdateInputOmitType = z.infer<typeof MyPrismaScalarsTypeUncheckedUpdateInputSchema>;
 
 export const MyPrismaScalarsTypeCreateManyInputSchema: z.ZodType<Omit<PrismaClient.Prisma.MyPrismaScalarsTypeCreateManyInput, "exclude">> = z.object({
   id: z.string({ invalid_type_error: "invalid type error" }).cuid().optional(),
@@ -1054,8 +1032,6 @@ export const MyPrismaScalarsTypeCreateManyInputSchema: z.ZodType<Omit<PrismaClie
   // omitted: exclude: z.string().optional().nullable(),
 }).strict();
 
-export type MyPrismaScalarsTypeCreateManyInputOmitType = z.infer<typeof MyPrismaScalarsTypeCreateManyInputSchema>;
-
 export const MyPrismaScalarsTypeUpdateManyMutationInputSchema: z.ZodType<Omit<PrismaClient.Prisma.MyPrismaScalarsTypeUpdateManyMutationInput, "exclude">> = z.object({
   id: z.union([z.string({ invalid_type_error: "invalid type error" }).cuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
   string: z.union([z.string().min(3, { message: "min error" }).max(10, { message: "max error" }), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
@@ -1070,8 +1046,6 @@ export const MyPrismaScalarsTypeUpdateManyMutationInputSchema: z.ZodType<Omit<Pr
   // omitted: exclude: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
-export type MyPrismaScalarsTypeUpdateManyMutationInputOmitType = z.infer<typeof MyPrismaScalarsTypeUpdateManyMutationInputSchema>;
-
 export const MyPrismaScalarsTypeUncheckedUpdateManyInputSchema: z.ZodType<Omit<PrismaClient.Prisma.MyPrismaScalarsTypeUncheckedUpdateManyInput, "exclude">> = z.object({
   id: z.union([z.string({ invalid_type_error: "invalid type error" }).cuid(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
   string: z.union([z.string().min(3, { message: "min error" }).max(10, { message: "max error" }), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
@@ -1085,8 +1059,6 @@ export const MyPrismaScalarsTypeUncheckedUpdateManyInputSchema: z.ZodType<Omit<P
   custom: z.union([z.string().refine((val) => myFunction(val), { message: 'Is not valid' }), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
   // omitted: exclude: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
-
-export type MyPrismaScalarsTypeUncheckedUpdateManyInputOmitType = z.infer<typeof MyPrismaScalarsTypeUncheckedUpdateManyInputSchema>;
 
 export const UserCreateInputSchema: z.ZodType<PrismaClient.Prisma.UserCreateInput> = z.object({
   id: z.string().cuid().optional(),
@@ -3739,82 +3711,44 @@ export const LocationFindUniqueOrThrowArgsSchema: z.ZodType<PrismaClient.Prisma.
   where: LocationWhereUniqueInputSchema,
 }).strict();
 
-export type MyModelCreateArgsOmitType = {
-  select?: PrismaClient.Prisma.MyModelSelect | null
-  data: MyModelCreateInputOmitType | MyModelUncheckedCreateInputOmitType
-};
-
-export const MyModelCreateArgsSchema: z.ZodType<MyModelCreateArgsOmitType> = z.object({
+export const MyModelCreateArgsSchema: z.ZodType<Omit<PrismaClient.Prisma.MyModelCreateArgs, "data"> & { data: z.infer<typeof MyModelCreateInputSchema> | z.infer<typeof MyModelUncheckedCreateInputSchema> }> = z.object({
   select: MyModelSelectSchema.optional(),
   data: z.union([MyModelCreateInputSchema, MyModelUncheckedCreateInputSchema]),
 }).strict();
 
-export type MyModelUpsertArgsOmitType = {
-  select?: PrismaClient.Prisma.MyModelSelect | null
-  where: PrismaClient.Prisma.MyModelWhereUniqueInput
-  create: MyModelCreateInputOmitType | MyModelUncheckedCreateInputOmitType
-  update: MyModelUpdateInputOmitType | MyModelUncheckedUpdateInputOmitType
-};
-
-export const MyModelUpsertArgsSchema: z.ZodType<MyModelUpsertArgsOmitType> = z.object({
+export const MyModelUpsertArgsSchema: z.ZodType<Omit<PrismaClient.Prisma.MyModelUpsertArgs, "create" | "update"> & { create: z.infer<typeof MyModelCreateInputSchema> | z.infer<typeof MyModelUncheckedCreateInputSchema>, update: z.infer<typeof MyModelUpdateInputSchema> | z.infer<typeof MyModelUncheckedUpdateInputSchema> }> = z.object({
   select: MyModelSelectSchema.optional(),
   where: MyModelWhereUniqueInputSchema,
   create: z.union([MyModelCreateInputSchema, MyModelUncheckedCreateInputSchema]),
   update: z.union([MyModelUpdateInputSchema, MyModelUncheckedUpdateInputSchema]),
 }).strict();
 
-export type MyModelCreateManyArgsOmitType = {
-  select?: PrismaClient.Prisma.MyModelSelect | null
-  data: MyModelCreateManyInputOmitType[]
-  skipDuplicates?: boolean
-};
-
-export const MyModelCreateManyArgsSchema: z.ZodType<MyModelCreateManyArgsOmitType> = z.object({
+export const MyModelCreateManyArgsSchema: z.ZodType<Omit<PrismaClient.Prisma.MyModelCreateManyArgs, "data"> & {
+  data: z.infer<typeof MyModelCreateManyInputSchema>[]
+}> = z.object({
   select: MyModelSelectSchema.optional(),
   data: MyModelCreateManyInputSchema.array(),
   skipDuplicates: z.boolean().optional(),
 }).strict();
 
-export type MyModelDeleteArgsOmitType = {
-  select?: PrismaClient.Prisma.MyModelSelect | null
-  where: PrismaClient.Prisma.MyModelWhereUniqueInput
-};
-
-export const MyModelDeleteArgsSchema: z.ZodType<MyModelDeleteArgsOmitType> = z.object({
+export const MyModelDeleteArgsSchema: z.ZodType<PrismaClient.Prisma.MyModelDeleteArgs> = z.object({
   select: MyModelSelectSchema.optional(),
   where: MyModelWhereUniqueInputSchema,
 }).strict();
 
-export type MyModelUpdateArgsOmitType = {
-  select?: PrismaClient.Prisma.MyModelSelect | null
-  data: MyModelUpdateInputOmitType | MyModelUncheckedUpdateInputOmitType
-  where: PrismaClient.Prisma.MyModelWhereUniqueInput
-};
-
-export const MyModelUpdateArgsSchema: z.ZodType<MyModelUpdateArgsOmitType> = z.object({
+export const MyModelUpdateArgsSchema: z.ZodType<Omit<PrismaClient.Prisma.MyModelUpdateArgs, "data"> & { data: z.infer<typeof MyModelUpdateInputSchema> | z.infer<typeof MyModelUncheckedUpdateInputSchema>, }> = z.object({
   select: MyModelSelectSchema.optional(),
   data: z.union([MyModelUpdateInputSchema, MyModelUncheckedUpdateInputSchema]),
   where: MyModelWhereUniqueInputSchema,
 }).strict();
 
-export type MyModelUpdateManyArgsOmitType = {
-  select?: PrismaClient.Prisma.MyModelSelect | null
-  data: MyModelUpdateManyMutationInputOmitType | MyModelUncheckedUpdateManyInputOmitType
-  where?: PrismaClient.Prisma.MyModelWhereInput
-};
-
-export const MyModelUpdateManyArgsSchema: z.ZodType<MyModelUpdateManyArgsOmitType> = z.object({
+export const MyModelUpdateManyArgsSchema: z.ZodType<Omit<PrismaClient.Prisma.MyModelUpdateManyArgs, "data"> & { data: z.infer<typeof MyModelUpdateManyMutationInputSchema> | z.infer<typeof MyModelUncheckedUpdateManyInputSchema>, }> = z.object({
   select: MyModelSelectSchema.optional(),
   data: z.union([MyModelUpdateManyMutationInputSchema, MyModelUncheckedUpdateManyInputSchema]),
   where: MyModelWhereInputSchema.optional(),
 }).strict();
 
-export type MyModelDeleteManyArgsOmitType = {
-  select?: PrismaClient.Prisma.MyModelSelect | null
-  where?: PrismaClient.Prisma.MyModelWhereInput
-};
-
-export const MyModelDeleteManyArgsSchema: z.ZodType<MyModelDeleteManyArgsOmitType> = z.object({
+export const MyModelDeleteManyArgsSchema: z.ZodType<PrismaClient.Prisma.MyModelDeleteManyArgs> = z.object({
   select: MyModelSelectSchema.optional(),
   where: MyModelWhereInputSchema.optional(),
 }).strict();
@@ -3859,82 +3793,44 @@ export const TestDeleteManyArgsSchema: z.ZodType<PrismaClient.Prisma.TestDeleteM
   where: TestWhereInputSchema.optional(),
 }).strict();
 
-export type MyPrismaScalarsTypeCreateArgsOmitType = {
-  select?: PrismaClient.Prisma.MyPrismaScalarsTypeSelect | null
-  data: MyPrismaScalarsTypeCreateInputOmitType | MyPrismaScalarsTypeUncheckedCreateInputOmitType
-};
-
-export const MyPrismaScalarsTypeCreateArgsSchema: z.ZodType<MyPrismaScalarsTypeCreateArgsOmitType> = z.object({
+export const MyPrismaScalarsTypeCreateArgsSchema: z.ZodType<Omit<PrismaClient.Prisma.MyPrismaScalarsTypeCreateArgs, "data"> & { data: z.infer<typeof MyPrismaScalarsTypeCreateInputSchema> | z.infer<typeof MyPrismaScalarsTypeUncheckedCreateInputSchema> }> = z.object({
   select: MyPrismaScalarsTypeSelectSchema.optional(),
   data: z.union([MyPrismaScalarsTypeCreateInputSchema, MyPrismaScalarsTypeUncheckedCreateInputSchema]),
 }).strict();
 
-export type MyPrismaScalarsTypeUpsertArgsOmitType = {
-  select?: PrismaClient.Prisma.MyPrismaScalarsTypeSelect | null
-  where: PrismaClient.Prisma.MyPrismaScalarsTypeWhereUniqueInput
-  create: MyPrismaScalarsTypeCreateInputOmitType | MyPrismaScalarsTypeUncheckedCreateInputOmitType
-  update: MyPrismaScalarsTypeUpdateInputOmitType | MyPrismaScalarsTypeUncheckedUpdateInputOmitType
-};
-
-export const MyPrismaScalarsTypeUpsertArgsSchema: z.ZodType<MyPrismaScalarsTypeUpsertArgsOmitType> = z.object({
+export const MyPrismaScalarsTypeUpsertArgsSchema: z.ZodType<Omit<PrismaClient.Prisma.MyPrismaScalarsTypeUpsertArgs, "create" | "update"> & { create: z.infer<typeof MyPrismaScalarsTypeCreateInputSchema> | z.infer<typeof MyPrismaScalarsTypeUncheckedCreateInputSchema>, update: z.infer<typeof MyPrismaScalarsTypeUpdateInputSchema> | z.infer<typeof MyPrismaScalarsTypeUncheckedUpdateInputSchema> }> = z.object({
   select: MyPrismaScalarsTypeSelectSchema.optional(),
   where: MyPrismaScalarsTypeWhereUniqueInputSchema,
   create: z.union([MyPrismaScalarsTypeCreateInputSchema, MyPrismaScalarsTypeUncheckedCreateInputSchema]),
   update: z.union([MyPrismaScalarsTypeUpdateInputSchema, MyPrismaScalarsTypeUncheckedUpdateInputSchema]),
 }).strict();
 
-export type MyPrismaScalarsTypeCreateManyArgsOmitType = {
-  select?: PrismaClient.Prisma.MyPrismaScalarsTypeSelect | null
-  data: MyPrismaScalarsTypeCreateManyInputOmitType[]
-  skipDuplicates?: boolean
-};
-
-export const MyPrismaScalarsTypeCreateManyArgsSchema: z.ZodType<MyPrismaScalarsTypeCreateManyArgsOmitType> = z.object({
+export const MyPrismaScalarsTypeCreateManyArgsSchema: z.ZodType<Omit<PrismaClient.Prisma.MyPrismaScalarsTypeCreateManyArgs, "data"> & {
+  data: z.infer<typeof MyPrismaScalarsTypeCreateManyInputSchema>[]
+}> = z.object({
   select: MyPrismaScalarsTypeSelectSchema.optional(),
   data: MyPrismaScalarsTypeCreateManyInputSchema.array(),
   skipDuplicates: z.boolean().optional(),
 }).strict();
 
-export type MyPrismaScalarsTypeDeleteArgsOmitType = {
-  select?: PrismaClient.Prisma.MyPrismaScalarsTypeSelect | null
-  where: PrismaClient.Prisma.MyPrismaScalarsTypeWhereUniqueInput
-};
-
-export const MyPrismaScalarsTypeDeleteArgsSchema: z.ZodType<MyPrismaScalarsTypeDeleteArgsOmitType> = z.object({
+export const MyPrismaScalarsTypeDeleteArgsSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeDeleteArgs> = z.object({
   select: MyPrismaScalarsTypeSelectSchema.optional(),
   where: MyPrismaScalarsTypeWhereUniqueInputSchema,
 }).strict();
 
-export type MyPrismaScalarsTypeUpdateArgsOmitType = {
-  select?: PrismaClient.Prisma.MyPrismaScalarsTypeSelect | null
-  data: MyPrismaScalarsTypeUpdateInputOmitType | MyPrismaScalarsTypeUncheckedUpdateInputOmitType
-  where: PrismaClient.Prisma.MyPrismaScalarsTypeWhereUniqueInput
-};
-
-export const MyPrismaScalarsTypeUpdateArgsSchema: z.ZodType<MyPrismaScalarsTypeUpdateArgsOmitType> = z.object({
+export const MyPrismaScalarsTypeUpdateArgsSchema: z.ZodType<Omit<PrismaClient.Prisma.MyPrismaScalarsTypeUpdateArgs, "data"> & { data: z.infer<typeof MyPrismaScalarsTypeUpdateInputSchema> | z.infer<typeof MyPrismaScalarsTypeUncheckedUpdateInputSchema>, }> = z.object({
   select: MyPrismaScalarsTypeSelectSchema.optional(),
   data: z.union([MyPrismaScalarsTypeUpdateInputSchema, MyPrismaScalarsTypeUncheckedUpdateInputSchema]),
   where: MyPrismaScalarsTypeWhereUniqueInputSchema,
 }).strict();
 
-export type MyPrismaScalarsTypeUpdateManyArgsOmitType = {
-  select?: PrismaClient.Prisma.MyPrismaScalarsTypeSelect | null
-  data: MyPrismaScalarsTypeUpdateManyMutationInputOmitType | MyPrismaScalarsTypeUncheckedUpdateManyInputOmitType
-  where?: PrismaClient.Prisma.MyPrismaScalarsTypeWhereInput
-};
-
-export const MyPrismaScalarsTypeUpdateManyArgsSchema: z.ZodType<MyPrismaScalarsTypeUpdateManyArgsOmitType> = z.object({
+export const MyPrismaScalarsTypeUpdateManyArgsSchema: z.ZodType<Omit<PrismaClient.Prisma.MyPrismaScalarsTypeUpdateManyArgs, "data"> & { data: z.infer<typeof MyPrismaScalarsTypeUpdateManyMutationInputSchema> | z.infer<typeof MyPrismaScalarsTypeUncheckedUpdateManyInputSchema>, }> = z.object({
   select: MyPrismaScalarsTypeSelectSchema.optional(),
   data: z.union([MyPrismaScalarsTypeUpdateManyMutationInputSchema, MyPrismaScalarsTypeUncheckedUpdateManyInputSchema]),
   where: MyPrismaScalarsTypeWhereInputSchema.optional(),
 }).strict();
 
-export type MyPrismaScalarsTypeDeleteManyArgsOmitType = {
-  select?: PrismaClient.Prisma.MyPrismaScalarsTypeSelect | null
-  where?: PrismaClient.Prisma.MyPrismaScalarsTypeWhereInput
-};
-
-export const MyPrismaScalarsTypeDeleteManyArgsSchema: z.ZodType<MyPrismaScalarsTypeDeleteManyArgsOmitType> = z.object({
+export const MyPrismaScalarsTypeDeleteManyArgsSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeDeleteManyArgs> = z.object({
   select: MyPrismaScalarsTypeSelectSchema.optional(),
   where: MyPrismaScalarsTypeWhereInputSchema.optional(),
 }).strict();

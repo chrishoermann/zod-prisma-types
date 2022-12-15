@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import {
+  MyModelCreateArgsSchema,
   UserFindFirstArgsSchema,
   UserFindManyArgsSchema,
   UserFindUniqueArgsSchema,
@@ -10,7 +11,7 @@ const prisma = new PrismaClient();
 
 const t = initTRPC.create();
 
-const appRouter = t.router({
+export const appRouter = t.router({
   findManyUser: t.procedure.input(UserFindManyArgsSchema).query(({ input }) => {
     return prisma.user.findMany(input);
   }),
@@ -24,5 +25,14 @@ const appRouter = t.router({
     .input(UserFindFirstArgsSchema)
     .query(({ input }) => {
       return prisma.user.findFirst(input);
+    }),
+
+  createMyModel: t.procedure
+    .input(MyModelCreateArgsSchema)
+    .query(({ input }) => {
+      return prisma.myModel.create({
+        ...input,
+        data: { ...input.data, omitRequired: 'foo' },
+      });
     }),
 });

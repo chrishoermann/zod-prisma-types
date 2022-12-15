@@ -133,10 +133,41 @@ export class ExtendedDMMFSchemaField
     );
   }
 
+  /**
+   * Checks if the field contains `create`, `upsert`, `update` or `delete` in its name.
+   * If so, it checks if the linked model has `omit` fields
+   * @returns `true` if the field contains `create`, `upsert`, `update` or `delete` and the linked model has `omit` fields
+   */
   private _setHasOmitFields() {
     const writeOmit = this.name.match(/create|upsert|update|delete/);
     if (writeOmit) return Boolean(this.linkedModel?.hasOmitFields);
     return false;
+  }
+
+  /**
+   * Checkst if the field contains `create`, `upsert`, `update` or `delete` in its name.
+   * Used to determine if the type in the created arg should be recreated with updated arg types.
+   * @returns `true` if the field contains `create`, `upsert`, `update` or `delete` in its name
+   */
+  createCustomOmitFieldType() {
+    return (
+      this.hasOmitFields &&
+      this.args.some((arg) =>
+        arg.name.match(/create|update|upsert|delete|data/),
+      )
+    );
+  }
+
+  /**
+   * If the field contains `create`, `upsert`, `update` or `delete` in its name,
+   * it returns the string union of the fields that should be omitted.
+   * @returns union of fields that should be omitted in custom type
+   */
+  getOmitUnionForCustomType() {
+    return this.args
+      .filter((arg) => arg.name.match(/create|update|upsert|delete|data/))
+      .map((arg) => `"${arg.name}"`)
+      .join(' | ');
   }
 
   isEnumOutputType() {

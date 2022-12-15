@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { StructureKind } from 'ts-morph';
+// import { StructureKind } from 'ts-morph';
 
 import { GetStatements, Statement } from '../types';
 import {
@@ -120,20 +120,6 @@ export const getInputTypeStatements: GetStatements = (dmmf) => {
         ],
       }),
     );
-
-    // If the input type has omitted fields, create a type from the schema.
-    // This type is later used to create an arg type that supports the schema
-    // with the omitted fields.
-    // Otherwise it would be tricky to omit required fields.
-    if (inputType.hasOmitFields()) {
-      statements.push({
-        leadingTrivia: (writer) => writer.newLine(),
-        kind: StructureKind.TypeAlias,
-        name: `${inputType.name}OmitType`,
-        type: `z.infer<typeof ${inputType.name}Schema>`,
-        isExported: true,
-      });
-    }
   });
 
   return statements;
