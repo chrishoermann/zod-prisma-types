@@ -219,7 +219,7 @@ generator zod {
 
 ## `prismaClientPath`
 
-If your prisma client is not located in your `node_modules` folder you can specify the path relative to your `prisma-schema`.
+If your prisma client is not located in your `node_modules` folder you can specify the path relative to the path where your generated zod-schemas live.
 
 ```prisma
 generator zod {
