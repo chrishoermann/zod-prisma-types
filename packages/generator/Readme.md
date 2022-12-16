@@ -12,6 +12,7 @@
   - [addInputTypeValidation](#addinputtypevalidation)
   - [imports](#imports)
   - [tsConfigFilePath](#tsconfigfilepath)
+  - [prismaClientPath](#prismaclientpath)
 - [Skip schema generation](#skip-schema-generation)
 - [Field validators](#field-validators)
   - [Custom type error messages](#custom-type-error-messages)
@@ -68,6 +69,8 @@ generator zod {
   addInputTypeValidation  = false // default is true
   imports                 = "import(import { myFunction } from 'mypackage').import(...other import)" // optional
   tsConfigFilePath        = "config/tsconfig.json" // optional
+  prismaClientPath        = "../../node_modules/.prisma/client" // optional
+
 }
 ```
 
@@ -211,6 +214,17 @@ If your `tsconfig.json` file resides in another folder than your root (where the
 generator zod {
   // ...rest of config
   tsConfigFilePath = "config/tsconfig.json"
+}
+```
+
+## `prismaClientPath`
+
+If your prisma client is not located in your `node_modules` folder you can specify the path relative to your `prisma-schema`.
+
+```prisma
+generator zod {
+  // ...rest of config
+  prismaClientPath = "../../node_modules/.prisma/client"
 }
 ```
 

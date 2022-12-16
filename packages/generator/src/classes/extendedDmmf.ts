@@ -38,6 +38,7 @@ export const configSchema = z.object({
     .default('true')
     .transform((val) => val === 'true'),
   tsConfigFilePath: z.string().optional(),
+  prismaClientPath: z.string().optional(),
 });
 
 export type GeneratorConfig = z.infer<typeof configSchema>;
@@ -76,6 +77,11 @@ export class ExtendedDMMF implements DMMF.Document {
   }
 
   private _setGeneratorConfig(config: Dictionary<string>): GeneratorConfig {
+    console.log('config', config);
+    const parsedConfig = configSchema.parse(config);
+
+    console.log('parsedConfig', parsedConfig);
+
     return configSchema.parse(config);
   }
 
