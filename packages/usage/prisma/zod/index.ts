@@ -439,7 +439,7 @@ export const TestOrderByWithRelationInputSchema: z.ZodType<PrismaClient.Prisma.T
 }).strict();
 
 export const TestWhereUniqueInputSchema: z.ZodType<PrismaClient.Prisma.TestWhereUniqueInput> = z.object({
-  id: z.string().optional(),
+  id: z.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid().optional(),
 }).strict();
 
 export const TestOrderByWithAggregationInputSchema: z.ZodType<PrismaClient.Prisma.TestOrderByWithAggregationInput> = z.object({
@@ -524,7 +524,7 @@ export const MyPrismaScalarsTypeOrderByWithRelationInputSchema: z.ZodType<Prisma
 }).strict();
 
 export const MyPrismaScalarsTypeWhereUniqueInputSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeWhereUniqueInput> = z.object({
-  id: z.string().optional(),
+  id: z.string({ invalid_type_error: "invalid type error" }).cuid().optional(),
 }).strict();
 
 export const MyPrismaScalarsTypeOrderByWithAggregationInputSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeOrderByWithAggregationInput> = z.object({
@@ -595,8 +595,8 @@ export const UserOrderByWithRelationInputSchema: z.ZodType<PrismaClient.Prisma.U
 }).strict();
 
 export const UserWhereUniqueInputSchema: z.ZodType<PrismaClient.Prisma.UserWhereUniqueInput> = z.object({
-  id: z.string().optional(),
-  email: z.string().optional(),
+  id: z.string().cuid().optional(),
+  email: z.string().email({ message: "Invalid email address" }).optional(),
 }).strict();
 
 export const UserOrderByWithAggregationInputSchema: z.ZodType<PrismaClient.Prisma.UserOrderByWithAggregationInput> = z.object({
