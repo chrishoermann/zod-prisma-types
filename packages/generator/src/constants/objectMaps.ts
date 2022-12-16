@@ -3,6 +3,7 @@ import {
   KeyValueMap,
   PrismaAction,
   PrismaScalarType,
+  ZodCustomErrorKey,
   ZodCustomValidatorKeys,
   ZodDateValidatorKeys,
   ZodNumberValidatorKeys,
@@ -77,6 +78,16 @@ export const PRISMA_TO_ZOD_TYPE_MAP: KeyValueMap<
   BigInt: 'bigint',
   Float: 'number',
 };
+
+/////////////////////////////////////////////////
+// ZOD VALID ERROR KEYS
+/////////////////////////////////////////////////
+
+export const ZOD_VALID_ERROR_KEYS: ZodCustomErrorKey[] = [
+  'invalid_type_error',
+  'required_error',
+  'description',
+];
 
 /////////////////////////////////////////////
 // REGEX MAPS

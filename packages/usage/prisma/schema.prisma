@@ -57,7 +57,7 @@ model MyModel {
 model Test {
   /// @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid()
   id         String    @id @default(cuid())
-  /// some comment @zod.string({ required_error: "error", invalid_type_error: "error", wrong_type_error: "error" })
+  /// some comment @zod.string({ required_error: "error", invalid_type_error: "error"})
   name       String?
   value      MyValue
   /// @zod.custom.use(z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }))
@@ -65,7 +65,6 @@ model Test {
   intTwo     Int
   int        Int?
   floatOpt   Float?
-  /// @zod.number({ error: "error", some_key: "error", wrong_type_error: "error" })
   float      Float
   decimal    Decimal
   decimalOpt Decimal?
@@ -149,7 +148,6 @@ model Location {
 //   provider = "zod-prisma-types"
 //   output   = "./generated"
 // }
-
 
 // datasource db {
 //   provider          = "mysql"

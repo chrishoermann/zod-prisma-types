@@ -383,21 +383,16 @@ This would result in an output like:
   }),
 ```
 
-All keys that do not match keys of the `RawCreateParams` type will be filterd out and are not written to the zod type. Currently no error is thrown when an invalid key is used but I intend to implement this behaviour in a future release. So if you have a typo or an invalid key in your custom type error string like:
+If you use a wrong key or have a typo the generator would throw an error:
 
 ```prisma
 model MyModel {
-  myField String  /// @zod.string({ invalid_type_error: "invalid type error", my_invalid_key: "is required", description: "describe the error" })
+  myField String  /// @zod.string({ required_error: "error", invalid_type_errrrrror: "error"})
 }
 ```
 
-The result would look like this (`my_invalid_key` got filtered out):
-
-```ts
- string: z.string({
-    invalid_type_error: 'invalid type error',
-    description: 'describe the error',
-  }),
+```
+[@zod generator error]: Custom error key 'invalid_type_errrrrror' is not valid. Please check for typos! [Error Location]: Model: 'Test', Field: 'myField'.
 ```
 
 ## String validators
@@ -593,7 +588,7 @@ model MyModel {
 For the above example the Error message would look like this:
 
 ```
-[@zod validator error]: Validator 'string' is not valid for type 'Int'. [Error Location]: Model: 'MyModel', Field: 'number'
+[@zod generator error]: Validator 'string' is not valid for type 'Int'. [Error Location]: Model: 'MyModel', Field: 'number'
 ```
 
 The generator provides the exact location, what went wrong and where the error happend. In big prisma schemas with hundreds of models and hundreds of custom validation strings this can come in handy.

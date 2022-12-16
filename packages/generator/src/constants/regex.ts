@@ -16,11 +16,13 @@ export const VALIDATOR_KEY_REGEX = /(\.(?<validatorKey>[\w]+))/;
 export const VALIDATOR_CUSTOM_ERROR_REGEX =
   /(\()(?<object>\{(?<messages>[\w (),'":+\-*#!§$%&\/{}\[\]=?~><°^]+)\})(\))/;
 
+export const VALIDATOR_CUSTOM_ERROR_MESSAGE_REGEX =
+  /[ ]?"[\w (),.':+\-*#!§$%&\/{}\[\]=?~><°^]+"[,]?[ ]?/g;
+
+export const VALIDATOR_CUSTOM_ERROR_SPLIT_KEYS_REGEX = /[\w]+(?=:)/g;
+
 export const VALIDATOR_CUSTOM_ERROR_REGEX_ALT =
   /(?<opening>\(\{)(?<messages>[\w,": ]+)(?<closing>\}\))/;
-
-export const VALIDATOR_CUSTOM_ERROR_KEYS_REGEX =
-  /(?<message>invalid_type_error:[ ]?("|')[\w (),':+\-*#!§$%&\/{}\[\]=?~><°^]+("|')|required_error:[ ]?("|')[\w (),':+\-*#!§$%&\/{}\[\]=?~><°^]+("|')|description:[ ]?("|')[\w (),':+\-*#!§$%&\/{}\[\]=?~><°^]+("|'))/g;
 
 // STRING
 // ----------------------------------------

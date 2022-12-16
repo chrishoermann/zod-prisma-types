@@ -9,11 +9,13 @@ import {
   PRISMA_TO_VALIDATOR_TYPE_MAP,
   CUSTOM_VALIDATOR_REGEX_MAP,
   ValidatorMap,
+  ZOD_VALID_ERROR_KEYS,
 } from '../constants/objectMaps';
 import {
   PRISMA_FUNCTION_TYPES_WITH_VALIDATORS,
-  VALIDATOR_CUSTOM_ERROR_KEYS_REGEX,
+  VALIDATOR_CUSTOM_ERROR_MESSAGE_REGEX,
   VALIDATOR_CUSTOM_ERROR_REGEX,
+  VALIDATOR_CUSTOM_ERROR_SPLIT_KEYS_REGEX,
   VALIDATOR_KEY_REGEX,
   VALIDATOR_TYPE_IS_VALID_REGEX,
   VALIDATOR_TYPE_REGEX,
@@ -24,6 +26,7 @@ import {
   ScalarValidatorFunctionOptions,
   ZodValidatorType,
   ZodPrismaScalarType,
+  ZodCustomErrorKey,
 } from '../types';
 import { FormattedNames } from './formattedNames';
 
@@ -266,13 +269,22 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
 
     const customErrorsString = customErrors.match(VALIDATOR_CUSTOM_ERROR_REGEX);
 
-    const validErrorMessages = customErrorsString?.groups?.['object'].match(
-      VALIDATOR_CUSTOM_ERROR_KEYS_REGEX,
-    );
+    // extract the keys of the custom error messages
+    const customErrorKeys = customErrorsString?.groups?.['messages']
+      .replace(VALIDATOR_CUSTOM_ERROR_MESSAGE_REGEX, '')
+      .match(VALIDATOR_CUSTOM_ERROR_SPLIT_KEYS_REGEX);
 
-    if (!validErrorMessages) return;
+    // check if the keys are valid
+    customErrorKeys?.forEach((key) => {
+      if (!ZOD_VALID_ERROR_KEYS.includes(key as ZodCustomErrorKey)) {
+        throw new Error(
+          `[@zod generator error]: Custom error key '${key}' is not valid. Please check for typos! ${this.errorLocation}`,
+        );
+      }
+    });
 
-    return `{ ${validErrorMessages.join(', ')} }`;
+    // return the valid custom error messages
+    return customErrorsString?.groups?.['object'];
   }
 
   // GET ZOD CUSTOM VALIDATOR

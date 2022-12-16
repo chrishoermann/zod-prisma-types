@@ -35,6 +35,11 @@ export type ZodValidatorTypeMap = KeyValueMap<
 
 export type PrismaScalarTypeMap<T> = KeyValueMap<PrismaScalarType, T>;
 
+export type ZodCustomErrorKey =
+  | 'invalid_type_error'
+  | 'required_error'
+  | 'description';
+
 export type ZodPrimitiveType =
   | 'string'
   | 'number'
