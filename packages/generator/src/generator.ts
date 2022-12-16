@@ -1,8 +1,7 @@
 import { GeneratorOptions } from '@prisma/generator-helper';
 import { Project } from 'ts-morph';
 
-import { DirectoryHelper } from './classes/directoryHelper';
-import { ExtendedDMMF } from './classes/extendedDMMF';
+import { DirectoryHelper, ExtendedDMMF } from './classes';
 import {
   getArgTypeStatements,
   getEnumStatements,
