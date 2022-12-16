@@ -75,11 +75,13 @@ export const getArgTypeStatements: GetStatements = (dmmf) => {
                 writer.write(`z.object(`);
                 writer.inlineBlock(() => {
                   writer
-                    .writeLine(
+                    .conditionalWriteLine(
+                      field.writeSelectAndIncludeArgs(),
                       `select :${field.modelType}SelectSchema.optional(),`,
                     )
                     .conditionalWriteLine(
-                      field.linkedModel?.hasRelationFields,
+                      field.writeSelectAndIncludeArgs() &&
+                        field.linkedModel?.hasRelationFields,
                       `include: ${field.modelType}IncludeSchema.optional(),`,
                     );
                   field.args.forEach((arg) => {

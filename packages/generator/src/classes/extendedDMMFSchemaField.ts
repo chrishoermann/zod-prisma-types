@@ -189,4 +189,12 @@ export class ExtendedDMMFSchemaField
   isCountField() {
     return this.name.includes('_count');
   }
+
+  /**
+   * Used to determine if the field should be included in the `select` and `include` args.
+   * @returns `true` if the field does not contian `createMany`, `updateMany` or `deleteMany` in its name
+   */
+  writeSelectAndIncludeArgs() {
+    return !this.name.match(/createMany|updateMany|deleteMany/);
+  }
 }

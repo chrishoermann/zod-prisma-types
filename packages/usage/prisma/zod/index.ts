@@ -3726,7 +3726,6 @@ export const MyModelUpsertArgsSchema: z.ZodType<Omit<PrismaClient.Prisma.MyModel
 export const MyModelCreateManyArgsSchema: z.ZodType<Omit<PrismaClient.Prisma.MyModelCreateManyArgs, "data"> & {
   data: z.infer<typeof MyModelCreateManyInputSchema>[]
 }> = z.object({
-  select: MyModelSelectSchema.optional(),
   data: MyModelCreateManyInputSchema.array(),
   skipDuplicates: z.boolean().optional(),
 }).strict();
@@ -3743,13 +3742,11 @@ export const MyModelUpdateArgsSchema: z.ZodType<Omit<PrismaClient.Prisma.MyModel
 }).strict();
 
 export const MyModelUpdateManyArgsSchema: z.ZodType<Omit<PrismaClient.Prisma.MyModelUpdateManyArgs, "data"> & { data: z.infer<typeof MyModelUpdateManyMutationInputSchema> | z.infer<typeof MyModelUncheckedUpdateManyInputSchema>, }> = z.object({
-  select: MyModelSelectSchema.optional(),
   data: z.union([MyModelUpdateManyMutationInputSchema, MyModelUncheckedUpdateManyInputSchema]),
   where: MyModelWhereInputSchema.optional(),
 }).strict();
 
 export const MyModelDeleteManyArgsSchema: z.ZodType<PrismaClient.Prisma.MyModelDeleteManyArgs> = z.object({
-  select: MyModelSelectSchema.optional(),
   where: MyModelWhereInputSchema.optional(),
 }).strict();
 
@@ -3766,7 +3763,6 @@ export const TestUpsertArgsSchema: z.ZodType<PrismaClient.Prisma.TestUpsertArgs>
 }).strict();
 
 export const TestCreateManyArgsSchema: z.ZodType<PrismaClient.Prisma.TestCreateManyArgs> = z.object({
-  select: TestSelectSchema.optional(),
   data: TestCreateManyInputSchema.array(),
   skipDuplicates: z.boolean().optional(),
 }).strict();
@@ -3783,13 +3779,11 @@ export const TestUpdateArgsSchema: z.ZodType<PrismaClient.Prisma.TestUpdateArgs>
 }).strict();
 
 export const TestUpdateManyArgsSchema: z.ZodType<PrismaClient.Prisma.TestUpdateManyArgs> = z.object({
-  select: TestSelectSchema.optional(),
   data: z.union([TestUpdateManyMutationInputSchema, TestUncheckedUpdateManyInputSchema]),
   where: TestWhereInputSchema.optional(),
 }).strict();
 
 export const TestDeleteManyArgsSchema: z.ZodType<PrismaClient.Prisma.TestDeleteManyArgs> = z.object({
-  select: TestSelectSchema.optional(),
   where: TestWhereInputSchema.optional(),
 }).strict();
 
@@ -3808,7 +3802,6 @@ export const MyPrismaScalarsTypeUpsertArgsSchema: z.ZodType<Omit<PrismaClient.Pr
 export const MyPrismaScalarsTypeCreateManyArgsSchema: z.ZodType<Omit<PrismaClient.Prisma.MyPrismaScalarsTypeCreateManyArgs, "data"> & {
   data: z.infer<typeof MyPrismaScalarsTypeCreateManyInputSchema>[]
 }> = z.object({
-  select: MyPrismaScalarsTypeSelectSchema.optional(),
   data: MyPrismaScalarsTypeCreateManyInputSchema.array(),
   skipDuplicates: z.boolean().optional(),
 }).strict();
@@ -3825,13 +3818,11 @@ export const MyPrismaScalarsTypeUpdateArgsSchema: z.ZodType<Omit<PrismaClient.Pr
 }).strict();
 
 export const MyPrismaScalarsTypeUpdateManyArgsSchema: z.ZodType<Omit<PrismaClient.Prisma.MyPrismaScalarsTypeUpdateManyArgs, "data"> & { data: z.infer<typeof MyPrismaScalarsTypeUpdateManyMutationInputSchema> | z.infer<typeof MyPrismaScalarsTypeUncheckedUpdateManyInputSchema>, }> = z.object({
-  select: MyPrismaScalarsTypeSelectSchema.optional(),
   data: z.union([MyPrismaScalarsTypeUpdateManyMutationInputSchema, MyPrismaScalarsTypeUncheckedUpdateManyInputSchema]),
   where: MyPrismaScalarsTypeWhereInputSchema.optional(),
 }).strict();
 
 export const MyPrismaScalarsTypeDeleteManyArgsSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeDeleteManyArgs> = z.object({
-  select: MyPrismaScalarsTypeSelectSchema.optional(),
   where: MyPrismaScalarsTypeWhereInputSchema.optional(),
 }).strict();
 
@@ -3850,8 +3841,6 @@ export const UserUpsertArgsSchema: z.ZodType<PrismaClient.Prisma.UserUpsertArgs>
 }).strict();
 
 export const UserCreateManyArgsSchema: z.ZodType<PrismaClient.Prisma.UserCreateManyArgs> = z.object({
-  select: UserSelectSchema.optional(),
-  include: UserIncludeSchema.optional(),
   data: UserCreateManyInputSchema.array(),
   skipDuplicates: z.boolean().optional(),
 }).strict();
@@ -3870,15 +3859,11 @@ export const UserUpdateArgsSchema: z.ZodType<PrismaClient.Prisma.UserUpdateArgs>
 }).strict();
 
 export const UserUpdateManyArgsSchema: z.ZodType<PrismaClient.Prisma.UserUpdateManyArgs> = z.object({
-  select: UserSelectSchema.optional(),
-  include: UserIncludeSchema.optional(),
   data: z.union([UserUpdateManyMutationInputSchema, UserUncheckedUpdateManyInputSchema]),
   where: UserWhereInputSchema.optional(),
 }).strict();
 
 export const UserDeleteManyArgsSchema: z.ZodType<PrismaClient.Prisma.UserDeleteManyArgs> = z.object({
-  select: UserSelectSchema.optional(),
-  include: UserIncludeSchema.optional(),
   where: UserWhereInputSchema.optional(),
 }).strict();
 
@@ -3897,8 +3882,6 @@ export const PostUpsertArgsSchema: z.ZodType<PrismaClient.Prisma.PostUpsertArgs>
 }).strict();
 
 export const PostCreateManyArgsSchema: z.ZodType<PrismaClient.Prisma.PostCreateManyArgs> = z.object({
-  select: PostSelectSchema.optional(),
-  include: PostIncludeSchema.optional(),
   data: PostCreateManyInputSchema.array(),
   skipDuplicates: z.boolean().optional(),
 }).strict();
@@ -3917,15 +3900,11 @@ export const PostUpdateArgsSchema: z.ZodType<PrismaClient.Prisma.PostUpdateArgs>
 }).strict();
 
 export const PostUpdateManyArgsSchema: z.ZodType<PrismaClient.Prisma.PostUpdateManyArgs> = z.object({
-  select: PostSelectSchema.optional(),
-  include: PostIncludeSchema.optional(),
   data: z.union([PostUpdateManyMutationInputSchema, PostUncheckedUpdateManyInputSchema]),
   where: PostWhereInputSchema.optional(),
 }).strict();
 
 export const PostDeleteManyArgsSchema: z.ZodType<PrismaClient.Prisma.PostDeleteManyArgs> = z.object({
-  select: PostSelectSchema.optional(),
-  include: PostIncludeSchema.optional(),
   where: PostWhereInputSchema.optional(),
 }).strict();
 
@@ -3944,8 +3923,6 @@ export const ProfileUpsertArgsSchema: z.ZodType<PrismaClient.Prisma.ProfileUpser
 }).strict();
 
 export const ProfileCreateManyArgsSchema: z.ZodType<PrismaClient.Prisma.ProfileCreateManyArgs> = z.object({
-  select: ProfileSelectSchema.optional(),
-  include: ProfileIncludeSchema.optional(),
   data: ProfileCreateManyInputSchema.array(),
   skipDuplicates: z.boolean().optional(),
 }).strict();
@@ -3964,15 +3941,11 @@ export const ProfileUpdateArgsSchema: z.ZodType<PrismaClient.Prisma.ProfileUpdat
 }).strict();
 
 export const ProfileUpdateManyArgsSchema: z.ZodType<PrismaClient.Prisma.ProfileUpdateManyArgs> = z.object({
-  select: ProfileSelectSchema.optional(),
-  include: ProfileIncludeSchema.optional(),
   data: z.union([ProfileUpdateManyMutationInputSchema, ProfileUncheckedUpdateManyInputSchema]),
   where: ProfileWhereInputSchema.optional(),
 }).strict();
 
 export const ProfileDeleteManyArgsSchema: z.ZodType<PrismaClient.Prisma.ProfileDeleteManyArgs> = z.object({
-  select: ProfileSelectSchema.optional(),
-  include: ProfileIncludeSchema.optional(),
   where: ProfileWhereInputSchema.optional(),
 }).strict();
 
@@ -3991,8 +3964,6 @@ export const LocationUpsertArgsSchema: z.ZodType<PrismaClient.Prisma.LocationUps
 }).strict();
 
 export const LocationCreateManyArgsSchema: z.ZodType<PrismaClient.Prisma.LocationCreateManyArgs> = z.object({
-  select: LocationSelectSchema.optional(),
-  include: LocationIncludeSchema.optional(),
   data: LocationCreateManyInputSchema.array(),
   skipDuplicates: z.boolean().optional(),
 }).strict();
@@ -4011,14 +3982,10 @@ export const LocationUpdateArgsSchema: z.ZodType<PrismaClient.Prisma.LocationUpd
 }).strict();
 
 export const LocationUpdateManyArgsSchema: z.ZodType<PrismaClient.Prisma.LocationUpdateManyArgs> = z.object({
-  select: LocationSelectSchema.optional(),
-  include: LocationIncludeSchema.optional(),
   data: z.union([LocationUpdateManyMutationInputSchema, LocationUncheckedUpdateManyInputSchema]),
   where: LocationWhereInputSchema.optional(),
 }).strict();
 
 export const LocationDeleteManyArgsSchema: z.ZodType<PrismaClient.Prisma.LocationDeleteManyArgs> = z.object({
-  select: LocationSelectSchema.optional(),
-  include: LocationIncludeSchema.optional(),
   where: LocationWhereInputSchema.optional(),
 }).strict();

@@ -20,3 +20,7 @@ export const usesCustomTsConfigFilePath = async (
     );
   }
 };
+
+// export const cleanPath = (path: string): string => {
+//   return path.replace(/\\/g, '/');
+// };
