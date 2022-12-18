@@ -14,7 +14,7 @@ export const getEnumStatements: GetStatements = ({ schema, datamodel }) => {
   statements.push(writeHeading(`PRISMA GENERATED ENUMS`, 'SLIM'));
 
   schema.enumTypes.prisma.forEach(
-    ({ formattedNames, useNativeEnum, values }) => {
+    ({ formattedNames, useNativeEnum, values, name }) => {
       if (useNativeEnum) {
         statements.push(
           writeConstStatement({
@@ -23,9 +23,7 @@ export const getEnumStatements: GetStatements = ({ schema, datamodel }) => {
               {
                 name: `${formattedNames.pascalCase}Schema`,
                 initializer(writer) {
-                  writer.write(
-                    `z.nativeEnum(PrismaClient.Prisma.${formattedNames.pascalCase})`,
-                  );
+                  writer.write(`z.nativeEnum(PrismaClient.Prisma.${name})`);
                 },
               },
             ],
@@ -58,17 +56,15 @@ export const getEnumStatements: GetStatements = ({ schema, datamodel }) => {
 
   statements.push(writeHeading(`CUSTOM ENUMS`, 'SLIM'));
 
-  datamodel.enums.forEach(({ formattedNames }) => {
+  datamodel.enums.forEach(({ name }) => {
     statements.push(
       writeConstStatement({
         leadingTrivia: (writer) => writer.newLine(),
         declarations: [
           {
-            name: `${formattedNames.pascalCase}Schema`,
+            name: `${name}Schema`,
             initializer(writer) {
-              writer.write(
-                `z.nativeEnum(PrismaClient.${formattedNames.pascalCase})`,
-              );
+              writer.write(`z.nativeEnum(PrismaClient.${name})`);
             },
           },
         ],

@@ -21,7 +21,7 @@ generator zod {
   // prismaClientPath = "../../node_modules/.prisma/client" // optional
 }
 
-enum MyValue {
+enum MYValue {
   A
   B
   C
@@ -59,7 +59,7 @@ model Test {
   id         String    @id @default(cuid())
   /// some comment @zod.string({ required_error: "error", invalid_type_error: "error"})
   name       String?
-  value      MyValue
+  value      MYValue
   /// @zod.custom.use(z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }))
   bic        String?
   intTwo     Int
@@ -73,7 +73,7 @@ model Test {
   bigInt     BigInt /// @zod.bigint({ invalid_type_error: "error" })
   bigIntOpt  BigInt?
   json       Json
-  jsonOpt    Json?
+  // jsonOpt    Json?
   bytes      Bytes /// @zod.custom.use(z.instanceof(Buffer).refine((val) => val ? true : false, { message: 'Value is not valid' }))
   bytesOpt   Bytes?
 }
