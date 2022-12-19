@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  // output   = "../client"
 }
 
 datasource db {
@@ -20,6 +21,10 @@ generator zod {
   // tsConfigFilePath = "tsconfig.json" // optional
   // prismaClientPath = "../../node_modules/.prisma/client" // optional
 }
+
+// generator zodgen {
+//   provider = "prisma-zod-generator"
+// }
 
 enum MYValue {
   A
@@ -55,14 +60,14 @@ model MyModel {
 }
 
 model MODELWithUpperCase {
-  id   Int  @id @default(autoincrement())
-  STRING String
+  id      Int     @id @default(autoincrement())
+  STRING  String
   MYValue MYValue
 }
 
 model JsonModel {
-  id   Int  @id @default(autoincrement())
-  json Json
+  id      Int   @id @default(autoincrement())
+  json    Json
   jsonOpt Json?
 }
 

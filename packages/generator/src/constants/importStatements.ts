@@ -13,10 +13,10 @@ export const PRIMSA_IMPORT_STATEMENT: ImportDeclarationStructure = {
 };
 
 export const getPrismaImportStatemnt = (
-  prismaClientPath?: string,
+  prismaClientPath: string,
 ): ImportDeclarationStructure => ({
   ...PRIMSA_IMPORT_STATEMENT,
-  moduleSpecifier: prismaClientPath || '@prisma/client',
+  moduleSpecifier: prismaClientPath,
 });
 
 export const ENUM_IMPORT_STATEMENT: ImportDeclarationStructure = {

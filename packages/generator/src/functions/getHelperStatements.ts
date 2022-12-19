@@ -1,3 +1,5 @@
+import { StructureKind } from 'ts-morph';
+
 import { GetStatements, Statement } from '../types';
 import { writeConstStatement, writeHeading } from '../utils';
 
@@ -11,6 +13,34 @@ export const getHelperStatements: GetStatements = ({ schema }) => {
   if (schema.hasJsonTypes) {
     statements.push(
       writeHeading(`HELPER TYPES`, 'FAT'),
+      {
+        leadingTrivia: (writer) => writer.newLine(),
+        kind: StructureKind.TypeAlias,
+        name: 'NullableJsonInput',
+        type: "PrismaClient.Prisma.JsonValue | null | 'JsonNull' | 'DbNull'",
+      },
+      writeConstStatement({
+        leadingTrivia: (writer) => writer.newLine(),
+        declarations: [
+          {
+            name: `transformJsonNull`,
+            initializer(writer) {
+              writer
+                .writeLine(`(v?: NullableJsonInput) => `)
+                .inlineBlock(() => {
+                  writer.writeLine(
+                    `if (!v || v === 'DbNull') return PrismaClient.Prisma.DbNull;`,
+                  );
+                  writer.writeLine(
+                    `if (v === 'JsonNull') return PrismaClient.Prisma.JsonNull;`,
+                  );
+                  writer.writeLine(`return v;`);
+                });
+            },
+          },
+        ],
+      }),
+
       writeConstStatement({
         leadingTrivia: (writer) => writer.newLine(),
         declarations: [
@@ -24,7 +54,23 @@ export const getHelperStatements: GetStatements = ({ schema }) => {
               writer.writeLine(`z.boolean(),`);
               writer.writeLine(`z.lazy(() => z.array(JsonValue)),`);
               writer.writeLine(`z.lazy(() => z.record(JsonValue)),`);
-              writer.write(`])`).write('.nullable()');
+              writer.write(`])`);
+            },
+          },
+        ],
+      }),
+      writeConstStatement({
+        leadingTrivia: (writer) => writer.newLine(),
+        declarations: [
+          {
+            name: `NullableJsonValue`,
+            initializer(writer) {
+              writer
+                .write(`z`)
+                .newLine()
+                .write(`.union([JsonValue, NullableJsonNullValueInputSchema])`)
+                .writeLine('.nullable()')
+                .write(`.transform((v) => transformJsonNull(v))`);
             },
           },
         ],

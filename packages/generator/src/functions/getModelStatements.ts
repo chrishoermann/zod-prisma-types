@@ -55,7 +55,7 @@ export const getModelStatements: GetStatements = (dmmf) => {
                       .conditionalWrite(field.omitInModel(), '// omitted: ')
                       .write(`${field.formattedNames.original}: `)
                       .conditionalWrite(field.isRequired, `InputJsonValue`)
-                      .conditionalWrite(!field.isRequired, `JsonValue`)
+                      .conditionalWrite(!field.isRequired, `NullableJsonValue`)
                       .conditionalWrite(field.isList, `.array()`)
                       .conditionalWrite(!field.isRequired, `.optional()`)
                       // TODO: check out how to handle json null in the standard schema

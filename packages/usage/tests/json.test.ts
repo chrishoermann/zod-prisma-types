@@ -1,10 +1,5 @@
 import { Prisma, PrismaClient } from '@prisma/client';
-import { z } from 'zod';
-import {
-  JsonModelCreateInputSchema,
-  JsonModelSchema,
-  JsonValue,
-} from '../prisma/zod';
+import { JsonModelSchema, JsonValue } from '../prisma/zod';
 
 const JsonValueWithTransform = JsonValue.transform((v) => {
   if (v === null) return Prisma.DbNull;
@@ -30,7 +25,7 @@ it('should return the right json null value', async () => {
       a: 'b',
       c: 'd',
     },
-    jsonOpt: 'JsonNull',
+    jsonOpt: 'DbNull',
   });
 
   //   const transformedInput = {
