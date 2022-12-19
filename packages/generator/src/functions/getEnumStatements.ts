@@ -42,6 +42,16 @@ export const getEnumStatements: GetStatements = ({ schema, datamodel }) => {
                   writer.write(`'${value}',`);
                 });
                 writer.write(`])`);
+                //   .write(`.transform((v) => `)
+                //   .inlineBlock(() => {
+                //     values.forEach((value) => {
+                //       writer.writeLine(
+                //         `if (v === '${value}') return PrismaClient.Prisma.NullTypes.${value};`,
+                //       );
+                //     });
+                //     writer.writeLine(`return v;`);
+                //   })
+                //   .write(`)`);
               },
             },
           ],

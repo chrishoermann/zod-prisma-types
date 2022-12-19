@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": ".",
-    "lib": ["dom","ESNext"],
+    "lib": ["dom", "ESNext"],
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
@@ -29,6 +29,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "useDefineForClassFields": true,
-    "useUnknownInCatchVariables": true
+    "useUnknownInCatchVariables": true,
+    "types": ["vitest/globals"]
   }
 }
