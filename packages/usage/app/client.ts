@@ -1,5 +1,9 @@
 // @filename: client.ts
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
+import {
+  JsonNullValueInputSchema,
+  NullableJsonNullValueInputSchema,
+} from '../prisma/zod/index.js';
 import type { AppRouter } from './server.js';
 
 // Notice the <AppRouter> generic here.
@@ -15,9 +19,8 @@ const main = () => {
   const user = trpc.createJson
     .mutate({
       data: {
-        json: {
-          foo: 'bar',
-        },
+        json: JsonNullValueInputSchema.Enum.JsonNull,
+        jsonOpt: NullableJsonNullValueInputSchema.Enum.DbNull,
       },
     })
     .then((res) => {

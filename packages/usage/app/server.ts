@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import {
   MyModelCreateArgsSchema,
   JsonModelCreateArgsSchema,
@@ -41,6 +41,12 @@ export const appRouter = t.router({
     .input(JsonModelCreateArgsSchema)
     .mutation(({ input }) => {
       return prisma.jsonModel.create(input);
+      // return prisma.jsonModel.create({
+      //   data: {
+      //     json: Prisma.JsonNull,
+      //     jsonOpt: Prisma.JsonNull,
+      //   },
+      // });
     }),
 });
 

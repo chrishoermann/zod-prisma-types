@@ -14,6 +14,7 @@ export const getEnumStatements: GetStatements = ({ schema, datamodel }) => {
   statements.push(writeHeading(`PRISMA GENERATED ENUMS`, 'SLIM'));
 
   schema.enumTypes.prisma.forEach(({ useNativeEnum, values, name }) => {
+    // console.log({ name, values });
     if (useNativeEnum) {
       statements.push(
         writeConstStatement({
@@ -46,6 +47,25 @@ export const getEnumStatements: GetStatements = ({ schema, datamodel }) => {
           ],
         }),
       );
+      // statements.push(
+      //   writeConstStatement({
+      //     leadingTrivia: (writer) => writer.newLine(),
+      //     declarations: [
+      //       {
+      //         name: `${name}ObjectSchema`,
+      //         initializer(writer) {
+      //           writer.write(`z.object({`);
+      //           values.forEach((value) => {
+      //             writer.writeLine(
+      //               `${value}: z.literal(PrismaClient.Prisma.${name}['${value}']),`,
+      //             );
+      //           });
+      //           writer.write(`})`);
+      //         },
+      //       },
+      //     ],
+      //   }),
+      // );
     }
   });
 

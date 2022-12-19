@@ -27,6 +27,6 @@ export class ExtendedDMMFSchemaEnum
   }
 
   private _setUseNativeEnum() {
-    return !this.name.includes('Json');
+    return !this.name.includes('JsonNullValue');
   }
 }

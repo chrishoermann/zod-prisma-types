@@ -63,6 +63,7 @@ model MODELWithUpperCase {
 model JsonModel {
   id   Int  @id @default(autoincrement())
   json Json
+  jsonOpt Json?
 }
 
 model Test {
@@ -84,7 +85,7 @@ model Test {
   bigInt     BigInt /// @zod.bigint({ invalid_type_error: "error" })
   bigIntOpt  BigInt?
   json       Json
-  // jsonOpt    Json?
+  jsonOpt    Json?
   bytes      Bytes /// @zod.custom.use(z.instanceof(Buffer).refine((val) => val ? true : false, { message: 'Value is not valid' }))
   bytesOpt   Bytes?
 }
