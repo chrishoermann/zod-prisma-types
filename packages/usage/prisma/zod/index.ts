@@ -95,8 +95,9 @@ export const MyModelSchema = z.object({
 //------------------------------------------------------
 
 export const MODELWithUpperCaseSchema = z.object({
+  MYValue: MYValueSchema,
   id: z.number(),
-  string: z.string(),
+  STRING: z.string(),
 });
 
 // JSON MODEL
@@ -218,7 +219,8 @@ export const MyModelSelectSchema: z.ZodType<PrismaClient.Prisma.MyModelSelect> =
 
 export const MODELWithUpperCaseSelectSchema: z.ZodType<PrismaClient.Prisma.MODELWithUpperCaseSelect> = z.object({
   id: z.boolean().optional(),
-  string: z.boolean().optional(),
+  STRING: z.boolean().optional(),
+  MYValue: z.boolean().optional(),
 }).strict();
 
 // JSON MODEL
@@ -430,12 +432,14 @@ export const MODELWithUpperCaseWhereInputSchema: z.ZodType<PrismaClient.Prisma.M
   OR: z.lazy(() => MODELWithUpperCaseWhereInputSchema).array().optional(),
   NOT: z.union([z.lazy(() => MODELWithUpperCaseWhereInputSchema), z.lazy(() => MODELWithUpperCaseWhereInputSchema).array()]).optional(),
   id: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
-  string: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+  STRING: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+  MYValue: z.union([z.lazy(() => EnumMYValueFilterSchema), z.lazy(() => MYValueSchema)]).optional(),
 }).strict();
 
 export const MODELWithUpperCaseOrderByWithRelationInputSchema: z.ZodType<PrismaClient.Prisma.MODELWithUpperCaseOrderByWithRelationInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  string: z.lazy(() => SortOrderSchema).optional(),
+  STRING: z.lazy(() => SortOrderSchema).optional(),
+  MYValue: z.lazy(() => SortOrderSchema).optional(),
 }).strict();
 
 export const MODELWithUpperCaseWhereUniqueInputSchema: z.ZodType<PrismaClient.Prisma.MODELWithUpperCaseWhereUniqueInput> = z.object({
@@ -444,7 +448,8 @@ export const MODELWithUpperCaseWhereUniqueInputSchema: z.ZodType<PrismaClient.Pr
 
 export const MODELWithUpperCaseOrderByWithAggregationInputSchema: z.ZodType<PrismaClient.Prisma.MODELWithUpperCaseOrderByWithAggregationInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  string: z.lazy(() => SortOrderSchema).optional(),
+  STRING: z.lazy(() => SortOrderSchema).optional(),
+  MYValue: z.lazy(() => SortOrderSchema).optional(),
   _count: z.lazy(() => MODELWithUpperCaseCountOrderByAggregateInputSchema).optional(),
   _avg: z.lazy(() => MODELWithUpperCaseAvgOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => MODELWithUpperCaseMaxOrderByAggregateInputSchema).optional(),
@@ -457,7 +462,8 @@ export const MODELWithUpperCaseScalarWhereWithAggregatesInputSchema: z.ZodType<P
   OR: z.lazy(() => MODELWithUpperCaseScalarWhereWithAggregatesInputSchema).array().optional(),
   NOT: z.union([z.lazy(() => MODELWithUpperCaseScalarWhereWithAggregatesInputSchema), z.lazy(() => MODELWithUpperCaseScalarWhereWithAggregatesInputSchema).array()]).optional(),
   id: z.union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()]).optional(),
-  string: z.union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()]).optional(),
+  STRING: z.union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()]).optional(),
+  MYValue: z.union([z.lazy(() => EnumMYValueWithAggregatesFilterSchema), z.lazy(() => MYValueSchema)]).optional(),
 }).strict();
 
 export const JsonModelWhereInputSchema: z.ZodType<PrismaClient.Prisma.JsonModelWhereInput> = z.object({
@@ -914,35 +920,42 @@ export const MyModelUncheckedUpdateManyInputSchema: z.ZodType<Omit<PrismaClient.
 }).strict();
 
 export const MODELWithUpperCaseCreateInputSchema: z.ZodType<PrismaClient.Prisma.MODELWithUpperCaseCreateInput> = z.object({
-  string: z.string(),
+  STRING: z.string(),
+  MYValue: z.lazy(() => MYValueSchema),
 }).strict();
 
 export const MODELWithUpperCaseUncheckedCreateInputSchema: z.ZodType<PrismaClient.Prisma.MODELWithUpperCaseUncheckedCreateInput> = z.object({
   id: z.number().optional(),
-  string: z.string(),
+  STRING: z.string(),
+  MYValue: z.lazy(() => MYValueSchema),
 }).strict();
 
 export const MODELWithUpperCaseUpdateInputSchema: z.ZodType<PrismaClient.Prisma.MODELWithUpperCaseUpdateInput> = z.object({
-  string: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+  STRING: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+  MYValue: z.union([z.lazy(() => MYValueSchema), z.lazy(() => EnumMYValueFieldUpdateOperationsInputSchema)]).optional(),
 }).strict();
 
 export const MODELWithUpperCaseUncheckedUpdateInputSchema: z.ZodType<PrismaClient.Prisma.MODELWithUpperCaseUncheckedUpdateInput> = z.object({
   id: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
-  string: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+  STRING: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+  MYValue: z.union([z.lazy(() => MYValueSchema), z.lazy(() => EnumMYValueFieldUpdateOperationsInputSchema)]).optional(),
 }).strict();
 
 export const MODELWithUpperCaseCreateManyInputSchema: z.ZodType<PrismaClient.Prisma.MODELWithUpperCaseCreateManyInput> = z.object({
   id: z.number().optional(),
-  string: z.string(),
+  STRING: z.string(),
+  MYValue: z.lazy(() => MYValueSchema),
 }).strict();
 
 export const MODELWithUpperCaseUpdateManyMutationInputSchema: z.ZodType<PrismaClient.Prisma.MODELWithUpperCaseUpdateManyMutationInput> = z.object({
-  string: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+  STRING: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+  MYValue: z.union([z.lazy(() => MYValueSchema), z.lazy(() => EnumMYValueFieldUpdateOperationsInputSchema)]).optional(),
 }).strict();
 
 export const MODELWithUpperCaseUncheckedUpdateManyInputSchema: z.ZodType<PrismaClient.Prisma.MODELWithUpperCaseUncheckedUpdateManyInput> = z.object({
   id: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
-  string: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+  STRING: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+  MYValue: z.union([z.lazy(() => MYValueSchema), z.lazy(() => EnumMYValueFieldUpdateOperationsInputSchema)]).optional(),
 }).strict();
 
 export const JsonModelCreateInputSchema: z.ZodType<PrismaClient.Prisma.JsonModelCreateInput> = z.object({
@@ -1568,9 +1581,17 @@ export const StringWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.Str
   _max: z.lazy(() => NestedStringFilterSchema).optional(),
 }).strict();
 
+export const EnumMYValueFilterSchema: z.ZodType<PrismaClient.Prisma.EnumMYValueFilter> = z.object({
+  equals: z.lazy(() => MYValueSchema).optional(),
+  in: z.lazy(() => MYValueSchema).array().optional(),
+  notIn: z.lazy(() => MYValueSchema).array().optional(),
+  not: z.union([z.lazy(() => MYValueSchema), z.lazy(() => NestedEnumMYValueFilterSchema)]).optional(),
+}).strict();
+
 export const MODELWithUpperCaseCountOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.MODELWithUpperCaseCountOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  string: z.lazy(() => SortOrderSchema).optional(),
+  STRING: z.lazy(() => SortOrderSchema).optional(),
+  MYValue: z.lazy(() => SortOrderSchema).optional(),
 }).strict();
 
 export const MODELWithUpperCaseAvgOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.MODELWithUpperCaseAvgOrderByAggregateInput> = z.object({
@@ -1579,16 +1600,28 @@ export const MODELWithUpperCaseAvgOrderByAggregateInputSchema: z.ZodType<PrismaC
 
 export const MODELWithUpperCaseMaxOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.MODELWithUpperCaseMaxOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  string: z.lazy(() => SortOrderSchema).optional(),
+  STRING: z.lazy(() => SortOrderSchema).optional(),
+  MYValue: z.lazy(() => SortOrderSchema).optional(),
 }).strict();
 
 export const MODELWithUpperCaseMinOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.MODELWithUpperCaseMinOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  string: z.lazy(() => SortOrderSchema).optional(),
+  STRING: z.lazy(() => SortOrderSchema).optional(),
+  MYValue: z.lazy(() => SortOrderSchema).optional(),
 }).strict();
 
 export const MODELWithUpperCaseSumOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.MODELWithUpperCaseSumOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
+}).strict();
+
+export const EnumMYValueWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.EnumMYValueWithAggregatesFilter> = z.object({
+  equals: z.lazy(() => MYValueSchema).optional(),
+  in: z.lazy(() => MYValueSchema).array().optional(),
+  notIn: z.lazy(() => MYValueSchema).array().optional(),
+  not: z.union([z.lazy(() => MYValueSchema), z.lazy(() => NestedEnumMYValueWithAggregatesFilterSchema)]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedEnumMYValueFilterSchema).optional(),
+  _max: z.lazy(() => NestedEnumMYValueFilterSchema).optional(),
 }).strict();
 
 export const JsonFilterSchema: z.ZodType<PrismaClient.Prisma.JsonFilter> = z.object({
@@ -1645,13 +1678,6 @@ export const JsonWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.JsonW
   _count: z.lazy(() => NestedIntFilterSchema).optional(),
   _min: z.lazy(() => NestedJsonFilterSchema).optional(),
   _max: z.lazy(() => NestedJsonFilterSchema).optional(),
-}).strict();
-
-export const EnumMYValueFilterSchema: z.ZodType<PrismaClient.Prisma.EnumMYValueFilter> = z.object({
-  equals: z.lazy(() => MYValueSchema).optional(),
-  in: z.lazy(() => MYValueSchema).array().optional(),
-  notIn: z.lazy(() => MYValueSchema).array().optional(),
-  not: z.union([z.lazy(() => MYValueSchema), z.lazy(() => NestedEnumMYValueFilterSchema)]).optional(),
 }).strict();
 
 export const IntNullableFilterSchema: z.ZodType<PrismaClient.Prisma.IntNullableFilter> = z.object({
@@ -1845,16 +1871,6 @@ export const TestSumOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.T
   decimalOpt: z.lazy(() => SortOrderSchema).optional(),
   bigInt: z.lazy(() => SortOrderSchema).optional(),
   bigIntOpt: z.lazy(() => SortOrderSchema).optional(),
-}).strict();
-
-export const EnumMYValueWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.EnumMYValueWithAggregatesFilter> = z.object({
-  equals: z.lazy(() => MYValueSchema).optional(),
-  in: z.lazy(() => MYValueSchema).array().optional(),
-  notIn: z.lazy(() => MYValueSchema).array().optional(),
-  not: z.union([z.lazy(() => MYValueSchema), z.lazy(() => NestedEnumMYValueWithAggregatesFilterSchema)]).optional(),
-  _count: z.lazy(() => NestedIntFilterSchema).optional(),
-  _min: z.lazy(() => NestedEnumMYValueFilterSchema).optional(),
-  _max: z.lazy(() => NestedEnumMYValueFilterSchema).optional(),
 }).strict();
 
 export const IntNullableWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.IntNullableWithAggregatesFilter> = z.object({
@@ -2718,6 +2734,23 @@ export const NestedStringWithAggregatesFilterSchema: z.ZodType<PrismaClient.Pris
   _max: z.lazy(() => NestedStringFilterSchema).optional(),
 }).strict();
 
+export const NestedEnumMYValueFilterSchema: z.ZodType<PrismaClient.Prisma.NestedEnumMYValueFilter> = z.object({
+  equals: z.lazy(() => MYValueSchema).optional(),
+  in: z.lazy(() => MYValueSchema).array().optional(),
+  notIn: z.lazy(() => MYValueSchema).array().optional(),
+  not: z.union([z.lazy(() => MYValueSchema), z.lazy(() => NestedEnumMYValueFilterSchema)]).optional(),
+}).strict();
+
+export const NestedEnumMYValueWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.NestedEnumMYValueWithAggregatesFilter> = z.object({
+  equals: z.lazy(() => MYValueSchema).optional(),
+  in: z.lazy(() => MYValueSchema).array().optional(),
+  notIn: z.lazy(() => MYValueSchema).array().optional(),
+  not: z.union([z.lazy(() => MYValueSchema), z.lazy(() => NestedEnumMYValueWithAggregatesFilterSchema)]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedEnumMYValueFilterSchema).optional(),
+  _max: z.lazy(() => NestedEnumMYValueFilterSchema).optional(),
+}).strict();
+
 export const NestedJsonFilterSchema: z.ZodType<PrismaClient.Prisma.NestedJsonFilter> = z.object({
   equals: z.union([InputJsonValue, z.lazy(() => JsonNullValueFilterSchema)]).optional(),
   path: z.string().array().optional(),
@@ -2732,13 +2765,6 @@ export const NestedJsonFilterSchema: z.ZodType<PrismaClient.Prisma.NestedJsonFil
   gt: InputJsonValue.optional(),
   gte: InputJsonValue.optional(),
   not: z.union([InputJsonValue, z.lazy(() => JsonNullValueFilterSchema)]).optional(),
-}).strict();
-
-export const NestedEnumMYValueFilterSchema: z.ZodType<PrismaClient.Prisma.NestedEnumMYValueFilter> = z.object({
-  equals: z.lazy(() => MYValueSchema).optional(),
-  in: z.lazy(() => MYValueSchema).array().optional(),
-  notIn: z.lazy(() => MYValueSchema).array().optional(),
-  not: z.union([z.lazy(() => MYValueSchema), z.lazy(() => NestedEnumMYValueFilterSchema)]).optional(),
 }).strict();
 
 export const NestedFloatNullableFilterSchema: z.ZodType<PrismaClient.Prisma.NestedFloatNullableFilter> = z.object({
@@ -2830,16 +2856,6 @@ export const NestedBytesNullableFilterSchema: z.ZodType<PrismaClient.Prisma.Nest
   in: z.instanceof(Buffer).array().optional().nullable(),
   notIn: z.instanceof(Buffer).array().optional().nullable(),
   not: z.union([z.instanceof(Buffer), z.lazy(() => NestedBytesNullableFilterSchema)]).optional().nullable(),
-}).strict();
-
-export const NestedEnumMYValueWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.NestedEnumMYValueWithAggregatesFilter> = z.object({
-  equals: z.lazy(() => MYValueSchema).optional(),
-  in: z.lazy(() => MYValueSchema).array().optional(),
-  notIn: z.lazy(() => MYValueSchema).array().optional(),
-  not: z.union([z.lazy(() => MYValueSchema), z.lazy(() => NestedEnumMYValueWithAggregatesFilterSchema)]).optional(),
-  _count: z.lazy(() => NestedIntFilterSchema).optional(),
-  _min: z.lazy(() => NestedEnumMYValueFilterSchema).optional(),
-  _max: z.lazy(() => NestedEnumMYValueFilterSchema).optional(),
 }).strict();
 
 export const NestedIntNullableWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.NestedIntNullableWithAggregatesFilter> = z.object({

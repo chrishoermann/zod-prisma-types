@@ -56,7 +56,8 @@ model MyModel {
 
 model MODELWithUpperCase {
   id   Int  @id @default(autoincrement())
-  string String
+  STRING String
+  MYValue MYValue
 }
 
 model JsonModel {
