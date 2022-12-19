@@ -16,7 +16,7 @@ generator zod {
   // useInstanceOfForDecimal = true // default is false
   // createInputTypes        = false // default is true
   // addInputTypeValidation  = false // default is true
-  imports  = "import(import { myFunction } from '../../myFunction';).import(import validator from 'validator';)" // optional
+  imports  = "import(import { myFunction } from '../../utils/myFunction';).import(import validator from 'validator';)" // optional
   // tsConfigFilePath = "tsconfig.json" // optional
   // prismaClientPath = "../../node_modules/.prisma/client" // optional
 }
@@ -52,6 +52,11 @@ model MyModel {
   string       String?
   omitField    String? /// @zod.custom.omit([model, input])
   omitRequired String /// @zod.custom.omit([model, input])
+}
+
+model JsonModel {
+  id   Int  @id @default(autoincrement())
+  json Json
 }
 
 model Test {

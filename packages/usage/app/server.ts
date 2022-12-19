@@ -1,10 +1,11 @@
 import { PrismaClient } from '@prisma/client';
 import {
   MyModelCreateArgsSchema,
+  JsonModelCreateArgsSchema,
   UserFindFirstArgsSchema,
   UserFindManyArgsSchema,
   UserFindUniqueArgsSchema,
-} from './prisma/zod';
+} from '../prisma/zod';
 import { initTRPC } from '@trpc/server';
 
 const prisma = new PrismaClient();
@@ -35,4 +36,12 @@ export const appRouter = t.router({
         data: { ...input.data, omitRequired: 'foo' },
       });
     }),
+
+  createJson: t.procedure
+    .input(JsonModelCreateArgsSchema)
+    .mutation(({ input }) => {
+      return prisma.jsonModel.create(input);
+    }),
 });
+
+export type AppRouter = typeof appRouter;
