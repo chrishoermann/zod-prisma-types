@@ -34,7 +34,7 @@ export const getInputTypeStatements: GetStatements = (dmmf) => {
         leadingTrivia: (writer) => writer.newLine(),
         declarations: [
           {
-            name: `${inputType.name}Schema`,
+            name: `${inputType.formattedNames.original}Schema`,
             type,
             initializer: (writer) => {
               writer.write(`z.object(`);

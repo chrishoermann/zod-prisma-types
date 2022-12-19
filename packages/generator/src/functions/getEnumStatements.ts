@@ -13,43 +13,41 @@ export const getEnumStatements: GetStatements = ({ schema, datamodel }) => {
 
   statements.push(writeHeading(`PRISMA GENERATED ENUMS`, 'SLIM'));
 
-  schema.enumTypes.prisma.forEach(
-    ({ formattedNames, useNativeEnum, values, name }) => {
-      if (useNativeEnum) {
-        statements.push(
-          writeConstStatement({
-            leadingTrivia: (writer) => writer.newLine(),
-            declarations: [
-              {
-                name: `${formattedNames.pascalCase}Schema`,
-                initializer(writer) {
-                  writer.write(`z.nativeEnum(PrismaClient.Prisma.${name})`);
-                },
+  schema.enumTypes.prisma.forEach(({ useNativeEnum, values, name }) => {
+    if (useNativeEnum) {
+      statements.push(
+        writeConstStatement({
+          leadingTrivia: (writer) => writer.newLine(),
+          declarations: [
+            {
+              name: `${name}Schema`,
+              initializer(writer) {
+                writer.write(`z.nativeEnum(PrismaClient.Prisma.${name})`);
               },
-            ],
-          }),
-        );
-      } else {
-        statements.push(
-          writeConstStatement({
-            leadingTrivia: (writer) => writer.newLine(),
-            declarations: [
-              {
-                name: `${formattedNames.pascalCase}Schema`,
-                initializer(writer) {
-                  writer.write(`z.enum([`);
-                  values.forEach((value) => {
-                    writer.write(`'${value}',`);
-                  });
-                  writer.write(`])`);
-                },
+            },
+          ],
+        }),
+      );
+    } else {
+      statements.push(
+        writeConstStatement({
+          leadingTrivia: (writer) => writer.newLine(),
+          declarations: [
+            {
+              name: `${name}Schema`,
+              initializer(writer) {
+                writer.write(`z.enum([`);
+                values.forEach((value) => {
+                  writer.write(`'${value}',`);
+                });
+                writer.write(`])`);
               },
-            ],
-          }),
-        );
-      }
-    },
-  );
+            },
+          ],
+        }),
+      );
+    }
+  });
 
   // CUSTOM ENUMS
   // ---------------------------------------------------------------------

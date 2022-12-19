@@ -54,6 +54,11 @@ model MyModel {
   omitRequired String /// @zod.custom.omit([model, input])
 }
 
+model MODELWithUpperCase {
+  id   Int  @id @default(autoincrement())
+  string String
+}
+
 model JsonModel {
   id   Int  @id @default(autoincrement())
   json Json

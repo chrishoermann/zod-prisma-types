@@ -21,20 +21,18 @@ export const getIncludeSelectStatements: GetStatements = (dmmf) => {
           leadingTrivia: (writer) => writer.newLine(),
           declarations: [
             {
-              name: `${model.formattedNames.pascalCase}ArgsSchema`,
-              type: `z.ZodType<PrismaClient.Prisma.${model.formattedNames.pascalCase}Args>`,
+              name: `${model.name}ArgsSchema`,
+              type: `z.ZodType<PrismaClient.Prisma.${model.name}Args>`,
               initializer(writer) {
                 writer
                   .writeLine(`z.object({`)
                   .write(`select: `)
-                  .write(
-                    `z.lazy(() => ${model.formattedNames.pascalCase}SelectSchema).optional(),`,
-                  )
+                  .write(`z.lazy(() => ${model.name}SelectSchema).optional(),`)
                   .newLine()
                   .conditionalWrite(model.hasRelationField(), `include: `)
                   .conditionalWrite(
                     model.hasRelationField(),
-                    `z.lazy(() => ${model.formattedNames.pascalCase}IncludeSchema).optional(),`,
+                    `z.lazy(() => ${model.name}IncludeSchema).optional(),`,
                   )
                   .newLine()
                   .write(`})`)
@@ -50,8 +48,8 @@ export const getIncludeSelectStatements: GetStatements = (dmmf) => {
           leadingTrivia: (writer) => writer.newLine(),
           declarations: [
             {
-              name: `${model.formattedNames.pascalCase}IncludeSchema`,
-              type: `z.ZodType<PrismaClient.Prisma.${model.formattedNames.pascalCase}Include>`,
+              name: `${model.name}IncludeSchema`,
+              type: `z.ZodType<PrismaClient.Prisma.${model.name}Include>`,
               initializer(writer) {
                 writer.write(`z.object({`);
                 model.fields.forEach((field) => {
@@ -91,14 +89,14 @@ export const getIncludeSelectStatements: GetStatements = (dmmf) => {
           leadingTrivia: (writer) => writer.newLine(),
           declarations: [
             {
-              name: `${model.formattedNames.pascalCase}CountOutputTypeArgsSchema`,
-              type: `z.ZodType<PrismaClient.Prisma.${model.formattedNames.pascalCase}CountOutputTypeArgs>`,
+              name: `${model.name}CountOutputTypeArgsSchema`,
+              type: `z.ZodType<PrismaClient.Prisma.${model.name}CountOutputTypeArgs>`,
               initializer(writer) {
                 writer.write(`z.object(`).inlineBlock(() => {
                   writer
                     .write(`select: `)
                     .write(
-                      `z.lazy(() => ${model.formattedNames.pascalCase}CountOutputTypeSelectSchema).nullish(),`,
+                      `z.lazy(() => ${model.name}CountOutputTypeSelectSchema).nullish(),`,
                     )
                     .newLine();
                 });
@@ -116,8 +114,8 @@ export const getIncludeSelectStatements: GetStatements = (dmmf) => {
           leadingTrivia: (writer) => writer.newLine(),
           declarations: [
             {
-              name: `${model.formattedNames.pascalCase}CountOutputTypeSelectSchema`,
-              type: `z.ZodType<PrismaClient.Prisma.${model.formattedNames.pascalCase}CountOutputTypeSelect>`,
+              name: `${model.name}CountOutputTypeSelectSchema`,
+              type: `z.ZodType<PrismaClient.Prisma.${model.name}CountOutputTypeSelect>`,
               initializer(writer) {
                 writer
                   .write(`z.object(`)
@@ -150,8 +148,8 @@ export const getIncludeSelectStatements: GetStatements = (dmmf) => {
         leadingTrivia: (writer) => writer.newLine(),
         declarations: [
           {
-            name: `${model.formattedNames.pascalCase}SelectSchema`,
-            type: `z.ZodType<PrismaClient.Prisma.${model.formattedNames.pascalCase}Select>`,
+            name: `${model.name}SelectSchema`,
+            type: `z.ZodType<PrismaClient.Prisma.${model.name}Select>`,
             initializer(writer) {
               writer.write(`z.object({`);
               model.fields.forEach((field) => {

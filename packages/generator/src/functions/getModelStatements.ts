@@ -19,7 +19,7 @@ export const getModelStatements: GetStatements = (dmmf) => {
         },
         declarations: [
           {
-            name: `${model.formattedNames.pascalCase}Schema`,
+            name: `${model.formattedNames.original}Schema`,
             initializer(writer) {
               writer.write(`z.object({`);
               [...model.enumFields, ...model.scalarFields].forEach((field) => {
