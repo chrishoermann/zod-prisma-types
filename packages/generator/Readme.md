@@ -13,6 +13,7 @@
   - [imports](#imports)
   - [tsConfigFilePath](#tsconfigfilepath)
   - [prismaClientPath](#prismaclientpath)
+- [Json null values](#json-null-values)
 - [Skip schema generation](#skip-schema-generation)
 - [Field validators](#field-validators)
   - [Custom type error messages](#custom-type-error-messages)
@@ -227,6 +228,12 @@ generator zod {
   prismaClientPath = "../../node_modules/.prisma/client"
 }
 ```
+
+# Json null values
+
+When using json null values prisma has a unique way of handling Database `NULL` and JSON `null` as stated [in the Docs](https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#using-null-values).
+
+To adhere to this concept you can pass `"DbNull"` or `"JsonNull"` as string to a nullable Json field. When the schema gets validated these strings are transformed to `Prisma.DbNull` or `Prisma.JsonNull` to satisfy the `prisma.[myModel].create() | .update() | ...` functions.
 
 # Skip schema generation
 
