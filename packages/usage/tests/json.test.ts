@@ -1,5 +1,9 @@
 import { Prisma, PrismaClient } from '@prisma/client';
-import { JsonModelSchema, JsonValue } from '../prisma/zod';
+import {
+  JsonModelCreateInputSchema,
+  JsonModelSchema,
+  JsonValue,
+} from '../prisma/zod';
 
 const JsonValueWithTransform = JsonValue.transform((v) => {
   if (v === null) return Prisma.DbNull;
@@ -28,39 +32,26 @@ it('should return the right json null value', async () => {
     jsonOpt: 'DbNull',
   });
 
-  //   const transformedInput = {
-  //     ...parsedModel,
-  //     jsonOpt: transformJsonNull(parsedModel.jsonOpt),
-  //   };
+  // await prisma.jsonModel.create({
+  //   data: parsedModel,
+  // });
 
-  await prisma.jsonModel.create({
-    data: parsedModel,
-  });
-
-  console.log({ parsedModel });
-
-  //   expect(parsedSchema).toBeTypeOf('function');
+  console.log('JsonModelSchema', parsedModel);
 });
 
-// it('should return the right json null value', async () => {
-//   const parsedModel = JsonModelCreateInputSchema.parse({
-//     // id: 1,
-//     json: {
-//       a: 'b',
-//       c: 'd',
-//     },
-//     jsonOpt: 'DbNull',
-//   });
+it('should return the right json null value', async () => {
+  const parsedModel = JsonModelCreateInputSchema.parse({
+    // id: 1,
+    json: {
+      a: 'b',
+      c: 'd',
+    },
+    jsonOpt: 'JsonNull',
+  });
 
-//   //   await prisma.jsonModel.create({
-//   //     data: {
-//   //       ...parsedModel,
-//   //       json: parsedModel.json,
-//   //       // jsonOpt: !parsedModel.jsonOpt ? Prisma.DbNull : parsedModel.jsonOpt,
-//   //     },
-//   //   });
+  // await prisma.jsonModel.create({
+  //   data: parsedModel,
+  // });
 
-//   console.log(parsedModel);
-
-//   //   expect(parsedSchema).toBeTypeOf('function');
-// });
+  console.log('JsonModelCreateInputSchema', parsedModel);
+});

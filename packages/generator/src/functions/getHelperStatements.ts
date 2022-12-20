@@ -17,7 +17,7 @@ export const getHelperStatements: GetStatements = ({ schema }) => {
         leadingTrivia: (writer) => writer.newLine(),
         kind: StructureKind.TypeAlias,
         name: 'NullableJsonInput',
-        type: "PrismaClient.Prisma.JsonValue | null | 'JsonNull' | 'DbNull'",
+        type: "PrismaClient.Prisma.JsonValue | null | 'JsonNull' | 'DbNull' | PrismaClient.Prisma.NullTypes.DbNull | PrismaClient.Prisma.NullTypes.JsonNull",
       },
       writeConstStatement({
         leadingTrivia: (writer) => writer.newLine(),
@@ -68,7 +68,9 @@ export const getHelperStatements: GetStatements = ({ schema }) => {
               writer
                 .write(`z`)
                 .newLine()
-                .write(`.union([JsonValue, NullableJsonNullValueInputSchema])`)
+                .write(
+                  `.union([JsonValue, z.literal('DbNull'), z.literal('JsonNull')])`,
+                )
                 .writeLine('.nullable()')
                 .write(`.transform((v) => transformJsonNull(v))`);
             },

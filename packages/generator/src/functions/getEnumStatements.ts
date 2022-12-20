@@ -41,41 +41,17 @@ export const getEnumStatements: GetStatements = ({ schema, datamodel }) => {
                 values.forEach((value) => {
                   writer.write(`'${value}',`);
                 });
-                writer.write(`])`);
-                //   .write(`.transform((v) => `)
-                //   .inlineBlock(() => {
-                //     values.forEach((value) => {
-                //       writer.writeLine(
-                //         `if (v === '${value}') return PrismaClient.Prisma.NullTypes.${value};`,
-                //       );
-                //     });
-                //     writer.writeLine(`return v;`);
-                //   })
-                //   .write(`)`);
+                writer
+                  .write(`])`)
+                  .conditionalWrite(
+                    name.includes('Nullable'),
+                    `.transform((v) => transformJsonNull(v))`,
+                  );
               },
             },
           ],
         }),
       );
-      // statements.push(
-      //   writeConstStatement({
-      //     leadingTrivia: (writer) => writer.newLine(),
-      //     declarations: [
-      //       {
-      //         name: `${name}ObjectSchema`,
-      //         initializer(writer) {
-      //           writer.write(`z.object({`);
-      //           values.forEach((value) => {
-      //             writer.writeLine(
-      //               `${value}: z.literal(PrismaClient.Prisma.${name}['${value}']),`,
-      //             );
-      //           });
-      //           writer.write(`})`);
-      //         },
-      //       },
-      //     ],
-      //   }),
-      // );
     }
   });
 
