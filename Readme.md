@@ -12,7 +12,6 @@
   - [addInputTypeValidation](#addinputtypevalidation)
   - [imports](#imports)
   - [tsConfigFilePath](#tsconfigfilepath)
-  - [prismaClientPath](#prismaclientpath)
 - [Json null values](#json-null-values)
 - [Skip schema generation](#skip-schema-generation)
 - [Field validators](#field-validators)
@@ -215,17 +214,6 @@ If your `tsconfig.json` file resides in another folder than your root (where the
 generator zod {
   // ...rest of config
   tsConfigFilePath = "config/tsconfig.json"
-}
-```
-
-## `prismaClientPath`
-
-If your prisma client is not located in your `node_modules` folder you can specify the path relative to the path where your generated zod-schemas live.
-
-```prisma
-generator zod {
-  // ...rest of config
-  prismaClientPath = "../../node_modules/.prisma/client"
 }
 ```
 
