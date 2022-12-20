@@ -22,6 +22,15 @@ it('should return Prisma.DbNull json null value when "DbNull" is provided with M
   expect(parsedModel.jsonOpt).toBeTypeOf('object');
 });
 
+const parsedModel = JsonModelSchema.parse({
+  id: 1,
+  json: {
+    a: 'b',
+    c: 'd',
+  },
+  jsonOpt: null,
+});
+
 it('should return Prisma.DbNull json null value when "null" is provided with ModelSchema', async () => {
   const parsedModel = JsonModelSchema.parse({
     id: 1,

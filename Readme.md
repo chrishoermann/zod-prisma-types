@@ -69,8 +69,6 @@ generator zod {
   addInputTypeValidation  = false // default is true
   imports                 = "import(import { myFunction } from 'mypackage').import(...other import)" // optional
   tsConfigFilePath        = "config/tsconfig.json" // optional
-  prismaClientPath        = "../../node_modules/.prisma/client" // optional
-
 }
 ```
 
