@@ -7,7 +7,7 @@ export const getPrismaClientOutputPath = (options: GeneratorOptions) => {
     (g) => g.provider.value === 'prisma-client-js',
   );
 
-  // check if custom output is used
+  // check if custom output is used on generator or prisma client
   if (
     !options.generator.output?.value ||
     !prismaClientOptions?.isCustomOutput ||
