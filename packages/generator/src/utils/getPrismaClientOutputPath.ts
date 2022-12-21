@@ -9,6 +9,7 @@ export const getPrismaClientOutputPath = (options: GeneratorOptions) => {
 
   // check if custom output is used
   if (
+    !options.generator.output?.value ||
     !prismaClientOptions?.isCustomOutput ||
     !prismaClientOptions?.output?.value
   )
@@ -16,7 +17,7 @@ export const getPrismaClientOutputPath = (options: GeneratorOptions) => {
 
   // get the relative path to the prisma schema
   const prismaClientPath = path
-    .relative(options.schemaPath, prismaClientOptions?.output?.value)
+    .relative(options.generator.output.value, prismaClientOptions.output.value)
     .replace(/\\/g, '/');
 
   if (!prismaClientPath) return undefined;
