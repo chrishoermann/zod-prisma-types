@@ -1,5 +1,5 @@
 import { z } from "zod";
-import * as PrismaClient from "../generated/client";
+import * as PrismaClient from "@prisma/client";
 import { myFunction } from '../../utils/myFunction';
 import validator from 'validator';
 

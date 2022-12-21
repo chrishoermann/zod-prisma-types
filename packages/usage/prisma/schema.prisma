@@ -3,7 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "generated/client"
+  // output   = "generated/client"
 }
 
 datasource db {
@@ -13,7 +13,7 @@ datasource db {
 
 generator zod {
   provider = "zod-prisma-types"
-  output   = "generated/zod" // default is ./generated/zod
+  output   = "./zod" // default is ./generated/zod 
   // useInstanceOfForDecimal = true // default is false
   // createInputTypes        = false // default is true
   // addInputTypeValidation  = false // default is true

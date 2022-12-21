@@ -28,7 +28,7 @@ const parsedModel = JsonModelSchema.parse({
     a: 'b',
     c: 'd',
   },
-  jsonOpt: null,
+  jsonOpt: 'DbNull',
 });
 
 it('should return Prisma.DbNull json null value when "null" is provided with ModelSchema', async () => {
