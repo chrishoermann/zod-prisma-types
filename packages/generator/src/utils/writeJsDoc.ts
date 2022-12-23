@@ -10,6 +10,4 @@ export const writeJsDoc = (writer: CodeBlockWriter, jsDoc?: string) => {
     writer.writeLine(` * ${line.trim()}`);
   });
   writer.writeLine(` */`);
-
-  // return writer.writeLine(`/**`).writeLine(` * ${jsDoc}`).writeLine(` */`);
 };

@@ -49,12 +49,12 @@ export const writeScalarType: WriteTypeFunction = (
 
   return writer
     .write(`z.${zodType}(`)
-    .conditionalWrite(writeValidation && !!zodCustomErrors, zodCustomErrors!) // assertion because we know it's not undefined
+    .conditionalWrite(writeValidation && !!zodCustomErrors, zodCustomErrors!)
     .write(`)`)
     .conditionalWrite(
       writeValidation && !!zodValidatorString,
       zodValidatorString!,
-    ) // assertion because we know it's not undefined
+    )
     .conditionalWrite(inputType.isList, `.array()`)
     .conditionalWrite(isOptional, `.optional()`)
     .conditionalWrite(isNullable, `.nullable()`)
