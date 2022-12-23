@@ -385,7 +385,7 @@ model MyModel {
 ```
 
 ```
-[@zod generator error]: Custom error key 'invalid_type_errrrrror' is not valid. Please check for typos! [Error Location]: Model: 'Test', Field: 'myField'.
+[@zod generator error]: Custom error key 'invalid_type_errrrrror' is not valid. Please check for typos! [Error Location]: Model: 'MyModel', Field: 'myField'.
 ```
 
 ## String validators
@@ -431,7 +431,7 @@ model MyModel {
 
 ## Custom validators
 
-To add custom validators to any [`Prisma Scalar`](https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#model-field-scalar-types) field you can use the `@zod.custom.use()` key. This key has only the `.use(...your custom code here)` validator. This code overwrites all other standard implementations so you have to exactly specify the `zod type` how it should be written by the generator. Only `.optional()` and `.nullable()` are added automatically based on your prisma schema type definition. This field is inteded to provide validators like zod `.refine` or `.transform` on your fields.
+To add custom validators to any [`Prisma Scalar`](https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#model-field-scalar-types) field you can use the `@zod.custom.use()` key. This key has only the `.use(...your custom code here)` validator. This code overwrites all other standard implementations so you have to exactly specify the `zod type` how it should be written by the generator. Only `.optional()` and `.nullable()` are added automatically based on your prisma schema type definition. This field is intended to provide validators like zod `.refine` or `.transform` on your fields.
 
 ```prisma
 model MyModel {
