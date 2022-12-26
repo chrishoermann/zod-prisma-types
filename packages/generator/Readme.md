@@ -10,6 +10,7 @@
   - [useInstanceOfForDecimal](#useinstanceoffordecimal)
   - [createInputTypes](#createinputtypes)
   - [addInputTypeValidation](#addinputtypevalidation)
+  - [defaultValuesOptionalInModel](#defaultvaluesoptionalinmodel)
   - [imports](#imports)
   - [tsConfigFilePath](#tsconfigfilepath)
 - [Json null values](#json-null-values)
@@ -62,13 +63,14 @@ If you want to customize the behaviour of the generator you can use the followin
 
 ```prisma
 generator zod {
-  provider                = "zod-prisma-types"
-  output                  = "./zod" // default is ./generated/zod
-  useInstanceOfForDecimal = true // default is false
-  createInputTypes        = false // default is true
-  addInputTypeValidation  = false // default is true
-  imports                 = "import(import { myFunction } from 'mypackage').import(...other import)" // optional
-  tsConfigFilePath        = "config/tsconfig.json" // optional
+  provider                     = "zod-prisma-types"
+  output                       = "./zod" // default is ./generated/zod
+  useInstanceOfForDecimal      = true // default is false
+  createInputTypes             = false // default is true
+  addInputTypeValidation       = false // default is true
+  defaultValuesOptionalInModel = true // default is false
+  imports                      = "import(import { myFunction } from '../../utils/myFunction';).import(import validator from 'validator';)" // optional
+  tsConfigFilePath             = "tsconfig.json" // optional
 }
 ```
 
@@ -158,6 +160,37 @@ generator zod {
 }
 ```
 
+## `defaultValuesOptionalInModel`
+
+> default: `false`
+
+If you want to make all fields in your model schemas optional that have a default value you can pass the following config option:
+
+```prisma
+generator zod {
+  // ...rest of config
+  defaultValuesOptionalInModel = true
+}
+
+model MyModel {
+  id         Int      @id @default(autoincrement())
+  value      String
+  valueOpt   String?
+}
+```
+
+The above model would generate the following model schema:
+
+```ts
+export const MyModel = z.object({
+  id: z.number().optional(),
+  value: z.string(),
+  valueOpt: z.string().nullish(),
+});
+```
+
+````
+
 ## `imports`
 
 You can specify custom imports that are then added to the `index.ts` file. Since prisma only lets us specify `string` options in the `prisma.schema` generator config the syntax of the imports is a bit clumsy:
@@ -167,7 +200,7 @@ generator zod {
   // ...other config options
   imports        = "import(import { myFunction } from 'mypackage').import(import { custom } from './myfolder')"
 }
-```
+````
 
 > The function-like syntax is used to easily split the string into an array and remove the unnecessary stuff. To add multiple imports just chain the commands.
 

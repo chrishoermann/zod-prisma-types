@@ -37,6 +37,11 @@ export const configSchema = z.object({
     .optional()
     .default('true')
     .transform((val) => val === 'true'),
+  defaultValuesOptionalInModel: z
+    .string()
+    .optional()
+    .default('false')
+    .transform((val) => val === 'true'),
   tsConfigFilePath: z.string().optional(),
   prismaClientPath: z.string().default('@prisma/client'),
 });

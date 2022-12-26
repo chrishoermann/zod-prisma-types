@@ -12,14 +12,14 @@ datasource db {
 }
 
 generator zod {
-  provider = "zod-prisma-types"
-  output   = "./zod" // default is ./generated/zod 
-  // useInstanceOfForDecimal = true // default is false
-  // createInputTypes        = false // default is true
-  // addInputTypeValidation  = false // default is true
-  imports  = "import(import { myFunction } from '../../utils/myFunction';).import(import validator from 'validator';)" // optional
-  // tsConfigFilePath = "tsconfig.json" // optional
-  // prismaClientPath = "../../node_modules/.prisma/client" // optional
+  provider                     = "zod-prisma-types"
+  output                       = "./zod" // default is ./generated/zod 
+  // useInstanceOfForDecimal      = true // default is false
+  // createInputTypes             = false // default is true
+  // addInputTypeValidation       = false // default is true
+  defaultValuesOptionalInModel = true // default is false
+  imports                      = "import(import { myFunction } from '../../utils/myFunction';).import(import validator from 'validator';)" // optional
+  // tsConfigFilePath             = "tsconfig.json" // optional
 }
 
 // generator zodgen {

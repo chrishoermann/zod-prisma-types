@@ -96,7 +96,7 @@ export const InputJsonValue: z.ZodType<PrismaClient.Prisma.InputJsonValue> = z.u
  * comment line two
  */
 export const MyModelSchema = z.object({
-  id: z.number(),
+  id: z.number().optional(),
   /**
    * comment before validator
    * comment after validator
@@ -111,7 +111,7 @@ export const MyModelSchema = z.object({
 
 export const MODELWithUpperCaseSchema = z.object({
   MYValue: MYValueSchema,
-  id: z.number(),
+  id: z.number().optional(),
   STRING: z.string(),
 });
 
@@ -119,7 +119,7 @@ export const MODELWithUpperCaseSchema = z.object({
 //------------------------------------------------------
 
 export const JsonModelSchema = z.object({
-  id: z.number(),
+  id: z.number().optional(),
   json: InputJsonValue,
   jsonOpt: NullableJsonValue.optional(),
 });
@@ -129,7 +129,7 @@ export const JsonModelSchema = z.object({
 
 export const TestSchema = z.object({
   value: MYValueSchema,
-  id: z.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid(),
+  id: z.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid().optional(),
   name: z.string({ required_error: "error", invalid_type_error: "error" }).nullish(),
   bic: z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }).nullish(),
   intTwo: z.number(),
@@ -138,7 +138,7 @@ export const TestSchema = z.object({
   float: z.number(),
   decimal: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Field "decimal" must be a Decimal', path: ['Models', 'Test'] }),
   decimalOpt: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Field "decimalOpt" must be a Decimal', path: ['Models', 'Test'] }).nullish(),
-  date: z.date(),
+  date: z.date().optional(),
   dateOpt: z.date({ invalid_type_error: "wrong date type" }).nullish(),
   bigInt: z.bigint({ invalid_type_error: "error" }),
   bigIntOpt: z.bigint().nullish(),
@@ -152,7 +152,7 @@ export const TestSchema = z.object({
 //------------------------------------------------------
 
 export const MyPrismaScalarsTypeSchema = z.object({
-  id: z.string({ invalid_type_error: "invalid type error" }).cuid(),
+  id: z.string({ invalid_type_error: "invalid type error" }).cuid().optional(),
   /**
    * Some comment about string
    */
@@ -172,9 +172,9 @@ export const MyPrismaScalarsTypeSchema = z.object({
 //------------------------------------------------------
 
 export const UserSchema = z.object({
-  role: RoleSchema.array(),
-  enum: AnotherEnumSchema,
-  id: z.string().cuid(),
+  role: RoleSchema.array().optional(),
+  enum: AnotherEnumSchema.optional(),
+  id: z.string().cuid().optional(),
   email: z.string().email({ message: "Invalid email address" }),
   /**
    * some other comment
@@ -191,10 +191,10 @@ export const UserSchema = z.object({
 
 export const PostSchema = z.object({
   anotherEnum: AnotherEnumSchema.array(),
-  id: z.number(),
+  id: z.number().optional(),
   title: z.string(),
   content: z.string().nullish(),
-  published: z.boolean(),
+  published: z.boolean().optional(),
   authorId: z.string(),
 });
 
@@ -202,9 +202,9 @@ export const PostSchema = z.object({
 //------------------------------------------------------
 
 export const ProfileSchema = z.object({
-  role: RoleSchema.array(),
-  second: SecondEnumSchema,
-  id: z.number(),
+  role: RoleSchema.array().optional(),
+  second: SecondEnumSchema.optional(),
+  id: z.number().optional(),
   bio: z.string(),
   userId: z.string(),
 });

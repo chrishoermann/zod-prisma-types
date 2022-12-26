@@ -33,7 +33,14 @@ export const getModelStatements: GetStatements = (dmmf) => {
                     .write(`${field.formattedNames.original}: `)
                     .write(field.zodCustomValidatorString!)
                     .conditionalWrite(field.isList, `.array()`)
-                    .conditionalWrite(field.isNullable, `.nullish()`)
+                    .conditionalWrite(
+                      field.isNullable && !field.isOptionalOnDefaultValue,
+                      `.nullish()`,
+                    )
+                    .conditionalWrite(
+                      field.isOptionalOnDefaultValue,
+                      `.optional()`,
+                    )
                     .write(`,`)
                     .newLine();
                 }
@@ -44,33 +51,28 @@ export const getModelStatements: GetStatements = (dmmf) => {
                     .write(`${field.formattedNames.original}: `)
                     .write(`${field.zodType}Schema`)
                     .conditionalWrite(field.isList, `.array()`)
-                    .conditionalWrite(field.isNullable, `.nullish()`)
+                    .conditionalWrite(
+                      field.isNullable && !field.isOptionalOnDefaultValue,
+                      `.nullish()`,
+                    )
+                    .conditionalWrite(
+                      field.isOptionalOnDefaultValue,
+                      `.optional()`,
+                    )
                     .write(`,`)
                     .newLine();
                 }
 
                 if (field.isJsonType) {
-                  return (
-                    writer
-                      .conditionalWrite(field.omitInModel(), '// omitted: ')
-                      .write(`${field.formattedNames.original}: `)
-                      .conditionalWrite(field.isRequired, `InputJsonValue`)
-                      .conditionalWrite(!field.isRequired, `NullableJsonValue`)
-                      .conditionalWrite(field.isList, `.array()`)
-                      .conditionalWrite(!field.isRequired, `.optional()`)
-                      // TODO: check out how to handle json null in the standard schema
-                      // maybe the JsonValueSchema should include json null types and the
-                      // nullable() here should be removed or JsonValueSchema should not
-                      // include null types and the json null values are handled here.
-
-                      // maybe in JsonValueSchema the JsonNullValueFilterSchema should be
-                      // added to the union type and the nullable() should be removed
-
-                      // .conditionalWrite(field.isNullable, `.nullable()`)
-
-                      .write(`,`)
-                      .newLine()
-                  );
+                  return writer
+                    .conditionalWrite(field.omitInModel(), '// omitted: ')
+                    .write(`${field.formattedNames.original}: `)
+                    .conditionalWrite(field.isRequired, `InputJsonValue`)
+                    .conditionalWrite(!field.isRequired, `NullableJsonValue`)
+                    .conditionalWrite(field.isList, `.array()`)
+                    .conditionalWrite(!field.isRequired, `.optional()`)
+                    .write(`,`)
+                    .newLine();
                 }
 
                 if (field.isBytesType) {
@@ -79,7 +81,14 @@ export const getModelStatements: GetStatements = (dmmf) => {
                     .write(`${field.formattedNames.original}: `)
                     .write(`z.instanceof(Buffer)`)
                     .conditionalWrite(field.isList, `.array()`)
-                    .conditionalWrite(field.isNullable, `.nullish()`)
+                    .conditionalWrite(
+                      field.isNullable && !field.isOptionalOnDefaultValue,
+                      `.nullish()`,
+                    )
+                    .conditionalWrite(
+                      field.isOptionalOnDefaultValue,
+                      `.optional()`,
+                    )
                     .write(`,`)
                     .newLine();
                 }
@@ -104,7 +113,14 @@ export const getModelStatements: GetStatements = (dmmf) => {
                     )
                     .write(` })`)
                     .conditionalWrite(field.isList, `.array()`)
-                    .conditionalWrite(field.isNullable, `.nullish()`)
+                    .conditionalWrite(
+                      field.isNullable && !field.isOptionalOnDefaultValue,
+                      `.nullish()`,
+                    )
+                    .conditionalWrite(
+                      field.isOptionalOnDefaultValue,
+                      `.optional()`,
+                    )
                     .write(`,`)
                     .newLine();
                 }
@@ -115,7 +131,14 @@ export const getModelStatements: GetStatements = (dmmf) => {
                     .write(`${field.formattedNames.original}: `)
                     .write(`z.instanceof(PrismaClient.Prisma.Decimal)`)
                     .conditionalWrite(field.isList, `.array()`)
-                    .conditionalWrite(field.isNullable, `.nullish()`)
+                    .conditionalWrite(
+                      field.isNullable && !field.isOptionalOnDefaultValue,
+                      `.nullish()`,
+                    )
+                    .conditionalWrite(
+                      field.isOptionalOnDefaultValue,
+                      `.optional()`,
+                    )
                     .write(`,`)
                     .newLine();
                 }
@@ -134,7 +157,14 @@ export const getModelStatements: GetStatements = (dmmf) => {
                     field.zodValidatorString!,
                   )
                   .conditionalWrite(field.isList, `.array()`)
-                  .conditionalWrite(field.isNullable, `.nullish()`)
+                  .conditionalWrite(
+                    field.isNullable && !field.isOptionalOnDefaultValue,
+                    `.nullish()`,
+                  )
+                  .conditionalWrite(
+                    field.isOptionalOnDefaultValue,
+                    `.optional()`,
+                  )
                   .write(`,`)
                   .newLine();
               });

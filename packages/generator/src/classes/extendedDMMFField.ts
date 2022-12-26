@@ -64,6 +64,7 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   readonly documentation?: DMMF.Field['documentation'];
 
   readonly isNullable: boolean;
+  readonly isOptionalOnDefaultValue: boolean;
   readonly isJsonType: boolean;
   readonly isBytesType: boolean;
   readonly isDecimalType: boolean;
@@ -115,10 +116,11 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
     this.relationName = field.relationName;
     this.documentation = field.documentation;
 
+    this.isNullable = this._setIsNullable();
+    this.isOptionalOnDefaultValue = this._setDefaultValueOptional();
     this.isJsonType = this._setIsJsonType();
     this.isBytesType = this._setIsBytesType();
     this.isDecimalType = this._setIsDecimalType();
-    this.isNullable = this._setIsNullable();
     this.modelName = modelName;
     this.errorLocation = this._setErrorLocation();
 
@@ -135,6 +137,12 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
 
   // INITIALIZERS
   // ----------------------------------------------
+
+  private _setDefaultValueOptional() {
+    return (
+      this.hasDefaultValue && this.generatorConfig.defaultValuesOptionalInModel
+    );
+  }
 
   private _setIsJsonType() {
     return this.type === 'Json';
