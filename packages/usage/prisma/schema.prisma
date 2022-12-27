@@ -59,6 +59,24 @@ model MyModel {
   omitRequired String /// @zod.custom.omit([model, input])
 }
 
+model WithDefaults {
+  id            Int      @id @default(autoincrement())
+  stringNormal  String
+  string        String   @default("default")
+  intNormal     Int
+  int           Int      @default(1)
+  floatNormal   Float
+  float         Float    @default(1.1)
+  decimalNormal Decimal
+  decimal       Decimal  @default(1.1)
+  dateNormal    DateTime
+  date          DateTime @default(now())
+  bigIntNormal  BigInt
+  bigInt        BigInt   @default(1)
+  jsonNormal    Json
+  json          Json     @default("{}")
+}
+
 model MODELWithUpperCase {
   id      Int     @id @default(autoincrement())
   STRING  String

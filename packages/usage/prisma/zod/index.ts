@@ -40,6 +40,8 @@ export const TransactionIsolationLevelSchema = z.nativeEnum(PrismaClient.Prisma.
 
 export const UserScalarFieldEnumSchema = z.nativeEnum(PrismaClient.Prisma.UserScalarFieldEnum);
 
+export const WithDefaultsScalarFieldEnumSchema = z.nativeEnum(PrismaClient.Prisma.WithDefaultsScalarFieldEnum);
+
 // CUSTOM ENUMS
 //------------------------------------------------------
 
@@ -106,6 +108,50 @@ export const MyModelSchema = z.object({
   // omitted: omitRequired: z.string(),
 });
 
+/**
+ * comment line one
+ * comment line two
+ */
+export const MyModelOptionalDefaultsSchema = MyModelSchema.merge(
+  z.object({
+    id: z.number().optional(),
+  })
+);
+
+// WITH DEFAULTS
+//------------------------------------------------------
+
+export const WithDefaultsSchema = z.object({
+  id: z.number(),
+  stringNormal: z.string(),
+  string: z.string(),
+  intNormal: z.number(),
+  int: z.number(),
+  floatNormal: z.number(),
+  float: z.number(),
+  decimalNormal: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Field "decimalNormal" must be a Decimal', path: ['Models', 'WithDefaults'] }),
+  decimal: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Field "decimal" must be a Decimal', path: ['Models', 'WithDefaults'] }),
+  dateNormal: z.date(),
+  date: z.date(),
+  bigIntNormal: z.bigint(),
+  bigInt: z.bigint(),
+  jsonNormal: InputJsonValue,
+  json: InputJsonValue,
+});
+
+export const WithDefaultsOptionalDefaultsSchema = WithDefaultsSchema.merge(
+  z.object({
+    id: z.number().optional(),
+    string: z.string().optional(),
+    int: z.number().optional(),
+    float: z.number().optional(),
+    decimal: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Field "decimal" must be a Decimal', path: ['Models', 'WithDefaults'] }).optional(),
+    date: z.date().optional(),
+    bigInt: z.bigint().optional(),
+    json: InputJsonValue,
+  })
+);
+
 // MODEL WITH UPPER CASE
 //------------------------------------------------------
 
@@ -114,6 +160,12 @@ export const MODELWithUpperCaseSchema = z.object({
   id: z.number(),
   STRING: z.string(),
 });
+
+export const MODELWithUpperCaseOptionalDefaultsSchema = MODELWithUpperCaseSchema.merge(
+  z.object({
+    id: z.number().optional(),
+  })
+);
 
 // JSON MODEL
 //------------------------------------------------------
@@ -124,6 +176,11 @@ export const JsonModelSchema = z.object({
   jsonOpt: NullableJsonValue.optional(),
 });
 
+export const JsonModelOptionalDefaultsSchema = JsonModelSchema.merge(
+  z.object({
+    id: z.number().optional(),
+  })
+);
 
 // TEST
 //------------------------------------------------------
@@ -149,6 +206,13 @@ export const TestSchema = z.object({
   bytesOpt: z.instanceof(Buffer).nullish(),
 });
 
+export const TestOptionalDefaultsSchema = TestSchema.merge(
+  z.object({
+    id: z.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid().optional(),
+    date: z.date().optional(),
+  })
+);
+
 // MY PRISMA SCALARS TYPE
 //------------------------------------------------------
 
@@ -169,6 +233,12 @@ export const MyPrismaScalarsTypeSchema = z.object({
   // omitted: exclude: z.string().nullish(),
 });
 
+export const MyPrismaScalarsTypeOptionalDefaultsSchema = MyPrismaScalarsTypeSchema.merge(
+  z.object({
+    id: z.string({ invalid_type_error: "invalid type error" }).cuid().optional(),
+  })
+);
+
 // USER
 //------------------------------------------------------
 
@@ -187,6 +257,14 @@ export const UserSchema = z.object({
   lng: z.number(),
 });
 
+export const UserOptionalDefaultsSchema = UserSchema.merge(
+  z.object({
+    role: RoleSchema.array().optional(),
+    enum: AnotherEnumSchema.optional(),
+    id: z.string().cuid().optional(),
+  })
+);
+
 // POST
 //------------------------------------------------------
 
@@ -199,6 +277,13 @@ export const PostSchema = z.object({
   authorId: z.string(),
 });
 
+export const PostOptionalDefaultsSchema = PostSchema.merge(
+  z.object({
+    id: z.number().optional(),
+    published: z.boolean().optional(),
+  })
+);
+
 // PROFILE
 //------------------------------------------------------
 
@@ -210,6 +295,14 @@ export const ProfileSchema = z.object({
   userId: z.string(),
 });
 
+export const ProfileOptionalDefaultsSchema = ProfileSchema.merge(
+  z.object({
+    role: RoleSchema.array().optional(),
+    second: SecondEnumSchema.optional(),
+    id: z.number().optional(),
+  })
+);
+
 // LOCATION
 //------------------------------------------------------
 
@@ -217,6 +310,11 @@ export const LocationSchema = z.object({
   lat: z.number(),
   lng: z.number(),
 });
+
+export const LocationOptionalDefaultsSchema = LocationSchema.merge(
+  z.object({
+  })
+);
 
 /////////////////////////////////////////
 // SELECT & INCLUDE
@@ -230,6 +328,27 @@ export const MyModelSelectSchema: z.ZodType<PrismaClient.Prisma.MyModelSelect> =
   string: z.boolean().optional(),
   omitField: z.boolean().optional(),
   omitRequired: z.boolean().optional(),
+}).strict();
+
+// WITH DEFAULTS
+//------------------------------------------------------
+
+export const WithDefaultsSelectSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsSelect> = z.object({
+  id: z.boolean().optional(),
+  stringNormal: z.boolean().optional(),
+  string: z.boolean().optional(),
+  intNormal: z.boolean().optional(),
+  int: z.boolean().optional(),
+  floatNormal: z.boolean().optional(),
+  float: z.boolean().optional(),
+  decimalNormal: z.boolean().optional(),
+  decimal: z.boolean().optional(),
+  dateNormal: z.boolean().optional(),
+  date: z.boolean().optional(),
+  bigIntNormal: z.boolean().optional(),
+  bigInt: z.boolean().optional(),
+  jsonNormal: z.boolean().optional(),
+  json: z.boolean().optional(),
 }).strict();
 
 // MODEL WITH UPPER CASE
@@ -445,6 +564,93 @@ export const MyModelScalarWhereWithAggregatesInputSchema: z.ZodType<PrismaClient
   string: z.union([z.lazy(() => StringNullableWithAggregatesFilterSchema), z.string()]).optional().nullable(),
   omitField: z.union([z.lazy(() => StringNullableWithAggregatesFilterSchema), z.string()]).optional().nullable(),
   omitRequired: z.union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()]).optional(),
+}).strict();
+
+export const WithDefaultsWhereInputSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsWhereInput> = z.object({
+  AND: z.union([z.lazy(() => WithDefaultsWhereInputSchema), z.lazy(() => WithDefaultsWhereInputSchema).array()]).optional(),
+  OR: z.lazy(() => WithDefaultsWhereInputSchema).array().optional(),
+  NOT: z.union([z.lazy(() => WithDefaultsWhereInputSchema), z.lazy(() => WithDefaultsWhereInputSchema).array()]).optional(),
+  id: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
+  stringNormal: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+  string: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+  intNormal: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
+  int: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
+  floatNormal: z.union([z.lazy(() => FloatFilterSchema), z.number()]).optional(),
+  float: z.union([z.lazy(() => FloatFilterSchema), z.number()]).optional(),
+  decimalNormal: z.union([z.lazy(() => DecimalFilterSchema), z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' })]).optional(),
+  decimal: z.union([z.lazy(() => DecimalFilterSchema), z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' })]).optional(),
+  dateNormal: z.union([z.lazy(() => DateTimeFilterSchema), z.date()]).optional(),
+  date: z.union([z.lazy(() => DateTimeFilterSchema), z.date()]).optional(),
+  bigIntNormal: z.union([z.lazy(() => BigIntFilterSchema), z.bigint()]).optional(),
+  bigInt: z.union([z.lazy(() => BigIntFilterSchema), z.bigint()]).optional(),
+  jsonNormal: z.lazy(() => JsonFilterSchema).optional(),
+  json: z.lazy(() => JsonFilterSchema).optional(),
+}).strict();
+
+export const WithDefaultsOrderByWithRelationInputSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsOrderByWithRelationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  stringNormal: z.lazy(() => SortOrderSchema).optional(),
+  string: z.lazy(() => SortOrderSchema).optional(),
+  intNormal: z.lazy(() => SortOrderSchema).optional(),
+  int: z.lazy(() => SortOrderSchema).optional(),
+  floatNormal: z.lazy(() => SortOrderSchema).optional(),
+  float: z.lazy(() => SortOrderSchema).optional(),
+  decimalNormal: z.lazy(() => SortOrderSchema).optional(),
+  decimal: z.lazy(() => SortOrderSchema).optional(),
+  dateNormal: z.lazy(() => SortOrderSchema).optional(),
+  date: z.lazy(() => SortOrderSchema).optional(),
+  bigIntNormal: z.lazy(() => SortOrderSchema).optional(),
+  bigInt: z.lazy(() => SortOrderSchema).optional(),
+  jsonNormal: z.lazy(() => SortOrderSchema).optional(),
+  json: z.lazy(() => SortOrderSchema).optional(),
+}).strict();
+
+export const WithDefaultsWhereUniqueInputSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsWhereUniqueInput> = z.object({
+  id: z.number().optional(),
+}).strict();
+
+export const WithDefaultsOrderByWithAggregationInputSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsOrderByWithAggregationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  stringNormal: z.lazy(() => SortOrderSchema).optional(),
+  string: z.lazy(() => SortOrderSchema).optional(),
+  intNormal: z.lazy(() => SortOrderSchema).optional(),
+  int: z.lazy(() => SortOrderSchema).optional(),
+  floatNormal: z.lazy(() => SortOrderSchema).optional(),
+  float: z.lazy(() => SortOrderSchema).optional(),
+  decimalNormal: z.lazy(() => SortOrderSchema).optional(),
+  decimal: z.lazy(() => SortOrderSchema).optional(),
+  dateNormal: z.lazy(() => SortOrderSchema).optional(),
+  date: z.lazy(() => SortOrderSchema).optional(),
+  bigIntNormal: z.lazy(() => SortOrderSchema).optional(),
+  bigInt: z.lazy(() => SortOrderSchema).optional(),
+  jsonNormal: z.lazy(() => SortOrderSchema).optional(),
+  json: z.lazy(() => SortOrderSchema).optional(),
+  _count: z.lazy(() => WithDefaultsCountOrderByAggregateInputSchema).optional(),
+  _avg: z.lazy(() => WithDefaultsAvgOrderByAggregateInputSchema).optional(),
+  _max: z.lazy(() => WithDefaultsMaxOrderByAggregateInputSchema).optional(),
+  _min: z.lazy(() => WithDefaultsMinOrderByAggregateInputSchema).optional(),
+  _sum: z.lazy(() => WithDefaultsSumOrderByAggregateInputSchema).optional(),
+}).strict();
+
+export const WithDefaultsScalarWhereWithAggregatesInputSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsScalarWhereWithAggregatesInput> = z.object({
+  AND: z.union([z.lazy(() => WithDefaultsScalarWhereWithAggregatesInputSchema), z.lazy(() => WithDefaultsScalarWhereWithAggregatesInputSchema).array()]).optional(),
+  OR: z.lazy(() => WithDefaultsScalarWhereWithAggregatesInputSchema).array().optional(),
+  NOT: z.union([z.lazy(() => WithDefaultsScalarWhereWithAggregatesInputSchema), z.lazy(() => WithDefaultsScalarWhereWithAggregatesInputSchema).array()]).optional(),
+  id: z.union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()]).optional(),
+  stringNormal: z.union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()]).optional(),
+  string: z.union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()]).optional(),
+  intNormal: z.union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()]).optional(),
+  int: z.union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()]).optional(),
+  floatNormal: z.union([z.lazy(() => FloatWithAggregatesFilterSchema), z.number()]).optional(),
+  float: z.union([z.lazy(() => FloatWithAggregatesFilterSchema), z.number()]).optional(),
+  decimalNormal: z.union([z.lazy(() => DecimalWithAggregatesFilterSchema), z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' })]).optional(),
+  decimal: z.union([z.lazy(() => DecimalWithAggregatesFilterSchema), z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' })]).optional(),
+  dateNormal: z.union([z.lazy(() => DateTimeWithAggregatesFilterSchema), z.date()]).optional(),
+  date: z.union([z.lazy(() => DateTimeWithAggregatesFilterSchema), z.date()]).optional(),
+  bigIntNormal: z.union([z.lazy(() => BigIntWithAggregatesFilterSchema), z.bigint()]).optional(),
+  bigInt: z.union([z.lazy(() => BigIntWithAggregatesFilterSchema), z.bigint()]).optional(),
+  jsonNormal: z.lazy(() => JsonWithAggregatesFilterSchema).optional(),
+  json: z.lazy(() => JsonWithAggregatesFilterSchema).optional(),
 }).strict();
 
 export const MODELWithUpperCaseWhereInputSchema: z.ZodType<PrismaClient.Prisma.MODELWithUpperCaseWhereInput> = z.object({
@@ -945,6 +1151,129 @@ export const MyModelUncheckedUpdateManyInputSchema: z.ZodType<Omit<PrismaClient.
   string: z.union([z.string().min(4).max(10), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
   // omitted: omitField: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   // omitted: omitRequired: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const WithDefaultsCreateInputSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsCreateInput> = z.object({
+  stringNormal: z.string(),
+  string: z.string().optional(),
+  intNormal: z.number(),
+  int: z.number().optional(),
+  floatNormal: z.number(),
+  float: z.number().optional(),
+  decimalNormal: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }),
+  decimal: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  dateNormal: z.date(),
+  date: z.date().optional(),
+  bigIntNormal: z.bigint(),
+  bigInt: z.bigint().optional(),
+  jsonNormal: z.union([z.lazy(() => JsonNullValueInputSchema), InputJsonValue]),
+  json: z.union([z.lazy(() => JsonNullValueInputSchema), InputJsonValue]).optional(),
+}).strict();
+
+export const WithDefaultsUncheckedCreateInputSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsUncheckedCreateInput> = z.object({
+  id: z.number().optional(),
+  stringNormal: z.string(),
+  string: z.string().optional(),
+  intNormal: z.number(),
+  int: z.number().optional(),
+  floatNormal: z.number(),
+  float: z.number().optional(),
+  decimalNormal: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }),
+  decimal: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  dateNormal: z.date(),
+  date: z.date().optional(),
+  bigIntNormal: z.bigint(),
+  bigInt: z.bigint().optional(),
+  jsonNormal: z.union([z.lazy(() => JsonNullValueInputSchema), InputJsonValue]),
+  json: z.union([z.lazy(() => JsonNullValueInputSchema), InputJsonValue]).optional(),
+}).strict();
+
+export const WithDefaultsUpdateInputSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsUpdateInput> = z.object({
+  stringNormal: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+  string: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+  intNormal: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+  int: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+  floatNormal: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
+  float: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
+  decimalNormal: z.union([z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => DecimalFieldUpdateOperationsInputSchema)]).optional(),
+  decimal: z.union([z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => DecimalFieldUpdateOperationsInputSchema)]).optional(),
+  dateNormal: z.union([z.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
+  date: z.union([z.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
+  bigIntNormal: z.union([z.bigint(), z.lazy(() => BigIntFieldUpdateOperationsInputSchema)]).optional(),
+  bigInt: z.union([z.bigint(), z.lazy(() => BigIntFieldUpdateOperationsInputSchema)]).optional(),
+  jsonNormal: z.union([z.lazy(() => JsonNullValueInputSchema), InputJsonValue]).optional(),
+  json: z.union([z.lazy(() => JsonNullValueInputSchema), InputJsonValue]).optional(),
+}).strict();
+
+export const WithDefaultsUncheckedUpdateInputSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsUncheckedUpdateInput> = z.object({
+  id: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+  stringNormal: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+  string: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+  intNormal: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+  int: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+  floatNormal: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
+  float: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
+  decimalNormal: z.union([z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => DecimalFieldUpdateOperationsInputSchema)]).optional(),
+  decimal: z.union([z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => DecimalFieldUpdateOperationsInputSchema)]).optional(),
+  dateNormal: z.union([z.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
+  date: z.union([z.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
+  bigIntNormal: z.union([z.bigint(), z.lazy(() => BigIntFieldUpdateOperationsInputSchema)]).optional(),
+  bigInt: z.union([z.bigint(), z.lazy(() => BigIntFieldUpdateOperationsInputSchema)]).optional(),
+  jsonNormal: z.union([z.lazy(() => JsonNullValueInputSchema), InputJsonValue]).optional(),
+  json: z.union([z.lazy(() => JsonNullValueInputSchema), InputJsonValue]).optional(),
+}).strict();
+
+export const WithDefaultsCreateManyInputSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsCreateManyInput> = z.object({
+  id: z.number().optional(),
+  stringNormal: z.string(),
+  string: z.string().optional(),
+  intNormal: z.number(),
+  int: z.number().optional(),
+  floatNormal: z.number(),
+  float: z.number().optional(),
+  decimalNormal: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }),
+  decimal: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  dateNormal: z.date(),
+  date: z.date().optional(),
+  bigIntNormal: z.bigint(),
+  bigInt: z.bigint().optional(),
+  jsonNormal: z.union([z.lazy(() => JsonNullValueInputSchema), InputJsonValue]),
+  json: z.union([z.lazy(() => JsonNullValueInputSchema), InputJsonValue]).optional(),
+}).strict();
+
+export const WithDefaultsUpdateManyMutationInputSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsUpdateManyMutationInput> = z.object({
+  stringNormal: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+  string: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+  intNormal: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+  int: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+  floatNormal: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
+  float: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
+  decimalNormal: z.union([z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => DecimalFieldUpdateOperationsInputSchema)]).optional(),
+  decimal: z.union([z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => DecimalFieldUpdateOperationsInputSchema)]).optional(),
+  dateNormal: z.union([z.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
+  date: z.union([z.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
+  bigIntNormal: z.union([z.bigint(), z.lazy(() => BigIntFieldUpdateOperationsInputSchema)]).optional(),
+  bigInt: z.union([z.bigint(), z.lazy(() => BigIntFieldUpdateOperationsInputSchema)]).optional(),
+  jsonNormal: z.union([z.lazy(() => JsonNullValueInputSchema), InputJsonValue]).optional(),
+  json: z.union([z.lazy(() => JsonNullValueInputSchema), InputJsonValue]).optional(),
+}).strict();
+
+export const WithDefaultsUncheckedUpdateManyInputSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsUncheckedUpdateManyInput> = z.object({
+  id: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+  stringNormal: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+  string: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+  intNormal: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+  int: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+  floatNormal: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
+  float: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
+  decimalNormal: z.union([z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => DecimalFieldUpdateOperationsInputSchema)]).optional(),
+  decimal: z.union([z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => DecimalFieldUpdateOperationsInputSchema)]).optional(),
+  dateNormal: z.union([z.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
+  date: z.union([z.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
+  bigIntNormal: z.union([z.bigint(), z.lazy(() => BigIntFieldUpdateOperationsInputSchema)]).optional(),
+  bigInt: z.union([z.bigint(), z.lazy(() => BigIntFieldUpdateOperationsInputSchema)]).optional(),
+  jsonNormal: z.union([z.lazy(() => JsonNullValueInputSchema), InputJsonValue]).optional(),
+  json: z.union([z.lazy(() => JsonNullValueInputSchema), InputJsonValue]).optional(),
 }).strict();
 
 export const MODELWithUpperCaseCreateInputSchema: z.ZodType<PrismaClient.Prisma.MODELWithUpperCaseCreateInput> = z.object({
@@ -1623,6 +1952,221 @@ export const StringWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.Str
   _max: z.lazy(() => NestedStringFilterSchema).optional(),
 }).strict();
 
+export const FloatFilterSchema: z.ZodType<PrismaClient.Prisma.FloatFilter> = z.object({
+  equals: z.number().optional(),
+  in: z.number().array().optional(),
+  notIn: z.number().array().optional(),
+  lt: z.number().optional(),
+  lte: z.number().optional(),
+  gt: z.number().optional(),
+  gte: z.number().optional(),
+  not: z.union([z.number(), z.lazy(() => NestedFloatFilterSchema)]).optional(),
+}).strict();
+
+export const DecimalFilterSchema: z.ZodType<PrismaClient.Prisma.DecimalFilter> = z.object({
+  equals: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  in: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional(),
+  notIn: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional(),
+  lt: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  lte: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  gt: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  gte: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  not: z.union([z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => NestedDecimalFilterSchema)]).optional(),
+}).strict();
+
+export const DateTimeFilterSchema: z.ZodType<PrismaClient.Prisma.DateTimeFilter> = z.object({
+  equals: z.date().optional(),
+  in: z.date().array().optional(),
+  notIn: z.date().array().optional(),
+  lt: z.date().optional(),
+  lte: z.date().optional(),
+  gt: z.date().optional(),
+  gte: z.date().optional(),
+  not: z.union([z.date(), z.lazy(() => NestedDateTimeFilterSchema)]).optional(),
+}).strict();
+
+export const BigIntFilterSchema: z.ZodType<PrismaClient.Prisma.BigIntFilter> = z.object({
+  equals: z.bigint().optional(),
+  in: z.bigint().array().optional(),
+  notIn: z.bigint().array().optional(),
+  lt: z.bigint().optional(),
+  lte: z.bigint().optional(),
+  gt: z.bigint().optional(),
+  gte: z.bigint().optional(),
+  not: z.union([z.bigint(), z.lazy(() => NestedBigIntFilterSchema)]).optional(),
+}).strict();
+
+export const JsonFilterSchema: z.ZodType<PrismaClient.Prisma.JsonFilter> = z.object({
+  equals: z.union([InputJsonValue, z.lazy(() => JsonNullValueFilterSchema)]).optional(),
+  path: z.string().array().optional(),
+  string_contains: z.string().optional(),
+  string_starts_with: z.string().optional(),
+  string_ends_with: z.string().optional(),
+  array_contains: InputJsonValue.optional().nullable(),
+  array_starts_with: InputJsonValue.optional().nullable(),
+  array_ends_with: InputJsonValue.optional().nullable(),
+  lt: InputJsonValue.optional(),
+  lte: InputJsonValue.optional(),
+  gt: InputJsonValue.optional(),
+  gte: InputJsonValue.optional(),
+  not: z.union([InputJsonValue, z.lazy(() => JsonNullValueFilterSchema)]).optional(),
+}).strict();
+
+export const WithDefaultsCountOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsCountOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  stringNormal: z.lazy(() => SortOrderSchema).optional(),
+  string: z.lazy(() => SortOrderSchema).optional(),
+  intNormal: z.lazy(() => SortOrderSchema).optional(),
+  int: z.lazy(() => SortOrderSchema).optional(),
+  floatNormal: z.lazy(() => SortOrderSchema).optional(),
+  float: z.lazy(() => SortOrderSchema).optional(),
+  decimalNormal: z.lazy(() => SortOrderSchema).optional(),
+  decimal: z.lazy(() => SortOrderSchema).optional(),
+  dateNormal: z.lazy(() => SortOrderSchema).optional(),
+  date: z.lazy(() => SortOrderSchema).optional(),
+  bigIntNormal: z.lazy(() => SortOrderSchema).optional(),
+  bigInt: z.lazy(() => SortOrderSchema).optional(),
+  jsonNormal: z.lazy(() => SortOrderSchema).optional(),
+  json: z.lazy(() => SortOrderSchema).optional(),
+}).strict();
+
+export const WithDefaultsAvgOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsAvgOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  intNormal: z.lazy(() => SortOrderSchema).optional(),
+  int: z.lazy(() => SortOrderSchema).optional(),
+  floatNormal: z.lazy(() => SortOrderSchema).optional(),
+  float: z.lazy(() => SortOrderSchema).optional(),
+  decimalNormal: z.lazy(() => SortOrderSchema).optional(),
+  decimal: z.lazy(() => SortOrderSchema).optional(),
+  bigIntNormal: z.lazy(() => SortOrderSchema).optional(),
+  bigInt: z.lazy(() => SortOrderSchema).optional(),
+}).strict();
+
+export const WithDefaultsMaxOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsMaxOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  stringNormal: z.lazy(() => SortOrderSchema).optional(),
+  string: z.lazy(() => SortOrderSchema).optional(),
+  intNormal: z.lazy(() => SortOrderSchema).optional(),
+  int: z.lazy(() => SortOrderSchema).optional(),
+  floatNormal: z.lazy(() => SortOrderSchema).optional(),
+  float: z.lazy(() => SortOrderSchema).optional(),
+  decimalNormal: z.lazy(() => SortOrderSchema).optional(),
+  decimal: z.lazy(() => SortOrderSchema).optional(),
+  dateNormal: z.lazy(() => SortOrderSchema).optional(),
+  date: z.lazy(() => SortOrderSchema).optional(),
+  bigIntNormal: z.lazy(() => SortOrderSchema).optional(),
+  bigInt: z.lazy(() => SortOrderSchema).optional(),
+}).strict();
+
+export const WithDefaultsMinOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsMinOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  stringNormal: z.lazy(() => SortOrderSchema).optional(),
+  string: z.lazy(() => SortOrderSchema).optional(),
+  intNormal: z.lazy(() => SortOrderSchema).optional(),
+  int: z.lazy(() => SortOrderSchema).optional(),
+  floatNormal: z.lazy(() => SortOrderSchema).optional(),
+  float: z.lazy(() => SortOrderSchema).optional(),
+  decimalNormal: z.lazy(() => SortOrderSchema).optional(),
+  decimal: z.lazy(() => SortOrderSchema).optional(),
+  dateNormal: z.lazy(() => SortOrderSchema).optional(),
+  date: z.lazy(() => SortOrderSchema).optional(),
+  bigIntNormal: z.lazy(() => SortOrderSchema).optional(),
+  bigInt: z.lazy(() => SortOrderSchema).optional(),
+}).strict();
+
+export const WithDefaultsSumOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsSumOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  intNormal: z.lazy(() => SortOrderSchema).optional(),
+  int: z.lazy(() => SortOrderSchema).optional(),
+  floatNormal: z.lazy(() => SortOrderSchema).optional(),
+  float: z.lazy(() => SortOrderSchema).optional(),
+  decimalNormal: z.lazy(() => SortOrderSchema).optional(),
+  decimal: z.lazy(() => SortOrderSchema).optional(),
+  bigIntNormal: z.lazy(() => SortOrderSchema).optional(),
+  bigInt: z.lazy(() => SortOrderSchema).optional(),
+}).strict();
+
+export const FloatWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.FloatWithAggregatesFilter> = z.object({
+  equals: z.number().optional(),
+  in: z.number().array().optional(),
+  notIn: z.number().array().optional(),
+  lt: z.number().optional(),
+  lte: z.number().optional(),
+  gt: z.number().optional(),
+  gte: z.number().optional(),
+  not: z.union([z.number(), z.lazy(() => NestedFloatWithAggregatesFilterSchema)]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _avg: z.lazy(() => NestedFloatFilterSchema).optional(),
+  _sum: z.lazy(() => NestedFloatFilterSchema).optional(),
+  _min: z.lazy(() => NestedFloatFilterSchema).optional(),
+  _max: z.lazy(() => NestedFloatFilterSchema).optional(),
+}).strict();
+
+export const DecimalWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.DecimalWithAggregatesFilter> = z.object({
+  equals: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  in: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional(),
+  notIn: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional(),
+  lt: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  lte: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  gt: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  gte: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  not: z.union([z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => NestedDecimalWithAggregatesFilterSchema)]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _avg: z.lazy(() => NestedDecimalFilterSchema).optional(),
+  _sum: z.lazy(() => NestedDecimalFilterSchema).optional(),
+  _min: z.lazy(() => NestedDecimalFilterSchema).optional(),
+  _max: z.lazy(() => NestedDecimalFilterSchema).optional(),
+}).strict();
+
+export const DateTimeWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.DateTimeWithAggregatesFilter> = z.object({
+  equals: z.date().optional(),
+  in: z.date().array().optional(),
+  notIn: z.date().array().optional(),
+  lt: z.date().optional(),
+  lte: z.date().optional(),
+  gt: z.date().optional(),
+  gte: z.date().optional(),
+  not: z.union([z.date(), z.lazy(() => NestedDateTimeWithAggregatesFilterSchema)]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedDateTimeFilterSchema).optional(),
+  _max: z.lazy(() => NestedDateTimeFilterSchema).optional(),
+}).strict();
+
+export const BigIntWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.BigIntWithAggregatesFilter> = z.object({
+  equals: z.bigint().optional(),
+  in: z.bigint().array().optional(),
+  notIn: z.bigint().array().optional(),
+  lt: z.bigint().optional(),
+  lte: z.bigint().optional(),
+  gt: z.bigint().optional(),
+  gte: z.bigint().optional(),
+  not: z.union([z.bigint(), z.lazy(() => NestedBigIntWithAggregatesFilterSchema)]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _avg: z.lazy(() => NestedFloatFilterSchema).optional(),
+  _sum: z.lazy(() => NestedBigIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedBigIntFilterSchema).optional(),
+  _max: z.lazy(() => NestedBigIntFilterSchema).optional(),
+}).strict();
+
+export const JsonWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.JsonWithAggregatesFilter> = z.object({
+  equals: z.union([InputJsonValue, z.lazy(() => JsonNullValueFilterSchema)]).optional(),
+  path: z.string().array().optional(),
+  string_contains: z.string().optional(),
+  string_starts_with: z.string().optional(),
+  string_ends_with: z.string().optional(),
+  array_contains: InputJsonValue.optional().nullable(),
+  array_starts_with: InputJsonValue.optional().nullable(),
+  array_ends_with: InputJsonValue.optional().nullable(),
+  lt: InputJsonValue.optional(),
+  lte: InputJsonValue.optional(),
+  gt: InputJsonValue.optional(),
+  gte: InputJsonValue.optional(),
+  not: z.union([InputJsonValue, z.lazy(() => JsonNullValueFilterSchema)]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedJsonFilterSchema).optional(),
+  _max: z.lazy(() => NestedJsonFilterSchema).optional(),
+}).strict();
+
 export const EnumMYValueFilterSchema: z.ZodType<PrismaClient.Prisma.EnumMYValueFilter> = z.object({
   equals: z.lazy(() => MYValueSchema).optional(),
   in: z.lazy(() => MYValueSchema).array().optional(),
@@ -1666,22 +2210,6 @@ export const EnumMYValueWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prism
   _max: z.lazy(() => NestedEnumMYValueFilterSchema).optional(),
 }).strict();
 
-export const JsonFilterSchema: z.ZodType<PrismaClient.Prisma.JsonFilter> = z.object({
-  equals: z.union([InputJsonValue, z.lazy(() => JsonNullValueFilterSchema)]).optional(),
-  path: z.string().array().optional(),
-  string_contains: z.string().optional(),
-  string_starts_with: z.string().optional(),
-  string_ends_with: z.string().optional(),
-  array_contains: InputJsonValue.optional().nullable(),
-  array_starts_with: InputJsonValue.optional().nullable(),
-  array_ends_with: InputJsonValue.optional().nullable(),
-  lt: InputJsonValue.optional(),
-  lte: InputJsonValue.optional(),
-  gt: InputJsonValue.optional(),
-  gte: InputJsonValue.optional(),
-  not: z.union([InputJsonValue, z.lazy(() => JsonNullValueFilterSchema)]).optional(),
-}).strict();
-
 export const JsonNullableFilterSchema: z.ZodType<PrismaClient.Prisma.JsonNullableFilter> = z.object({
   equals: z.union([InputJsonValue, z.lazy(() => JsonNullValueFilterSchema)]).optional(),
   path: z.string().array().optional(),
@@ -1718,25 +2246,6 @@ export const JsonModelMinOrderByAggregateInputSchema: z.ZodType<PrismaClient.Pri
 
 export const JsonModelSumOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.JsonModelSumOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-}).strict();
-
-export const JsonWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.JsonWithAggregatesFilter> = z.object({
-  equals: z.union([InputJsonValue, z.lazy(() => JsonNullValueFilterSchema)]).optional(),
-  path: z.string().array().optional(),
-  string_contains: z.string().optional(),
-  string_starts_with: z.string().optional(),
-  string_ends_with: z.string().optional(),
-  array_contains: InputJsonValue.optional().nullable(),
-  array_starts_with: InputJsonValue.optional().nullable(),
-  array_ends_with: InputJsonValue.optional().nullable(),
-  lt: InputJsonValue.optional(),
-  lte: InputJsonValue.optional(),
-  gt: InputJsonValue.optional(),
-  gte: InputJsonValue.optional(),
-  not: z.union([InputJsonValue, z.lazy(() => JsonNullValueFilterSchema)]).optional(),
-  _count: z.lazy(() => NestedIntFilterSchema).optional(),
-  _min: z.lazy(() => NestedJsonFilterSchema).optional(),
-  _max: z.lazy(() => NestedJsonFilterSchema).optional(),
 }).strict();
 
 export const JsonNullableWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.JsonNullableWithAggregatesFilter> = z.object({
@@ -1780,28 +2289,6 @@ export const FloatNullableFilterSchema: z.ZodType<PrismaClient.Prisma.FloatNulla
   not: z.union([z.number(), z.lazy(() => NestedFloatNullableFilterSchema)]).optional().nullable(),
 }).strict();
 
-export const FloatFilterSchema: z.ZodType<PrismaClient.Prisma.FloatFilter> = z.object({
-  equals: z.number().optional(),
-  in: z.number().array().optional(),
-  notIn: z.number().array().optional(),
-  lt: z.number().optional(),
-  lte: z.number().optional(),
-  gt: z.number().optional(),
-  gte: z.number().optional(),
-  not: z.union([z.number(), z.lazy(() => NestedFloatFilterSchema)]).optional(),
-}).strict();
-
-export const DecimalFilterSchema: z.ZodType<PrismaClient.Prisma.DecimalFilter> = z.object({
-  equals: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
-  in: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional(),
-  notIn: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional(),
-  lt: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
-  lte: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
-  gt: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
-  gte: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
-  not: z.union([z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => NestedDecimalFilterSchema)]).optional(),
-}).strict();
-
 export const DecimalNullableFilterSchema: z.ZodType<PrismaClient.Prisma.DecimalNullableFilter> = z.object({
   equals: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional().nullable(),
   in: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional().nullable(),
@@ -1813,17 +2300,6 @@ export const DecimalNullableFilterSchema: z.ZodType<PrismaClient.Prisma.DecimalN
   not: z.union([z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => NestedDecimalNullableFilterSchema)]).optional().nullable(),
 }).strict();
 
-export const DateTimeFilterSchema: z.ZodType<PrismaClient.Prisma.DateTimeFilter> = z.object({
-  equals: z.date().optional(),
-  in: z.date().array().optional(),
-  notIn: z.date().array().optional(),
-  lt: z.date().optional(),
-  lte: z.date().optional(),
-  gt: z.date().optional(),
-  gte: z.date().optional(),
-  not: z.union([z.date(), z.lazy(() => NestedDateTimeFilterSchema)]).optional(),
-}).strict();
-
 export const DateTimeNullableFilterSchema: z.ZodType<PrismaClient.Prisma.DateTimeNullableFilter> = z.object({
   equals: z.date().optional().nullable(),
   in: z.date().array().optional().nullable(),
@@ -1833,17 +2309,6 @@ export const DateTimeNullableFilterSchema: z.ZodType<PrismaClient.Prisma.DateTim
   gt: z.date().optional(),
   gte: z.date().optional(),
   not: z.union([z.date(), z.lazy(() => NestedDateTimeNullableFilterSchema)]).optional().nullable(),
-}).strict();
-
-export const BigIntFilterSchema: z.ZodType<PrismaClient.Prisma.BigIntFilter> = z.object({
-  equals: z.bigint().optional(),
-  in: z.bigint().array().optional(),
-  notIn: z.bigint().array().optional(),
-  lt: z.bigint().optional(),
-  lte: z.bigint().optional(),
-  gt: z.bigint().optional(),
-  gte: z.bigint().optional(),
-  not: z.union([z.bigint(), z.lazy(() => NestedBigIntFilterSchema)]).optional(),
 }).strict();
 
 export const BigIntNullableFilterSchema: z.ZodType<PrismaClient.Prisma.BigIntNullableFilter> = z.object({
@@ -1984,38 +2449,6 @@ export const FloatNullableWithAggregatesFilterSchema: z.ZodType<PrismaClient.Pri
   _max: z.lazy(() => NestedFloatNullableFilterSchema).optional(),
 }).strict();
 
-export const FloatWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.FloatWithAggregatesFilter> = z.object({
-  equals: z.number().optional(),
-  in: z.number().array().optional(),
-  notIn: z.number().array().optional(),
-  lt: z.number().optional(),
-  lte: z.number().optional(),
-  gt: z.number().optional(),
-  gte: z.number().optional(),
-  not: z.union([z.number(), z.lazy(() => NestedFloatWithAggregatesFilterSchema)]).optional(),
-  _count: z.lazy(() => NestedIntFilterSchema).optional(),
-  _avg: z.lazy(() => NestedFloatFilterSchema).optional(),
-  _sum: z.lazy(() => NestedFloatFilterSchema).optional(),
-  _min: z.lazy(() => NestedFloatFilterSchema).optional(),
-  _max: z.lazy(() => NestedFloatFilterSchema).optional(),
-}).strict();
-
-export const DecimalWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.DecimalWithAggregatesFilter> = z.object({
-  equals: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
-  in: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional(),
-  notIn: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional(),
-  lt: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
-  lte: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
-  gt: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
-  gte: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
-  not: z.union([z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => NestedDecimalWithAggregatesFilterSchema)]).optional(),
-  _count: z.lazy(() => NestedIntFilterSchema).optional(),
-  _avg: z.lazy(() => NestedDecimalFilterSchema).optional(),
-  _sum: z.lazy(() => NestedDecimalFilterSchema).optional(),
-  _min: z.lazy(() => NestedDecimalFilterSchema).optional(),
-  _max: z.lazy(() => NestedDecimalFilterSchema).optional(),
-}).strict();
-
 export const DecimalNullableWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.DecimalNullableWithAggregatesFilter> = z.object({
   equals: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional().nullable(),
   in: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional().nullable(),
@@ -2032,20 +2465,6 @@ export const DecimalNullableWithAggregatesFilterSchema: z.ZodType<PrismaClient.P
   _max: z.lazy(() => NestedDecimalNullableFilterSchema).optional(),
 }).strict();
 
-export const DateTimeWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.DateTimeWithAggregatesFilter> = z.object({
-  equals: z.date().optional(),
-  in: z.date().array().optional(),
-  notIn: z.date().array().optional(),
-  lt: z.date().optional(),
-  lte: z.date().optional(),
-  gt: z.date().optional(),
-  gte: z.date().optional(),
-  not: z.union([z.date(), z.lazy(() => NestedDateTimeWithAggregatesFilterSchema)]).optional(),
-  _count: z.lazy(() => NestedIntFilterSchema).optional(),
-  _min: z.lazy(() => NestedDateTimeFilterSchema).optional(),
-  _max: z.lazy(() => NestedDateTimeFilterSchema).optional(),
-}).strict();
-
 export const DateTimeNullableWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.DateTimeNullableWithAggregatesFilter> = z.object({
   equals: z.date().optional().nullable(),
   in: z.date().array().optional().nullable(),
@@ -2058,22 +2477,6 @@ export const DateTimeNullableWithAggregatesFilterSchema: z.ZodType<PrismaClient.
   _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
   _min: z.lazy(() => NestedDateTimeNullableFilterSchema).optional(),
   _max: z.lazy(() => NestedDateTimeNullableFilterSchema).optional(),
-}).strict();
-
-export const BigIntWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.BigIntWithAggregatesFilter> = z.object({
-  equals: z.bigint().optional(),
-  in: z.bigint().array().optional(),
-  notIn: z.bigint().array().optional(),
-  lt: z.bigint().optional(),
-  lte: z.bigint().optional(),
-  gt: z.bigint().optional(),
-  gte: z.bigint().optional(),
-  not: z.union([z.bigint(), z.lazy(() => NestedBigIntWithAggregatesFilterSchema)]).optional(),
-  _count: z.lazy(() => NestedIntFilterSchema).optional(),
-  _avg: z.lazy(() => NestedFloatFilterSchema).optional(),
-  _sum: z.lazy(() => NestedBigIntFilterSchema).optional(),
-  _min: z.lazy(() => NestedBigIntFilterSchema).optional(),
-  _max: z.lazy(() => NestedBigIntFilterSchema).optional(),
 }).strict();
 
 export const BigIntNullableWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.BigIntNullableWithAggregatesFilter> = z.object({
@@ -2418,6 +2821,34 @@ export const IntFieldUpdateOperationsInputSchema: z.ZodType<PrismaClient.Prisma.
   divide: z.number().optional(),
 }).strict();
 
+export const FloatFieldUpdateOperationsInputSchema: z.ZodType<PrismaClient.Prisma.FloatFieldUpdateOperationsInput> = z.object({
+  set: z.number().optional(),
+  increment: z.number().optional(),
+  decrement: z.number().optional(),
+  multiply: z.number().optional(),
+  divide: z.number().optional(),
+}).strict();
+
+export const DecimalFieldUpdateOperationsInputSchema: z.ZodType<PrismaClient.Prisma.DecimalFieldUpdateOperationsInput> = z.object({
+  set: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  increment: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  decrement: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  multiply: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  divide: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+}).strict();
+
+export const DateTimeFieldUpdateOperationsInputSchema: z.ZodType<PrismaClient.Prisma.DateTimeFieldUpdateOperationsInput> = z.object({
+  set: z.date().optional(),
+}).strict();
+
+export const BigIntFieldUpdateOperationsInputSchema: z.ZodType<PrismaClient.Prisma.BigIntFieldUpdateOperationsInput> = z.object({
+  set: z.bigint().optional(),
+  increment: z.bigint().optional(),
+  decrement: z.bigint().optional(),
+  multiply: z.bigint().optional(),
+  divide: z.bigint().optional(),
+}).strict();
+
 export const EnumMYValueFieldUpdateOperationsInputSchema: z.ZodType<PrismaClient.Prisma.EnumMYValueFieldUpdateOperationsInput> = z.object({
   set: z.lazy(() => MYValueSchema).optional(),
 }).strict();
@@ -2438,22 +2869,6 @@ export const NullableFloatFieldUpdateOperationsInputSchema: z.ZodType<PrismaClie
   divide: z.number().optional(),
 }).strict();
 
-export const FloatFieldUpdateOperationsInputSchema: z.ZodType<PrismaClient.Prisma.FloatFieldUpdateOperationsInput> = z.object({
-  set: z.number().optional(),
-  increment: z.number().optional(),
-  decrement: z.number().optional(),
-  multiply: z.number().optional(),
-  divide: z.number().optional(),
-}).strict();
-
-export const DecimalFieldUpdateOperationsInputSchema: z.ZodType<PrismaClient.Prisma.DecimalFieldUpdateOperationsInput> = z.object({
-  set: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
-  increment: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
-  decrement: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
-  multiply: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
-  divide: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
-}).strict();
-
 export const NullableDecimalFieldUpdateOperationsInputSchema: z.ZodType<PrismaClient.Prisma.NullableDecimalFieldUpdateOperationsInput> = z.object({
   set: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional().nullable(),
   increment: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
@@ -2462,20 +2877,8 @@ export const NullableDecimalFieldUpdateOperationsInputSchema: z.ZodType<PrismaCl
   divide: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
 }).strict();
 
-export const DateTimeFieldUpdateOperationsInputSchema: z.ZodType<PrismaClient.Prisma.DateTimeFieldUpdateOperationsInput> = z.object({
-  set: z.date().optional(),
-}).strict();
-
 export const NullableDateTimeFieldUpdateOperationsInputSchema: z.ZodType<PrismaClient.Prisma.NullableDateTimeFieldUpdateOperationsInput> = z.object({
   set: z.date().optional().nullable(),
-}).strict();
-
-export const BigIntFieldUpdateOperationsInputSchema: z.ZodType<PrismaClient.Prisma.BigIntFieldUpdateOperationsInput> = z.object({
-  set: z.bigint().optional(),
-  increment: z.bigint().optional(),
-  decrement: z.bigint().optional(),
-  multiply: z.bigint().optional(),
-  divide: z.bigint().optional(),
 }).strict();
 
 export const NullableBigIntFieldUpdateOperationsInputSchema: z.ZodType<PrismaClient.Prisma.NullableBigIntFieldUpdateOperationsInput> = z.object({
@@ -2813,21 +3216,99 @@ export const NestedStringWithAggregatesFilterSchema: z.ZodType<PrismaClient.Pris
   _max: z.lazy(() => NestedStringFilterSchema).optional(),
 }).strict();
 
-export const NestedEnumMYValueFilterSchema: z.ZodType<PrismaClient.Prisma.NestedEnumMYValueFilter> = z.object({
-  equals: z.lazy(() => MYValueSchema).optional(),
-  in: z.lazy(() => MYValueSchema).array().optional(),
-  notIn: z.lazy(() => MYValueSchema).array().optional(),
-  not: z.union([z.lazy(() => MYValueSchema), z.lazy(() => NestedEnumMYValueFilterSchema)]).optional(),
+export const NestedDecimalFilterSchema: z.ZodType<PrismaClient.Prisma.NestedDecimalFilter> = z.object({
+  equals: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  in: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional(),
+  notIn: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional(),
+  lt: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  lte: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  gt: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  gte: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  not: z.union([z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => NestedDecimalFilterSchema)]).optional(),
 }).strict();
 
-export const NestedEnumMYValueWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.NestedEnumMYValueWithAggregatesFilter> = z.object({
-  equals: z.lazy(() => MYValueSchema).optional(),
-  in: z.lazy(() => MYValueSchema).array().optional(),
-  notIn: z.lazy(() => MYValueSchema).array().optional(),
-  not: z.union([z.lazy(() => MYValueSchema), z.lazy(() => NestedEnumMYValueWithAggregatesFilterSchema)]).optional(),
+export const NestedDateTimeFilterSchema: z.ZodType<PrismaClient.Prisma.NestedDateTimeFilter> = z.object({
+  equals: z.date().optional(),
+  in: z.date().array().optional(),
+  notIn: z.date().array().optional(),
+  lt: z.date().optional(),
+  lte: z.date().optional(),
+  gt: z.date().optional(),
+  gte: z.date().optional(),
+  not: z.union([z.date(), z.lazy(() => NestedDateTimeFilterSchema)]).optional(),
+}).strict();
+
+export const NestedBigIntFilterSchema: z.ZodType<PrismaClient.Prisma.NestedBigIntFilter> = z.object({
+  equals: z.bigint().optional(),
+  in: z.bigint().array().optional(),
+  notIn: z.bigint().array().optional(),
+  lt: z.bigint().optional(),
+  lte: z.bigint().optional(),
+  gt: z.bigint().optional(),
+  gte: z.bigint().optional(),
+  not: z.union([z.bigint(), z.lazy(() => NestedBigIntFilterSchema)]).optional(),
+}).strict();
+
+export const NestedFloatWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.NestedFloatWithAggregatesFilter> = z.object({
+  equals: z.number().optional(),
+  in: z.number().array().optional(),
+  notIn: z.number().array().optional(),
+  lt: z.number().optional(),
+  lte: z.number().optional(),
+  gt: z.number().optional(),
+  gte: z.number().optional(),
+  not: z.union([z.number(), z.lazy(() => NestedFloatWithAggregatesFilterSchema)]).optional(),
   _count: z.lazy(() => NestedIntFilterSchema).optional(),
-  _min: z.lazy(() => NestedEnumMYValueFilterSchema).optional(),
-  _max: z.lazy(() => NestedEnumMYValueFilterSchema).optional(),
+  _avg: z.lazy(() => NestedFloatFilterSchema).optional(),
+  _sum: z.lazy(() => NestedFloatFilterSchema).optional(),
+  _min: z.lazy(() => NestedFloatFilterSchema).optional(),
+  _max: z.lazy(() => NestedFloatFilterSchema).optional(),
+}).strict();
+
+export const NestedDecimalWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.NestedDecimalWithAggregatesFilter> = z.object({
+  equals: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  in: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional(),
+  notIn: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional(),
+  lt: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  lte: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  gt: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  gte: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
+  not: z.union([z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => NestedDecimalWithAggregatesFilterSchema)]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _avg: z.lazy(() => NestedDecimalFilterSchema).optional(),
+  _sum: z.lazy(() => NestedDecimalFilterSchema).optional(),
+  _min: z.lazy(() => NestedDecimalFilterSchema).optional(),
+  _max: z.lazy(() => NestedDecimalFilterSchema).optional(),
+}).strict();
+
+export const NestedDateTimeWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.NestedDateTimeWithAggregatesFilter> = z.object({
+  equals: z.date().optional(),
+  in: z.date().array().optional(),
+  notIn: z.date().array().optional(),
+  lt: z.date().optional(),
+  lte: z.date().optional(),
+  gt: z.date().optional(),
+  gte: z.date().optional(),
+  not: z.union([z.date(), z.lazy(() => NestedDateTimeWithAggregatesFilterSchema)]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedDateTimeFilterSchema).optional(),
+  _max: z.lazy(() => NestedDateTimeFilterSchema).optional(),
+}).strict();
+
+export const NestedBigIntWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.NestedBigIntWithAggregatesFilter> = z.object({
+  equals: z.bigint().optional(),
+  in: z.bigint().array().optional(),
+  notIn: z.bigint().array().optional(),
+  lt: z.bigint().optional(),
+  lte: z.bigint().optional(),
+  gt: z.bigint().optional(),
+  gte: z.bigint().optional(),
+  not: z.union([z.bigint(), z.lazy(() => NestedBigIntWithAggregatesFilterSchema)]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _avg: z.lazy(() => NestedFloatFilterSchema).optional(),
+  _sum: z.lazy(() => NestedBigIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedBigIntFilterSchema).optional(),
+  _max: z.lazy(() => NestedBigIntFilterSchema).optional(),
 }).strict();
 
 export const NestedJsonFilterSchema: z.ZodType<PrismaClient.Prisma.NestedJsonFilter> = z.object({
@@ -2844,6 +3325,23 @@ export const NestedJsonFilterSchema: z.ZodType<PrismaClient.Prisma.NestedJsonFil
   gt: InputJsonValue.optional(),
   gte: InputJsonValue.optional(),
   not: z.union([InputJsonValue, z.lazy(() => JsonNullValueFilterSchema)]).optional(),
+}).strict();
+
+export const NestedEnumMYValueFilterSchema: z.ZodType<PrismaClient.Prisma.NestedEnumMYValueFilter> = z.object({
+  equals: z.lazy(() => MYValueSchema).optional(),
+  in: z.lazy(() => MYValueSchema).array().optional(),
+  notIn: z.lazy(() => MYValueSchema).array().optional(),
+  not: z.union([z.lazy(() => MYValueSchema), z.lazy(() => NestedEnumMYValueFilterSchema)]).optional(),
+}).strict();
+
+export const NestedEnumMYValueWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.NestedEnumMYValueWithAggregatesFilter> = z.object({
+  equals: z.lazy(() => MYValueSchema).optional(),
+  in: z.lazy(() => MYValueSchema).array().optional(),
+  notIn: z.lazy(() => MYValueSchema).array().optional(),
+  not: z.union([z.lazy(() => MYValueSchema), z.lazy(() => NestedEnumMYValueWithAggregatesFilterSchema)]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedEnumMYValueFilterSchema).optional(),
+  _max: z.lazy(() => NestedEnumMYValueFilterSchema).optional(),
 }).strict();
 
 export const NestedJsonNullableFilterSchema: z.ZodType<PrismaClient.Prisma.NestedJsonNullableFilter> = z.object({
@@ -2873,17 +3371,6 @@ export const NestedFloatNullableFilterSchema: z.ZodType<PrismaClient.Prisma.Nest
   not: z.union([z.number(), z.lazy(() => NestedFloatNullableFilterSchema)]).optional().nullable(),
 }).strict();
 
-export const NestedDecimalFilterSchema: z.ZodType<PrismaClient.Prisma.NestedDecimalFilter> = z.object({
-  equals: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
-  in: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional(),
-  notIn: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional(),
-  lt: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
-  lte: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
-  gt: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
-  gte: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
-  not: z.union([z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => NestedDecimalFilterSchema)]).optional(),
-}).strict();
-
 export const NestedDecimalNullableFilterSchema: z.ZodType<PrismaClient.Prisma.NestedDecimalNullableFilter> = z.object({
   equals: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional().nullable(),
   in: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional().nullable(),
@@ -2895,17 +3382,6 @@ export const NestedDecimalNullableFilterSchema: z.ZodType<PrismaClient.Prisma.Ne
   not: z.union([z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => NestedDecimalNullableFilterSchema)]).optional().nullable(),
 }).strict();
 
-export const NestedDateTimeFilterSchema: z.ZodType<PrismaClient.Prisma.NestedDateTimeFilter> = z.object({
-  equals: z.date().optional(),
-  in: z.date().array().optional(),
-  notIn: z.date().array().optional(),
-  lt: z.date().optional(),
-  lte: z.date().optional(),
-  gt: z.date().optional(),
-  gte: z.date().optional(),
-  not: z.union([z.date(), z.lazy(() => NestedDateTimeFilterSchema)]).optional(),
-}).strict();
-
 export const NestedDateTimeNullableFilterSchema: z.ZodType<PrismaClient.Prisma.NestedDateTimeNullableFilter> = z.object({
   equals: z.date().optional().nullable(),
   in: z.date().array().optional().nullable(),
@@ -2915,17 +3391,6 @@ export const NestedDateTimeNullableFilterSchema: z.ZodType<PrismaClient.Prisma.N
   gt: z.date().optional(),
   gte: z.date().optional(),
   not: z.union([z.date(), z.lazy(() => NestedDateTimeNullableFilterSchema)]).optional().nullable(),
-}).strict();
-
-export const NestedBigIntFilterSchema: z.ZodType<PrismaClient.Prisma.NestedBigIntFilter> = z.object({
-  equals: z.bigint().optional(),
-  in: z.bigint().array().optional(),
-  notIn: z.bigint().array().optional(),
-  lt: z.bigint().optional(),
-  lte: z.bigint().optional(),
-  gt: z.bigint().optional(),
-  gte: z.bigint().optional(),
-  not: z.union([z.bigint(), z.lazy(() => NestedBigIntFilterSchema)]).optional(),
 }).strict();
 
 export const NestedBigIntNullableFilterSchema: z.ZodType<PrismaClient.Prisma.NestedBigIntNullableFilter> = z.object({
@@ -2985,38 +3450,6 @@ export const NestedFloatNullableWithAggregatesFilterSchema: z.ZodType<PrismaClie
   _max: z.lazy(() => NestedFloatNullableFilterSchema).optional(),
 }).strict();
 
-export const NestedFloatWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.NestedFloatWithAggregatesFilter> = z.object({
-  equals: z.number().optional(),
-  in: z.number().array().optional(),
-  notIn: z.number().array().optional(),
-  lt: z.number().optional(),
-  lte: z.number().optional(),
-  gt: z.number().optional(),
-  gte: z.number().optional(),
-  not: z.union([z.number(), z.lazy(() => NestedFloatWithAggregatesFilterSchema)]).optional(),
-  _count: z.lazy(() => NestedIntFilterSchema).optional(),
-  _avg: z.lazy(() => NestedFloatFilterSchema).optional(),
-  _sum: z.lazy(() => NestedFloatFilterSchema).optional(),
-  _min: z.lazy(() => NestedFloatFilterSchema).optional(),
-  _max: z.lazy(() => NestedFloatFilterSchema).optional(),
-}).strict();
-
-export const NestedDecimalWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.NestedDecimalWithAggregatesFilter> = z.object({
-  equals: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
-  in: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional(),
-  notIn: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional(),
-  lt: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
-  lte: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
-  gt: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
-  gte: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional(),
-  not: z.union([z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }), z.lazy(() => NestedDecimalWithAggregatesFilterSchema)]).optional(),
-  _count: z.lazy(() => NestedIntFilterSchema).optional(),
-  _avg: z.lazy(() => NestedDecimalFilterSchema).optional(),
-  _sum: z.lazy(() => NestedDecimalFilterSchema).optional(),
-  _min: z.lazy(() => NestedDecimalFilterSchema).optional(),
-  _max: z.lazy(() => NestedDecimalFilterSchema).optional(),
-}).strict();
-
 export const NestedDecimalNullableWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.NestedDecimalNullableWithAggregatesFilter> = z.object({
   equals: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).optional().nullable(),
   in: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }).array().optional().nullable(),
@@ -3033,20 +3466,6 @@ export const NestedDecimalNullableWithAggregatesFilterSchema: z.ZodType<PrismaCl
   _max: z.lazy(() => NestedDecimalNullableFilterSchema).optional(),
 }).strict();
 
-export const NestedDateTimeWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.NestedDateTimeWithAggregatesFilter> = z.object({
-  equals: z.date().optional(),
-  in: z.date().array().optional(),
-  notIn: z.date().array().optional(),
-  lt: z.date().optional(),
-  lte: z.date().optional(),
-  gt: z.date().optional(),
-  gte: z.date().optional(),
-  not: z.union([z.date(), z.lazy(() => NestedDateTimeWithAggregatesFilterSchema)]).optional(),
-  _count: z.lazy(() => NestedIntFilterSchema).optional(),
-  _min: z.lazy(() => NestedDateTimeFilterSchema).optional(),
-  _max: z.lazy(() => NestedDateTimeFilterSchema).optional(),
-}).strict();
-
 export const NestedDateTimeNullableWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.NestedDateTimeNullableWithAggregatesFilter> = z.object({
   equals: z.date().optional().nullable(),
   in: z.date().array().optional().nullable(),
@@ -3059,22 +3478,6 @@ export const NestedDateTimeNullableWithAggregatesFilterSchema: z.ZodType<PrismaC
   _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
   _min: z.lazy(() => NestedDateTimeNullableFilterSchema).optional(),
   _max: z.lazy(() => NestedDateTimeNullableFilterSchema).optional(),
-}).strict();
-
-export const NestedBigIntWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.NestedBigIntWithAggregatesFilter> = z.object({
-  equals: z.bigint().optional(),
-  in: z.bigint().array().optional(),
-  notIn: z.bigint().array().optional(),
-  lt: z.bigint().optional(),
-  lte: z.bigint().optional(),
-  gt: z.bigint().optional(),
-  gte: z.bigint().optional(),
-  not: z.union([z.bigint(), z.lazy(() => NestedBigIntWithAggregatesFilterSchema)]).optional(),
-  _count: z.lazy(() => NestedIntFilterSchema).optional(),
-  _avg: z.lazy(() => NestedFloatFilterSchema).optional(),
-  _sum: z.lazy(() => NestedBigIntFilterSchema).optional(),
-  _min: z.lazy(() => NestedBigIntFilterSchema).optional(),
-  _max: z.lazy(() => NestedBigIntFilterSchema).optional(),
 }).strict();
 
 export const NestedBigIntNullableWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.NestedBigIntNullableWithAggregatesFilter> = z.object({
@@ -3585,6 +3988,65 @@ export const MyModelFindUniqueArgsSchema: z.ZodType<PrismaClient.Prisma.MyModelF
 export const MyModelFindUniqueOrThrowArgsSchema: z.ZodType<PrismaClient.Prisma.MyModelFindUniqueOrThrowArgs> = z.object({
   select: MyModelSelectSchema.optional(),
   where: MyModelWhereUniqueInputSchema,
+}).strict();
+
+export const WithDefaultsFindFirstArgsSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsFindFirstArgs> = z.object({
+  select: WithDefaultsSelectSchema.optional(),
+  where: WithDefaultsWhereInputSchema.optional(),
+  orderBy: z.union([WithDefaultsOrderByWithRelationInputSchema.array(), WithDefaultsOrderByWithRelationInputSchema]).optional(),
+  cursor: WithDefaultsWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: WithDefaultsScalarFieldEnumSchema.array().optional(),
+}).strict();
+
+export const WithDefaultsFindFirstOrThrowArgsSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsFindFirstOrThrowArgs> = z.object({
+  select: WithDefaultsSelectSchema.optional(),
+  where: WithDefaultsWhereInputSchema.optional(),
+  orderBy: z.union([WithDefaultsOrderByWithRelationInputSchema.array(), WithDefaultsOrderByWithRelationInputSchema]).optional(),
+  cursor: WithDefaultsWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: WithDefaultsScalarFieldEnumSchema.array().optional(),
+}).strict();
+
+export const WithDefaultsFindManyArgsSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsFindManyArgs> = z.object({
+  select: WithDefaultsSelectSchema.optional(),
+  where: WithDefaultsWhereInputSchema.optional(),
+  orderBy: z.union([WithDefaultsOrderByWithRelationInputSchema.array(), WithDefaultsOrderByWithRelationInputSchema]).optional(),
+  cursor: WithDefaultsWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: WithDefaultsScalarFieldEnumSchema.array().optional(),
+}).strict();
+
+export const WithDefaultsAggregateArgsSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsAggregateArgs> = z.object({
+  select: WithDefaultsSelectSchema.optional(),
+  where: WithDefaultsWhereInputSchema.optional(),
+  orderBy: z.union([WithDefaultsOrderByWithRelationInputSchema.array(), WithDefaultsOrderByWithRelationInputSchema]).optional(),
+  cursor: WithDefaultsWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict();
+
+export const WithDefaultsGroupByArgsSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsGroupByArgs> = z.object({
+  select: WithDefaultsSelectSchema.optional(),
+  where: WithDefaultsWhereInputSchema.optional(),
+  orderBy: z.union([WithDefaultsOrderByWithAggregationInputSchema.array(), WithDefaultsOrderByWithAggregationInputSchema]).optional(),
+  by: WithDefaultsScalarFieldEnumSchema.array(),
+  having: WithDefaultsScalarWhereWithAggregatesInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict();
+
+export const WithDefaultsFindUniqueArgsSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsFindUniqueArgs> = z.object({
+  select: WithDefaultsSelectSchema.optional(),
+  where: WithDefaultsWhereUniqueInputSchema,
+}).strict();
+
+export const WithDefaultsFindUniqueOrThrowArgsSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsFindUniqueOrThrowArgs> = z.object({
+  select: WithDefaultsSelectSchema.optional(),
+  where: WithDefaultsWhereUniqueInputSchema,
 }).strict();
 
 export const MODELWithUpperCaseFindFirstArgsSchema: z.ZodType<PrismaClient.Prisma.MODELWithUpperCaseFindFirstArgs> = z.object({
@@ -4124,6 +4586,43 @@ export const MyModelUpdateManyArgsSchema: z.ZodType<Omit<PrismaClient.Prisma.MyM
 
 export const MyModelDeleteManyArgsSchema: z.ZodType<PrismaClient.Prisma.MyModelDeleteManyArgs> = z.object({
   where: MyModelWhereInputSchema.optional(),
+}).strict();
+
+export const WithDefaultsCreateArgsSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsCreateArgs> = z.object({
+  select: WithDefaultsSelectSchema.optional(),
+  data: z.union([WithDefaultsCreateInputSchema, WithDefaultsUncheckedCreateInputSchema]),
+}).strict();
+
+export const WithDefaultsUpsertArgsSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsUpsertArgs> = z.object({
+  select: WithDefaultsSelectSchema.optional(),
+  where: WithDefaultsWhereUniqueInputSchema,
+  create: z.union([WithDefaultsCreateInputSchema, WithDefaultsUncheckedCreateInputSchema]),
+  update: z.union([WithDefaultsUpdateInputSchema, WithDefaultsUncheckedUpdateInputSchema]),
+}).strict();
+
+export const WithDefaultsCreateManyArgsSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsCreateManyArgs> = z.object({
+  data: WithDefaultsCreateManyInputSchema.array(),
+  skipDuplicates: z.boolean().optional(),
+}).strict();
+
+export const WithDefaultsDeleteArgsSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsDeleteArgs> = z.object({
+  select: WithDefaultsSelectSchema.optional(),
+  where: WithDefaultsWhereUniqueInputSchema,
+}).strict();
+
+export const WithDefaultsUpdateArgsSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsUpdateArgs> = z.object({
+  select: WithDefaultsSelectSchema.optional(),
+  data: z.union([WithDefaultsUpdateInputSchema, WithDefaultsUncheckedUpdateInputSchema]),
+  where: WithDefaultsWhereUniqueInputSchema,
+}).strict();
+
+export const WithDefaultsUpdateManyArgsSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsUpdateManyArgs> = z.object({
+  data: z.union([WithDefaultsUpdateManyMutationInputSchema, WithDefaultsUncheckedUpdateManyInputSchema]),
+  where: WithDefaultsWhereInputSchema.optional(),
+}).strict();
+
+export const WithDefaultsDeleteManyArgsSchema: z.ZodType<PrismaClient.Prisma.WithDefaultsDeleteManyArgs> = z.object({
+  where: WithDefaultsWhereInputSchema.optional(),
 }).strict();
 
 export const MODELWithUpperCaseCreateArgsSchema: z.ZodType<PrismaClient.Prisma.MODELWithUpperCaseCreateArgs> = z.object({
