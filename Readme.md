@@ -2,17 +2,17 @@
 
 `zod-prisma-types` is a generator for [prisma](www.prisma.io) that generates [zod](https://github.com/colinhacks/zod) schemas from your prisma models. This includes schemas of models, enums, inputTypes, argTypes, filters and so on. It also provides options to write advanced zod validators directly in the prisma schema comments.
 
-# Table of content
+## Table of contents
 
 - [Installation](#installation)
 - [Usage](#usage)
-  - [output](#output)
-  - [useInstanceOfForDecimal](#useinstanceoffordecimal)
-  - [createInputTypes](#createinputtypes)
-  - [addInputTypeValidation](#addinputtypevalidation)
-  - [defaultValuesOptionalInModel](#defaultvaluesoptionalinmodel)
-  - [imports](#imports)
-  - [tsConfigFilePath](#tsconfigfilepath)
+  - [`output`](#output)
+  - [`useInstanceOfForDecimal`](#useinstanceoffordecimal)
+  - [`createInputTypes`](#createinputtypes)
+  - [`addInputTypeValidation`](#addinputtypevalidation)
+  - [`defaultValuesOptionalInModel`](#defaultvaluesoptionalinmodel)
+  - [`imports`](#imports)
+  - [`tsConfigFilePath`](#tsconfigfilepath)
 - [Json null values](#json-null-values)
 - [Skip schema generation](#skip-schema-generation)
 - [Field validators](#field-validators)
@@ -27,27 +27,27 @@
 - [Naming of zod schemas](#naming-of-zod-schemas)
 - [Adding comments](#adding-comments)
 
-# Installation
+## Installation
 
 via npm:
 
-```
+```bash
 npm install zod-prisma-types
 ```
 
 via yarn:
 
-```
+```bash
 yarn add zod-prisma-types
 ```
 
 via pnpm:
 
-```
+```bash
 pnpm add zod-prisma-types
 ```
 
-# Usage
+## Usage
 
 > Supports prisma 4.x
 
@@ -76,13 +76,13 @@ generator zod {
 
 > As mentioned above this generator only creates a single `index.ts` file in the specified output folder containing all the zod prisma schemas. I decided to only create a single file because in [`ts-morph`](https://ts-morph.com/manipulation/performance) it is more efficient to write a bunch of statements to a single file at once than creating multiple files where only a few statements are added. This can be beneficial for generating zod schemas for big prisma schemas. Another point is that it makes the codebase of the generator more managable (...no need to create imports, simpler structure of the files) and it's easier to use custom imports (see below).
 
-## `output`
+### `output`
 
 > default: `./generated/zod`
 
 Provide an alternative output path.
 
-## `useInstanceOfForDecimal`
+### `useInstanceOfForDecimal`
 
 > default: `false`
 
@@ -134,7 +134,7 @@ export const MyModel = z.object({
 });
 ```
 
-## `createInputTypes`
+### `createInputTypes`
 
 > default: `true`
 
@@ -147,7 +147,7 @@ generator zod {
 }
 ```
 
-## `addInputTypeValidation`
+### `addInputTypeValidation`
 
 > default: `true`
 
@@ -160,7 +160,7 @@ generator zod {
 }
 ```
 
-## `defaultValuesOptionalInModel`
+### `defaultValuesOptionalInModel`
 
 > default: `false`
 
@@ -189,9 +189,7 @@ export const MyModel = z.object({
 });
 ```
 
-````
-
-## `imports`
+### `imports`
 
 You can specify custom imports that are then added to the `index.ts` file. Since prisma only lets us specify `string` options in the `prisma.schema` generator config the syntax of the imports is a bit clumsy:
 
@@ -200,7 +198,7 @@ generator zod {
   // ...other config options
   imports        = "import(import { myFunction } from 'mypackage').import(import { custom } from './myfolder')"
 }
-````
+```
 
 > The function-like syntax is used to easily split the string into an array and remove the unnecessary stuff. To add multiple imports just chain the commands.
 
@@ -235,7 +233,7 @@ export const MyModelSchema = z.object({
 });
 ```
 
-## `tsConfigFilePath`
+### `tsConfigFilePath`
 
 If your `tsconfig.json` file resides in another folder than your root (where the `node_modules` folder is located) you can specify a custom path. This path is then consumed by the generator and passed on to the `ts-morph` `Project` instance that is used to create the file. Usually you don't have to provide this option because it defaults in ts-morph to the base directory.
 
@@ -248,13 +246,13 @@ generator zod {
 }
 ```
 
-# Json null values
+## Json null values
 
 When using json null values prisma has a unique way of handling Database `NULL` and JSON `null` as stated [in the Docs](https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#using-null-values).
 
 To adhere to this concept you can pass `"DbNull"` or `"JsonNull"` as string to a nullable Json field. When the schema gets validated these strings are transformed to `Prisma.DbNull` or `Prisma.JsonNull` to satisfy the `prisma.[myModel].create() | .update() | ...` functions.
 
-# Skip schema generation
+## Skip schema generation
 
 You can skip schema generation based on e.g. the environment you are currently working. For example you can only generate the schemas when you're in `development` but not when you run generation in `production` (because in `production` the schemas would already hav been created and pushed to the server via source code of git repo).
 
@@ -291,7 +289,7 @@ to your respective `.env` file. This will load the `SKIP_ZOD_PRISMA` environment
 
 > You can choose to name your environment variable whatever you want - just make shure to load the right variable in `zodGenConfig.js`.
 
-# Field validators
+## Field validators
 
 It is possible to add zod validators in the comments of the `prisma.schema` file with the following syntax (use [rich-comments](https://www.prisma.io/docs/concepts/components/prisma-schema#comments) `///` instead of `//`).
 
@@ -417,7 +415,7 @@ model MyModel {
 }
 ```
 
-```
+```bash
 [@zod generator error]: Custom error key 'invalid_type_errrrrror' is not valid. Please check for typos! [Error Location]: Model: 'Test', Field: 'myField'.
 ```
 
@@ -600,7 +598,7 @@ const appRouter = t.router({
 
 To ease the developer experience the generator checks if the provided `@zod.[key]` can be used on the respective type of the model field. It also checks if the `@zod.[key].[validator]` can be used on the specified `@zod.[key]`
 
-#### `Wrong zod type`
+### `Wrong zod type`
 
 The generator throws an error if you use a validator key like `@zod.string` on the wrong prisma type.
 
@@ -613,13 +611,13 @@ model MyModel {
 
 For the above example the Error message would look like this:
 
-```
+```bash
 [@zod generator error]: Validator 'string' is not valid for type 'Int'. [Error Location]: Model: 'MyModel', Field: 'number'
 ```
 
 The generator provides the exact location, what went wrong and where the error happend. In big prisma schemas with hundreds of models and hundreds of custom validation strings this can come in handy.
 
-#### `Wrong validator`
+### `Wrong validator`
 
 The generator throws an error if you use a validator `.min` on the wrong validator key.
 
@@ -631,11 +629,11 @@ model MyModel {
 
 The above example would throw the following error:
 
-```
+```bash
 [@zod generator error]: Validator 'min' is not valid for type 'Int'. [Error Location]: Model: 'MyModel', Field: 'number'.
 ```
 
-#### `Typo Errors`
+### `Typo Errors`
 
 If you have typos in your validator strings like
 
@@ -647,12 +645,12 @@ model MyModel {
 
 that the generator would throw the following error:
 
-```
+```bash
 [@zod generator error]: Could not match validator 'min' with validatorPattern
 '.min(3, { mussage: 'Must be at least 3 characters' })'. Please check for typos! [Error Location]: Model: 'MyModel', Field: 'string'.
 ```
 
-# Naming of zod schemas
+## Naming of zod schemas
 
 The zod types are named after the generated prisma types with an appended `"Schema"` string. You just need to hover over a prisma function and you know which type to import. This would look something like this for trpc v.10:
 
@@ -681,7 +679,7 @@ const appRouter = t.router({
 });
 ```
 
-# Adding comments
+## Adding comments
 
 You can add [rich-comments](https://www.prisma.io/docs/concepts/components/prisma-schema#comments) to your models and fields that are then printed as jsDoc in your generated zod schema.
 
