@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest';
 import { getStringVariants } from '../../../../utils/getStringVariants';
 import { ExtendedDMMF } from '../../../ExtendedDMMF';
 import { loadDMMF } from '../../utils/loadDMMF';
-import { DEFAULT_GENERATOR_CONFIG } from './fields.test';
+import { DEFAULT_GENERATOR_CONFIG } from './extendedDMMFField.test';
 
 describe('testSimpleModelNoValidators', async () => {
   const dmmf = await loadDMMF(`${__dirname}/extendedDMMFModel.prisma`);
