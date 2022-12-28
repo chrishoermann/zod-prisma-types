@@ -3,7 +3,7 @@ export const usesCustomTsConfigFilePath = async (
 ): Promise<void> => {
   if (!path) return;
 
-  const customPath = `${process.cwd()}/${path}`;
+  const customPath = `${process.cwd()}\\${path}`;
 
   try {
     const tsconfig = await import(customPath);

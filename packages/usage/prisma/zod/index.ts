@@ -22,8 +22,6 @@ export const MODELWithUpperCaseScalarFieldEnumSchema = z.nativeEnum(PrismaClient
 
 export const ModelWithCommentsScalarFieldEnumSchema = z.nativeEnum(PrismaClient.Prisma.ModelWithCommentsScalarFieldEnum);
 
-export const ModelWithDefaultValuesScalarFieldEnumSchema = z.nativeEnum(PrismaClient.Prisma.ModelWithDefaultValuesScalarFieldEnum);
-
 export const ModelWithOmitFieldsScalarFieldEnumSchema = z.nativeEnum(PrismaClient.Prisma.ModelWithOmitFieldsScalarFieldEnum);
 
 export const MyPrismaScalarsTypeScalarFieldEnumSchema = z.nativeEnum(PrismaClient.Prisma.MyPrismaScalarsTypeScalarFieldEnum);
@@ -275,34 +273,6 @@ export const LocationOptionalDefaultsSchema = LocationSchema.merge(
   })
 );
 
-// MODEL WITH DEFAULT VALUES
-//------------------------------------------------------
-
-export const ModelWithDefaultValuesSchema = z.object({
-  id: z.number(),
-  string: z.string(),
-  otherString: z.string(),
-  int: z.number(),
-  otherInt: z.number(),
-  float: z.number(),
-  otherFloat: z.number(),
-  boolean: z.boolean(),
-  otherBool: z.boolean(),
-  date: z.date(),
-  otherDate: z.date(),
-});
-
-export const ModelWithDefaultValuesOptionalDefaultsSchema = ModelWithDefaultValuesSchema.merge(
-  z.object({
-    id: z.number(),
-    string: z.string(),
-    int: z.number(),
-    float: z.number(),
-    boolean: z.boolean(),
-    date: z.date(),
-  })
-);
-
 /////////////////////////////////////////
 // SELECT & INCLUDE
 /////////////////////////////////////////
@@ -476,23 +446,6 @@ export const LocationSelectSchema: z.ZodType<PrismaClient.Prisma.LocationSelect>
   lng: z.boolean().optional(),
   User: z.union([z.boolean(), z.lazy(() => UserFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(), z.lazy(() => LocationCountOutputTypeArgsSchema)]).optional(),
-}).strict();
-
-// MODEL WITH DEFAULT VALUES
-//------------------------------------------------------
-
-export const ModelWithDefaultValuesSelectSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesSelect> = z.object({
-  id: z.boolean().optional(),
-  string: z.boolean().optional(),
-  otherString: z.boolean().optional(),
-  int: z.boolean().optional(),
-  otherInt: z.boolean().optional(),
-  float: z.boolean().optional(),
-  otherFloat: z.boolean().optional(),
-  boolean: z.boolean().optional(),
-  otherBool: z.boolean().optional(),
-  date: z.boolean().optional(),
-  otherDate: z.boolean().optional(),
 }).strict();
 
 /////////////////////////////////////////
@@ -966,77 +919,6 @@ export const LocationScalarWhereWithAggregatesInputSchema: z.ZodType<PrismaClien
   NOT: z.union([z.lazy(() => LocationScalarWhereWithAggregatesInputSchema), z.lazy(() => LocationScalarWhereWithAggregatesInputSchema).array()]).optional(),
   lat: z.union([z.lazy(() => FloatWithAggregatesFilterSchema), z.number()]).optional(),
   lng: z.union([z.lazy(() => FloatWithAggregatesFilterSchema), z.number()]).optional(),
-}).strict();
-
-export const ModelWithDefaultValuesWhereInputSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesWhereInput> = z.object({
-  AND: z.union([z.lazy(() => ModelWithDefaultValuesWhereInputSchema), z.lazy(() => ModelWithDefaultValuesWhereInputSchema).array()]).optional(),
-  OR: z.lazy(() => ModelWithDefaultValuesWhereInputSchema).array().optional(),
-  NOT: z.union([z.lazy(() => ModelWithDefaultValuesWhereInputSchema), z.lazy(() => ModelWithDefaultValuesWhereInputSchema).array()]).optional(),
-  id: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
-  string: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
-  otherString: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
-  int: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
-  otherInt: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
-  float: z.union([z.lazy(() => FloatFilterSchema), z.number()]).optional(),
-  otherFloat: z.union([z.lazy(() => FloatFilterSchema), z.number()]).optional(),
-  boolean: z.union([z.lazy(() => BoolFilterSchema), z.boolean()]).optional(),
-  otherBool: z.union([z.lazy(() => BoolFilterSchema), z.boolean()]).optional(),
-  date: z.union([z.lazy(() => DateTimeFilterSchema), z.date()]).optional(),
-  otherDate: z.union([z.lazy(() => DateTimeFilterSchema), z.date()]).optional(),
-}).strict();
-
-export const ModelWithDefaultValuesOrderByWithRelationInputSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesOrderByWithRelationInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional(),
-  string: z.lazy(() => SortOrderSchema).optional(),
-  otherString: z.lazy(() => SortOrderSchema).optional(),
-  int: z.lazy(() => SortOrderSchema).optional(),
-  otherInt: z.lazy(() => SortOrderSchema).optional(),
-  float: z.lazy(() => SortOrderSchema).optional(),
-  otherFloat: z.lazy(() => SortOrderSchema).optional(),
-  boolean: z.lazy(() => SortOrderSchema).optional(),
-  otherBool: z.lazy(() => SortOrderSchema).optional(),
-  date: z.lazy(() => SortOrderSchema).optional(),
-  otherDate: z.lazy(() => SortOrderSchema).optional(),
-}).strict();
-
-export const ModelWithDefaultValuesWhereUniqueInputSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesWhereUniqueInput> = z.object({
-  id: z.number().optional(),
-}).strict();
-
-export const ModelWithDefaultValuesOrderByWithAggregationInputSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesOrderByWithAggregationInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional(),
-  string: z.lazy(() => SortOrderSchema).optional(),
-  otherString: z.lazy(() => SortOrderSchema).optional(),
-  int: z.lazy(() => SortOrderSchema).optional(),
-  otherInt: z.lazy(() => SortOrderSchema).optional(),
-  float: z.lazy(() => SortOrderSchema).optional(),
-  otherFloat: z.lazy(() => SortOrderSchema).optional(),
-  boolean: z.lazy(() => SortOrderSchema).optional(),
-  otherBool: z.lazy(() => SortOrderSchema).optional(),
-  date: z.lazy(() => SortOrderSchema).optional(),
-  otherDate: z.lazy(() => SortOrderSchema).optional(),
-  _count: z.lazy(() => ModelWithDefaultValuesCountOrderByAggregateInputSchema).optional(),
-  _avg: z.lazy(() => ModelWithDefaultValuesAvgOrderByAggregateInputSchema).optional(),
-  _max: z.lazy(() => ModelWithDefaultValuesMaxOrderByAggregateInputSchema).optional(),
-  _min: z.lazy(() => ModelWithDefaultValuesMinOrderByAggregateInputSchema).optional(),
-  _sum: z.lazy(() => ModelWithDefaultValuesSumOrderByAggregateInputSchema).optional(),
-}).strict();
-
-export const ModelWithDefaultValuesScalarWhereWithAggregatesInputSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesScalarWhereWithAggregatesInput> = z.object({
-  AND: z.union([z.lazy(() => ModelWithDefaultValuesScalarWhereWithAggregatesInputSchema), z.lazy(() => ModelWithDefaultValuesScalarWhereWithAggregatesInputSchema).array()]).optional(),
-  OR: z.lazy(() => ModelWithDefaultValuesScalarWhereWithAggregatesInputSchema).array().optional(),
-  NOT: z.union([z.lazy(() => ModelWithDefaultValuesScalarWhereWithAggregatesInputSchema), z.lazy(() => ModelWithDefaultValuesScalarWhereWithAggregatesInputSchema).array()]).optional(),
-  id: z.union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()]).optional(),
-  string: z.union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()]).optional(),
-  otherString: z.union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()]).optional(),
-  int: z.union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()]).optional(),
-  otherInt: z.union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()]).optional(),
-  float: z.union([z.lazy(() => FloatWithAggregatesFilterSchema), z.number()]).optional(),
-  otherFloat: z.union([z.lazy(() => FloatWithAggregatesFilterSchema), z.number()]).optional(),
-  boolean: z.union([z.lazy(() => BoolWithAggregatesFilterSchema), z.boolean()]).optional(),
-  otherBool: z.union([z.lazy(() => BoolWithAggregatesFilterSchema), z.boolean()]).optional(),
-  date: z.union([z.lazy(() => DateTimeWithAggregatesFilterSchema), z.date()]).optional(),
-  otherDate: z.union([z.lazy(() => DateTimeWithAggregatesFilterSchema), z.date()]).optional(),
 }).strict();
 
 export const MODELWithUpperCaseCreateInputSchema: z.ZodType<PrismaClient.Prisma.MODELWithUpperCaseCreateInput> = z.object({
@@ -1585,101 +1467,6 @@ export const LocationUpdateManyMutationInputSchema: z.ZodType<PrismaClient.Prism
 export const LocationUncheckedUpdateManyInputSchema: z.ZodType<PrismaClient.Prisma.LocationUncheckedUpdateManyInput> = z.object({
   lat: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
   lng: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
-}).strict();
-
-export const ModelWithDefaultValuesCreateInputSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesCreateInput> = z.object({
-  string: z.string().optional(),
-  otherString: z.string(),
-  int: z.number().optional(),
-  otherInt: z.number(),
-  float: z.number().optional(),
-  otherFloat: z.number(),
-  boolean: z.boolean().optional(),
-  otherBool: z.boolean(),
-  date: z.date().optional(),
-  otherDate: z.date(),
-}).strict();
-
-export const ModelWithDefaultValuesUncheckedCreateInputSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesUncheckedCreateInput> = z.object({
-  id: z.number().optional(),
-  string: z.string().optional(),
-  otherString: z.string(),
-  int: z.number().optional(),
-  otherInt: z.number(),
-  float: z.number().optional(),
-  otherFloat: z.number(),
-  boolean: z.boolean().optional(),
-  otherBool: z.boolean(),
-  date: z.date().optional(),
-  otherDate: z.date(),
-}).strict();
-
-export const ModelWithDefaultValuesUpdateInputSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesUpdateInput> = z.object({
-  string: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-  otherString: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-  int: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
-  otherInt: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
-  float: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
-  otherFloat: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
-  boolean: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
-  otherBool: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
-  date: z.union([z.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
-  otherDate: z.union([z.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
-}).strict();
-
-export const ModelWithDefaultValuesUncheckedUpdateInputSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesUncheckedUpdateInput> = z.object({
-  id: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
-  string: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-  otherString: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-  int: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
-  otherInt: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
-  float: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
-  otherFloat: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
-  boolean: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
-  otherBool: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
-  date: z.union([z.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
-  otherDate: z.union([z.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
-}).strict();
-
-export const ModelWithDefaultValuesCreateManyInputSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesCreateManyInput> = z.object({
-  id: z.number().optional(),
-  string: z.string().optional(),
-  otherString: z.string(),
-  int: z.number().optional(),
-  otherInt: z.number(),
-  float: z.number().optional(),
-  otherFloat: z.number(),
-  boolean: z.boolean().optional(),
-  otherBool: z.boolean(),
-  date: z.date().optional(),
-  otherDate: z.date(),
-}).strict();
-
-export const ModelWithDefaultValuesUpdateManyMutationInputSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesUpdateManyMutationInput> = z.object({
-  string: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-  otherString: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-  int: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
-  otherInt: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
-  float: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
-  otherFloat: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
-  boolean: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
-  otherBool: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
-  date: z.union([z.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
-  otherDate: z.union([z.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
-}).strict();
-
-export const ModelWithDefaultValuesUncheckedUpdateManyInputSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesUncheckedUpdateManyInput> = z.object({
-  id: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
-  string: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-  otherString: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-  int: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
-  otherInt: z.union([z.number(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
-  float: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
-  otherFloat: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
-  boolean: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
-  otherBool: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
-  date: z.union([z.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
-  otherDate: z.union([z.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
 }).strict();
 
 export const IntFilterSchema: z.ZodType<PrismaClient.Prisma.IntFilter> = z.object({
@@ -2529,64 +2316,6 @@ export const LocationMinOrderByAggregateInputSchema: z.ZodType<PrismaClient.Pris
 export const LocationSumOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.LocationSumOrderByAggregateInput> = z.object({
   lat: z.lazy(() => SortOrderSchema).optional(),
   lng: z.lazy(() => SortOrderSchema).optional(),
-}).strict();
-
-export const ModelWithDefaultValuesCountOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesCountOrderByAggregateInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional(),
-  string: z.lazy(() => SortOrderSchema).optional(),
-  otherString: z.lazy(() => SortOrderSchema).optional(),
-  int: z.lazy(() => SortOrderSchema).optional(),
-  otherInt: z.lazy(() => SortOrderSchema).optional(),
-  float: z.lazy(() => SortOrderSchema).optional(),
-  otherFloat: z.lazy(() => SortOrderSchema).optional(),
-  boolean: z.lazy(() => SortOrderSchema).optional(),
-  otherBool: z.lazy(() => SortOrderSchema).optional(),
-  date: z.lazy(() => SortOrderSchema).optional(),
-  otherDate: z.lazy(() => SortOrderSchema).optional(),
-}).strict();
-
-export const ModelWithDefaultValuesAvgOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesAvgOrderByAggregateInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional(),
-  int: z.lazy(() => SortOrderSchema).optional(),
-  otherInt: z.lazy(() => SortOrderSchema).optional(),
-  float: z.lazy(() => SortOrderSchema).optional(),
-  otherFloat: z.lazy(() => SortOrderSchema).optional(),
-}).strict();
-
-export const ModelWithDefaultValuesMaxOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesMaxOrderByAggregateInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional(),
-  string: z.lazy(() => SortOrderSchema).optional(),
-  otherString: z.lazy(() => SortOrderSchema).optional(),
-  int: z.lazy(() => SortOrderSchema).optional(),
-  otherInt: z.lazy(() => SortOrderSchema).optional(),
-  float: z.lazy(() => SortOrderSchema).optional(),
-  otherFloat: z.lazy(() => SortOrderSchema).optional(),
-  boolean: z.lazy(() => SortOrderSchema).optional(),
-  otherBool: z.lazy(() => SortOrderSchema).optional(),
-  date: z.lazy(() => SortOrderSchema).optional(),
-  otherDate: z.lazy(() => SortOrderSchema).optional(),
-}).strict();
-
-export const ModelWithDefaultValuesMinOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesMinOrderByAggregateInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional(),
-  string: z.lazy(() => SortOrderSchema).optional(),
-  otherString: z.lazy(() => SortOrderSchema).optional(),
-  int: z.lazy(() => SortOrderSchema).optional(),
-  otherInt: z.lazy(() => SortOrderSchema).optional(),
-  float: z.lazy(() => SortOrderSchema).optional(),
-  otherFloat: z.lazy(() => SortOrderSchema).optional(),
-  boolean: z.lazy(() => SortOrderSchema).optional(),
-  otherBool: z.lazy(() => SortOrderSchema).optional(),
-  date: z.lazy(() => SortOrderSchema).optional(),
-  otherDate: z.lazy(() => SortOrderSchema).optional(),
-}).strict();
-
-export const ModelWithDefaultValuesSumOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesSumOrderByAggregateInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional(),
-  int: z.lazy(() => SortOrderSchema).optional(),
-  otherInt: z.lazy(() => SortOrderSchema).optional(),
-  float: z.lazy(() => SortOrderSchema).optional(),
-  otherFloat: z.lazy(() => SortOrderSchema).optional(),
 }).strict();
 
 export const StringFieldUpdateOperationsInputSchema: z.ZodType<PrismaClient.Prisma.StringFieldUpdateOperationsInput> = z.object({
@@ -4239,65 +3968,6 @@ export const LocationFindUniqueOrThrowArgsSchema: z.ZodType<PrismaClient.Prisma.
   where: LocationWhereUniqueInputSchema,
 }).strict();
 
-export const ModelWithDefaultValuesFindFirstArgsSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesFindFirstArgs> = z.object({
-  select: ModelWithDefaultValuesSelectSchema.optional(),
-  where: ModelWithDefaultValuesWhereInputSchema.optional(),
-  orderBy: z.union([ModelWithDefaultValuesOrderByWithRelationInputSchema.array(), ModelWithDefaultValuesOrderByWithRelationInputSchema]).optional(),
-  cursor: ModelWithDefaultValuesWhereUniqueInputSchema.optional(),
-  take: z.number().optional(),
-  skip: z.number().optional(),
-  distinct: ModelWithDefaultValuesScalarFieldEnumSchema.array().optional(),
-}).strict();
-
-export const ModelWithDefaultValuesFindFirstOrThrowArgsSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesFindFirstOrThrowArgs> = z.object({
-  select: ModelWithDefaultValuesSelectSchema.optional(),
-  where: ModelWithDefaultValuesWhereInputSchema.optional(),
-  orderBy: z.union([ModelWithDefaultValuesOrderByWithRelationInputSchema.array(), ModelWithDefaultValuesOrderByWithRelationInputSchema]).optional(),
-  cursor: ModelWithDefaultValuesWhereUniqueInputSchema.optional(),
-  take: z.number().optional(),
-  skip: z.number().optional(),
-  distinct: ModelWithDefaultValuesScalarFieldEnumSchema.array().optional(),
-}).strict();
-
-export const ModelWithDefaultValuesFindManyArgsSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesFindManyArgs> = z.object({
-  select: ModelWithDefaultValuesSelectSchema.optional(),
-  where: ModelWithDefaultValuesWhereInputSchema.optional(),
-  orderBy: z.union([ModelWithDefaultValuesOrderByWithRelationInputSchema.array(), ModelWithDefaultValuesOrderByWithRelationInputSchema]).optional(),
-  cursor: ModelWithDefaultValuesWhereUniqueInputSchema.optional(),
-  take: z.number().optional(),
-  skip: z.number().optional(),
-  distinct: ModelWithDefaultValuesScalarFieldEnumSchema.array().optional(),
-}).strict();
-
-export const ModelWithDefaultValuesAggregateArgsSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesAggregateArgs> = z.object({
-  select: ModelWithDefaultValuesSelectSchema.optional(),
-  where: ModelWithDefaultValuesWhereInputSchema.optional(),
-  orderBy: z.union([ModelWithDefaultValuesOrderByWithRelationInputSchema.array(), ModelWithDefaultValuesOrderByWithRelationInputSchema]).optional(),
-  cursor: ModelWithDefaultValuesWhereUniqueInputSchema.optional(),
-  take: z.number().optional(),
-  skip: z.number().optional(),
-}).strict();
-
-export const ModelWithDefaultValuesGroupByArgsSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesGroupByArgs> = z.object({
-  select: ModelWithDefaultValuesSelectSchema.optional(),
-  where: ModelWithDefaultValuesWhereInputSchema.optional(),
-  orderBy: z.union([ModelWithDefaultValuesOrderByWithAggregationInputSchema.array(), ModelWithDefaultValuesOrderByWithAggregationInputSchema]).optional(),
-  by: ModelWithDefaultValuesScalarFieldEnumSchema.array(),
-  having: ModelWithDefaultValuesScalarWhereWithAggregatesInputSchema.optional(),
-  take: z.number().optional(),
-  skip: z.number().optional(),
-}).strict();
-
-export const ModelWithDefaultValuesFindUniqueArgsSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesFindUniqueArgs> = z.object({
-  select: ModelWithDefaultValuesSelectSchema.optional(),
-  where: ModelWithDefaultValuesWhereUniqueInputSchema,
-}).strict();
-
-export const ModelWithDefaultValuesFindUniqueOrThrowArgsSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesFindUniqueOrThrowArgs> = z.object({
-  select: ModelWithDefaultValuesSelectSchema.optional(),
-  where: ModelWithDefaultValuesWhereUniqueInputSchema,
-}).strict();
-
 export const MODELWithUpperCaseCreateArgsSchema: z.ZodType<PrismaClient.Prisma.MODELWithUpperCaseCreateArgs> = z.object({
   select: MODELWithUpperCaseSelectSchema.optional(),
   data: z.union([MODELWithUpperCaseCreateInputSchema, MODELWithUpperCaseUncheckedCreateInputSchema]),
@@ -4651,41 +4321,4 @@ export const LocationUpdateManyArgsSchema: z.ZodType<PrismaClient.Prisma.Locatio
 
 export const LocationDeleteManyArgsSchema: z.ZodType<PrismaClient.Prisma.LocationDeleteManyArgs> = z.object({
   where: LocationWhereInputSchema.optional(),
-}).strict();
-
-export const ModelWithDefaultValuesCreateArgsSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesCreateArgs> = z.object({
-  select: ModelWithDefaultValuesSelectSchema.optional(),
-  data: z.union([ModelWithDefaultValuesCreateInputSchema, ModelWithDefaultValuesUncheckedCreateInputSchema]),
-}).strict();
-
-export const ModelWithDefaultValuesUpsertArgsSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesUpsertArgs> = z.object({
-  select: ModelWithDefaultValuesSelectSchema.optional(),
-  where: ModelWithDefaultValuesWhereUniqueInputSchema,
-  create: z.union([ModelWithDefaultValuesCreateInputSchema, ModelWithDefaultValuesUncheckedCreateInputSchema]),
-  update: z.union([ModelWithDefaultValuesUpdateInputSchema, ModelWithDefaultValuesUncheckedUpdateInputSchema]),
-}).strict();
-
-export const ModelWithDefaultValuesCreateManyArgsSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesCreateManyArgs> = z.object({
-  data: ModelWithDefaultValuesCreateManyInputSchema.array(),
-  skipDuplicates: z.boolean().optional(),
-}).strict();
-
-export const ModelWithDefaultValuesDeleteArgsSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesDeleteArgs> = z.object({
-  select: ModelWithDefaultValuesSelectSchema.optional(),
-  where: ModelWithDefaultValuesWhereUniqueInputSchema,
-}).strict();
-
-export const ModelWithDefaultValuesUpdateArgsSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesUpdateArgs> = z.object({
-  select: ModelWithDefaultValuesSelectSchema.optional(),
-  data: z.union([ModelWithDefaultValuesUpdateInputSchema, ModelWithDefaultValuesUncheckedUpdateInputSchema]),
-  where: ModelWithDefaultValuesWhereUniqueInputSchema,
-}).strict();
-
-export const ModelWithDefaultValuesUpdateManyArgsSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesUpdateManyArgs> = z.object({
-  data: z.union([ModelWithDefaultValuesUpdateManyMutationInputSchema, ModelWithDefaultValuesUncheckedUpdateManyInputSchema]),
-  where: ModelWithDefaultValuesWhereInputSchema.optional(),
-}).strict();
-
-export const ModelWithDefaultValuesDeleteManyArgsSchema: z.ZodType<PrismaClient.Prisma.ModelWithDefaultValuesDeleteManyArgs> = z.object({
-  where: ModelWithDefaultValuesWhereInputSchema.optional(),
 }).strict();
