@@ -23,7 +23,7 @@ generator zod {
   // addInputTypeValidation           = false // default is true
   createOptionalDefaultValuesTypes = true // default is false
   imports                          = "import(import { myFunction } from '../../utils/myFunction';).import(import validator from 'validator';)" // optional
-  tsConfigFilePath                 = "tsconfig.json" // optional
+  // tsConfigFilePath                 = "tsconfig.json" // optional
 }
 
 // MIXED CASE ENUMS AND MODELS
