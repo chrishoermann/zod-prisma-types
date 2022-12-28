@@ -1,7 +1,9 @@
-import { Prisma, PrismaClient } from '@prisma/client';
+// !!!!! prisma queries are left in place to check if typescript is happy with the generated types !!!!!
+
+// import { PrismaClient } from '@prisma/client';
 import { JsonModelCreateInputSchema, JsonModelSchema } from '../prisma/zod';
 
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
 
 it('should return Prisma.DbNull json null value when "DbNull" is provided with ModelSchema', async () => {
   const parsedModel = JsonModelSchema.parse({
@@ -20,15 +22,6 @@ it('should return Prisma.DbNull json null value when "DbNull" is provided with M
   console.log('DbNull provided', parsedModel);
 
   expect(parsedModel.jsonOpt).toBeTypeOf('object');
-});
-
-const parsedModel = JsonModelSchema.parse({
-  id: 1,
-  json: {
-    a: 'b',
-    c: 'd',
-  },
-  jsonOpt: 'DbNull',
 });
 
 it('should return Prisma.DbNull json null value when "null" is provided with ModelSchema', async () => {

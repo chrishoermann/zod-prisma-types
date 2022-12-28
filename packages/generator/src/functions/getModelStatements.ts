@@ -28,7 +28,7 @@ interface ExtendedWriteFieldOptions extends WriteFieldOptions {
 // ------------------------------------------
 
 /**
- * Writes all the relevant additional  zod modifiers like`.nullish().array().optional()` to a field
+ * Writes all relevant additional zod modifiers like`.nullish().array().optional()` to a field
  */
 const writeFieldAdditions = ({
   writer,
@@ -181,9 +181,12 @@ const writeScalar = ({
 /////////////////////////////////////////////////
 
 export const getModelStatements: GetStatements = (dmmf) => {
+  if (!dmmf.generatorConfig.createModelTypes) return [];
+
   const statements: Statement[] = [writeHeading(`MODELS`, 'FAT')];
 
   dmmf.datamodel.models.forEach((model) => {
+    // write standard model that represents the model type from prismas "index.d.ts"
     statements.push(
       writeHeading(`${model.formattedNames.upperCaseSpace}`, 'SLIM'),
       writeConstStatement({
@@ -234,7 +237,8 @@ export const getModelStatements: GetStatements = (dmmf) => {
       }),
     );
 
-    if (dmmf.generatorConfig.defaultValuesOptionalInModel) {
+    // check if a schema where fields with default values are optional should be generated
+    if (dmmf.generatorConfig.createOptionalDefaultValuesTypes) {
       statements.push(
         writeConstStatement({
           leadingTrivia: (writer) => {

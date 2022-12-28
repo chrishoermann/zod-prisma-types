@@ -6,12 +6,10 @@
     "eslint-config-universe",
     "prettier",
     "plugin:@typescript-eslint/recommended",
-    "airbnb-base"
   ],
   "plugins": ["@typescript-eslint", "prettier"],
   "ignorePatterns": ["node_modules", "dist"],
   "rules": {
     "prettier/prettier": ["error", { "endOfLine": "auto" }],
-    "sort-imports": ["error"]
   }
 }

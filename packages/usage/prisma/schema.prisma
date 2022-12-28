@@ -11,26 +11,117 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// GENERATOR CONFIGURATION
+// -----------------------------------------------
+
 generator zod {
-  provider                     = "zod-prisma-types"
-  output                       = "./zod" // default is ./generated/zod 
-  // useInstanceOfForDecimal      = true // default is false
-  // createInputTypes             = false // default is true
-  // addInputTypeValidation       = false // default is true
-  defaultValuesOptionalInModel = true // default is false
-  imports                      = "import(import { myFunction } from '../../utils/myFunction';).import(import validator from 'validator';)" // optional
-  // tsConfigFilePath             = "tsconfig.json" // optional
+  provider                         = "zod-prisma-types"
+  output                           = "./zod" // default is ./generated/zod 
+  // useInstanceOfForDecimal          = true // default is false
+  // createInputTypes                 = false // default is true
+  // createModelTypes                 = false // default is true
+  // addInputTypeValidation           = false // default is true
+  createOptionalDefaultValuesTypes = true // default is false
+  imports                          = "import(import { myFunction } from '../../utils/myFunction';).import(import validator from 'validator';)" // optional
+  // tsConfigFilePath                 = "tsconfig.json" // optional
 }
 
-// generator zodgen {
-//   provider = "prisma-zod-generator"
-// }
+// MIXED CASE ENUMS AND MODELS
+// -----------------------------------------------
+
+// Check if EnumS and modelS with mixed casing work 
 
 enum MYValue {
   A
   B
   C
 }
+
+model MODELWithUpperCase {
+  id      Int     @id @default(autoincrement())
+  STRING  String
+  MYValue MYValue
+}
+
+// OMITTED FIELDS
+// -----------------------------------------------
+
+// Omitted fields should not be included in the generated model or input schemas
+// Furthermore, for the required field the generated arg schema should have an updated z.ZodType<...> type
+
+model ModelWithOmitFields {
+  id           Int     @id @default(autoincrement())
+  string       String?
+  omitField    String? /// @zod.custom.omit([model, input])
+  omitRequired String /// @zod.custom.omit([model, input])
+}
+
+// JS DOC COMMENTS
+// -----------------------------------------------
+
+// JSDoc comments should be included in the generated model and input schemas
+// The validator comments should be removed from the generated model and input schemas
+
+/// comment line one
+/// comment line two
+model ModelWithComments {
+  id           Int     @id @default(autoincrement())
+  /// comment before validator @zod.string.min(4).max(10) 
+  /// comment after validator
+  string       String?
+  omitField    String? /// @zod.custom.omit([model, input])
+  omitRequired String /// @zod.custom.omit([model, input])
+}
+
+// CUSTOM VALIDATORS ON SCALARS
+// -----------------------------------------------
+
+// Custom validators should be included in the generated model and input schemas
+// It should not matter if the comments are above or next to the field
+
+model MyPrismaScalarsType {
+  /// @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid()
+  id         String    @id @default(cuid())
+  /// Some comment about string @zod.string.min(3, { message: "min error" }).max(10, { message: "max error" })
+  string     String?
+  /// @zod.custom.use(z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }))
+  bic        String?
+  /// @zod.number.lt(10, { message: "lt error" }).gt(5, { message: "gt error" })
+  float      Float
+  floatOpt   Float?
+  int        Int
+  intOpt     Int?
+  decimal    Decimal
+  decimalOpt Decimal?
+  date       DateTime  @default(now())
+  dateOpt    DateTime? /// @zod.date({ invalid_type_error: "wrong date type" })  bigInt     BigInt /// @zod.bigint({ invalid_type_error: "error" })
+  bigIntOpt  BigInt?
+  /// @zod.custom.use(z.lazy(() => InputJsonValue).refine((val) => myFunction(val), { message: 'Is not valid' }))
+  json       Json
+  jsonOpt    Json?
+  bytes      Bytes /// @zod.custom.use(z.instanceof(Buffer).refine((val) => val ? true : false, { message: 'Value is not valid' }))
+  bytesOpt   Bytes?
+  /// @zod.custom.use(z.string().refine((val) => myFunction(val), { message: 'Is not valid' }))
+  custom     String?
+  exclude    String? /// @zod.custom.omit(["model", "input"])
+}
+
+// JSON MODEL 
+// -----------------------------------------------
+
+// Used for testing if the Json null types are correctly transformed
+
+model JsonModel {
+  id      Int   @id @default(autoincrement())
+  json    Json
+  jsonOpt Json?
+}
+
+// STANDARD BLOG SCHEMA
+// -----------------------------------------------
+
+// This is the standard blog schema from the Prisma docs extended with some custom enums and models
+// https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-a-model
 
 enum Role {
   USER
@@ -45,93 +136,6 @@ enum SecondEnum {
 enum AnotherEnum {
   ONE
   TWO
-}
-
-/// comment line one
-/// comment line two
-model MyModel {
-  id           Int     @id @default(autoincrement())
-  // custom String? /// @zod.custom.use(z.string().refine(val => validator.isBIC(val)).transform(val => val.toUpperCase()))
-  /// comment before validator @zod.string.min(4).max(10) 
-  /// comment after validator
-  string       String?
-  omitField    String? /// @zod.custom.omit([model, input])
-  omitRequired String /// @zod.custom.omit([model, input])
-}
-
-model WithDefaults {
-  id            Int      @id @default(autoincrement())
-  stringNormal  String
-  string        String   @default("default")
-  intNormal     Int
-  int           Int      @default(1)
-  floatNormal   Float
-  float         Float    @default(1.1)
-  decimalNormal Decimal
-  decimal       Decimal  @default(1.1)
-  dateNormal    DateTime
-  date          DateTime @default(now())
-  bigIntNormal  BigInt
-  bigInt        BigInt   @default(1)
-  jsonNormal    Json
-  json          Json     @default("{}")
-}
-
-model MODELWithUpperCase {
-  id      Int     @id @default(autoincrement())
-  STRING  String
-  MYValue MYValue
-}
-
-model JsonModel {
-  id      Int   @id @default(autoincrement())
-  json    Json
-  jsonOpt Json?
-}
-
-model Test {
-  /// @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid()
-  id         String    @id @default(cuid())
-  /// some comment @zod.string({ required_error: "error", invalid_type_error: "error"})
-  name       String?
-  value      MYValue
-  /// @zod.custom.use(z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }))
-  bic        String?
-  intTwo     Int
-  int        Int?
-  floatOpt   Float?
-  float      Float
-  decimal    Decimal
-  decimalOpt Decimal?
-  date       DateTime  @default(now())
-  dateOpt    DateTime? /// @zod.date({ invalid_type_error: "wrong date type" })
-  bigInt     BigInt /// @zod.bigint({ invalid_type_error: "error" })
-  bigIntOpt  BigInt?
-  json       Json
-  jsonOpt    Json?
-  bytes      Bytes /// @zod.custom.use(z.instanceof(Buffer).refine((val) => val ? true : false, { message: 'Value is not valid' }))
-  bytesOpt   Bytes?
-}
-
-model MyPrismaScalarsType {
-  /// @zod.string({ invalid_type_error: "invalid type error" }).cuid()
-  id      String    @id @default(cuid())
-  /// Some comment about string @zod.string.min(3, { message: "min error" }).max(10, { message: "max error" })
-  string  String?
-  /// @zod.custom.use(z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }))
-  bic     String?
-  /// @zod.number.lt(10, { message: "lt error" }).gt(5, { message: "gt error" })
-  float   Float
-  decimal Decimal
-  date    DateTime? /// @zod.date.min(new Date('2020-01-01')).max(new Date('2020-12-31'))
-  bigInt  BigInt
-  /// @zod.custom.use(z.lazy(() => InputJsonValue).refine((val) => myFunction(val), { message: 'Is not valid' }))
-  json    Json
-  bytes   Bytes
-  /// @zod.custom.use(z.string().refine((val) => myFunction(val), { message: 'Is not valid' }))
-  custom  String?
-
-  exclude String? /// @zod.custom.omit(["model", "input"])
 }
 
 model User {
@@ -178,44 +182,3 @@ model Location {
 
   @@id([lat, lng])
 }
-
-// generator zod {
-//   provider = "zod-prisma-types"
-//   output   = "./generated"
-// }
-
-// datasource db {
-//   provider          = "mysql"
-//   url               = env("DATABASE_URL")
-//   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
-//   relationMode      = "prisma"
-// }
-
-// // create models for a blog
-// model Post {
-//   id        Int      @id @default(autoincrement())
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-//   published Boolean  @default(false)
-//   title     String
-//   content   String?
-//   author    User     @relation(fields: [authorId], references: [id])
-//   authorId  Int
-
-//   @@index([authorId])
-// }
-
-// model Profile {
-//   id     Int     @id @default(autoincrement())
-//   bio    String?
-//   user   User    @relation(fields: [userId], references: [id])
-//   userId Int     @unique
-// }
-
-// model User {
-//   id      Int      @id @default(autoincrement())
-//   email   String   @unique
-//   name    String?
-//   posts   Post[]
-//   profile Profile?
-// }

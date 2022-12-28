@@ -9,8 +9,9 @@
   - [`output`](#output)
   - [`useInstanceOfForDecimal`](#useinstanceoffordecimal)
   - [`createInputTypes`](#createinputtypes)
+  - [`createModelTypes`](#createmodeltypes)
   - [`addInputTypeValidation`](#addinputtypevalidation)
-  - [`defaultValuesOptionalInModel`](#defaultvaluesoptionalinmodel)
+  - [`createOptionalDefaultValuesTypes`](#createoptionaldefaultvaluestypes)
   - [`imports`](#imports)
   - [`tsConfigFilePath`](#tsconfigfilepath)
 - [Json null values](#json-null-values)
@@ -63,14 +64,15 @@ If you want to customize the behaviour of the generator you can use the followin
 
 ```prisma
 generator zod {
-  provider                     = "zod-prisma-types"
-  output                       = "./zod" // default is ./generated/zod
-  useInstanceOfForDecimal      = true // default is false
-  createInputTypes             = false // default is true
-  addInputTypeValidation       = false // default is true
-  defaultValuesOptionalInModel = true // default is false
-  imports                      = "import(import { myFunction } from '../../utils/myFunction';).import(import validator from 'validator';)" // optional
-  tsConfigFilePath             = "tsconfig.json" // optional
+  provider                         = "zod-prisma-types"
+  output                           = "./zod" // default is ./generated/zod
+  useInstanceOfForDecimal          = true // default is false
+  createInputTypes                 = false // default is true
+  createModelTypes                 = false // default is true
+  addInputTypeValidation           = false // default is true
+  createOptionalDefaultValuesTypes = true // default is false
+  imports                          = "import(import { myFunction } from '../../utils/myFunction';).import(import validator from 'validator';)" // optional
+  tsConfigFilePath                 = "tsconfig.json" // optional
 }
 ```
 
@@ -147,6 +149,19 @@ generator zod {
 }
 ```
 
+### `createModelTypes`
+
+> default: `true`
+
+If you just want to create zod schemas for your input types you can disable the creation of the corresponding model schemas. This may be useful if you just want to use the zod input schemas for autocompletion in your trpc queries or similar use cases.
+
+```prisma
+generator zod {
+  // ...rest of config
+  createModelTypes = false
+}
+```
+
 ### `addInputTypeValidation`
 
 > default: `true`
@@ -160,33 +175,61 @@ generator zod {
 }
 ```
 
-### `defaultValuesOptionalInModel`
+### `createOptionalDefaultValuesTypes`
 
 > default: `false`
 
-If you want to make all fields in your model schemas optional that have a default value you can pass the following config option:
+If you need an additional model schema where fields with default values are marked as `.optional()` you can pass the following config option:
 
 ```prisma
 generator zod {
   // ...rest of config
-  defaultValuesOptionalInModel = true
+  createOptionalDefaultValuesTypes = true
 }
 
-model MyModel {
-  id         Int      @id @default(autoincrement())
-  value      String
-  valueOpt   String?
+model ModelWithDefaultValues {
+  id          Int      @id @default(autoincrement())
+  string      String   @default("default")
+  otherString String
+  int         Int      @default(1)
+  otherInt    Int
+  float       Float    @default(1.1)
+  otherFloat  Float
+  boolean     Boolean  @default(true)
+  otherBool   Boolean
+  date        DateTime @default(now())
+  otherDate   DateTime
 }
 ```
 
-The above model would generate the following model schema:
+The above model would generate the following model schemas:
 
 ```ts
-export const MyModel = z.object({
-  id: z.number().optional(),
-  value: z.string(),
-  valueOpt: z.string().nullish(),
+export const ModelWithDefaultValuesSchema = z.object({
+  id: z.number(),
+  string: z.string(),
+  otherString: z.string(),
+  int: z.number(),
+  otherInt: z.number(),
+  float: z.number(),
+  otherFloat: z.number(),
+  boolean: z.boolean(),
+  otherBool: z.boolean(),
+  date: z.date(),
+  otherDate: z.date(),
 });
+
+export const ModelWithDefaultValuesOptionalDefaultsSchema =
+  ModelWithDefaultValuesSchema.merge(
+    z.object({
+      id: z.number().optional(),
+      string: z.string().optional(),
+      int: z.number().optional(),
+      float: z.number().optional(),
+      boolean: z.boolean().optional(),
+      date: z.date().optional(),
+    }),
+  );
 ```
 
 ### `imports`

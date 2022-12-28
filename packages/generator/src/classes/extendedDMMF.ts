@@ -31,6 +31,16 @@ export const configSchema = z.object({
     .optional()
     .default('true')
     .transform((val) => val === 'true'),
+  createModelTypes: z
+    .string()
+    .optional()
+    .default('true')
+    .transform((val) => val === 'true'),
+  createOptionalDefaultValuesTypes: z
+    .string()
+    .optional()
+    .default('false')
+    .transform((val) => val === 'true'),
   addInputTypeValidation: z
     .string()
     .optional()
