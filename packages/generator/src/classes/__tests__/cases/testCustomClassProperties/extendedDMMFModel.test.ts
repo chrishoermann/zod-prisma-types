@@ -6,7 +6,7 @@ import { loadDMMF } from '../../utils/loadDMMF';
 import { DEFAULT_GENERATOR_CONFIG } from './fields.test';
 
 describe('testSimpleModelNoValidators', async () => {
-  const dmmf = await loadDMMF(`${__dirname}/extendedDMMF.prisma`);
+  const dmmf = await loadDMMF(`${__dirname}/extendedDMMFModel.prisma`);
   const extendedDMMF = new ExtendedDMMF(dmmf, {});
   const model = extendedDMMF.datamodel.models[0];
 

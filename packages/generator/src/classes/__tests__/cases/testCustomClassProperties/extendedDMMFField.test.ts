@@ -10,6 +10,8 @@ export const DEFAULT_GENERATOR_CONFIG: GeneratorConfig = {
   createInputTypes: true,
   addInputTypeValidation: true,
   tsConfigFilePath: undefined,
+  prismaClientPath: '@prisma/client',
+  defaultValuesOptionalInModel: false,
 };
 describe('testSimpleModelNoValidators', async () => {
   const dmmf = await loadDMMF(`${__dirname}/fields.prisma`);

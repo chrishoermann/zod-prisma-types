@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 
 import { ExtendedDMMF } from '../../../ExtendedDMMF';
 import { loadDMMF } from '../../utils/loadDMMF';
+
 describe('testSimpleModelNoValidators', async () => {
   const dmmf = await loadDMMF(`${__dirname}/extendedDMMF.prisma`);
 

@@ -13,6 +13,9 @@ generatorHandler({
   onGenerate: async (generatorOptions) => {
     return generator({
       output: generatorOptions.generator.output,
+
+      // Merge the generator config with the prisma client output path
+      // The prisma client output path is automatically located
       config: {
         ...generatorOptions.generator.config,
         ...getPrismaClientOutputPath(generatorOptions),

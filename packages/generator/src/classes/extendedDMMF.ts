@@ -1,5 +1,4 @@
-import { DMMF } from '@prisma/generator-helper';
-import { Dictionary } from '@prisma/internals';
+import { DMMF, Dictionary } from '@prisma/generator-helper';
 import { z } from 'zod';
 
 import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';

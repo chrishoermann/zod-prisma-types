@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import {
-  ExtendedDMMF,
-  ExtendedDMMFField,
-  ExtendedDMMFModel,
-} from 'src/classes';
+import { ExtendedDMMF, ExtendedDMMFField, ExtendedDMMFModel } from '../classes';
 import { CodeBlockWriter } from 'ts-morph';
 
 import { GetStatements, Statement } from '../types';
 import { writeConstStatement, writeHeading, writeJsDoc } from '../utils';
+
+/////////////////////////////////////////////
+// TYPES & INTERFACES
+/////////////////////////////////////////////
 
 interface WriteFieldOptions {
   writer: CodeBlockWriter;
@@ -20,6 +20,16 @@ interface ExtendedWriteFieldOptions extends WriteFieldOptions {
   dmmf: ExtendedDMMF;
 }
 
+/////////////////////////////////////////////
+// HELPER FUNCTIONS
+/////////////////////////////////////////////
+
+// WRITE ADDITIONAL ZOD MODIFIERS
+// ------------------------------------------
+
+/**
+ * Writes all the relevant additional  zod modifiers like`.nullish().array().optional()` to a field
+ */
 const writeFieldAdditions = ({
   writer,
   field,
@@ -39,6 +49,9 @@ const writeFieldAdditions = ({
     .newLine();
 };
 
+// WRITE CUSTOM VALIDATOR
+// ------------------------------------------
+
 const writeCustomValidator = ({
   writer,
   field,
@@ -51,6 +64,9 @@ const writeCustomValidator = ({
 
   writeFieldAdditions({ writer, field, writeOptionalDefaults });
 };
+
+// WRITE ENUM
+// ------------------------------------------
 
 const writeEnum = ({
   writer,
@@ -65,6 +81,9 @@ const writeEnum = ({
   writeFieldAdditions({ writer, field, writeOptionalDefaults });
 };
 
+// WRITE JSON
+// ------------------------------------------
+
 const writeJson = ({ writer, field }: WriteFieldOptions) => {
   writer
     .conditionalWrite(field.omitInModel(), '// omitted: ')
@@ -76,6 +95,9 @@ const writeJson = ({ writer, field }: WriteFieldOptions) => {
     .write(`,`)
     .newLine();
 };
+
+// WRITE OBJECT
+// ------------------------------------------
 
 const writeBytes = ({
   writer,
@@ -89,6 +111,9 @@ const writeBytes = ({
 
   writeFieldAdditions({ writer, field, writeOptionalDefaults });
 };
+
+// WRITE DECIMAL
+// ------------------------------------------
 
 const writeDecimal = ({
   writer,
@@ -113,6 +138,9 @@ const writeDecimal = ({
   writeFieldAdditions({ writer, field, writeOptionalDefaults });
 };
 
+// WRITE DECIMAL WITH INSTANCE OF
+// ------------------------------------------
+
 const writeDecimalInstance = ({
   writer,
   field,
@@ -128,6 +156,9 @@ const writeDecimalInstance = ({
     writeFieldAdditions({ writer, field, writeOptionalDefaults });
   }
 };
+
+// WRITE SCALARS
+// ------------------------------------------
 
 const writeScalar = ({
   writer,
@@ -222,68 +253,40 @@ export const getModelStatements: GetStatements = (dmmf) => {
                   (field) => {
                     if (!field.hasDefaultValue) return;
 
-                    const writeOptionalDefaults = field.hasDefaultValue;
+                    const options = {
+                      writer,
+                      field,
+                      writeOptionalDefaults: field.hasDefaultValue,
+                    };
 
                     if (field.zodCustomValidatorString) {
-                      return writeCustomValidator({
-                        writer,
-                        field,
-                        writeOptionalDefaults,
-                      });
+                      return writeCustomValidator(options);
                     }
 
                     if (field.kind === 'enum') {
-                      return writeEnum({
-                        writer,
-                        field,
-                        writeOptionalDefaults,
-                      });
+                      return writeEnum(options);
                     }
 
                     if (field.isJsonType) {
-                      return writeJson({
-                        writer,
-                        field,
-                        writeOptionalDefaults,
-                      });
+                      return writeJson(options);
                     }
 
                     if (field.isBytesType) {
-                      return writeBytes({
-                        writer,
-                        field,
-                        writeOptionalDefaults,
-                      });
+                      return writeBytes(options);
                     }
 
                     if (
                       field.isDecimalType &&
                       !dmmf.useInstanceOfForDecimal()
                     ) {
-                      return writeDecimal({
-                        writer,
-                        field,
-                        writeOptionalDefaults,
-                        model,
-                        dmmf,
-                      });
+                      return writeDecimal({ ...options, model, dmmf });
                     }
 
                     if (field.isDecimalType && dmmf.useInstanceOfForDecimal()) {
-                      return writeDecimalInstance({
-                        writer,
-                        field,
-                        writeOptionalDefaults,
-                        model,
-                        dmmf,
-                      });
+                      return writeDecimalInstance({ ...options, model, dmmf });
                     }
 
-                    return writeScalar({
-                      writer,
-                      field,
-                      writeOptionalDefaults,
-                    });
+                    return writeScalar(options);
                   },
                 );
                 writer.writeLine(`})`).write(`)`);
