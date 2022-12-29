@@ -104,6 +104,8 @@ model MyPrismaScalarsType {
   /// @zod.custom.use(z.string().refine((val) => myFunction(val), { message: 'Is not valid' }))
   custom     String?
   exclude    String? /// @zod.custom.omit(["model", "input"])
+
+  updatedAt DateTime @updatedAt
 }
 
 // JSON MODEL 

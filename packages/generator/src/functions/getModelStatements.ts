@@ -255,12 +255,12 @@ export const getModelStatements: GetStatements = (dmmf) => {
                 writer.write(`z.object({`);
                 [...model.enumFields, ...model.scalarFields].forEach(
                   (field) => {
-                    if (!field.hasDefaultValue) return;
+                    if (!field.isOptionalDefaultField()) return;
 
                     const options = {
                       writer,
                       field,
-                      writeOptionalDefaults: field.hasDefaultValue,
+                      writeOptionalDefaults: true,
                     };
 
                     if (field.zodCustomValidatorString) {

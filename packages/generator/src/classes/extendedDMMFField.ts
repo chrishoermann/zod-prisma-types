@@ -56,6 +56,7 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   readonly type: DMMF.Field['type'];
   readonly dbNames?: DMMF.Field['dbNames'];
   readonly isGenerated: DMMF.Field['isGenerated'];
+  readonly isUpdatedAt: DMMF.Field['isUpdatedAt'];
   readonly hasDefaultValue: DMMF.Field['hasDefaultValue'];
   readonly default?: DMMF.Field['default'];
   readonly relationToFields?: DMMF.Field['relationToFields'];
@@ -109,6 +110,7 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
     this.type = field.type;
     this.dbNames = field.dbNames;
     this.isGenerated = field.isGenerated;
+    this.isUpdatedAt = field.isUpdatedAt;
     this.hasDefaultValue = field.hasDefaultValue;
     this.default = field.default;
     this.relationToFields = field.relationToFields;
@@ -139,8 +141,18 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   // ----------------------------------------------
 
   private _setDefaultValueOptional() {
+    console.log({
+      name: this.name,
+      hasDefaultValue: this.hasDefaultValue,
+      dbNames: this.dbNames,
+      isGenerated: this.isGenerated,
+      isUpdatedAt: this.isUpdatedAt,
+      default: this.default,
+    });
+
     return (
-      this.hasDefaultValue && this.generatorConfig.defaultValuesOptionalInModel
+      (this.hasDefaultValue || Boolean(this.isUpdatedAt)) &&
+      this.generatorConfig.createOptionalDefaultValuesTypes
     );
   }
 
@@ -500,5 +512,9 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
    */
   isOmitField() {
     return this.zodOmitField !== 'none';
+  }
+
+  isOptionalDefaultField() {
+    return this.hasDefaultValue || this.isUpdatedAt;
   }
 }
