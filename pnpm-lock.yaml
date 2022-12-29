@@ -55,7 +55,7 @@ importers:
       validator: ^13.7.0
       vitest: ^0.25.8
       zod: ^3.20.2
-      zod-prisma-types: workspace:1.5.0
+      zod-prisma-types: workspace:1.5.2
     dependencies:
       '@prisma/client': 4.8.0_prisma@4.8.0
       '@trpc/client': 10.7.0_@trpc+server@10.7.0

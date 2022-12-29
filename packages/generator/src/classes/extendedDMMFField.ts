@@ -141,15 +141,6 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
   // ----------------------------------------------
 
   private _setDefaultValueOptional() {
-    console.log({
-      name: this.name,
-      hasDefaultValue: this.hasDefaultValue,
-      dbNames: this.dbNames,
-      isGenerated: this.isGenerated,
-      isUpdatedAt: this.isUpdatedAt,
-      default: this.default,
-    });
-
     return (
       (this.hasDefaultValue || Boolean(this.isUpdatedAt)) &&
       this.generatorConfig.createOptionalDefaultValuesTypes

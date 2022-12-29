@@ -184,3 +184,8 @@ model Location {
 
   @@id([lat, lng])
 }
+
+model NonDefaultModel {
+  id     Int    @id
+  string String
+}

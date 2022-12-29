@@ -238,7 +238,7 @@ export const getModelStatements: GetStatements = (dmmf) => {
     );
 
     // check if a schema where fields with default values are optional should be generated
-    if (dmmf.generatorConfig.createOptionalDefaultValuesTypes) {
+    if (model.writeOptionalDefaultValuesTypes()) {
       statements.push(
         writeConstStatement({
           leadingTrivia: (writer) => {

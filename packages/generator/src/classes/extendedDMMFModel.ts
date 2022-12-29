@@ -65,4 +65,11 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
   private _setHasOmitFields() {
     return this.fields.some((field) => field.isOmitField());
   }
+
+  writeOptionalDefaultValuesTypes() {
+    return (
+      this.fields.some((field) => field.isOptionalDefaultField()) &&
+      this.generatorConfig.createOptionalDefaultValuesTypes
+    );
+  }
 }
