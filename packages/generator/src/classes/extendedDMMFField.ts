@@ -189,7 +189,11 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
    */
   private _getZodValidatorData = () => {
     const matchArrary = this._getValidatorRegexMatch();
-    if (!matchArrary) return;
+    // if a match array is found, the match takes precedence over the default validator
+    if (!matchArrary)
+      return {
+        zodValidatorString: this._getZodDefaultValidator(),
+      };
 
     const type = this._getValidatorType(matchArrary);
     if (!type) return;
@@ -211,6 +215,47 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
       zodOmitField: this._getZodOmitField(options),
     };
   };
+
+  // GET DEFAULT VALIDATOR
+  // ----------------------------------------------
+
+  private _getZodDefaultValidator() {
+    if (!this.generatorConfig.useDefaultValidators) return;
+    if (this._isCuid()) return '.cuid()';
+    if (this._isUuid()) return '.uuid()';
+    if (this._isInt()) return '.int()';
+    return;
+  }
+
+  private _isCuid() {
+    const defaults = this.default;
+    if (this._IsFieldDefault(defaults)) return defaults.name === 'cuid';
+    return false;
+  }
+
+  private _isUuid() {
+    const defaults = this.default;
+    if (this._IsFieldDefault(defaults)) return defaults.name === 'uuid';
+    return false;
+  }
+
+  private _isInt() {
+    return this.type === 'Int';
+  }
+
+  /**
+   * Type guard to check if the field default is a DMMF.FieldDefault.
+   * @param value field default value
+   * @returns boolean if the value is a field default
+   */
+  private _IsFieldDefault(
+    value?:
+      | DMMF.FieldDefault
+      | DMMF.FieldDefaultScalar
+      | DMMF.FieldDefaultScalar[],
+  ): value is DMMF.FieldDefault {
+    return (value as DMMF.FieldDefault)?.name !== undefined;
+  }
 
   // MATCH VALIDATOR AGAINST REGEX
   // ----------------------------------------------
@@ -395,6 +440,13 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
           `[@zod generator error]: Validator '${key}' is not valid for type '${this.type}'. ${this.errorLocation}`,
         );
     });
+
+    // If user opts out of default validator, no validator is returned
+    if (
+      !this.generatorConfig.useDefaultValidators ||
+      splitPattern.includes('.noDefault()')
+    )
+      return;
 
     return pattern;
   }

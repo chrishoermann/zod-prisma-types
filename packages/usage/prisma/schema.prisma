@@ -22,6 +22,7 @@ generator zod {
   // createModelTypes                 = false // default is true
   // addInputTypeValidation           = false // default is true
   createOptionalDefaultValuesTypes = true // default is false
+  useDefaultValidators             = true // default is true
   imports                          = "import(import { myFunction } from '../../utils/myFunction';).import(import validator from 'validator';)" // optional
   // tsConfigFilePath                 = "tsconfig.json" // optional
 }
@@ -50,7 +51,7 @@ model MODELWithUpperCase {
 // Furthermore, for the required field the generated arg schema should have an updated z.ZodType<...> type
 
 model ModelWithOmitFields {
-  id           Int     @id @default(autoincrement())
+  id           String  @id @default(cuid())
   string       String?
   omitField    String? /// @zod.custom.omit([model, input])
   omitRequired String /// @zod.custom.omit([model, input])
@@ -65,7 +66,7 @@ model ModelWithOmitFields {
 /// comment line one
 /// comment line two
 model ModelWithComments {
-  id           Int     @id @default(autoincrement())
+  id           String  @id @default(uuid())
   /// comment before validator @zod.string.min(4).max(10) 
   /// comment after validator
   string       String?
@@ -89,6 +90,7 @@ model MyPrismaScalarsType {
   /// @zod.number.lt(10, { message: "lt error" }).gt(5, { message: "gt error" })
   float      Float
   floatOpt   Float?
+  /// @zod.number.int({ message: "error" }).gt(5, { message: "gt error" })
   int        Int
   intOpt     Int?
   decimal    Decimal
@@ -188,4 +190,10 @@ model Location {
 model NonDefaultModel {
   id     Int    @id
   string String
+}
+
+model WithDefaultValidators {
+  id      String @id @default(cuid())
+  idTwo   String @default(uuid()) /// @zod.string.noDefault()
+  integer Int
 }

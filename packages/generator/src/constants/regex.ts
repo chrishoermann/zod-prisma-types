@@ -31,7 +31,7 @@ export const STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
   /.(?<validator>min|max|length)(?<number>\([\d]+([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\))/;
 
 export const STRING_VALIDATOR_MESSAGE_REGEX =
-  /(?<validator>email|url|uuid|cuid|trim|datetime)(\((?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\))/;
+  /(?<validator>email|url|uuid|cuid|trim|datetime|noDefault)(\((?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\))/;
 
 export const STRING_VALIDATOR_REGEX = /.(regex)(\((?<message>.*)\))/;
 
@@ -45,7 +45,7 @@ export const NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
   /.(?<validator>gt|gte|lt|lte|multipleOf)(?<number>\([\d]+([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\))/;
 
 export const NUMBER_VALIDATOR_MESSAGE_REGEX =
-  /.(?<validator>int|positive|nonnegative|negative|nonpositive|finite)(\((?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\))/;
+  /.(?<validator>int|positive|nonnegative|negative|nonpositive|finite|noDefault)(\((?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\))/;
 
 // DATE
 // ----------------------------------------

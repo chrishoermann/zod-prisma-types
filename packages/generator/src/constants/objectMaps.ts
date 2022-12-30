@@ -123,6 +123,7 @@ export const STRING_VALIDATOR_REGEX_MAP: ValidatorMap<ZodStringValidatorKeys> =
     endsWith: STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX,
     trim: STRING_VALIDATOR_MESSAGE_REGEX,
     datetime: STRING_VALIDATOR_MESSAGE_REGEX,
+    noDefault: STRING_VALIDATOR_MESSAGE_REGEX,
   };
 
 /**
@@ -145,6 +146,7 @@ export const NUMBER_VALIDATOR_REGEX_MAP: ValidatorMap<ZodNumberValidatorKeys> =
     negative: NUMBER_VALIDATOR_MESSAGE_REGEX,
     nonnegative: NUMBER_VALIDATOR_MESSAGE_REGEX,
     finite: NUMBER_VALIDATOR_MESSAGE_REGEX,
+    noDefault: NUMBER_VALIDATOR_MESSAGE_REGEX,
   };
 
 /**

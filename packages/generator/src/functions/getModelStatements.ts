@@ -171,6 +171,7 @@ const writeScalar = ({
     .write(`z.${field.zodType}(`)
     .conditionalWrite(!!field.zodCustomErrors, field.zodCustomErrors!)
     .write(`)`)
+    // .conditionalWrite(field.isIntField() && !field.zodValidatorString, `.int()`)
     .conditionalWrite(!!field.zodValidatorString, field.zodValidatorString!);
 
   writeFieldAdditions({ writer, field, writeOptionalDefaults });

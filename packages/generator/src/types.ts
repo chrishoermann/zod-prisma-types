@@ -95,7 +95,8 @@ export type ZodStringValidatorKeys =
   | 'startsWith'
   | 'endsWith'
   | 'trim'
-  | 'datetime';
+  | 'datetime'
+  | 'noDefault';
 
 export type ZodNumberValidatorKeys =
   | 'gt'
@@ -108,7 +109,8 @@ export type ZodNumberValidatorKeys =
   | 'negative'
   | 'nonnegative'
   | 'multipleOf'
-  | 'finite';
+  | 'finite'
+  | 'noDefault';
 
 export type ZodDateValidatorKeys = 'min' | 'max';
 

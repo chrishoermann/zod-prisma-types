@@ -11,6 +11,7 @@
   - [`createInputTypes`](#createinputtypes)
   - [`createModelTypes`](#createmodeltypes)
   - [`addInputTypeValidation`](#addinputtypevalidation)
+  - [`useDefaultValidators`](#usedefaultvalidators)
   - [`createOptionalDefaultValuesTypes`](#createoptionaldefaultvaluestypes)
   - [`imports`](#imports)
   - [`tsConfigFilePath`](#tsconfigfilepath)
@@ -70,6 +71,7 @@ generator zod {
   createInputTypes                 = false // default is true
   createModelTypes                 = false // default is true
   addInputTypeValidation           = false // default is true
+  useDefaultValidators             = false // default is true
   createOptionalDefaultValuesTypes = true // default is false
   imports                          = "import(import { myFunction } from '../../utils/myFunction';).import(import validator from 'validator';)" // optional
   tsConfigFilePath                 = "tsconfig.json" // optional
@@ -231,6 +233,58 @@ export const ModelWithDefaultValuesOptionalDefaultsSchema =
     }),
   );
 ```
+
+### `useDefaultValidators`
+
+> default: `true`
+
+The generator adds default validators in certain use cases:
+
+```prisma
+model WithDefaultValidators {
+  id      String @id @default(cuid())
+  idTwo   String @default(uuid())
+  integer Int
+}
+```
+
+```ts
+export const WithDefaultValidatorsSchema = z.object({
+  id: z.string().cuid(),
+  idTwo: z.string().uuid(),
+  integer: z.number().int(),
+});
+```
+
+These defaults are overwritten when using a custom validator (see: [Field Validators](#field-validators))
+or when you opt out of using a default validator on a specific field:
+
+```prisma
+model WithDefaultValidators {
+  id      String @id @default(cuid()) /// @zod.string.noDefault()
+  idTwo   String @default(uuid()) /// @zod.string.noDefault()
+  integer Int    /// @zod.number.noDefault()
+}
+```
+
+```ts
+export const WithDefaultValidatorsSchema = z.object({
+  id: z.string(),
+  idTwo: z.string(),
+  integer: z.number(),
+});
+```
+
+You can opt out of this feature completly by passing false to the config option.
+
+```prisma
+generator zod {
+  // ...rest of config
+  useDefaultValidators = false
+}
+```
+
+> If you have some further ideas for default validators feel free to open an issue.
 
 ### `imports`
 
