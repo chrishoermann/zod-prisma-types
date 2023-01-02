@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://www.npmjs.com/package/zod-prisma-types">
+  <a href="https://www.npmjs.com/package/zod-prisma-types" style="hover:text-decoration:none">
     <img alt="NPM version" src="https://img.shields.io/npm/v/zod-prisma-types?style=for-the-badge" />
   </a>
   <a href="https://github.com/chrishoermann/zod-prisma-types">
