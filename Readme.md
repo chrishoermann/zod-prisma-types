@@ -1,7 +1,7 @@
-<p align="center">
-  <a href="https://github.com/[user]/[repository]/releases/"><img alt="" src="" />
-  <img alt="NPM version" src="https://img.shields.io/npm/v/zod-prisma-types?style=for-the-badge" />
-  </a></a>
+<p align="left">
+  <a href="https://www.npmjs.com/package/zod-prisma-types">
+    <img alt="NPM version" src="https://img.shields.io/npm/v/zod-prisma-types?style=for-the-badge" />
+  </a>
   <a href=""><img alt="" src="" /></a>
   <a href=""><img alt="" src="" /></a>
 </p>
