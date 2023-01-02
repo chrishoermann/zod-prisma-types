@@ -1,9 +1,4 @@
-[![NPM][npm-shield]][npm-url]
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
+https://img.shields.io/npm/v/zod-prisma-types?style=for-the-badge
 
 # zod-prisma-types
 
