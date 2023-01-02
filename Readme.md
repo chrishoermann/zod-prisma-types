@@ -1,11 +1,11 @@
 <p align="center">
-  <a href="https://www.npmjs.com/package/zod-prisma-types" style="a.hover:text-decoration:none">
+  <a href="https://www.npmjs.com/package/zod-prisma-types" style="text-decoration:none">
     <img alt="NPM version" src="https://img.shields.io/npm/v/zod-prisma-types?style=for-the-badge" />
   </a>
-  <a href="https://github.com/chrishoermann/zod-prisma-types">
+  <a href="https://github.com/chrishoermann/zod-prisma-types" style="text-decoration:none">
     <img alt="License" src="https://img.shields.io/github/license/chrishoermann/zod-prisma-types?style=for-the-badge" />
   </a>
-  <a href="https://github.com/chrishoermann/zod-prisma-types/issues">
+  <a href="https://github.com/chrishoermann/zod-prisma-types/issues" style="text-decoration:none">
    <img alt="issues" src="https://img.shields.io/github/issues/chrishoermann/zod-prisma-types?style=for-the-badge" />
   </a>
 </p>
