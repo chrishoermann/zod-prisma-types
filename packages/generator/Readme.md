@@ -1,7 +1,7 @@
 [![NPM version](https://img.shields.io/npm/v/zod-prisma-types?style=for-the-badge)](https://www.npmjs.com/package/zod-prisma-types)
 [![Stars](https://img.shields.io/github/stars/chrishoermann/zod-prisma-types?style=for-the-badge)](https://github.com/chrishoermann/zod-prisma-types/stargazers)
 [![Contirbutors](https://img.shields.io/github/contributors/chrishoermann/zod-prisma-types?style=for-the-badge)](https://github.com/chrishoermann/zod-prisma-types/graphs/contributors)
-[![License](https://img.shields.io/github/license/chrishoermann/zod-prisma-types?style=for-the-badge)](https://github.com/chrishoermann/zod-prisma-types/LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](https://github.com/chrishoermann/zod-prisma-types/blob/master/LICENSE)
 [![Issues](https://img.shields.io/github/issues/chrishoermann/zod-prisma-types?style=for-the-badge)](https://github.com/chrishoermann/zod-prisma-types/issues)
 
 # zod-prisma-types
