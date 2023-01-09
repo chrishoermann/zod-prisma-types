@@ -1,12 +1,21 @@
+[![NPM version](https://img.shields.io/npm/v/zod-prisma-types?style=for-the-badge)](https://www.npmjs.com/package/zod-prisma-types)
+[![Stars](https://img.shields.io/github/stars/chrishoermann/zod-prisma-types?style=for-the-badge)](https://github.com/chrishoermann/zod-prisma-types/stargazers)
+[![Contirbutors](https://img.shields.io/github/contributors/chrishoermann/zod-prisma-types?style=for-the-badge)](https://github.com/chrishoermann/zod-prisma-types/graphs/contributors)
+[![License](https://img.shields.io/github/license/chrishoermann/zod-prisma-types?style=for-the-badge)](https://github.com/chrishoermann/zod-prisma-types/LICENSE)
+[![Issues](https://img.shields.io/github/issues/chrishoermann/zod-prisma-types?style=for-the-badge)](https://github.com/chrishoermann/zod-prisma-types/issues)
+
 # zod-prisma-types
 
 `zod-prisma-types` is a generator for [prisma](www.prisma.io) that generates [zod](https://github.com/colinhacks/zod) schemas from your prisma models. This includes schemas of models, enums, inputTypes, argTypes, filters and so on. It also provides options to write advanced zod validators directly in the prisma schema comments.
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/chrishoermann)
 
 ## Table of contents
 
 - [About this project](#about-this-project)
   - [Why zod?](#why-zod)
   - [Why not multiple files?](#why-not-multiple-files)
+  - [IDE performance problems](#ide-performance-problems)
 - [Installation](#installation)
 - [Usage](#usage)
   - [`output`](#output)
@@ -34,7 +43,7 @@
 
 ## About this project
 
-For one of my projects I was in need of a generator that combines the possibility of adding `zod valdiators` directly in `prisma schema's` [rich-comments](https://www.prisma.io/docs/concepts/components/prisma-schema#comments) and also generates `zod` schemas for all the prisma models, enums, inputTypes, argTypes, filters and so on. I also wanted to have the possibility to make the generator as flexible as possbile so it covers a large range of use cases. I looked around and found a few packages that generate `zod` schemas from prisma models but none of them met my requirements or they weren't activly maintained anymore. So I decided to write `zod-prisma-type`.
+For one of my projects I was in need of a generator that combines the possibility of adding `zod valdiators` directly in `prisma schema's` [rich-comments](https://www.prisma.io/docs/concepts/components/prisma-schema#comments) with the generation of `zod` schemas for all the prisma models, enums, inputTypes, argTypes, filters and so on. I also wanted to import these schemas for validation use in the frontend (e.g. form validation). Furthermore I wanted to make the generator as flexible as possbile so it covers a large range of use cases. I looked around and found a few packages that generate `zod` schemas from prisma models but none of them met my requirements or they weren't activly maintained anymore. So I decided to write `zod-prisma-type`.
 
 ### Why zod?
 
@@ -42,16 +51,11 @@ I decided to use `zod` because it is a very powerful and flexible library that a
 
 ### Why not multiple files?
 
-By design the generator only creates a single `index.ts` file in the specified output folder that contains all the `zod`schemas.
-I initially decided against a multiple file approach because it makes the handling of custom imports much easier and from a code prespective the generator itself is simpler (no imports from related models, enums, inputTypes and so on need to be handled, no index files need to be created, ...).
+By design the generator only creates a single `index.ts` file in the specified output folder that contains all the `zod`schemas. I decided against a multiple file approach because it makes the handling of custom imports much easier and from a code prespective the generator itself is simpler (no imports from related models, enums, inputTypes and so on need to be handled, no index files need to be created, ...). Also in [`ts-morph`](https://ts-morph.com/manipulation/performance) it is more efficient to write a bunch of statements to a single file at once than creating multiple files where only a few statements are added. This can be beneficial for generating zod schemas for big prisma schemas.
 
-In the process of writing the generator I also realized, that because of the structure of the `prisma dmmf` (where all the information about the models, enums, inputTypes, ... and their relation between each other is stored) an approach that colocates all relevant schemas of a model (model, inputType, argType, ...) in single files would increase the complexity of the generator with no guarantee that it will lead to a satisfying and fast solution or efficient and maintainable code.
+### IDE performance problems
 
-An option that would have been possible is, that each generated schema (inputType, argType, enum, ...) has a unique file. So then hundreds or thousands of files (depending on the size of your `prisma schema`) need to be deleted and recreated on each run of the generator which slows the process of generation down.
-
-One problem I and others encounterd is that IDE performance can be a bit of a show stopper with big `prisma schemas` especially after the generator has run. I believe this is because the typescript server needs to load all the type information of the generated schemas which can take a while. As far as I experienced it, this also happens on a multi file approach but just in the background.
-
-I don't know if this is more of a zod thing because TS needs to infer loads of new of types or if this is a typescript thing because in the blink of an eye hundreds or thousands of types are created and the TS server is kind of overwhelmed. Maybe someone with more insight in both can shed some light on this. I also don't know if a barrel file would solve the issue because in any case the types need to be loaded and, to my understanding, it shoud not matter if they are split into multiple files or if they are all located in one file. Again if someone has some deeper insight here, any advice is welcome. Just comment on [this issue](https://github.com/chrishoermann/zod-prisma-types/issues/48) or
+Some people reported that IDE performance is very slow after running the generator. If you encounter similar issues please check out [this issue](https://github.com/chrishoermann/zod-prisma-types/issues/48) and comment if you have any insights.
 
 ## Installation
 
