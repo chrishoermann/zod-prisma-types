@@ -1,17 +1,8 @@
 import { GeneratorOptions } from '@prisma/generator-helper';
 import { Project } from 'ts-morph';
 
-import { DirectoryHelper, ExtendedDMMF } from './classes';
-import {
-  getArgTypeStatements,
-  getEnumStatements,
-  getHelperStatements,
-  getIncludeSelectStatements,
-  getInputTypeStatements,
-  getImportStatements,
-  getModelStatements,
-  // getAggregateAndCountStatements // currently not used in any input types
-} from './functions';
+import { ExtendedDMMF } from './classes';
+import { generateSingleFile } from './generateSingleFile';
 import { skipGenerator, usesCustomTsConfigFilePath } from './utils';
 
 export interface GeneratorConfig {
@@ -32,49 +23,26 @@ export const generator = async ({ output, config, dmmf }: GeneratorConfig) => {
   }
 
   // extend the DMMF with custom functionality - see "classes" folder
-  const extendendDMMF = new ExtendedDMMF(dmmf, config);
+  const extendedDMMF = new ExtendedDMMF(dmmf, config);
 
   // check if a custom tsconfig file is used and log an info if so
   await usesCustomTsConfigFilePath(
-    extendendDMMF.generatorConfig.tsConfigFilePath,
+    extendedDMMF.generatorConfig.tsConfigFilePath,
   );
 
   // create ts-morph project - see: https://ts-morph.com/
   const project = new Project({
-    tsConfigFilePath: extendendDMMF.generatorConfig.tsConfigFilePath,
+    tsConfigFilePath: extendedDMMF.generatorConfig.tsConfigFilePath,
     skipAddingFilesFromTsConfig: true,
   });
 
-  // Create the path specified in the generator output
-  DirectoryHelper.pathExistsElseCreate(output.value);
+  if (extendedDMMF.generatorConfig.useMultipleFiles) {
+    return;
+  }
 
-  // create the source file containing all zod types
-  const indexSource = project.createSourceFile(
-    `${output.value}/index.ts`,
-    {
-      statements: [
-        ...getImportStatements(extendendDMMF),
-        ...getEnumStatements(extendendDMMF),
-        ...getHelperStatements(extendendDMMF),
-        ...getModelStatements(extendendDMMF),
-        ...getIncludeSelectStatements(extendendDMMF),
-        // ...getAggregateAndCountStatements(extendendDMMF), // currently not used in any input types
-        ...getInputTypeStatements(extendendDMMF),
-        ...getArgTypeStatements(extendendDMMF),
-      ],
-    },
-    {
-      overwrite: true,
-    },
-  );
-
-  // format the source file
-  indexSource.formatText({
-    indentSize: 2,
-    convertTabsToSpaces: true,
-    ensureNewLineAtEndOfFile: true,
+  return generateSingleFile({
+    extendedDMMF,
+    outputPath: output.value,
+    project,
   });
-
-  // save the source file and apply all changes
-  return project.save();
 };

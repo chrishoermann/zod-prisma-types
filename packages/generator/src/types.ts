@@ -9,6 +9,12 @@ import {
 
 export type StatementsArray = Statement[];
 export type Statement = string | WriterFunction | StatementStructures;
+
+export interface ExtendedStatement {
+  statement: Statement;
+  imports: Statement[];
+  filename: string;
+}
 export type GetStatements = (datamodel: ExtendedDMMF) => Statement[];
 
 export interface ScalarValidatorFunctionOptions {

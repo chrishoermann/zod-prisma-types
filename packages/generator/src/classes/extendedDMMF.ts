@@ -10,6 +10,11 @@ import { ExtendedDMMFSchema } from './extendedDMMFSchema';
 /////////////////////////////////////////////////
 
 export const configSchema = z.object({
+  useMultipleFiles: z
+    .string()
+    .optional()
+    .default('false')
+    .transform((val) => val === 'true'),
   useInstanceOfForDecimal: z
     .string()
     .optional()
