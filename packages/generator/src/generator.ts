@@ -2,6 +2,7 @@ import { GeneratorOptions } from '@prisma/generator-helper';
 import { Project } from 'ts-morph';
 
 import { ExtendedDMMF } from './classes';
+import { generateMultipleFiles } from './generateMultipleFiles';
 import { generateSingleFile } from './generateSingleFile';
 import { skipGenerator, usesCustomTsConfigFilePath } from './utils';
 
@@ -36,8 +37,13 @@ export const generator = async ({ output, config, dmmf }: GeneratorConfig) => {
     skipAddingFilesFromTsConfig: true,
   });
 
+  // generate single or multiple files
   if (extendedDMMF.generatorConfig.useMultipleFiles) {
-    return;
+    return generateMultipleFiles({
+      extendedDMMF,
+      outputPath: output.value,
+      project,
+    });
   }
 
   return generateSingleFile({

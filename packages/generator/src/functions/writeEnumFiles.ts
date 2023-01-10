@@ -1,87 +1,110 @@
-import { ExtendedDMMF } from 'src/classes';
-import { Project } from 'ts-morph';
-import { GetStatements, Statement } from '../types';
-import { writeConstStatement, writeHeading } from '../utils';
+import {
+  getPrismaImportStatemnt,
+  TRANSFORM_JSON_IMPORT_STATEMENT,
+  ZOD_IMPORT_STATEMENT,
+} from '../constants';
+import { CreateFiles } from '../types';
+import { multiFileWriter, writeConstStatement } from '../utils';
 
 /////////////////////////////////////////////////
 // FUNCTION
 /////////////////////////////////////////////////
 
-// needs: extendedDMMF, path, project
+export const writeEnumFiles: CreateFiles = async (options) => {
+  multiFileWriter({
+    ...options,
+    subPath: 'enums',
+    useWriter: ({ extendedDMMF, writeFile }) => {
+      extendedDMMF.schema.enumTypes.prisma.forEach(
+        ({ useNativeEnum, values, name }) => {
+          writeFile({
+            name,
+            writeStatement: (source) => {
+              if (useNativeEnum) {
+                source.addImportDeclarations([
+                  ZOD_IMPORT_STATEMENT,
+                  getPrismaImportStatemnt(
+                    extendedDMMF.generatorConfig.prismaClientPath,
+                  ),
+                ]);
 
-export const getEnumStatements = (
-  { schema, datamodel }: ExtendedDMMF,
-  project: Project,
-): void => {
-  const statements: Statement[] = [writeHeading(`ENUMS`, 'FAT')];
+                source.addStatements([
+                  writeConstStatement({
+                    leadingTrivia: (writer) => writer.newLine(),
+                    declarations: [
+                      {
+                        name: `${name}Schema`,
+                        initializer(writer) {
+                          writer.write(
+                            `z.nativeEnum(PrismaClient.Prisma.${name})`,
+                          );
+                        },
+                      },
+                    ],
+                  }),
+                ]);
+              } else {
+                source.addImportDeclarations(
+                  name.includes('NullableJson')
+                    ? [TRANSFORM_JSON_IMPORT_STATEMENT, ZOD_IMPORT_STATEMENT]
+                    : [ZOD_IMPORT_STATEMENT],
+                );
 
-  // PRISMA GENERATED ENUMS
-  // ---------------------------------------------------------------------
-
-  statements.push(writeHeading(`PRISMA GENERATED ENUMS`, 'SLIM'));
-
-  schema.enumTypes.prisma.forEach(({ useNativeEnum, values, name }) => {
-    // console.log({ name, values });
-    if (useNativeEnum) {
-      statements.push(
-        writeConstStatement({
-          leadingTrivia: (writer) => writer.newLine(),
-          declarations: [
-            {
-              name: `${name}Schema`,
-              initializer(writer) {
-                writer.write(`z.nativeEnum(PrismaClient.Prisma.${name})`);
-              },
+                source.addStatements([
+                  writeConstStatement({
+                    leadingTrivia: (writer) => writer.newLine(),
+                    declarations: [
+                      {
+                        name: `${name}Schema`,
+                        initializer(writer) {
+                          writer.write(`z.enum([`);
+                          values.forEach((value) => {
+                            writer.write(`'${value}',`);
+                          });
+                          writer
+                            .write(`])`)
+                            .conditionalWrite(
+                              name.includes('Nullable'),
+                              `.transform((v) => transformJsonNull(v))`,
+                            );
+                        },
+                      },
+                    ],
+                  }),
+                ]);
+              }
             },
-          ],
-        }),
+          });
+        },
       );
-    } else {
-      statements.push(
-        writeConstStatement({
-          leadingTrivia: (writer) => writer.newLine(),
-          declarations: [
-            {
-              name: `${name}Schema`,
-              initializer(writer) {
-                writer.write(`z.enum([`);
-                values.forEach((value) => {
-                  writer.write(`'${value}',`);
-                });
-                writer
-                  .write(`])`)
-                  .conditionalWrite(
-                    name.includes('Nullable'),
-                    `.transform((v) => transformJsonNull(v))`,
-                  );
-              },
-            },
-          ],
-        }),
-      );
-    }
-  });
 
-  // CUSTOM ENUMS
-  // ---------------------------------------------------------------------
+      extendedDMMF.datamodel.enums.forEach(({ name }) => {
+        writeFile({
+          name,
+          writeStatement: (source) => {
+            source.addImportDeclarations([
+              ZOD_IMPORT_STATEMENT,
+              getPrismaImportStatemnt(
+                extendedDMMF.generatorConfig.prismaClientPath,
+              ),
+            ]);
 
-  statements.push(writeHeading(`CUSTOM ENUMS`, 'SLIM'));
-
-  datamodel.enums.forEach(({ name }) => {
-    statements.push(
-      writeConstStatement({
-        leadingTrivia: (writer) => writer.newLine(),
-        declarations: [
-          {
-            name: `${name}Schema`,
-            initializer(writer) {
-              writer.write(`z.nativeEnum(PrismaClient.${name})`);
-            },
+            source.addStatements([
+              writeConstStatement({
+                leadingTrivia: (writer) => writer.newLine(),
+                declarations: [
+                  {
+                    name: `${name}Schema`,
+                    initializer(writer) {
+                      writer.write(`z.nativeEnum(PrismaClient.${name})`);
+                    },
+                  },
+                ],
+              }),
+            ]);
           },
-        ],
-      }),
-    );
+        });
+      });
+    },
   });
-
-  // return statements;
 };

@@ -1,5 +1,10 @@
 import { DMMF } from '@prisma/generator-helper';
-import { CodeBlockWriter, StatementStructures, WriterFunction } from 'ts-morph';
+import {
+  CodeBlockWriter,
+  Project,
+  StatementStructures,
+  WriterFunction,
+} from 'ts-morph';
 
 import {
   ExtendedDMMF,
@@ -16,6 +21,14 @@ export interface ExtendedStatement {
   filename: string;
 }
 export type GetStatements = (datamodel: ExtendedDMMF) => Statement[];
+
+export interface CreateOptions {
+  extendedDMMF: ExtendedDMMF;
+  outputPath: string;
+  project: Project;
+}
+
+export type CreateFiles = (options: CreateOptions) => Promise<void>;
 
 export interface ScalarValidatorFunctionOptions {
   key: string;

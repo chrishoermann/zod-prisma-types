@@ -1,49 +1,48 @@
-import { Project } from 'ts-morph';
-import { DirectoryHelper, ExtendedDMMF } from './classes';
+import { DirectoryHelper } from './classes';
 import fs from 'fs';
+import { CreateOptions } from './types';
+import { writeEnumFiles, writeHelperFiles } from './functions';
 
-interface CreateOptions {
-  extendedDMMF: ExtendedDMMF;
-  outputPath: string;
-  project: Project;
-}
-
-export const generateSingleFile = ({
-  // extendedDMMF,
+export const generateMultipleFiles = ({
+  extendedDMMF,
   outputPath,
   project,
 }: CreateOptions) => {
   // If data is present in the directory, delete it.
   // Is necessary to not have old data in the directory e.g.
-  // when a model is removed from the schema
+  // when a model is removed from the schema.
+  // needs to be syncronous because otherwise a race condition
+  // when creating new files occurs.
   if (DirectoryHelper.pathOrDirExists(outputPath)) {
-    fs.rm(outputPath, { recursive: true, force: true }, (err) => {
-      if (err) throw err;
-    });
+    try {
+      fs.rmdirSync(outputPath, { recursive: true });
+    } catch (err) {
+      if (err instanceof Error)
+        throw new Error(`Error while deleting old data: ${err.message}`);
+    }
   }
 
   // Create the path specified in the generator output
   DirectoryHelper.createDir(outputPath);
 
-  // create the source file containing all zod types
-  const indexSource = project.createSourceFile(
-    `${outputPath}/index.ts`,
+  const indexSource = project.createSourceFile(`${outputPath}/index.ts`);
+
+  indexSource.addExportDeclarations([
     {
-      statements: [
-        // ...getImportStatements(extendedDMMF),
-        // ...getEnumStatements(extendedDMMF),
-        // ...getHelperStatements(extendedDMMF),
-        // ...getModelStatements(extendedDMMF),
-        // ...getIncludeSelectStatements(extendedDMMF),
-        // // ...getAggregateAndCountStatements(extendedDMMF), // currently not used in any input types
-        // ...getInputTypeStatements(extendedDMMF),
-        // ...getArgTypeStatements(extendedDMMF),
-      ],
+      namespaceExport: '',
+      moduleSpecifier: './enums',
     },
     {
-      overwrite: true,
+      namespaceExport: '',
+      moduleSpecifier: './helpers',
     },
-  );
+  ]);
+
+  indexSource.organizeImports();
+
+  writeHelperFiles({ outputPath, project, extendedDMMF });
+
+  writeEnumFiles({ outputPath, project, extendedDMMF });
 
   // format the source file
   indexSource.formatText({

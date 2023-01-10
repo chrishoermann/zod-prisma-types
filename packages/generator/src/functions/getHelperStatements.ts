@@ -16,6 +16,7 @@ export const getHelperStatements: GetStatements = ({ schema }) => {
       {
         leadingTrivia: (writer) => writer.newLine(),
         kind: StructureKind.TypeAlias,
+        isExported: true,
         name: 'NullableJsonInput',
         type: "PrismaClient.Prisma.JsonValue | null | 'JsonNull' | 'DbNull' | PrismaClient.Prisma.NullTypes.DbNull | PrismaClient.Prisma.NullTypes.JsonNull",
       },
