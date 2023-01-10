@@ -1,9 +1,11 @@
+import { join } from 'path'
+
 export const usesCustomTsConfigFilePath = async (
   path?: string,
 ): Promise<void> => {
   if (!path) return;
 
-  const customPath = `${process.cwd()}\\${path}`;
+  const customPath = join(process.cwd(), path);
 
   try {
     const tsconfig = await import(customPath);
