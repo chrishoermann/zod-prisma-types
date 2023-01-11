@@ -6,6 +6,12 @@ export const ZOD_IMPORT_STATEMENT: ImportDeclarationStructure = {
   moduleSpecifier: 'zod',
 };
 
+export const TRANSFORM_JSON_IMPORT_STATEMENT: ImportDeclarationStructure = {
+  kind: StructureKind.ImportDeclaration,
+  namedImports: ['transformJsonNull'],
+  moduleSpecifier: '../helpers',
+};
+
 export const PRIMSA_IMPORT_STATEMENT: ImportDeclarationStructure = {
   kind: StructureKind.ImportDeclaration,
   defaultImport: '* as PrismaClient',

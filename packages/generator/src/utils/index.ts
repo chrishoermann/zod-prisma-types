@@ -1,5 +1,6 @@
 export * from './getStringVariants';
 export * from './getPrismaClientOutputPath';
+export * from './multiFileWriter';
 export * from './skipGenerator';
 export * from './usesCustomTsConfigFilePath';
 export * from './writeHeading';
