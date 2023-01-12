@@ -322,8 +322,10 @@ export const getModelStatements: GetStatements = (dmmf) => {
     // this is only done if the user has set the "createModelRelations" flag to true
 
     // todo:
-    // - does the relation need to be recursive or is just one layer sufficient?
     // - don't created relations model if the model has no relations
+    // - do the relations need to be recursive or is just one layer sufficient?
+    //   recursive could get tricky because then for each model a relations type needs to be created
+    //   even if the model itself has no relations. Furthermore a z.ZodType<> would be needed.
 
     if (dmmf.generatorConfig.createModelRelations) {
       statements.push(
