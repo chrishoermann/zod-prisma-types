@@ -30,7 +30,7 @@ interface ExtendedWriteFieldOptions extends WriteFieldOptions {
 /**
  * Writes all relevant additional zod modifiers like`.nullish().array().optional()` to a field
  */
-const writeFieldAdditions = ({
+export const writeFieldAdditions = ({
   writer,
   field,
   writeOptionalDefaults = false,
@@ -52,7 +52,7 @@ const writeFieldAdditions = ({
 // WRITE CUSTOM VALIDATOR
 // ------------------------------------------
 
-const writeCustomValidator = ({
+export const writeCustomValidator = ({
   writer,
   field,
   writeOptionalDefaults = false,
@@ -68,7 +68,7 @@ const writeCustomValidator = ({
 // WRITE ENUM
 // ------------------------------------------
 
-const writeEnum = ({
+export const writeEnum = ({
   writer,
   field,
   writeOptionalDefaults = false,
@@ -84,7 +84,7 @@ const writeEnum = ({
 // WRITE JSON
 // ------------------------------------------
 
-const writeJson = ({ writer, field }: WriteFieldOptions) => {
+export const writeJson = ({ writer, field }: WriteFieldOptions) => {
   writer
     .conditionalWrite(field.omitInModel(), '// omitted: ')
     .write(`${field.formattedNames.original}: `)
@@ -99,7 +99,7 @@ const writeJson = ({ writer, field }: WriteFieldOptions) => {
 // WRITE OBJECT
 // ------------------------------------------
 
-const writeBytes = ({
+export const writeBytes = ({
   writer,
   field,
   writeOptionalDefaults = false,
@@ -115,7 +115,7 @@ const writeBytes = ({
 // WRITE DECIMAL
 // ------------------------------------------
 
-const writeDecimal = ({
+export const writeDecimal = ({
   writer,
   field,
   model,
@@ -141,7 +141,7 @@ const writeDecimal = ({
 // WRITE DECIMAL WITH INSTANCE OF
 // ------------------------------------------
 
-const writeDecimalInstance = ({
+export const writeDecimalInstance = ({
   writer,
   field,
   dmmf,
@@ -160,7 +160,7 @@ const writeDecimalInstance = ({
 // WRITE SCALARS
 // ------------------------------------------
 
-const writeScalar = ({
+export const writeScalar = ({
   writer,
   field,
   writeOptionalDefaults = false,
@@ -193,7 +193,7 @@ export const getModelStatements: GetStatements = (dmmf) => {
       writeConstStatement({
         leadingTrivia: (writer) => {
           writer.newLine();
-          writeJsDoc(writer, model.documentation);
+          writeJsDoc(writer, model.clearedDocumentation);
         },
         declarations: [
           {
@@ -244,7 +244,7 @@ export const getModelStatements: GetStatements = (dmmf) => {
         writeConstStatement({
           leadingTrivia: (writer) => {
             writer.newLine();
-            writeJsDoc(writer, model.documentation);
+            writeJsDoc(writer, model.clearedDocumentation);
           },
           declarations: [
             {

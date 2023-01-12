@@ -1,4 +1,5 @@
 import { DMMF } from '@prisma/generator-helper';
+import { IMPORT_STATEMENT_REGEX } from '../constants';
 
 import { GeneratorConfig } from '.';
 import { ExtendedDMMFField } from './extendedDMMFField';
@@ -22,6 +23,9 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
   readonly enumFields: ExtendedDMMFField[];
   readonly hasRelationFields: boolean;
   readonly hasOmitFields: boolean;
+  readonly imports: Set<string>;
+  readonly errorLocation: string;
+  readonly clearedDocumentation?: string;
 
   constructor(generatorConfig: GeneratorConfig, model: DMMF.Model) {
     super(model.name);
@@ -38,6 +42,16 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
     this.enumFields = this._setEnumfields();
     this.hasRelationFields = this._setHasRelationFields();
     this.hasOmitFields = this._setHasOmitFields();
+    this.errorLocation = this._setErrorLocation();
+
+    const docsContent = this._getDocumentationContent();
+
+    this.imports = docsContent.imports;
+    this.clearedDocumentation = docsContent?.documentation;
+  }
+
+  private _setErrorLocation() {
+    return `[Error Location]: Model: '${this.name}'.`;
   }
 
   private _getExtendedFields(model: DMMF.Model) {
@@ -64,6 +78,82 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
 
   private _setHasOmitFields() {
     return this.fields.some((field) => field.isOmitField());
+  }
+
+  private _getDocumentationContent() {
+    const zodDirectives = this._extractZodDirectives();
+    const automaticImports = this._getAutomaticImports();
+
+    if (!zodDirectives)
+      return {
+        imports: new Set<string>(automaticImports),
+      };
+
+    return {
+      imports: new Set<string>([
+        ...zodDirectives.statements,
+        ...automaticImports,
+      ]),
+      documentation: zodDirectives.clearedDocumentation,
+    };
+  }
+
+  /**
+   * extracts import statements  from the model's documentation and removes them from the documentation.
+   * @returns array of import statements from the model's documentation and
+   * a string of the documentation with the import statements removed.
+   */
+  private _extractZodDirectives() {
+    if (!this.documentation) return;
+
+    const importStatements = this.documentation?.match(IMPORT_STATEMENT_REGEX);
+    if (!importStatements) return;
+
+    const type = importStatements.groups?.['type'];
+    if (type !== 'import')
+      throw new Error(
+        `[@zod generator error]: '${type}' is not a valid validator key. ${this.errorLocation}`,
+      );
+
+    const importsList = importStatements.groups?.['imports']?.split(', ');
+    if (!importsList) return;
+
+    return {
+      statements: importsList
+        .map((statement) =>
+          statement
+            .match(/"(?<statement>[\w "'\{\}\/,;.*]+)"/)
+            ?.groups?.['statement'].replace(/["']/g, "'"),
+        )
+        .filter((statement): statement is string => !!statement),
+      clearedDocumentation: this.documentation.replace(importStatements[0], ''),
+    };
+  }
+
+  /**
+   * Checks for certain field types and conditions and adds the necessary import statements to the model's imports.
+   * @returns array of import statements that are automatically added to the model's imports.
+   */
+  private _getAutomaticImports() {
+    const statements: string[] = [];
+    if (this.fields.some((field) => field.isJsonType && !field.isRequired))
+      statements.push('import { NullableJsonValue } from "../helpers');
+
+    if (this.fields.some((field) => field.isJsonType && field.isRequired))
+      statements.push('import { InputJsonValue } from "../helpers');
+
+    if (this.fields.some((field) => field.isDecimalType))
+      statements.push(
+        `import * as PrismaClient from '${this.generatorConfig.prismaClientPath}'`,
+      );
+
+    this.enumFields.forEach((field) => {
+      statements.push(
+        `import { ${field.type}Schema } from '../enums/${field.type}Schema'`,
+      );
+    });
+
+    return statements;
   }
 
   writeOptionalDefaultValuesTypes() {

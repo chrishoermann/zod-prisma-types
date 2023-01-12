@@ -81,6 +81,7 @@ model ModelWithComments {
 // Custom validators should be included in the generated model and input schemas
 // It should not matter if the comments are above or next to the field
 
+/// @zod.import(["import { myFunction } from "../../../utils/myFunction";", "import validator from 'validator';"])
 model MyPrismaScalarsType {
   /// @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid()
   id         String    @id @default(cuid())

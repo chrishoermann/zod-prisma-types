@@ -12,7 +12,7 @@ interface WriteFileParams {
 }
 
 interface UseWriterParams {
-  extendedDMMF: ExtendedDMMF;
+  dmmf: ExtendedDMMF;
   writeFile: (params: WriteFileParams) => void;
 }
 
@@ -50,7 +50,7 @@ export const multiFileWriter = ({
     // call the useWriter function that provides all the necessary information
     // and tools that are needed to write the files (extendedDMMF, writeFile function)
     useWriter({
-      extendedDMMF,
+      dmmf: extendedDMMF,
 
       // writeFile function is called for each element when
       // iterating over models, enums, etc.
@@ -67,6 +67,8 @@ export const multiFileWriter = ({
         // call the writeStatement function where
         // the actual writing of the file happens
         writeStatement(source);
+
+        source.organizeImports();
 
         // format the source file
         source.formatText({

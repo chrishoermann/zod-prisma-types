@@ -71,12 +71,14 @@ export class ExtendedDMMF implements DMMF.Document {
   readonly datamodel: ExtendedDMMFDatamodel;
   readonly schema: ExtendedDMMFSchema;
   readonly mappings: DMMF.Mappings;
+  readonly imports: Set<string>;
 
   constructor(dmmf: DMMF.Document, config: Dictionary<string>) {
     this.generatorConfig = this._setGeneratorConfig(config);
     this.datamodel = this._getExtendedDatamodel(dmmf);
     this.schema = this._getExtendedSchema(dmmf);
     this.mappings = this._getExtendedMappings(dmmf);
+    this.imports = this._getImports();
   }
 
   private _getExtendedDatamodel({ datamodel }: DMMF.Document) {
@@ -88,6 +90,12 @@ export class ExtendedDMMF implements DMMF.Document {
       this.generatorConfig,
       dmmf.schema,
       this.datamodel,
+    );
+  }
+
+  private _getImports() {
+    return new Set(
+      this.datamodel.models.map((model) => [...model.imports]).flat(),
     );
   }
 

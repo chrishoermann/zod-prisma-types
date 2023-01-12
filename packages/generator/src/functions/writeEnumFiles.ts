@@ -14,7 +14,7 @@ export const writeEnumFiles: CreateFiles = async (options) => {
   multiFileWriter({
     ...options,
     subPath: 'enums',
-    useWriter: ({ extendedDMMF, writeFile }) => {
+    useWriter: ({ dmmf: extendedDMMF, writeFile }) => {
       extendedDMMF.schema.enumTypes.prisma.forEach(
         ({ useNativeEnum, values, name }) => {
           writeFile({

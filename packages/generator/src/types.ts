@@ -133,7 +133,7 @@ export type ZodNumberValidatorKeys =
 
 export type ZodDateValidatorKeys = 'min' | 'max';
 
-export type ZodCustomValidatorKeys = 'use' | 'omit';
+export type ZodCustomValidatorKeys = 'use' | 'omit' | 'import';
 
 export type WriteBaseFilterTypesFunction = (options?: {
   nullable?: boolean;
