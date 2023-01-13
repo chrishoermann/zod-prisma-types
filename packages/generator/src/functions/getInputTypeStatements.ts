@@ -23,6 +23,8 @@ export const getInputTypeStatements: GetStatements = (dmmf) => {
   const statements: Statement[] = [writeHeading(`INPUT TYPES`, 'FAT')];
 
   dmmf.schema.inputObjectTypes.prisma.forEach((inputType) => {
+    // when an omit field is present, the type is not a native prism type
+    // but a zod union of the native type and an omit type
     const type = inputType.hasOmitFields()
       ? `z.ZodType<Omit<PrismaClient.Prisma.${
           inputType.name

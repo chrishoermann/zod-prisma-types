@@ -8,4 +8,6 @@ export * from './getInputTypeStatements';
 export * from './getModelStatements';
 export * from './writeEnumFiles';
 export * from './writeHelperFiles';
+export * from './writeInputTypeFiles';
 export * from './writeModelFiles';
+export * from './helpers';

@@ -1,0 +1,11 @@
+export { JsonModelSchema } from "./JsonModelSchema";
+export { LocationSchema } from "./LocationSchema";
+export { ModelWithCommentsSchema } from "./ModelWithCommentsSchema";
+export { ModelWithOmitFieldsSchema } from "./ModelWithOmitFieldsSchema";
+export { MODELWithUpperCaseSchema } from "./MODELWithUpperCaseSchema";
+export { MyPrismaScalarsTypeSchema } from "./MyPrismaScalarsTypeSchema";
+export { NonDefaultModelSchema } from "./NonDefaultModelSchema";
+export { PostSchema } from "./PostSchema";
+export { ProfileSchema } from "./ProfileSchema";
+export { UserSchema } from "./UserSchema";
+export { WithDefaultValidatorsSchema } from "./WithDefaultValidatorsSchema";

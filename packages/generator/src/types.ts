@@ -8,6 +8,8 @@ import {
 
 import {
   ExtendedDMMF,
+  ExtendedDMMFField,
+  ExtendedDMMFModel,
   ExtendedDMMFSchemaArgInputType,
   ZodValidatorOptions,
 } from './classes';
@@ -174,4 +176,19 @@ export type TestFunction = (dmmf: DMMF.Document) => void;
 export interface TestConfig {
   schemaPath: string;
   tests: TestFunction;
+}
+
+///////////////////////////////////////////////
+// HELPER TYPES FOR MODEL GENERATION
+///////////////////////////////////////////////
+
+export interface WriteFieldOptions {
+  writer: CodeBlockWriter;
+  field: ExtendedDMMFField;
+  writeOptionalDefaults?: boolean;
+}
+
+export interface ExtendedWriteFieldOptions extends WriteFieldOptions {
+  model: ExtendedDMMFModel;
+  dmmf: ExtendedDMMF;
 }

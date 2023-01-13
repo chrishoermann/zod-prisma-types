@@ -1,7 +1,12 @@
 import { DirectoryHelper } from './classes';
 import fs from 'fs';
 import { CreateOptions } from './types';
-import { writeEnumFiles, writeHelperFiles, writeModelFiles } from './functions';
+import {
+  writeEnumFiles,
+  writeHelperFiles,
+  writeInputTypeFiles,
+  writeModelFiles,
+} from './functions';
 
 export const generateMultipleFiles = ({
   extendedDMMF,
@@ -40,6 +45,10 @@ export const generateMultipleFiles = ({
       namespaceExport: '',
       moduleSpecifier: './models',
     },
+    {
+      namespaceExport: '',
+      moduleSpecifier: './inputTypes',
+    },
   ]);
 
   indexSource.organizeImports();
@@ -49,6 +58,8 @@ export const generateMultipleFiles = ({
   writeEnumFiles({ outputPath, project, extendedDMMF });
 
   writeModelFiles({ outputPath, project, extendedDMMF });
+
+  writeInputTypeFiles({ outputPath, project, extendedDMMF });
 
   // format the source file
   indexSource.formatText({

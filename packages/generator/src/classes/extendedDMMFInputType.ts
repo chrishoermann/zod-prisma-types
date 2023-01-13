@@ -27,6 +27,7 @@ export class ExtendedDMMFInputType
   readonly isBytesField: boolean;
   readonly isDecimalField: boolean;
   readonly omitFields: string[] = [];
+  readonly imports: Set<string>;
 
   constructor(
     readonly generatorConfig: GeneratorConfig,
@@ -45,6 +46,7 @@ export class ExtendedDMMFInputType
     this.isBytesField = this._setIsBytesField();
     this.isDecimalField = this._setIsDecimalField();
     this.omitFields = this._setOmitFields();
+    this.imports = this._setImports();
   }
 
   /**
@@ -161,5 +163,11 @@ export class ExtendedDMMFInputType
 
   getOmitFieldsUnion() {
     return this.omitFields.map((field) => `"${field}"`).join(' | ');
+  }
+
+  private _setImports() {
+    return new Set(this.fields.map((field) => field.getImports()).flat());
+    // .flat()
+    // .filter((importString) => importString);
   }
 }

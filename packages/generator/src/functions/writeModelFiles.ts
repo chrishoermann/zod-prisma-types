@@ -1,15 +1,7 @@
 import { ZOD_IMPORT_STATEMENT } from '../constants';
 import { CreateFiles } from '../types';
 import { multiFileWriter, writeConstStatement, writeJsDoc } from '../utils';
-import {
-  writeBytes,
-  writeCustomValidator,
-  writeDecimal,
-  writeDecimalInstance,
-  writeEnum,
-  writeJson,
-  writeScalar,
-} from './getModelStatements';
+import { writeModelFields } from '.';
 
 /////////////////////////////////////////////////
 // FUNCTION
@@ -45,46 +37,12 @@ export const writeModelFiles: CreateFiles = async (options) => {
                       writer.write(`z.object({`);
                       [...model.enumFields, ...model.scalarFields].forEach(
                         (field) => {
-                          if (field.clearedDocumentation) {
-                            writeJsDoc(writer, field.clearedDocumentation);
-                          }
-
-                          if (field.zodCustomValidatorString) {
-                            return writeCustomValidator({ writer, field });
-                          }
-
-                          if (field.kind === 'enum') {
-                            return writeEnum({ writer, field });
-                          }
-
-                          if (field.isJsonType) {
-                            return writeJson({ writer, field });
-                          }
-
-                          if (field.isBytesType) {
-                            return writeBytes({ writer, field });
-                          }
-
-                          if (
-                            field.isDecimalType &&
-                            !dmmf.useInstanceOfForDecimal()
-                          ) {
-                            return writeDecimal({ writer, field, model, dmmf });
-                          }
-
-                          if (
-                            field.isDecimalType &&
-                            dmmf.useInstanceOfForDecimal()
-                          ) {
-                            return writeDecimalInstance({
-                              writer,
-                              field,
-                              model,
-                              dmmf,
-                            });
-                          }
-
-                          return writeScalar({ writer, field });
+                          writeModelFields({
+                            writer,
+                            field,
+                            model,
+                            dmmf,
+                          });
                         },
                       );
                       writer.write(`})`);
@@ -120,45 +78,11 @@ export const writeModelFiles: CreateFiles = async (options) => {
                               writeOptionalDefaults: true,
                             };
 
-                            if (field.zodCustomValidatorString) {
-                              return writeCustomValidator(writeOptions);
-                            }
-
-                            if (field.kind === 'enum') {
-                              return writeEnum(writeOptions);
-                            }
-
-                            if (field.isJsonType) {
-                              return writeJson(writeOptions);
-                            }
-
-                            if (field.isBytesType) {
-                              return writeBytes(writeOptions);
-                            }
-
-                            if (
-                              field.isDecimalType &&
-                              !dmmf.useInstanceOfForDecimal()
-                            ) {
-                              return writeDecimal({
-                                ...writeOptions,
-                                model,
-                                dmmf,
-                              });
-                            }
-
-                            if (
-                              field.isDecimalType &&
-                              dmmf.useInstanceOfForDecimal()
-                            ) {
-                              return writeDecimalInstance({
-                                ...writeOptions,
-                                model,
-                                dmmf,
-                              });
-                            }
-
-                            return writeScalar(writeOptions);
+                            writeModelFields({
+                              ...writeOptions,
+                              model,
+                              dmmf,
+                            });
                           },
                         );
                         writer.writeLine(`})`).write(`)`);

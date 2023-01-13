@@ -130,4 +130,19 @@ export class ExtendedDMMFSchemaArg
   rewriteArgWithNewType() {
     return !!this.name.match(/create|update|upsert|delete|data/);
   }
+
+  getImports() {
+    const imports: string[] = [];
+
+    this.inputTypes.forEach((type) => {
+      const importType = type.getZodNonScalarType();
+      if (importType) {
+        imports.push(
+          `import { ${importType}Schema } from './${importType}Schema';`,
+        );
+      }
+    });
+
+    return imports;
+  }
 }

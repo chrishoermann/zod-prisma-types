@@ -1,0 +1,9 @@
+import { z } from 'zod';
+import * as PrismaClient from '@prisma/client';
+import { LocationCreateWithoutUserInputSchema } from './LocationCreateWithoutUserInputSchema';
+import { LocationUncheckedCreateWithoutUserInputSchema } from './LocationUncheckedCreateWithoutUserInputSchema';
+import { LocationCreateOrConnectWithoutUserInputSchema } from './LocationCreateOrConnectWithoutUserInputSchema';
+import { LocationWhereUniqueInputSchema } from './LocationWhereUniqueInputSchema';
+
+export const LocationCreateNestedOneWithoutUserInputSchema: z.ZodType<PrismaClient.Prisma.LocationCreateNestedOneWithoutUserInput> = z.object({
+	create: z.union([  ]).optional(),	connectOrCreate: 	connect: }).strict();
