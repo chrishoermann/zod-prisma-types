@@ -157,22 +157,6 @@ const writeDecimalInstance = ({
   }
 };
 
-// WRITE OBJECT
-// ------------------------------------------
-
-const writeRelation = ({
-  writer,
-  field,
-  writeOptionalDefaults = false,
-}: WriteFieldOptions) => {
-  writer
-    .conditionalWrite(field.omitInModel(), '// omitted: ')
-    .write(`${field.formattedNames.original}: `)
-    .write(`z.lazy(() => ${field.zodType}Schema)`);
-
-  writeFieldAdditions({ writer, field, writeOptionalDefaults });
-};
-
 // WRITE SCALARS
 // ------------------------------------------
 
@@ -310,45 +294,6 @@ export const getModelStatements: GetStatements = (dmmf) => {
                     return writeScalar(options);
                   },
                 );
-                writer.writeLine(`})`).write(`)`);
-              },
-            },
-          ],
-        }),
-      );
-    }
-
-    // check if a schema where relations are included should be generated
-    // this is only done if the user has set the "createModelRelations" flag to true
-
-    // todo:
-    // - don't created relations model if the model has no relations
-    // - do the relations need to be recursive or is just one layer sufficient?
-    //   recursive could get tricky because then for each model a relations type needs to be created
-    //   even if the model itself has no relations. Furthermore a z.ZodType<> would be needed.
-
-    if (dmmf.generatorConfig.createModelRelations) {
-      statements.push(
-        writeConstStatement({
-          leadingTrivia: (writer) => {
-            writer.newLine();
-            writeJsDoc(writer, model.documentation);
-          },
-          declarations: [
-            {
-              name: `${model.formattedNames.original}WithRelationsSchema`,
-              initializer(writer) {
-                writer.writeLine(
-                  `${model.formattedNames.original}Schema.merge(`,
-                );
-                writer.write(`z.object({`);
-                model.relationFields.forEach((field) => {
-                  const options = {
-                    writer,
-                    field,
-                  };
-                  return writeRelation(options);
-                });
                 writer.writeLine(`})`).write(`)`);
               },
             },

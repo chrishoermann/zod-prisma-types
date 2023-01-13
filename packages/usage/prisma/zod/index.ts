@@ -107,11 +107,6 @@ export const MODELWithUpperCaseOptionalDefaultsSchema = MODELWithUpperCaseSchema
   })
 );
 
-export const MODELWithUpperCaseWithRelationsSchema = MODELWithUpperCaseSchema.merge(
-  z.object({
-  })
-);
-
 // MODEL WITH OMIT FIELDS
 //------------------------------------------------------
 
@@ -125,11 +120,6 @@ export const ModelWithOmitFieldsSchema = z.object({
 export const ModelWithOmitFieldsOptionalDefaultsSchema = ModelWithOmitFieldsSchema.merge(
   z.object({
     id: z.string().cuid().optional(),
-  })
-);
-
-export const ModelWithOmitFieldsWithRelationsSchema = ModelWithOmitFieldsSchema.merge(
-  z.object({
   })
 );
 
@@ -158,15 +148,6 @@ export const ModelWithCommentsSchema = z.object({
 export const ModelWithCommentsOptionalDefaultsSchema = ModelWithCommentsSchema.merge(
   z.object({
     id: z.string().uuid().optional(),
-  })
-);
-
-/**
- * comment line one
- * comment line two
- */
-export const ModelWithCommentsWithRelationsSchema = ModelWithCommentsSchema.merge(
-  z.object({
   })
 );
 
@@ -206,11 +187,6 @@ export const MyPrismaScalarsTypeOptionalDefaultsSchema = MyPrismaScalarsTypeSche
   })
 );
 
-export const MyPrismaScalarsTypeWithRelationsSchema = MyPrismaScalarsTypeSchema.merge(
-  z.object({
-  })
-);
-
 // JSON MODEL
 //------------------------------------------------------
 
@@ -223,11 +199,6 @@ export const JsonModelSchema = z.object({
 export const JsonModelOptionalDefaultsSchema = JsonModelSchema.merge(
   z.object({
     id: z.number().int().optional(),
-  })
-);
-
-export const JsonModelWithRelationsSchema = JsonModelSchema.merge(
-  z.object({
   })
 );
 
@@ -257,14 +228,6 @@ export const UserOptionalDefaultsSchema = UserSchema.merge(
   })
 );
 
-export const UserWithRelationsSchema = UserSchema.merge(
-  z.object({
-    posts: z.lazy(() => PostSchema).array(),
-    profile: z.lazy(() => ProfileSchema).nullish(),
-    location: z.lazy(() => LocationSchema).nullish(),
-  })
-);
-
 // POST
 //------------------------------------------------------
 
@@ -281,12 +244,6 @@ export const PostOptionalDefaultsSchema = PostSchema.merge(
   z.object({
     id: z.number().int().optional(),
     published: z.boolean().optional(),
-  })
-);
-
-export const PostWithRelationsSchema = PostSchema.merge(
-  z.object({
-    author: z.lazy(() => UserSchema),
   })
 );
 
@@ -309,12 +266,6 @@ export const ProfileOptionalDefaultsSchema = ProfileSchema.merge(
   })
 );
 
-export const ProfileWithRelationsSchema = ProfileSchema.merge(
-  z.object({
-    user: z.lazy(() => UserSchema),
-  })
-);
-
 // LOCATION
 //------------------------------------------------------
 
@@ -323,12 +274,6 @@ export const LocationSchema = z.object({
   lng: z.number(),
 });
 
-export const LocationWithRelationsSchema = LocationSchema.merge(
-  z.object({
-    User: z.lazy(() => UserSchema).array(),
-  })
-);
-
 // NON DEFAULT MODEL
 //------------------------------------------------------
 
@@ -336,11 +281,6 @@ export const NonDefaultModelSchema = z.object({
   id: z.number().int(),
   string: z.string(),
 });
-
-export const NonDefaultModelWithRelationsSchema = NonDefaultModelSchema.merge(
-  z.object({
-  })
-);
 
 // WITH DEFAULT VALIDATORS
 //------------------------------------------------------
@@ -355,11 +295,6 @@ export const WithDefaultValidatorsOptionalDefaultsSchema = WithDefaultValidators
   z.object({
     id: z.string().cuid().optional(),
     idTwo: z.string().optional(),
-  })
-);
-
-export const WithDefaultValidatorsWithRelationsSchema = WithDefaultValidatorsSchema.merge(
-  z.object({
   })
 );
 
