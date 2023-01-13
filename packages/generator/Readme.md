@@ -192,19 +192,6 @@ generator zod {
 }
 ```
 
-### `createModelRelations`
-
-> default: `true`
-
-By default for each model schema a seperate schema is created that extends the base model schema and adds the relations of the model. If you don't want to use this feature you can disable it with the following config option:
-
-```prisma
-generator zod {
-  // ...rest of config
-  createModelRelations = false
-}
-```
-
 ### `addInputTypeValidation`
 
 > default: `true`
