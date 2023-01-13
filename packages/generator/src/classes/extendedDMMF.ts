@@ -41,6 +41,11 @@ export const configSchema = z.object({
     .optional()
     .default('true')
     .transform((val) => val === 'true'),
+  createModelRelations: z
+    .string()
+    .optional()
+    .default('true')
+    .transform((val) => val === 'true'),
   createOptionalDefaultValuesTypes: z
     .string()
     .optional()

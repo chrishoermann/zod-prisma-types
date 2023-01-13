@@ -21,6 +21,7 @@ generator zod {
   // useInstanceOfForDecimal          = true // default is false
   // createInputTypes                 = false // default is true
   // createModelTypes                 = false // default is true
+  // createModelTypes                 = false // default is true
   // addInputTypeValidation           = false // default is true
   createOptionalDefaultValuesTypes = true // default is false
   useDefaultValidators             = true // default is true
