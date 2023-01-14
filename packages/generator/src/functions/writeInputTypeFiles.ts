@@ -98,6 +98,7 @@ export const writeInputTypeFiles: CreateFiles = async ({
     extendedDMMF.schema.inputObjectTypes.prisma.forEach((inputType) => {
       const fileWriter = new FileWriter();
 
+      //  TODO:  change to named Prisma import since the default import is not needed in this case
       const imports = [
         `import { z } from 'zod';`,
         `import * as PrismaClient from '@prisma/client';`,
