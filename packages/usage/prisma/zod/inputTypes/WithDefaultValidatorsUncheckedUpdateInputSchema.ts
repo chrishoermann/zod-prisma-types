@@ -4,7 +4,7 @@ import { StringFieldUpdateOperationsInputSchema } from './StringFieldUpdateOpera
 import { IntFieldUpdateOperationsInputSchema } from './IntFieldUpdateOperationsInputSchema';
 
 export const WithDefaultValidatorsUncheckedUpdateInputSchema: z.ZodType<PrismaClient.Prisma.WithDefaultValidatorsUncheckedUpdateInput> = z.object({
-	id: z.union([ z.string().cuid().optional(), 
- ]).optional(),	idTwo: z.union([ z.string().optional(), 
- ]).optional(),	integer: z.union([ z.number().int().optional(), 
- ]).optional(),}).strict();
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  idTwo: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  integer: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict()

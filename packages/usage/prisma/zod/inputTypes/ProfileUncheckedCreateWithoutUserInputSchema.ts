@@ -5,6 +5,8 @@ import { RoleSchema } from './RoleSchema';
 import { SecondEnumSchema } from './SecondEnumSchema';
 
 export const ProfileUncheckedCreateWithoutUserInputSchema: z.ZodType<PrismaClient.Prisma.ProfileUncheckedCreateWithoutUserInput> = z.object({
-	id: z.number().optional(),
-	bio: z.string(),
-	role: z.union([  ]).optional(),	second: }).strict();
+  id: z.number().optional(),
+  bio: z.string(),
+  role: z.union([ z.lazy(() => ProfileCreateroleInputSchema),z.lazy(() => RoleSchema).array() ]).optional(),
+  second: z.lazy(() => SecondEnumSchema).optional(),
+}).strict()

@@ -9,7 +9,10 @@ import { EnumAnotherEnumFieldUpdateOperationsInputSchema } from './EnumAnotherEn
 import { UserUpdatescalarListInputSchema } from './UserUpdatescalarListInputSchema';
 
 export const UserUncheckedUpdateManyWithoutUserInputSchema: z.ZodType<PrismaClient.Prisma.UserUncheckedUpdateManyWithoutUserInput> = z.object({
-	id: z.union([ z.string().cuid().optional(), 
- ]).optional(),	email: z.union([ z.string().email({ message: "Invalid email address" }).optional(), 
- ]).optional(),	name: z.union([ z.string().min(1).max(100).optional().nullable(), 
- ]).optional().nullable(),	role: z.union([  ]).optional(),	enum: z.union([  ]).optional(),	scalarList: z.union([ z.string().array().optional() ]).optional(),}).strict();
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  email: z.union([ z.string().email({ message: "Invalid email address" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string().min(1).max(100),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  role: z.union([ z.lazy(() => UserUpdateroleInputSchema),z.lazy(() => RoleSchema).array() ]).optional(),
+  enum: z.union([ z.lazy(() => AnotherEnumSchema),z.lazy(() => EnumAnotherEnumFieldUpdateOperationsInputSchema) ]).optional(),
+  scalarList: z.union([ z.lazy(() => UserUpdatescalarListInputSchema),z.string().array() ]).optional(),
+}).strict()

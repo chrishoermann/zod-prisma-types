@@ -7,4 +7,8 @@ import { UserCreateManyLocationInputEnvelopeSchema } from './UserCreateManyLocat
 import { UserWhereUniqueInputSchema } from './UserWhereUniqueInputSchema';
 
 export const UserCreateNestedManyWithoutLocationInputSchema: z.ZodType<PrismaClient.Prisma.UserCreateNestedManyWithoutLocationInput> = z.object({
-	create: z.union([  ]).optional(),	connectOrCreate: z.union([  ]).optional(),	createMany: 	connect: z.union([  ]).optional(),}).strict();
+  create: z.union([ z.lazy(() => UserCreateWithoutLocationInputSchema),z.lazy(() => UserCreateWithoutLocationInputSchema).array(),z.lazy(() => UserUncheckedCreateWithoutLocationInputSchema),z.lazy(() => UserUncheckedCreateWithoutLocationInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => UserCreateOrConnectWithoutLocationInputSchema),z.lazy(() => UserCreateOrConnectWithoutLocationInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => UserCreateManyLocationInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => UserWhereUniqueInputSchema),z.lazy(() => UserWhereUniqueInputSchema).array() ]).optional(),
+}).strict()

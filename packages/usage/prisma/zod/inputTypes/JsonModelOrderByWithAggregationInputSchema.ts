@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
-import { SortOrderSchema } from './SortOrderSchema';
+import { SortOrderSchema } from '../enums';
 import { JsonModelCountOrderByAggregateInputSchema } from './JsonModelCountOrderByAggregateInputSchema';
 import { JsonModelAvgOrderByAggregateInputSchema } from './JsonModelAvgOrderByAggregateInputSchema';
 import { JsonModelMaxOrderByAggregateInputSchema } from './JsonModelMaxOrderByAggregateInputSchema';
@@ -8,4 +8,12 @@ import { JsonModelMinOrderByAggregateInputSchema } from './JsonModelMinOrderByAg
 import { JsonModelSumOrderByAggregateInputSchema } from './JsonModelSumOrderByAggregateInputSchema';
 
 export const JsonModelOrderByWithAggregationInputSchema: z.ZodType<PrismaClient.Prisma.JsonModelOrderByWithAggregationInput> = z.object({
-	id: 	json: 	jsonOpt: 	_count: 	_avg: 	_max: 	_min: 	_sum: }).strict();
+  id: z.lazy(() => SortOrderSchema).optional(),
+  json: z.lazy(() => SortOrderSchema).optional(),
+  jsonOpt: z.lazy(() => SortOrderSchema).optional(),
+  _count: z.lazy(() => JsonModelCountOrderByAggregateInputSchema).optional(),
+  _avg: z.lazy(() => JsonModelAvgOrderByAggregateInputSchema).optional(),
+  _max: z.lazy(() => JsonModelMaxOrderByAggregateInputSchema).optional(),
+  _min: z.lazy(() => JsonModelMinOrderByAggregateInputSchema).optional(),
+  _sum: z.lazy(() => JsonModelSumOrderByAggregateInputSchema).optional(),
+}).strict()

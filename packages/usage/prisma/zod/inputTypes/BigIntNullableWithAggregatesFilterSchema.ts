@@ -6,12 +6,17 @@ import { NestedFloatNullableFilterSchema } from './NestedFloatNullableFilterSche
 import { NestedBigIntNullableFilterSchema } from './NestedBigIntNullableFilterSchema';
 
 export const BigIntNullableWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.BigIntNullableWithAggregatesFilter> = z.object({
-	equals: z.bigint().optional().nullable(),
-	in: z.bigint().array().optional().nullable(),
-	notIn: z.bigint().array().optional().nullable(),
-	lt: z.bigint().optional(),
-	lte: z.bigint().optional(),
-	gt: z.bigint().optional(),
-	gte: z.bigint().optional(),
-	not: z.union([ z.bigint().optional().nullable(), 
- ]).optional().nullable(),	_count: 	_avg: 	_sum: 	_min: 	_max: }).strict();
+  equals: z.bigint().optional().nullable(),
+  in: z.bigint().array().optional().nullable(),
+  notIn: z.bigint().array().optional().nullable(),
+  lt: z.bigint().optional(),
+  lte: z.bigint().optional(),
+  gt: z.bigint().optional(),
+  gte: z.bigint().optional(),
+  not: z.union([ z.bigint(),z.lazy(() => NestedBigIntNullableWithAggregatesFilterSchema) ]).optional().nullable(),
+  _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
+  _avg: z.lazy(() => NestedFloatNullableFilterSchema).optional(),
+  _sum: z.lazy(() => NestedBigIntNullableFilterSchema).optional(),
+  _min: z.lazy(() => NestedBigIntNullableFilterSchema).optional(),
+  _max: z.lazy(() => NestedBigIntNullableFilterSchema).optional(),
+}).strict()

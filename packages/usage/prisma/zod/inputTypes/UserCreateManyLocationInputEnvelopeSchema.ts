@@ -3,5 +3,6 @@ import * as PrismaClient from '@prisma/client';
 import { UserCreateManyLocationInputSchema } from './UserCreateManyLocationInputSchema';
 
 export const UserCreateManyLocationInputEnvelopeSchema: z.ZodType<PrismaClient.Prisma.UserCreateManyLocationInputEnvelope> = z.object({
-	data: 	skipDuplicates: z.boolean().optional(),
-}).strict();
+  data: z.lazy(() => UserCreateManyLocationInputSchema).array(),
+  skipDuplicates: z.boolean().optional(),
+}).strict()

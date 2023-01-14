@@ -8,4 +8,12 @@ import { EnumSecondEnumWithAggregatesFilterSchema } from './EnumSecondEnumWithAg
 import { SecondEnumSchema } from './SecondEnumSchema';
 
 export const ProfileScalarWhereWithAggregatesInputSchema: z.ZodType<PrismaClient.Prisma.ProfileScalarWhereWithAggregatesInput> = z.object({
-	AND: z.union([  ]).optional(),	OR: 	NOT: z.union([  ]).optional(),	id: z.union([ z.number().optional() ]).optional(),	bio: z.union([ z.string().optional() ]).optional(),	userId: z.union([ z.string().optional() ]).optional(),	role: 	second: z.union([  ]).optional(),}).strict();
+  AND: z.union([ z.lazy(() => ProfileScalarWhereWithAggregatesInputSchema),z.lazy(() => ProfileScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  OR: z.lazy(() => ProfileScalarWhereWithAggregatesInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => ProfileScalarWhereWithAggregatesInputSchema),z.lazy(() => ProfileScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  bio: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  userId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  role: z.lazy(() => EnumRoleNullableListFilterSchema).optional(),
+  second: z.union([ z.lazy(() => EnumSecondEnumWithAggregatesFilterSchema),z.lazy(() => SecondEnumSchema) ]).optional(),
+}).strict()

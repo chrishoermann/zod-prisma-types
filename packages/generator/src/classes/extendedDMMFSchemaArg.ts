@@ -132,16 +132,41 @@ export class ExtendedDMMFSchemaArg
   }
 
   getImports() {
-    const imports: string[] = [];
+    const imports = this.inputTypes
+      .map((type) => {
+        if (type.isJsonType) {
+          return `import { InputJsonValue } from '../helpers';`;
+        }
 
-    this.inputTypes.forEach((type) => {
-      const importType = type.getZodNonScalarType();
-      if (importType) {
-        imports.push(
-          `import { ${importType}Schema } from './${importType}Schema';`,
-        );
-      }
-    });
+        // get imports for all non scalar types (e.g. enums, models)
+        const importType = type.getZodNonScalarType();
+        const stringImportType = importType?.toString();
+
+        // if (stringImportType?.includes('JsonNullValueInput')) {
+        //   return `import { ${importType}Schema } from '../enums';`;
+        // }
+
+        // if (stringImportType?.includes('JsonNullValueFilter')) {
+        //   return `import { ${importType}Schema } from '../enums';`;
+        // }
+
+        // if (stringImportType?.includes('NullableJsonNullValueInput')) {
+        //   return `import { ${importType}Schema } from '../enums';`;
+        // }
+
+        if (stringImportType?.includes('SortOrder')) {
+          return `import { ${importType}Schema } from '../enums';`;
+        }
+
+        if (importType) {
+          return `import { ${importType}Schema } from './${importType}Schema';`;
+        }
+
+        return;
+      })
+      .filter(
+        (importString): importString is string => importString !== undefined,
+      );
 
     return imports;
   }

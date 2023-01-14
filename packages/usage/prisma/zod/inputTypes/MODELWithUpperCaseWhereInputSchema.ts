@@ -7,4 +7,10 @@ import { EnumMYValueFilterSchema } from './EnumMYValueFilterSchema';
 import { MYValueSchema } from './MYValueSchema';
 
 export const MODELWithUpperCaseWhereInputSchema: z.ZodType<PrismaClient.Prisma.MODELWithUpperCaseWhereInput> = z.object({
-	AND: z.union([  ]).optional(),	OR: 	NOT: z.union([  ]).optional(),	id: z.union([ z.number().optional() ]).optional(),	STRING: z.union([ z.string().optional() ]).optional(),	MYValue: z.union([  ]).optional(),}).strict();
+  AND: z.union([ z.lazy(() => MODELWithUpperCaseWhereInputSchema),z.lazy(() => MODELWithUpperCaseWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => MODELWithUpperCaseWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => MODELWithUpperCaseWhereInputSchema),z.lazy(() => MODELWithUpperCaseWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  STRING: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  MYValue: z.union([ z.lazy(() => EnumMYValueFilterSchema),z.lazy(() => MYValueSchema) ]).optional(),
+}).strict()

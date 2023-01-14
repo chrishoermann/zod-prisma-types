@@ -5,4 +5,6 @@ import { PostCreateWithoutAuthorInputSchema } from './PostCreateWithoutAuthorInp
 import { PostUncheckedCreateWithoutAuthorInputSchema } from './PostUncheckedCreateWithoutAuthorInputSchema';
 
 export const PostCreateOrConnectWithoutAuthorInputSchema: z.ZodType<PrismaClient.Prisma.PostCreateOrConnectWithoutAuthorInput> = z.object({
-	where: 	create: z.union([  ]),}).strict();
+  where: z.lazy(() => PostWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => PostCreateWithoutAuthorInputSchema),z.lazy(() => PostUncheckedCreateWithoutAuthorInputSchema) ]),
+}).strict()

@@ -5,4 +5,6 @@ import { PostUpdateWithoutAuthorInputSchema } from './PostUpdateWithoutAuthorInp
 import { PostUncheckedUpdateWithoutAuthorInputSchema } from './PostUncheckedUpdateWithoutAuthorInputSchema';
 
 export const PostUpdateWithWhereUniqueWithoutAuthorInputSchema: z.ZodType<PrismaClient.Prisma.PostUpdateWithWhereUniqueWithoutAuthorInput> = z.object({
-	where: 	data: z.union([  ]),}).strict();
+  where: z.lazy(() => PostWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => PostUpdateWithoutAuthorInputSchema),z.lazy(() => PostUncheckedUpdateWithoutAuthorInputSchema) ]),
+}).strict()

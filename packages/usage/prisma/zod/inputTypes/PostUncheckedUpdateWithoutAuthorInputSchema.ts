@@ -8,8 +8,9 @@ import { PostUpdateanotherEnumInputSchema } from './PostUpdateanotherEnumInputSc
 import { AnotherEnumSchema } from './AnotherEnumSchema';
 
 export const PostUncheckedUpdateWithoutAuthorInputSchema: z.ZodType<PrismaClient.Prisma.PostUncheckedUpdateWithoutAuthorInput> = z.object({
-	id: z.union([ z.number().optional(), 
- ]).optional(),	title: z.union([ z.string().optional(), 
- ]).optional(),	content: z.union([ z.string().optional().nullable(), 
- ]).optional().nullable(),	published: z.union([ z.boolean().optional(), 
- ]).optional(),	anotherEnum: z.union([  ]).optional(),}).strict();
+  id: z.union([ z.number(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  content: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  published: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  anotherEnum: z.union([ z.lazy(() => PostUpdateanotherEnumInputSchema),z.lazy(() => AnotherEnumSchema).array() ]).optional(),
+}).strict()

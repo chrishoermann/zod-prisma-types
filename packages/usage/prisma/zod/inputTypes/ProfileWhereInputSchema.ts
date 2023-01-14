@@ -10,4 +10,13 @@ import { EnumSecondEnumFilterSchema } from './EnumSecondEnumFilterSchema';
 import { SecondEnumSchema } from './SecondEnumSchema';
 
 export const ProfileWhereInputSchema: z.ZodType<PrismaClient.Prisma.ProfileWhereInput> = z.object({
-	AND: z.union([  ]).optional(),	OR: 	NOT: z.union([  ]).optional(),	id: z.union([ z.number().optional() ]).optional(),	bio: z.union([ z.string().optional() ]).optional(),	user: z.union([  ]).optional(),	userId: z.union([ z.string().optional() ]).optional(),	role: 	second: z.union([  ]).optional(),}).strict();
+  AND: z.union([ z.lazy(() => ProfileWhereInputSchema),z.lazy(() => ProfileWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => ProfileWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => ProfileWhereInputSchema),z.lazy(() => ProfileWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  bio: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  user: z.union([ z.lazy(() => UserRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
+  userId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  role: z.lazy(() => EnumRoleNullableListFilterSchema).optional(),
+  second: z.union([ z.lazy(() => EnumSecondEnumFilterSchema),z.lazy(() => SecondEnumSchema) ]).optional(),
+}).strict()

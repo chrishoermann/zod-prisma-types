@@ -5,4 +5,10 @@ import { StringWithAggregatesFilterSchema } from './StringWithAggregatesFilterSc
 import { IntWithAggregatesFilterSchema } from './IntWithAggregatesFilterSchema';
 
 export const WithDefaultValidatorsScalarWhereWithAggregatesInputSchema: z.ZodType<PrismaClient.Prisma.WithDefaultValidatorsScalarWhereWithAggregatesInput> = z.object({
-	AND: z.union([  ]).optional(),	OR: 	NOT: z.union([  ]).optional(),	id: z.union([ z.string().optional() ]).optional(),	idTwo: z.union([ z.string().optional() ]).optional(),	integer: z.union([ z.number().optional() ]).optional(),}).strict();
+  AND: z.union([ z.lazy(() => WithDefaultValidatorsScalarWhereWithAggregatesInputSchema),z.lazy(() => WithDefaultValidatorsScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  OR: z.lazy(() => WithDefaultValidatorsScalarWhereWithAggregatesInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => WithDefaultValidatorsScalarWhereWithAggregatesInputSchema),z.lazy(() => WithDefaultValidatorsScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  idTwo: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  integer: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+}).strict()

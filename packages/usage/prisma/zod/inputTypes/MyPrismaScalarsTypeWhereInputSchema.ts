@@ -18,4 +18,26 @@ import { BytesFilterSchema } from './BytesFilterSchema';
 import { BytesNullableFilterSchema } from './BytesNullableFilterSchema';
 
 export const MyPrismaScalarsTypeWhereInputSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeWhereInput> = z.object({
-	AND: z.union([  ]).optional(),	OR: 	NOT: z.union([  ]).optional(),	id: z.union([ z.string().optional() ]).optional(),	string: z.union([ z.string().optional().nullable() ]).optional().nullable(),	bic: z.union([ z.string().optional().nullable() ]).optional().nullable(),	float: z.union([ z.number().optional() ]).optional(),	floatOpt: z.union([ z.number().optional().nullable() ]).optional().nullable(),	int: z.union([ z.number().optional() ]).optional(),	intOpt: z.union([ z.number().optional().nullable() ]).optional().nullable(),	decimal: z.union([  ]).optional(),	decimalOpt: z.union([  ]).optional().nullable(),	date: z.union([ z.date().optional() ]).optional(),	dateOpt: z.union([ z.date().optional().nullable() ]).optional().nullable(),	bigIntOpt: z.union([ z.bigint().optional().nullable() ]).optional().nullable(),	json: 	jsonOpt: 	bytes: z.union([  ]).optional(),	bytesOpt: z.union([  ]).optional().nullable(),	custom: z.union([ z.string().optional().nullable() ]).optional().nullable(),	exclude: z.union([ z.string().optional().nullable() ]).optional().nullable(),	updatedAt: z.union([ z.date().optional() ]).optional(),}).strict();
+  AND: z.union([ z.lazy(() => MyPrismaScalarsTypeWhereInputSchema),z.lazy(() => MyPrismaScalarsTypeWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => MyPrismaScalarsTypeWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => MyPrismaScalarsTypeWhereInputSchema),z.lazy(() => MyPrismaScalarsTypeWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  string: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  bic: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  float: z.union([ z.lazy(() => FloatFilterSchema),z.number() ]).optional(),
+  floatOpt: z.union([ z.lazy(() => FloatNullableFilterSchema),z.number() ]).optional().nullable(),
+  int: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  intOpt: z.union([ z.lazy(() => IntNullableFilterSchema),z.number() ]).optional().nullable(),
+  decimal: z.union([ z.lazy(() => DecimalFilterSchema),z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }) ]).optional(),
+  decimalOpt: z.union([ z.lazy(() => DecimalNullableFilterSchema),z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }) ]).optional().nullable(),
+  date: z.union([ z.lazy(() => DateTimeFilterSchema),z.date() ]).optional(),
+  dateOpt: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.date() ]).optional().nullable(),
+  bigIntOpt: z.union([ z.lazy(() => BigIntNullableFilterSchema),z.bigint() ]).optional().nullable(),
+  json: z.lazy(() => JsonFilterSchema).optional(),
+  jsonOpt: z.lazy(() => JsonNullableFilterSchema).optional(),
+  bytes: z.union([ z.lazy(() => BytesFilterSchema),z.instanceof(Buffer) ]).optional(),
+  bytesOpt: z.union([ z.lazy(() => BytesNullableFilterSchema),z.instanceof(Buffer) ]).optional().nullable(),
+  custom: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  exclude: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.date() ]).optional(),
+}).strict()

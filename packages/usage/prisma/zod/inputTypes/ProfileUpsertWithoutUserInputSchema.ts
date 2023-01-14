@@ -6,4 +6,6 @@ import { ProfileCreateWithoutUserInputSchema } from './ProfileCreateWithoutUserI
 import { ProfileUncheckedCreateWithoutUserInputSchema } from './ProfileUncheckedCreateWithoutUserInputSchema';
 
 export const ProfileUpsertWithoutUserInputSchema: z.ZodType<PrismaClient.Prisma.ProfileUpsertWithoutUserInput> = z.object({
-	update: z.union([  ]),	create: z.union([  ]),}).strict();
+  update: z.union([ z.lazy(() => ProfileUpdateWithoutUserInputSchema),z.lazy(() => ProfileUncheckedUpdateWithoutUserInputSchema) ]),
+  create: z.union([ z.lazy(() => ProfileCreateWithoutUserInputSchema),z.lazy(() => ProfileUncheckedCreateWithoutUserInputSchema) ]),
+}).strict()

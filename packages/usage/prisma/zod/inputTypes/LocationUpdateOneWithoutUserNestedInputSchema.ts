@@ -9,6 +9,11 @@ import { LocationUpdateWithoutUserInputSchema } from './LocationUpdateWithoutUse
 import { LocationUncheckedUpdateWithoutUserInputSchema } from './LocationUncheckedUpdateWithoutUserInputSchema';
 
 export const LocationUpdateOneWithoutUserNestedInputSchema: z.ZodType<PrismaClient.Prisma.LocationUpdateOneWithoutUserNestedInput> = z.object({
-	create: z.union([  ]).optional(),	connectOrCreate: 	upsert: 	disconnect: z.boolean().optional(),
-	delete: z.boolean().optional(),
-	connect: 	update: z.union([  ]).optional(),}).strict();
+  create: z.union([ z.lazy(() => LocationCreateWithoutUserInputSchema),z.lazy(() => LocationUncheckedCreateWithoutUserInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => LocationCreateOrConnectWithoutUserInputSchema).optional(),
+  upsert: z.lazy(() => LocationUpsertWithoutUserInputSchema).optional(),
+  disconnect: z.boolean().optional(),
+  delete: z.boolean().optional(),
+  connect: z.lazy(() => LocationWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => LocationUpdateWithoutUserInputSchema),z.lazy(() => LocationUncheckedUpdateWithoutUserInputSchema) ]).optional(),
+}).strict()

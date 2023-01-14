@@ -5,4 +5,11 @@ import { StringFilterSchema } from './StringFilterSchema';
 import { StringNullableFilterSchema } from './StringNullableFilterSchema';
 
 export const ModelWithCommentsWhereInputSchema: z.ZodType<PrismaClient.Prisma.ModelWithCommentsWhereInput> = z.object({
-	AND: z.union([  ]).optional(),	OR: 	NOT: z.union([  ]).optional(),	id: z.union([ z.string().optional() ]).optional(),	string: z.union([ z.string().optional().nullable() ]).optional().nullable(),	omitField: z.union([ z.string().optional().nullable() ]).optional().nullable(),	omitRequired: z.union([ z.string().optional() ]).optional(),}).strict();
+  AND: z.union([ z.lazy(() => ModelWithCommentsWhereInputSchema),z.lazy(() => ModelWithCommentsWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => ModelWithCommentsWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => ModelWithCommentsWhereInputSchema),z.lazy(() => ModelWithCommentsWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  string: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  omitField: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  omitRequired: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+}).strict()

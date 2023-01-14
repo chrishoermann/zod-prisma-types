@@ -1,14 +1,10 @@
-import { DirectoryHelper } from '../classes';
-// import { ZOD_IMPORT_STATEMENT } from '../constants';
+import { FileWriter } from '../classes';
 import { CreateFiles } from '../types';
-// import {
-//   multiFileWriter,
-//   // writeConstStatement,
-//   // writeNonScalarType,
-//   // writeSpecialType,
-//   // writeScalarType,
-// } from '../utils';
-import fs from 'fs';
+import {
+  writeNonScalarType,
+  writeScalarType,
+  writeSpecialType,
+} from '../utils';
 
 /////////////////////////////////////////////////
 // FUNCTION
@@ -16,351 +12,190 @@ import fs from 'fs';
 
 export const writeInputTypeFiles: CreateFiles = async ({
   outputPath,
-  project,
   extendedDMMF,
 }) => {
-  const subPath = 'inputTypes';
+  // WRITE INDEX FILE
+  // ------------------------------------------------------------
+  const indexFileWriter = new FileWriter();
 
-  const path = DirectoryHelper.createDir(`${outputPath}/${subPath}`);
+  const path = indexFileWriter.createPath(`${outputPath}/inputTypes`);
 
   if (path) {
-    // WRITE INDEX FILE
+    indexFileWriter.createFile(`${path}/index.ts`, (writer) => {
+      extendedDMMF.schema.inputObjectTypes.prisma.forEach((inputType) => {
+        writer.writeLine(
+          `export{ ${inputType.name}Schema } from './${inputType.name}Schema'`,
+        );
+      });
+      extendedDMMF.schema.enumTypes.prisma.forEach(({ name }) => {
+        writer.writeLine(`export{ ${name}Schema } from './${name}Schema'`);
+      });
+      extendedDMMF.datamodel.enums.forEach(({ name }) => {
+        writer.writeLine(`export{ ${name}Schema } from './${name}Schema'`);
+      });
+    });
+
+    // WRITE ENUMS
     // ------------------------------------------------------------
-    const indexSource = project.createSourceFile(`${path}/index.ts`, {
-      statements: [
-        ...extendedDMMF.schema.inputObjectTypes.prisma.map((inputType) => {
-          return `export{ ${inputType.name}Schema } from './${inputType.name}Schema'`;
-        }),
-      ],
+
+    extendedDMMF.schema.enumTypes.prisma.forEach(
+      ({ useNativeEnum, values, name }) => {
+        const fileWriter = new FileWriter();
+
+        fileWriter.createFile(`${path}/${name}Schema.ts`, (writer) => {
+          if (useNativeEnum) {
+            writer.writeLine(`import { z } from 'zod'`);
+            writer.writeLine(
+              `import * as PrismaClient from '${extendedDMMF.generatorConfig.prismaClientPath}'`,
+            );
+
+            writer.blankLine();
+
+            writer.writeLine(
+              `export const ${name}Schema = z.nativeEnum(PrismaClient.Prisma.${name})`,
+            );
+          } else {
+            writer.writeLine(`import { z } from 'zod'`);
+            writer.conditionalWrite(
+              name.includes('NullableJson'),
+              `import { transformJsonNull } from '../utils'`,
+            );
+
+            writer.blankLine();
+
+            writer.writeLine(`export const ${name}Schema = z.enum([`);
+            values.forEach((value) => {
+              writer.writeLine(`'${value}',`);
+            });
+            writer.writeLine(`])`);
+            writer.conditionalWrite(
+              name.includes('Nullable'),
+              `.transform((v) => transformJsonNull(v))`,
+            );
+          }
+        });
+      },
+    );
+
+    extendedDMMF.datamodel.enums.forEach(({ name }) => {
+      const fileWriter = new FileWriter();
+
+      fileWriter.createFile(`${path}/${name}Schema.ts`, (writer) => {
+        writer.writeLine(`import { z } from 'zod'`);
+        writer.writeLine(
+          `import { ${name} } from '${extendedDMMF.generatorConfig.prismaClientPath}'`,
+        );
+
+        writer.blankLine();
+
+        writer.writeLine(`export const ${name}Schema = z.nativeEnum(${name})`);
+      });
     });
 
-    indexSource.organizeImports();
-
-    indexSource.formatText({
-      indentSize: 2,
-      convertTabsToSpaces: true,
-      ensureNewLineAtEndOfFile: true,
-    });
-
-    // WRITE INDEX FILE
+    // WRITE INPUT TYPE FILES
     // ------------------------------------------------------------
 
     extendedDMMF.schema.inputObjectTypes.prisma.forEach((inputType) => {
+      const fileWriter = new FileWriter();
+
       const imports = [
         `import { z } from 'zod';`,
         `import * as PrismaClient from '@prisma/client';`,
         ...inputType.imports,
       ];
 
-      // const joinedImports = imports.join(`\n`);
+      fileWriter.createFile(`${path}/${inputType.name}Schema.ts`, (writer) => {
+        imports.forEach((v) => writer.write(`${v}`).newLine());
 
-      // console.log(joinedImports);
+        const type = inputType.hasOmitFields()
+          ? `z.ZodType<Omit<PrismaClient.Prisma.${
+              inputType.name
+            }, ${inputType.getOmitFieldsUnion()}>>`
+          : `z.ZodType<PrismaClient.Prisma.${inputType.name}>`;
 
-      const writer = fs.createWriteStream(
-        `${path}/${inputType.name}Schema.ts`,
-        {
-          flags: 'a',
-        },
-      );
+        writer
+          .blankLine()
+          .write(`export const ${inputType.name}Schema: ${type} = `);
 
-      imports.forEach((v) => writer.write(`${v}\n`));
-      writer.write(`\n`);
+        writer.write(`z.object(`);
+        writer.inlineBlock(() => {
+          inputType.fields.forEach((field) => {
+            const {
+              isNullable,
+              isOptional,
+              zodCustomErrors,
+              zodValidatorString,
+              zodCustomValidatorString,
+            } = field;
 
-      const type = inputType.hasOmitFields()
-        ? `z.ZodType<Omit<PrismaClient.Prisma.${
-            inputType.name
-          }, ${inputType.getOmitFieldsUnion()}>>`
-        : `z.ZodType<PrismaClient.Prisma.${inputType.name}>`;
-
-      writer.write(
-        `export const ${inputType.name}Schema: ${type} = z.object({\n`,
-      );
-
-      inputType.fields.forEach((field) => {
-        writer.write(`\t`);
-        if (field.zodOmitField) {
-          writer.write(`// omitted: `);
-        }
-
-        writer.write(`${field.name}: `);
-
-        if (field.hasMultipleTypes) {
-          writer.write(`z.union([ `);
-
-          field.inputTypes.forEach((inputType, idx) => {
-            const writeComma = idx !== field.inputTypes.length - 1;
-
-            const zodType = inputType.getZodScalarType();
-            if (!zodType) return;
-
-            if (field.zodCustomValidatorString) {
-              if (inputType.generatorConfig.addInputTypeValidation) {
-                writer.write(field.zodCustomValidatorString);
-              } else {
-                writer.write(`z.${zodType}()`);
-              }
-
-              if (inputType.isList) {
-                writer.write(`.array()`);
-              }
-
-              if (field.isOptional) {
-                writer.write(`.optional()`);
-              }
-
-              if (field.isNullable) {
-                writer.write(`.nullable()`);
-              }
-
-              if (writeComma) {
-                writer.write(`, `);
-              }
-            } else {
-              writer.write(`z.${zodType}(`);
-
-              if (
-                extendedDMMF.addInputTypeValidation() &&
-                !!field.zodCustomErrors
-              ) {
-                writer.write(field.zodCustomErrors);
-              }
-
-              writer.write(`)`);
-
-              if (
-                extendedDMMF.addInputTypeValidation() &&
-                !!field.zodValidatorString
-              ) {
-                writer.write(field.zodValidatorString);
-              }
-
-              if (inputType.isList) {
-                writer.write(`.array()`);
-              }
-
-              if (field.isOptional) {
-                writer.write(`.optional()`);
-              }
-
-              if (field.isNullable) {
-                writer.write(`.nullable()`);
-              }
-
-              if (writeComma) {
-                writer.write(`, \n`);
-              }
+            if (field.zodOmitField) {
+              writer.write(`// omitted: `);
             }
 
-            // writeNonScalarType(writer, {
-            //   inputType,
-            //   writeComma,
-            // });
+            writer.write(`${field.name}: `);
 
-            // writeSpecialType(writer, {
-            //   inputType,
-            //   zodCustomErrors,
-            //   zodCustomValidatorString,
-            //   writeComma,
-            //   writeValidation: dmmf.addInputTypeValidation(),
-            // });
+            if (field.hasMultipleTypes) {
+              writer.write(`z.union([ `);
+
+              field.inputTypes.forEach((inputType, idx) => {
+                const writeComma = idx !== field.inputTypes.length - 1;
+                writeScalarType(writer, {
+                  inputType,
+                  zodCustomErrors,
+                  zodValidatorString,
+                  zodCustomValidatorString,
+                  writeComma,
+                  writeValidation: extendedDMMF.addInputTypeValidation(),
+                });
+                writeNonScalarType(writer, {
+                  inputType,
+                  writeComma,
+                });
+                writeSpecialType(writer, {
+                  inputType,
+                  zodCustomErrors,
+                  zodCustomValidatorString,
+                  writeComma,
+                  writeValidation: extendedDMMF.addInputTypeValidation(),
+                });
+              });
+
+              writer
+                .write(` ])`)
+                .conditionalWrite(!field.isRequired, `.optional()`)
+                .conditionalWrite(field.isNullable, `.nullable()`)
+                .write(`,`);
+            } else {
+              const inputType = field.inputTypes[0];
+              writeScalarType(writer, {
+                inputType,
+                isNullable,
+                isOptional,
+                zodCustomErrors,
+                zodValidatorString,
+                zodCustomValidatorString,
+                writeValidation: extendedDMMF.addInputTypeValidation(),
+              });
+              writeNonScalarType(writer, {
+                inputType,
+                isNullable,
+                isOptional,
+              });
+              writeSpecialType(writer, {
+                inputType,
+                zodCustomErrors,
+                zodCustomValidatorString,
+                isNullable,
+                isOptional,
+                writeValidation: extendedDMMF.addInputTypeValidation(),
+              });
+            }
+
+            writer.newLine();
           });
-
-          writer.write(` ])`);
-          !field.isRequired && writer.write(`.optional()`);
-          field.isNullable && writer.write(`.nullable()`);
-          writer.write(`,`);
-        } else {
-          const inputType = field.inputTypes[0];
-          const zodType = inputType.getZodScalarType();
-          if (!zodType) return;
-
-          if (field.zodCustomValidatorString) {
-            if (inputType.generatorConfig.addInputTypeValidation) {
-              writer.write(field.zodCustomValidatorString);
-            } else {
-              writer.write(`z.${zodType}()`);
-            }
-
-            if (inputType.isList) {
-              writer.write(`.array()`);
-            }
-
-            if (field.isOptional) {
-              writer.write(`.optional()`);
-            }
-
-            if (field.isNullable) {
-              writer.write(`.nullable()`);
-            }
-
-            writer.write(`,\n`);
-          } else {
-            writer.write(`z.${zodType}(`);
-
-            if (
-              extendedDMMF.addInputTypeValidation() &&
-              !!field.zodCustomErrors
-            ) {
-              writer.write(field.zodCustomErrors);
-            }
-
-            writer.write(`)`);
-
-            if (
-              extendedDMMF.addInputTypeValidation() &&
-              !!field.zodValidatorString
-            ) {
-              writer.write(field.zodValidatorString);
-            }
-
-            if (inputType.isList) {
-              writer.write(`.array()`);
-            }
-
-            if (field.isOptional) {
-              writer.write(`.optional()`);
-            }
-
-            if (field.isNullable) {
-              writer.write(`.nullable()`);
-            }
-
-            writer.write(`,\n`);
-          }
-        }
+        });
+        writer.write(`)`).write(`.strict()`);
       });
-
-      writer.write('}).strict();\n');
     });
   }
-
-  // multiFileWriter({
-  //   ...options,
-  //   subPath: 'inputTypes',
-  //   useWriter: ({ dmmf, writeFile }) => {
-  //     dmmf.schema.inputObjectTypes.prisma.forEach((inputType) => {
-  //       // when an omit field is present, the type is not a native prism type
-  //       // but a zod union of the native type and an omit type
-  //       // const type = inputType.hasOmitFields()
-  //       //   ? `z.ZodType<Omit<PrismaClient.Prisma.${
-  //       //       inputType.name
-  //       //     }, ${inputType.getOmitFieldsUnion()}>>`
-  //       //   : `z.ZodType<PrismaClient.Prisma.${inputType.name}>`;
-
-  //       writeFile({
-  //         name: inputType.name,
-  //         writeStatement: (source) => {
-  //           // add basic imports
-  //           source.addImportDeclarations([ZOD_IMPORT_STATEMENT]);
-
-  //           // const imports = inputType.getImports();
-
-  //           console.log({ imports: inputType.imports, name: inputType.name });
-
-  //           // add custom and automatic imports
-  //           // if (imports.size > 0) {
-  //           //   source.addStatements([...imports]);
-  //           // }
-
-  //           // source.addStatements([
-  //           //   writeConstStatement({
-  //           //     leadingTrivia: (writer) => writer.newLine(),
-  //           //     declarations: [
-  //           //       {
-  //           //         name: `${inputType.formattedNames.original}Schema`,
-  //           //         type,
-  //           //         initializer: (writer) => {
-  //           //           writer.write(`z.object(`);
-  //           //           writer.inlineBlock(() => {
-  //           //             inputType.fields.forEach((field) => {
-  //           //               const {
-  //           //                 isNullable,
-  //           //                 isOptional,
-  //           //                 zodCustomErrors,
-  //           //                 zodValidatorString,
-  //           //                 zodCustomValidatorString,
-  //           //               } = field;
-
-  //           //               if (field.zodOmitField) {
-  //           //                 writer.write(`// omitted: `);
-  //           //               }
-
-  //           //               writer.write(`${field.name}: `);
-
-  //           //               if (field.hasMultipleTypes) {
-  //           //                 writer.write(`z.union([ `);
-
-  //           //                 field.inputTypes.forEach((inputType, idx) => {
-  //           //                   const writeComma =
-  //           //                     idx !== field.inputTypes.length - 1;
-  //           //                   writeScalarType(writer, {
-  //           //                     inputType,
-  //           //                     zodCustomErrors,
-  //           //                     zodValidatorString,
-  //           //                     zodCustomValidatorString,
-  //           //                     writeComma,
-  //           //                     writeValidation: dmmf.addInputTypeValidation(),
-  //           //                   });
-  //           //                   writeNonScalarType(writer, {
-  //           //                     inputType,
-  //           //                     writeComma,
-  //           //                   });
-
-  //           //                   writeSpecialType(writer, {
-  //           //                     inputType,
-  //           //                     zodCustomErrors,
-  //           //                     zodCustomValidatorString,
-  //           //                     writeComma,
-  //           //                     writeValidation: dmmf.addInputTypeValidation(),
-  //           //                   });
-  //           //                 });
-
-  //           //                 writer
-  //           //                   .write(` ])`)
-  //           //                   .conditionalWrite(
-  //           //                     !field.isRequired,
-  //           //                     `.optional()`,
-  //           //                   )
-  //           //                   .conditionalWrite(field.isNullable, `.nullable()`)
-  //           //                   .write(`,`);
-  //           //               } else {
-  //           //                 const inputType = field.inputTypes[0];
-  //           //                 writeScalarType(writer, {
-  //           //                   inputType,
-  //           //                   isNullable,
-  //           //                   isOptional,
-  //           //                   zodCustomErrors,
-  //           //                   zodValidatorString,
-  //           //                   zodCustomValidatorString,
-  //           //                   writeValidation: dmmf.addInputTypeValidation(),
-  //           //                 });
-  //           //                 writeNonScalarType(writer, {
-  //           //                   inputType,
-  //           //                   isNullable,
-  //           //                   isOptional,
-  //           //                 });
-  //           //                 writeSpecialType(writer, {
-  //           //                   inputType,
-  //           //                   zodCustomErrors,
-  //           //                   zodCustomValidatorString,
-  //           //                   isNullable,
-  //           //                   isOptional,
-  //           //                   writeValidation: dmmf.addInputTypeValidation(),
-  //           //                 });
-  //           //               }
-
-  //           //               writer.newLine();
-  //           //             });
-  //           //           });
-  //           //           writer.write(`)`).write(`.strict()`);
-  //           //         },
-  //           //       },
-  //           //     ],
-  //           //   }),
-  //           // ]);
-  //         },
-  //       });
-  //     });
-  //   },
-  // });
 };

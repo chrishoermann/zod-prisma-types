@@ -5,4 +5,6 @@ import { UserUpdateWithoutLocationInputSchema } from './UserUpdateWithoutLocatio
 import { UserUncheckedUpdateWithoutLocationInputSchema } from './UserUncheckedUpdateWithoutLocationInputSchema';
 
 export const UserUpdateWithWhereUniqueWithoutLocationInputSchema: z.ZodType<PrismaClient.Prisma.UserUpdateWithWhereUniqueWithoutLocationInput> = z.object({
-	where: 	data: z.union([  ]),}).strict();
+  where: z.lazy(() => UserWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => UserUpdateWithoutLocationInputSchema),z.lazy(() => UserUncheckedUpdateWithoutLocationInputSchema) ]),
+}).strict()

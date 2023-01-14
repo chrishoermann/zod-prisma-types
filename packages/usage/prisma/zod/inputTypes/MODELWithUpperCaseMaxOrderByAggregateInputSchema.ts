@@ -1,6 +1,9 @@
 import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
-import { SortOrderSchema } from './SortOrderSchema';
+import { SortOrderSchema } from '../enums';
 
 export const MODELWithUpperCaseMaxOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.MODELWithUpperCaseMaxOrderByAggregateInput> = z.object({
-	id: 	STRING: 	MYValue: }).strict();
+  id: z.lazy(() => SortOrderSchema).optional(),
+  STRING: z.lazy(() => SortOrderSchema).optional(),
+  MYValue: z.lazy(() => SortOrderSchema).optional(),
+}).strict()

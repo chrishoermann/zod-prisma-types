@@ -65,6 +65,7 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
     this.generatorConfig = generatorConfig;
     this.rootQueryType = schema.rootQueryType;
     this.rootMutationType = schema.rootMutationType;
+    this.enumTypes = this._setExtendedEnumTypes(schema);
     this.inputObjectTypes = this._setExtendedInputObjectTypes(
       schema,
       datamodel,
@@ -73,7 +74,6 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
       schema,
       datamodel,
     );
-    this.enumTypes = this._setExtendedEnumTypes(schema);
     this.fieldRefTypes = schema.fieldRefTypes;
     this.hasJsonTypes = this._setHasJsonTypes();
     this.hasBytesTypes = this._setHasBytesTypes();

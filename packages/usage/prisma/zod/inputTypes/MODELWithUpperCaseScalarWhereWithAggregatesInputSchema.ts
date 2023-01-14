@@ -7,4 +7,10 @@ import { EnumMYValueWithAggregatesFilterSchema } from './EnumMYValueWithAggregat
 import { MYValueSchema } from './MYValueSchema';
 
 export const MODELWithUpperCaseScalarWhereWithAggregatesInputSchema: z.ZodType<PrismaClient.Prisma.MODELWithUpperCaseScalarWhereWithAggregatesInput> = z.object({
-	AND: z.union([  ]).optional(),	OR: 	NOT: z.union([  ]).optional(),	id: z.union([ z.number().optional() ]).optional(),	STRING: z.union([ z.string().optional() ]).optional(),	MYValue: z.union([  ]).optional(),}).strict();
+  AND: z.union([ z.lazy(() => MODELWithUpperCaseScalarWhereWithAggregatesInputSchema),z.lazy(() => MODELWithUpperCaseScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  OR: z.lazy(() => MODELWithUpperCaseScalarWhereWithAggregatesInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => MODELWithUpperCaseScalarWhereWithAggregatesInputSchema),z.lazy(() => MODELWithUpperCaseScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  STRING: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  MYValue: z.union([ z.lazy(() => EnumMYValueWithAggregatesFilterSchema),z.lazy(() => MYValueSchema) ]).optional(),
+}).strict()

@@ -6,4 +6,7 @@ import { LocationCreateOrConnectWithoutUserInputSchema } from './LocationCreateO
 import { LocationWhereUniqueInputSchema } from './LocationWhereUniqueInputSchema';
 
 export const LocationCreateNestedOneWithoutUserInputSchema: z.ZodType<PrismaClient.Prisma.LocationCreateNestedOneWithoutUserInput> = z.object({
-	create: z.union([  ]).optional(),	connectOrCreate: 	connect: }).strict();
+  create: z.union([ z.lazy(() => LocationCreateWithoutUserInputSchema),z.lazy(() => LocationUncheckedCreateWithoutUserInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => LocationCreateOrConnectWithoutUserInputSchema).optional(),
+  connect: z.lazy(() => LocationWhereUniqueInputSchema).optional(),
+}).strict()

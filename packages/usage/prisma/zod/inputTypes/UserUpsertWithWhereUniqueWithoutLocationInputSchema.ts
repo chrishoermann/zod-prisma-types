@@ -7,4 +7,7 @@ import { UserCreateWithoutLocationInputSchema } from './UserCreateWithoutLocatio
 import { UserUncheckedCreateWithoutLocationInputSchema } from './UserUncheckedCreateWithoutLocationInputSchema';
 
 export const UserUpsertWithWhereUniqueWithoutLocationInputSchema: z.ZodType<PrismaClient.Prisma.UserUpsertWithWhereUniqueWithoutLocationInput> = z.object({
-	where: 	update: z.union([  ]),	create: z.union([  ]),}).strict();
+  where: z.lazy(() => UserWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => UserUpdateWithoutLocationInputSchema),z.lazy(() => UserUncheckedUpdateWithoutLocationInputSchema) ]),
+  create: z.union([ z.lazy(() => UserCreateWithoutLocationInputSchema),z.lazy(() => UserUncheckedCreateWithoutLocationInputSchema) ]),
+}).strict()

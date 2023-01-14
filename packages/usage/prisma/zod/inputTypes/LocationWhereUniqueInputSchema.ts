@@ -3,4 +3,5 @@ import * as PrismaClient from '@prisma/client';
 import { LocationLatLngCompoundUniqueInputSchema } from './LocationLatLngCompoundUniqueInputSchema';
 
 export const LocationWhereUniqueInputSchema: z.ZodType<PrismaClient.Prisma.LocationWhereUniqueInput> = z.object({
-	lat_lng: }).strict();
+  lat_lng: z.lazy(() => LocationLatLngCompoundUniqueInputSchema).optional(),
+}).strict()

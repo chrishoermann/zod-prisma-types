@@ -3,4 +3,5 @@ import * as PrismaClient from '@prisma/client';
 import { SecondEnumSchema } from './SecondEnumSchema';
 
 export const EnumSecondEnumFieldUpdateOperationsInputSchema: z.ZodType<PrismaClient.Prisma.EnumSecondEnumFieldUpdateOperationsInput> = z.object({
-	set: }).strict();
+  set: z.lazy(() => SecondEnumSchema).optional(),
+}).strict()

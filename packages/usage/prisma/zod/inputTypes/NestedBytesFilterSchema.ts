@@ -3,4 +3,8 @@ import * as PrismaClient from '@prisma/client';
 import { NestedBytesFilterSchema } from './NestedBytesFilterSchema';
 
 export const NestedBytesFilterSchema: z.ZodType<PrismaClient.Prisma.NestedBytesFilter> = z.object({
-	equals: 	in: 	notIn: 	not: z.union([  ]).optional(),}).strict();
+  equals: z.instanceof(Buffer).optional(),
+  in: z.instanceof(Buffer).array().optional(),
+  notIn: z.instanceof(Buffer).array().optional(),
+  not: z.union([ z.instanceof(Buffer),z.lazy(() => NestedBytesFilterSchema) ]).optional(),
+}).strict()

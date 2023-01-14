@@ -7,5 +7,7 @@ import { SecondEnumSchema } from './SecondEnumSchema';
 import { EnumSecondEnumFieldUpdateOperationsInputSchema } from './EnumSecondEnumFieldUpdateOperationsInputSchema';
 
 export const ProfileUpdateWithoutUserInputSchema: z.ZodType<PrismaClient.Prisma.ProfileUpdateWithoutUserInput> = z.object({
-	bio: z.union([ z.string().optional(), 
- ]).optional(),	role: z.union([  ]).optional(),	second: z.union([  ]).optional(),}).strict();
+  bio: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  role: z.union([ z.lazy(() => ProfileUpdateroleInputSchema),z.lazy(() => RoleSchema).array() ]).optional(),
+  second: z.union([ z.lazy(() => SecondEnumSchema),z.lazy(() => EnumSecondEnumFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict()

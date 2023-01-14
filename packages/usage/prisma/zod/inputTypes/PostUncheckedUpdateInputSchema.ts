@@ -8,9 +8,10 @@ import { PostUpdateanotherEnumInputSchema } from './PostUpdateanotherEnumInputSc
 import { AnotherEnumSchema } from './AnotherEnumSchema';
 
 export const PostUncheckedUpdateInputSchema: z.ZodType<PrismaClient.Prisma.PostUncheckedUpdateInput> = z.object({
-	id: z.union([ z.number().int().optional(), 
- ]).optional(),	title: z.union([ z.string().optional(), 
- ]).optional(),	content: z.union([ z.string().optional().nullable(), 
- ]).optional().nullable(),	published: z.union([ z.boolean().optional(), 
- ]).optional(),	authorId: z.union([ z.string().optional(), 
- ]).optional(),	anotherEnum: z.union([  ]).optional(),}).strict();
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  content: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  published: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  authorId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  anotherEnum: z.union([ z.lazy(() => PostUpdateanotherEnumInputSchema),z.lazy(() => AnotherEnumSchema).array() ]).optional(),
+}).strict()

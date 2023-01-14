@@ -6,4 +6,7 @@ import { ProfileCreateOrConnectWithoutUserInputSchema } from './ProfileCreateOrC
 import { ProfileWhereUniqueInputSchema } from './ProfileWhereUniqueInputSchema';
 
 export const ProfileUncheckedCreateNestedOneWithoutUserInputSchema: z.ZodType<PrismaClient.Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput> = z.object({
-	create: z.union([  ]).optional(),	connectOrCreate: 	connect: }).strict();
+  create: z.union([ z.lazy(() => ProfileCreateWithoutUserInputSchema),z.lazy(() => ProfileUncheckedCreateWithoutUserInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => ProfileCreateOrConnectWithoutUserInputSchema).optional(),
+  connect: z.lazy(() => ProfileWhereUniqueInputSchema).optional(),
+}).strict()

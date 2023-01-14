@@ -9,4 +9,9 @@ import { UserUpdateWithoutProfileInputSchema } from './UserUpdateWithoutProfileI
 import { UserUncheckedUpdateWithoutProfileInputSchema } from './UserUncheckedUpdateWithoutProfileInputSchema';
 
 export const UserUpdateOneRequiredWithoutProfileNestedInputSchema: z.ZodType<PrismaClient.Prisma.UserUpdateOneRequiredWithoutProfileNestedInput> = z.object({
-	create: z.union([  ]).optional(),	connectOrCreate: 	upsert: 	connect: 	update: z.union([  ]).optional(),}).strict();
+  create: z.union([ z.lazy(() => UserCreateWithoutProfileInputSchema),z.lazy(() => UserUncheckedCreateWithoutProfileInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutProfileInputSchema).optional(),
+  upsert: z.lazy(() => UserUpsertWithoutProfileInputSchema).optional(),
+  connect: z.lazy(() => UserWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => UserUpdateWithoutProfileInputSchema),z.lazy(() => UserUncheckedUpdateWithoutProfileInputSchema) ]).optional(),
+}).strict()

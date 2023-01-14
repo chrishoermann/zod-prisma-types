@@ -3,4 +3,5 @@ import * as PrismaClient from '@prisma/client';
 import { RoleSchema } from './RoleSchema';
 
 export const UserCreateroleInputSchema: z.ZodType<PrismaClient.Prisma.UserCreateroleInput> = z.object({
-	set: }).strict();
+  set: z.lazy(() => RoleSchema).array(),
+}).strict()

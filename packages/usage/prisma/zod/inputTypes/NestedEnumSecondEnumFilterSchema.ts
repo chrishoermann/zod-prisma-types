@@ -4,4 +4,8 @@ import { SecondEnumSchema } from './SecondEnumSchema';
 import { NestedEnumSecondEnumFilterSchema } from './NestedEnumSecondEnumFilterSchema';
 
 export const NestedEnumSecondEnumFilterSchema: z.ZodType<PrismaClient.Prisma.NestedEnumSecondEnumFilter> = z.object({
-	equals: 	in: 	notIn: 	not: z.union([  ]).optional(),}).strict();
+  equals: z.lazy(() => SecondEnumSchema).optional(),
+  in: z.lazy(() => SecondEnumSchema).array().optional(),
+  notIn: z.lazy(() => SecondEnumSchema).array().optional(),
+  not: z.union([ z.lazy(() => SecondEnumSchema),z.lazy(() => NestedEnumSecondEnumFilterSchema) ]).optional(),
+}).strict()

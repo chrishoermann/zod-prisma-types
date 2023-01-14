@@ -8,4 +8,13 @@ import { BoolFilterSchema } from './BoolFilterSchema';
 import { EnumAnotherEnumNullableListFilterSchema } from './EnumAnotherEnumNullableListFilterSchema';
 
 export const PostScalarWhereInputSchema: z.ZodType<PrismaClient.Prisma.PostScalarWhereInput> = z.object({
-	AND: z.union([  ]).optional(),	OR: 	NOT: z.union([  ]).optional(),	id: z.union([ z.number().optional() ]).optional(),	title: z.union([ z.string().optional() ]).optional(),	content: z.union([ z.string().optional().nullable() ]).optional().nullable(),	published: z.union([ z.boolean().optional() ]).optional(),	authorId: z.union([ z.string().optional() ]).optional(),	anotherEnum: }).strict();
+  AND: z.union([ z.lazy(() => PostScalarWhereInputSchema),z.lazy(() => PostScalarWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => PostScalarWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => PostScalarWhereInputSchema),z.lazy(() => PostScalarWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  title: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  content: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  published: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
+  authorId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  anotherEnum: z.lazy(() => EnumAnotherEnumNullableListFilterSchema).optional(),
+}).strict()

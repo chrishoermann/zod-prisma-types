@@ -9,6 +9,7 @@ importers:
       '@types/lodash': ^4.14.191
       '@typescript-eslint/eslint-plugin': ^5.47.1
       '@typescript-eslint/parser': ^5.47.1
+      code-block-writer: ^11.0.3
       eslint: ^8.30.0
       eslint-config-prettier: ^8.5.0
       eslint-config-universe: ^11.1.1
@@ -22,6 +23,7 @@ importers:
       zod: ^3.20.2
     dependencies:
       '@prisma/generator-helper': 4.8.0
+      code-block-writer: 11.0.3
       lodash: 4.17.21
       ts-morph: 16.0.0
       zod: 3.20.2

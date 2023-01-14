@@ -5,4 +5,6 @@ import { UserUpdateManyMutationInputSchema } from './UserUpdateManyMutationInput
 import { UserUncheckedUpdateManyWithoutUserInputSchema } from './UserUncheckedUpdateManyWithoutUserInputSchema';
 
 export const UserUpdateManyWithWhereWithoutLocationInputSchema: z.ZodType<PrismaClient.Prisma.UserUpdateManyWithWhereWithoutLocationInput> = z.object({
-	where: 	data: z.union([  ]),}).strict();
+  where: z.lazy(() => UserScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => UserUpdateManyMutationInputSchema),z.lazy(() => UserUncheckedUpdateManyWithoutUserInputSchema) ]),
+}).strict()

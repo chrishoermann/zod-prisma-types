@@ -4,4 +4,8 @@ import { MYValueSchema } from './MYValueSchema';
 import { NestedEnumMYValueFilterSchema } from './NestedEnumMYValueFilterSchema';
 
 export const EnumMYValueFilterSchema: z.ZodType<PrismaClient.Prisma.EnumMYValueFilter> = z.object({
-	equals: 	in: 	notIn: 	not: z.union([  ]).optional(),}).strict();
+  equals: z.lazy(() => MYValueSchema).optional(),
+  in: z.lazy(() => MYValueSchema).array().optional(),
+  notIn: z.lazy(() => MYValueSchema).array().optional(),
+  not: z.union([ z.lazy(() => MYValueSchema),z.lazy(() => NestedEnumMYValueFilterSchema) ]).optional(),
+}).strict()

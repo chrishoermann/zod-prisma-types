@@ -8,7 +8,12 @@ import { AnotherEnumSchema } from './AnotherEnumSchema';
 import { UserCreatescalarListInputSchema } from './UserCreatescalarListInputSchema';
 
 export const UserUncheckedCreateWithoutLocationInputSchema: z.ZodType<PrismaClient.Prisma.UserUncheckedCreateWithoutLocationInput> = z.object({
-	id: z.string().optional(),
-	email: z.string(),
-	name: z.string().optional().nullable(),
-	posts: 	profile: 	role: z.union([  ]).optional(),	enum: 	scalarList: z.union([ z.string().array().optional() ]).optional(),}).strict();
+  id: z.string().optional(),
+  email: z.string(),
+  name: z.string().optional().nullable(),
+  posts: z.lazy(() => PostUncheckedCreateNestedManyWithoutAuthorInputSchema).optional(),
+  profile: z.lazy(() => ProfileUncheckedCreateNestedOneWithoutUserInputSchema).optional(),
+  role: z.union([ z.lazy(() => UserCreateroleInputSchema),z.lazy(() => RoleSchema).array() ]).optional(),
+  enum: z.lazy(() => AnotherEnumSchema).optional(),
+  scalarList: z.union([ z.lazy(() => UserCreatescalarListInputSchema),z.string().array() ]).optional(),
+}).strict()

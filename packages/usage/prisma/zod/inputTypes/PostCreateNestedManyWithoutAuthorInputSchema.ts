@@ -7,4 +7,8 @@ import { PostCreateManyAuthorInputEnvelopeSchema } from './PostCreateManyAuthorI
 import { PostWhereUniqueInputSchema } from './PostWhereUniqueInputSchema';
 
 export const PostCreateNestedManyWithoutAuthorInputSchema: z.ZodType<PrismaClient.Prisma.PostCreateNestedManyWithoutAuthorInput> = z.object({
-	create: z.union([  ]).optional(),	connectOrCreate: z.union([  ]).optional(),	createMany: 	connect: z.union([  ]).optional(),}).strict();
+  create: z.union([ z.lazy(() => PostCreateWithoutAuthorInputSchema),z.lazy(() => PostCreateWithoutAuthorInputSchema).array(),z.lazy(() => PostUncheckedCreateWithoutAuthorInputSchema),z.lazy(() => PostUncheckedCreateWithoutAuthorInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => PostCreateOrConnectWithoutAuthorInputSchema),z.lazy(() => PostCreateOrConnectWithoutAuthorInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => PostCreateManyAuthorInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => PostWhereUniqueInputSchema),z.lazy(() => PostWhereUniqueInputSchema).array() ]).optional(),
+}).strict()

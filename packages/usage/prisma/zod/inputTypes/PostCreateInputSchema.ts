@@ -5,7 +5,9 @@ import { PostCreateanotherEnumInputSchema } from './PostCreateanotherEnumInputSc
 import { AnotherEnumSchema } from './AnotherEnumSchema';
 
 export const PostCreateInputSchema: z.ZodType<PrismaClient.Prisma.PostCreateInput> = z.object({
-	title: z.string(),
-	content: z.string().optional().nullable(),
-	published: z.boolean().optional(),
-	author: 	anotherEnum: z.union([  ]).optional(),}).strict();
+  title: z.string(),
+  content: z.string().optional().nullable(),
+  published: z.boolean().optional(),
+  author: z.lazy(() => UserCreateNestedOneWithoutPostsInputSchema),
+  anotherEnum: z.union([ z.lazy(() => PostCreateanotherEnumInputSchema),z.lazy(() => AnotherEnumSchema).array() ]).optional(),
+}).strict()
