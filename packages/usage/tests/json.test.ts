@@ -2,8 +2,19 @@
 
 // import { PrismaClient } from '@prisma/client';
 import { JsonModelCreateInputSchema, JsonModelSchema } from '../prisma/zod';
+import { getServer } from './trpc/server';
 
 // const prisma = new PrismaClient();
+
+const httpServer = getServer();
+
+beforeAll(() => {
+  httpServer.listen(2022);
+});
+
+afterAll(() => {
+  httpServer.server.close();
+});
 
 it('should return Prisma.DbNull json null value when "DbNull" is provided with ModelSchema', async () => {
   const parsedModel = JsonModelSchema.parse({

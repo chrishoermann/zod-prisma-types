@@ -1,10 +1,16 @@
 import { Prisma } from '@prisma/client';
 import { decimalSchema } from './schemas/decimalSchema';
 import { client } from './trpc/client';
-import { startServer } from './trpc/server';
+import { getServer } from './trpc/server';
+
+const httpServer = getServer();
 
 beforeAll(() => {
-  startServer();
+  httpServer.listen(2022);
+});
+
+afterAll(() => {
+  httpServer.server.close();
 });
 
 it('should be able to use decimal', () => {
