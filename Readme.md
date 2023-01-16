@@ -118,7 +118,7 @@ Provide an alternative output path.
 
 > default: `false`
 
-In Prisma `Decimal` fields are represented by the [decimal.js](https://mikemcl.github.io/decimal.js/) library as stated in the [prisma docs](https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields#working-with-decimal). By default the `Prisma.Decimal` type is used to validate `Decimal` fields by using the built in typeguard `isDecimal(value)` to check if the field value is a `Decimal`.
+In Prisma `Decimal` fields are represented by the [decimal.js](https://mikemcl.github.io/decimal.js/) library as stated in the [prisma docs](https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields#working-with-decimal). By default the `Prisma.Decimal` type is used to validate `Decimal` fields by using the built in typeguard `isDecimal(value)` with a custom transform to check if the field value is a `Decimal`.
 
 ```prisma
 model MyModel {
@@ -132,18 +132,26 @@ By default The above model would generate the following output:
 
 ```ts
 export const MyModel = z.object({
-  id: z.number(),
-  decimal: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-    message: 'Field "decimal" must be a Decimal',
-    path: ['Models', 'MyModel'],
-  }),
+  id: z.number().int(),
+  decimal: z
+    .any()
+    .transform((v) =>
+      isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
+    )
+    .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
+      message: 'Field "decimal" must be a Decimal',
+      path: ['Models', 'DecimalModel'],
+    }),
   decimalOpt: z
-    .number()
+    .any()
+    .transform((v) =>
+      isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
+    )
     .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
       message: 'Field "decimalOpt" must be a Decimal',
-      path: ['Models', 'MyModel'],
+      path: ['Models', 'DecimalModel'],
     })
-    .nullable(),
+    .nullish(),
 });
 ```
 
@@ -431,22 +439,34 @@ generator zod {
   imports        = "import(import { myFunction } from 'mypackage')"
 }
 
-model MyPrismaScalarsTypes {
-  /// @zod.string({ invalid_type_error: "invalid type error" }).cuid()
-  id      String    @id @default(cuid())
-  /// comment about string @zod.string.min(3, { message: "min error" }).max(10, { message: "max error" })
-  string  String?
+model MyPrismaScalarsType {
+  /// @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid()
+  id         String    @id @default(cuid())
+  /// Some comment about string @zod.string.min(3, { message: "min error" }).max(10, { message: "max error" })
+  string     String?
   /// @zod.custom.use(z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }))
-  bic     String?
-  /// @zod.number({ error: "error", some_key: "error", wrong_type_error: "error" })
-  float   Float
-  decimal Decimal
-  date    DateTime? /// @zod.date.min(new Date('2020-01-01'))
-  bigInt  BigInt
-  json    Json
-  bytes   Bytes
-  /// @zod.custom.use(z.string().refine((val) => myFunction.validate(val), { message: 'Is not valid' }))
-  custom  String?
+  bic        String?
+  /// @zod.number.lt(10, { message: "lt error" }).gt(5, { message: "gt error" })
+  float      Float
+  floatOpt   Float?
+  /// @zod.number.int({ message: "error" }).gt(5, { message: "gt error" })
+  int        Int
+  intOpt     Int?
+  decimal    Decimal
+  decimalOpt Decimal?
+  date       DateTime  @default(now())
+  dateOpt    DateTime? /// @zod.date({ invalid_type_error: "wrong date type" })  bigInt     BigInt /// @zod.bigint({ invalid_type_error: "error" })
+  bigIntOpt  BigInt?
+  /// @zod.custom.use(z.lazy(() => InputJsonValue).refine((val) => myFunction(val), { message: 'Is not valid' }))
+  json       Json
+  jsonOpt    Json?
+  bytes      Bytes /// @zod.custom.use(z.instanceof(Buffer).refine((val) => val ? true : false, { message: 'Value is not valid' }))
+  bytesOpt   Bytes?
+  /// @zod.custom.use(z.string().refine((val) => myFunction(val), { message: 'Is not valid' }))
+  custom     String?
+  exclude    String? /// @zod.custom.omit(["model", "input"])
+
+  updatedAt DateTime @updatedAt
 }
 ```
 
@@ -468,33 +488,70 @@ export const JsonValue: z.ZodType<PrismaClient.Prisma.JsonValue> = z
   ])
   .nullable();
 
-export const MyPrismaScalarsTypes = z.object({
-  id: z.string({ invalid_type_error: 'invalid type error' }).cuid(),
+export const MyPrismaScalarsTypeSchema = z.object({
+  id: z
+    .string({
+      invalid_type_error:
+        "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]",
+      required_error: 'some other',
+      description: 'some description',
+    })
+    .cuid(),
   /**
-   * comment about string
+   * Some comment about string
    */
   string: z
     .string()
     .min(3, { message: 'min error' })
     .max(10, { message: 'max error' })
-    .nullable(),
+    .nullish(),
   bic: z
     .string()
     .refine((val) => validator.isBIC(val), { message: 'BIC is not valid' })
-    .nullable(),
-  float: z.number(),
-  decimal: z.number().refine((v) => PrismClient.Prisma.Decimal.isDecimal(v), {
-    message: 'Field "decimal" must be a Decimal',
-    path: ['Models', 'MyPrismaScalarsType'],
-  }),
-  date: z.date().min(new Date('2020-01-01')).nullable(),
-  bigInt: z.bigint(),
-  json: JsonValue,
-  bytes: z.instanceof(Buffer),
+    .nullish(),
+  float: z
+    .number()
+    .lt(10, { message: 'lt error' })
+    .gt(5, { message: 'gt error' }),
+  floatOpt: z.number().nullish(),
+  int: z.number().int({ message: 'error' }).gt(5, { message: 'gt error' }),
+  intOpt: z.number().int().nullish(),
+  decimal: z
+    .any()
+    .transform((v) =>
+      isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
+    )
+    .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
+      message: 'Field "decimal" must be a Decimal',
+      path: ['Models', 'MyPrismaScalarsType'],
+    }),
+  decimalOpt: z
+    .any()
+    .transform((v) =>
+      isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
+    )
+    .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
+      message: 'Field "decimalOpt" must be a Decimal',
+      path: ['Models', 'MyPrismaScalarsType'],
+    })
+    .nullish(),
+  date: z.date(),
+  dateOpt: z.date({ invalid_type_error: 'wrong date type' }).nullish(),
+  bigIntOpt: z.bigint().nullish(),
+  json: z
+    .lazy(() => InputJsonValue)
+    .refine((val) => myFunction(val), { message: 'Is not valid' }),
+  jsonOpt: NullableJsonValue.optional(),
+  bytes: z
+    .instanceof(Buffer)
+    .refine((val) => (val ? true : false), { message: 'Value is not valid' }),
+  bytesOpt: z.instanceof(Buffer).nullish(),
   custom: z
     .string()
-    .refine((val) => myFunction.validate(val), { message: 'Is not valid' })
-    .nullable(),
+    .refine((val) => myFunction(val), { message: 'Is not valid' })
+    .nullish(),
+  // omitted: exclude: z.string().nullish(),
+  updatedAt: z.date(),
 });
 ```
 

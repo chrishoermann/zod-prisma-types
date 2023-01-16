@@ -200,7 +200,7 @@ model WithDefaultValidators {
 }
 
 model DecimalModel {
-  id      Int      @id @default(autoincrement())
-  decimal Decimal
+  id         Int      @id @default(autoincrement())
+  decimal    Decimal
   decimalOpt Decimal?
 }
