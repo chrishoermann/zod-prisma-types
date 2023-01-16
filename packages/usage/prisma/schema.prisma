@@ -200,3 +200,9 @@ model WithDefaultValidators {
   idTwo   String @default(uuid()) /// @zod.string.noDefault()
   integer Int
 }
+
+model DecimalModel {
+  id      Int      @id @default(autoincrement())
+  decimal Decimal
+  decimalOpt Decimal?
+}

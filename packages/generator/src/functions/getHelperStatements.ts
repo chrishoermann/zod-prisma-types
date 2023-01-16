@@ -46,6 +46,26 @@ export const getHelperStatements: GetStatements = ({ schema }) => {
         leadingTrivia: (writer) => writer.newLine(),
         declarations: [
           {
+            name: `isValidDecimalInput`,
+            initializer(writer) {
+              writer.writeLine(`(v: any) => `);
+              writer.withIndentationLevel(2, () => {
+                writer
+                  .writeLine(`typeof v === 'number' ||`)
+                  .writeLine(
+                    `(typeof v === 'object' && PrismaClient.Prisma.Decimal.isDecimal(v)) ||`,
+                  )
+                  .write(`(typeof v === 'string' && v.match(/[0-9.]/))`);
+              });
+            },
+          },
+        ],
+      }),
+
+      writeConstStatement({
+        leadingTrivia: (writer) => writer.newLine(),
+        declarations: [
+          {
             name: `JsonValue`,
             type: 'z.ZodType<PrismaClient.Prisma.JsonValue>',
             initializer(writer) {
