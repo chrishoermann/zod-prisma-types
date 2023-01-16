@@ -124,9 +124,12 @@ const writeDecimal = ({
   writer
     .conditionalWrite(field.omitInModel(), '// omitted: ')
     .write(`${field.formattedNames.original}: `)
-    .write(`z.number(`)
+    .write(`z.any(`)
     .conditionalWrite(!!field.zodCustomErrors, field.zodCustomErrors!)
     .write(`)`)
+    .write(
+      `.transform((v) => isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v)`,
+    )
     .write(`.refine((v) => `)
     .write(`PrismaClient.Prisma.Decimal.isDecimal(v),`)
     .write(
