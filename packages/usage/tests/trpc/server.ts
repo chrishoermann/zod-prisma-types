@@ -19,8 +19,6 @@ const appRouter = router({
     try {
       const isDecimal = Prisma.Decimal.isDecimal(input.decimal);
       const isDecimalOpt = Prisma.Decimal.isDecimal(input.decimalOpt);
-      console.log({ isDecimal, isDecimalOpt });
-
       return { isDecimal, isDecimalOpt };
     } catch (error) {
       throw new Error('something went wrong');
