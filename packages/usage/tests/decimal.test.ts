@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client';
 import { decimalSchema } from './schemas/decimalSchema';
 import { client } from './trpc/client';
 import { getServer } from './trpc/server';
+import Decimal from 'decimal.js';
 
 const httpServer = getServer();
 
@@ -19,6 +20,10 @@ it('should be able to use decimal', () => {
 });
 
 it('should be able to pass a decimal via trpc', async () => {
+  expect(await client.decimal.query(new Decimal(1.16511))).toBe(true);
+});
+
+it('should be able to pass a Prisma decimal via trpc', async () => {
   expect(await client.decimal.query(new Prisma.Decimal(1.16511))).toBe(true);
 });
 

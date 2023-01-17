@@ -7,7 +7,10 @@ import { writeConstStatement, writeHeading } from '../utils';
 // FUNCTION
 /////////////////////////////////////////////////
 
-export const getHelperStatements: GetStatements = ({ schema }) => {
+export const getHelperStatements: GetStatements = ({
+  schema,
+  generatorConfig,
+}) => {
   const statements: Statement[] = [];
 
   if (schema.hasJsonTypes) {
@@ -47,14 +50,18 @@ export const getHelperStatements: GetStatements = ({ schema }) => {
           {
             name: `isValidDecimalInput`,
             initializer(writer) {
-              writer.writeLine(`(v: any) => `);
+              writer.writeLine(
+                `(v: string | number | PrismaClient.Prisma.Decimal${
+                  generatorConfig.useDecimalJs ? '| Decimal' : ''
+                }): v is number | string => `,
+              );
               writer.withIndentationLevel(2, () => {
                 writer
                   .writeLine(`typeof v === 'number' ||`)
-                  .writeLine(
-                    `(typeof v === 'object' && PrismaClient.Prisma.Decimal.isDecimal(v)) ||`,
-                  )
-                  .write(`(typeof v === 'string' && v.match(/[0-9.]/))`);
+                  // .writeLine(
+                  //   `(typeof v === 'object' && PrismaClient.Prisma.Decimal.isDecimal(v)) ||`,
+                  // )
+                  .write(`(typeof v === 'string' && !!v.match(/[0-9.]/))`);
               });
             },
           },

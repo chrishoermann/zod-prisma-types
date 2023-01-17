@@ -9,6 +9,7 @@ importers:
       '@types/lodash': ^4.14.191
       '@typescript-eslint/eslint-plugin': ^5.47.1
       '@typescript-eslint/parser': ^5.47.1
+      decimal.js: ^10.4.3
       eslint: ^8.30.0
       eslint-config-prettier: ^8.5.0
       eslint-config-universe: ^11.1.1
@@ -22,6 +23,7 @@ importers:
       zod: ^3.20.2
     dependencies:
       '@prisma/generator-helper': 4.8.0
+      decimal.js: 10.4.3
       lodash: 4.17.21
       ts-morph: 16.0.0
       zod: 3.20.2
@@ -2223,7 +2225,7 @@ packages:
   /fs-jetpack/5.1.0:
     resolution: {integrity: sha512-Xn4fDhLydXkuzepZVsr02jakLlmoARPy+YWIclo4kh0GyNGUHnTqeH/w/qIsVn50dFxtp8otPL2t/HcPJBbxUA==}
     dependencies:
-      minimatch: 5.1.4
+      minimatch: 5.1.5
 
   /fs.realpath/1.0.0:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
@@ -2777,8 +2779,8 @@ packages:
       brace-expansion: 2.0.1
     dev: false
 
-  /minimatch/5.1.4:
-    resolution: {integrity: sha512-U0iNYXt9wALljzfnGkhFSy5sAC6/SCR3JrHrlsdJz4kF8MvhTRQNiC59iUi1iqsitV7abrNAJWElVL9pdnoUgw==}
+  /minimatch/5.1.5:
+    resolution: {integrity: sha512-CI8wwdrll4ehjPAqs8TL8lBPyNnpZlQI02Wn8C1weNz/QbUbjh3OMxgMKSnvqfKFdLlks3EzHB9tO0BqGc3phQ==}
     engines: {node: '>=10'}
     dependencies:
       brace-expansion: 2.0.1
@@ -3195,7 +3197,7 @@ packages:
   /readdir-glob/1.1.2:
     resolution: {integrity: sha512-6RLVvwJtVwEDfPdn6X6Ille4/lxGl0ATOY4FN/B9nxQcgOazvvI0nodiD19ScKq0PvA/29VpaOQML36o5IzZWA==}
     dependencies:
-      minimatch: 5.1.4
+      minimatch: 5.1.5
 
   /readdirp/3.6.0:
     resolution: {integrity: sha512-hOS089on8RduqdbhvQ5Z37A0ESjsqz6qnRcffsMU3495FuTdqSm+7bhJ29JvIOsBDEEnan5DPu9t3To9VRlMzA==}
