@@ -124,14 +124,19 @@ const writeDecimal = ({
   writer
     .conditionalWrite(field.omitInModel(), '// omitted: ')
     .write(`${field.formattedNames.original}: `)
-    .write(`z.any(`)
+    .write(`z.union([`)
+    .write(`z.number(),`)
+    .write(`z.string(),`)
+    .write(`z.instanceof(PrismaClient.Prisma.Decimal),`)
+    .write(`DecimalJSLikeSchema,`)
+    .write(`]`)
     .conditionalWrite(!!field.zodCustomErrors, field.zodCustomErrors!)
     .write(`)`)
     .write(
       `.transform((v) => isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v)`,
     )
     .write(`.refine((v) => `)
-    .write(`PrismaClient.Prisma.Decimal.isDecimal(v),`)
+    .write(`PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),`)
     .write(
       ` { message: 'Field "${field.formattedNames.original}" must be a Decimal', `,
     )

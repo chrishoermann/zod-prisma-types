@@ -2,7 +2,6 @@ import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
 import { myFunction } from '../../utils/myFunction';
 import validator from 'validator';
-import { Decimal } from 'decimal.js';
 
 /////////////////////////////////////////
 // ENUMS
@@ -94,6 +93,43 @@ export const AnotherEnumSchema = z.nativeEnum(PrismaClient.AnotherEnum);
 // HELPER TYPES
 /////////////////////////////////////////
 
+// DECIMAL
+//------------------------------------------------------
+
+export interface DecimalJsLike {
+  d: number[];
+  e: number;
+  s: number;
+}
+
+export const DECIMAL_STRING_REGEX = /^[0-9.,e+-bxffo_cp]+$|Infinity|NaN/;
+
+export const DecimalJSLikeSchema = z.object({
+  d: z.array(z.number()),
+  e: z.number(),
+  s: z.number(),
+});
+
+export const isValidDecimalInput = (
+  v: string | number | PrismaClient.Prisma.Decimal | DecimalJsLike,
+): v is number | string =>
+  typeof v === 'number' ||
+  (typeof v === 'string' && DECIMAL_STRING_REGEX.test(v));
+
+export const isValidDecimalListInput = (
+  v: string[] | number[] | PrismaClient.Prisma.Decimal[] | DecimalJsLike[],
+): v is number[] | string[] =>
+  (v as number[]).every((v) => typeof v === 'number') ||
+  (v as string[]).every(
+    (v) => typeof v === 'string' && DECIMAL_STRING_REGEX.test(v),
+  );
+
+export const isDecimalJsLike = (v: unknown): v is DecimalJsLike =>
+  !!v && typeof v === 'object' && 'd' in v && 'e' in v && 's' in v;
+
+// JSON
+//------------------------------------------------------
+
 type NullableJsonInput =
   | PrismaClient.Prisma.JsonValue
   | null
@@ -107,17 +143,6 @@ export const transformJsonNull = (v?: NullableJsonInput) => {
   if (v === 'JsonNull') return PrismaClient.Prisma.JsonNull;
   return v;
 };
-
-export const isValidDecimalInput = (
-  v: string | number | PrismaClient.Prisma.Decimal | Decimal,
-): v is number | string =>
-  typeof v === 'number' || (typeof v === 'string' && !!v.match(/[0-9.]/));
-
-const isValidDecimalListInput = (
-  v: string[] | number[] | Prisma.Decimal[] | Decimal[],
-): v is number[] | string[] =>
-  (v as number[]).every((v) => typeof v === 'number') ||
-  (v as string[]).every((v) => typeof v === 'string' && !!v.match(/[0-9.]/));
 
 export const JsonValue: z.ZodType<PrismaClient.Prisma.JsonValue> = z.union([
   z.string(),
@@ -239,23 +264,39 @@ export const MyPrismaScalarsTypeSchema = z.object({
   int: z.number().int({ message: 'error' }).gt(5, { message: 'gt error' }),
   intOpt: z.number().int().nullish(),
   decimal: z
-    .any()
+    .union([
+      z.number(),
+      z.string(),
+      z.instanceof(PrismaClient.Prisma.Decimal),
+      DecimalJSLikeSchema,
+    ])
     .transform((v) =>
       isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
     )
-    .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-      message: 'Field "decimal" must be a Decimal',
-      path: ['Models', 'MyPrismaScalarsType'],
-    }),
+    .refine(
+      (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+      {
+        message: 'Field "decimal" must be a Decimal',
+        path: ['Models', 'MyPrismaScalarsType'],
+      },
+    ),
   decimalOpt: z
-    .any()
+    .union([
+      z.number(),
+      z.string(),
+      z.instanceof(PrismaClient.Prisma.Decimal),
+      DecimalJSLikeSchema,
+    ])
     .transform((v) =>
       isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
     )
-    .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-      message: 'Field "decimalOpt" must be a Decimal',
-      path: ['Models', 'MyPrismaScalarsType'],
-    })
+    .refine(
+      (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+      {
+        message: 'Field "decimalOpt" must be a Decimal',
+        path: ['Models', 'MyPrismaScalarsType'],
+      },
+    )
     .nullish(),
   date: z.date(),
   dateOpt: z.date({ invalid_type_error: 'wrong date type' }).nullish(),
@@ -411,23 +452,39 @@ export const WithDefaultValidatorsOptionalDefaultsSchema =
 export const DecimalModelSchema = z.object({
   id: z.number().int(),
   decimal: z
-    .any()
+    .union([
+      z.number(),
+      z.string(),
+      z.instanceof(PrismaClient.Prisma.Decimal),
+      DecimalJSLikeSchema,
+    ])
     .transform((v) =>
       isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
     )
-    .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-      message: 'Field "decimal" must be a Decimal',
-      path: ['Models', 'DecimalModel'],
-    }),
+    .refine(
+      (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+      {
+        message: 'Field "decimal" must be a Decimal',
+        path: ['Models', 'DecimalModel'],
+      },
+    ),
   decimalOpt: z
-    .any()
+    .union([
+      z.number(),
+      z.string(),
+      z.instanceof(PrismaClient.Prisma.Decimal),
+      DecimalJSLikeSchema,
+    ])
     .transform((v) =>
       isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
     )
-    .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-      message: 'Field "decimalOpt" must be a Decimal',
-      path: ['Models', 'DecimalModel'],
-    })
+    .refine(
+      (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+      {
+        message: 'Field "decimalOpt" must be a Decimal',
+        path: ['Models', 'DecimalModel'],
+      },
+    )
     .nullish(),
 });
 
@@ -1115,14 +1172,16 @@ export const MyPrismaScalarsTypeWhereInputSchema: z.ZodType<PrismaClient.Prisma.
               z.number(),
               z.string(),
               z.instanceof(PrismaClient.Prisma.Decimal),
-              z.instanceof(Decimal),
+              DecimalJSLikeSchema,
             ])
             .transform((v) =>
               isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
             )
-            .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-              message: 'Must be a Decimal',
-            }),
+            .refine(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+              { message: 'Must be a Decimal' },
+            ),
         ])
         .optional(),
       decimalOpt: z
@@ -1133,14 +1192,16 @@ export const MyPrismaScalarsTypeWhereInputSchema: z.ZodType<PrismaClient.Prisma.
               z.number(),
               z.string(),
               z.instanceof(PrismaClient.Prisma.Decimal),
-              z.instanceof(Decimal),
+              DecimalJSLikeSchema,
             ])
             .transform((v) =>
               isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
             )
-            .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-              message: 'Must be a Decimal',
-            }),
+            .refine(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+              { message: 'Must be a Decimal' },
+            ),
         ])
         .optional()
         .nullable(),
@@ -1324,14 +1385,16 @@ export const MyPrismaScalarsTypeScalarWhereWithAggregatesInputSchema: z.ZodType<
               z.number(),
               z.string(),
               z.instanceof(PrismaClient.Prisma.Decimal),
-              z.instanceof(Decimal),
+              DecimalJSLikeSchema,
             ])
             .transform((v) =>
               isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
             )
-            .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-              message: 'Must be a Decimal',
-            }),
+            .refine(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+              { message: 'Must be a Decimal' },
+            ),
         ])
         .optional(),
       decimalOpt: z
@@ -1342,14 +1405,16 @@ export const MyPrismaScalarsTypeScalarWhereWithAggregatesInputSchema: z.ZodType<
               z.number(),
               z.string(),
               z.instanceof(PrismaClient.Prisma.Decimal),
-              z.instanceof(Decimal),
+              DecimalJSLikeSchema,
             ])
             .transform((v) =>
               isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
             )
-            .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-              message: 'Must be a Decimal',
-            }),
+            .refine(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+              { message: 'Must be a Decimal' },
+            ),
         ])
         .optional()
         .nullable(),
@@ -2187,14 +2252,16 @@ export const DecimalModelWhereInputSchema: z.ZodType<PrismaClient.Prisma.Decimal
               z.number(),
               z.string(),
               z.instanceof(PrismaClient.Prisma.Decimal),
-              z.instanceof(Decimal),
+              DecimalJSLikeSchema,
             ])
             .transform((v) =>
               isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
             )
-            .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-              message: 'Must be a Decimal',
-            }),
+            .refine(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+              { message: 'Must be a Decimal' },
+            ),
         ])
         .optional(),
       decimalOpt: z
@@ -2205,14 +2272,16 @@ export const DecimalModelWhereInputSchema: z.ZodType<PrismaClient.Prisma.Decimal
               z.number(),
               z.string(),
               z.instanceof(PrismaClient.Prisma.Decimal),
-              z.instanceof(Decimal),
+              DecimalJSLikeSchema,
             ])
             .transform((v) =>
               isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
             )
-            .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-              message: 'Must be a Decimal',
-            }),
+            .refine(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+              { message: 'Must be a Decimal' },
+            ),
         ])
         .optional()
         .nullable(),
@@ -2285,14 +2354,16 @@ export const DecimalModelScalarWhereWithAggregatesInputSchema: z.ZodType<PrismaC
               z.number(),
               z.string(),
               z.instanceof(PrismaClient.Prisma.Decimal),
-              z.instanceof(Decimal),
+              DecimalJSLikeSchema,
             ])
             .transform((v) =>
               isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
             )
-            .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-              message: 'Must be a Decimal',
-            }),
+            .refine(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+              { message: 'Must be a Decimal' },
+            ),
         ])
         .optional(),
       decimalOpt: z
@@ -2303,14 +2374,16 @@ export const DecimalModelScalarWhereWithAggregatesInputSchema: z.ZodType<PrismaC
               z.number(),
               z.string(),
               z.instanceof(PrismaClient.Prisma.Decimal),
-              z.instanceof(Decimal),
+              DecimalJSLikeSchema,
             ])
             .transform((v) =>
               isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
             )
-            .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-              message: 'Must be a Decimal',
-            }),
+            .refine(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+              { message: 'Must be a Decimal' },
+            ),
         ])
         .optional()
         .nullable(),
@@ -2747,27 +2820,29 @@ export const MyPrismaScalarsTypeCreateInputSchema: z.ZodType<
         z.number(),
         z.string(),
         z.instanceof(PrismaClient.Prisma.Decimal),
-        z.instanceof(Decimal),
+        DecimalJSLikeSchema,
       ])
       .transform((v) =>
         isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
       )
-      .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-        message: 'Must be a Decimal',
-      }),
+      .refine(
+        (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+        { message: 'Must be a Decimal' },
+      ),
     decimalOpt: z
       .union([
         z.number(),
         z.string(),
         z.instanceof(PrismaClient.Prisma.Decimal),
-        z.instanceof(Decimal),
+        DecimalJSLikeSchema,
       ])
       .transform((v) =>
         isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
       )
-      .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-        message: 'Must be a Decimal',
-      })
+      .refine(
+        (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+        { message: 'Must be a Decimal' },
+      )
       .optional()
       .nullable(),
     date: z.date().optional(),
@@ -2835,27 +2910,29 @@ export const MyPrismaScalarsTypeUncheckedCreateInputSchema: z.ZodType<
         z.number(),
         z.string(),
         z.instanceof(PrismaClient.Prisma.Decimal),
-        z.instanceof(Decimal),
+        DecimalJSLikeSchema,
       ])
       .transform((v) =>
         isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
       )
-      .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-        message: 'Must be a Decimal',
-      }),
+      .refine(
+        (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+        { message: 'Must be a Decimal' },
+      ),
     decimalOpt: z
       .union([
         z.number(),
         z.string(),
         z.instanceof(PrismaClient.Prisma.Decimal),
-        z.instanceof(Decimal),
+        DecimalJSLikeSchema,
       ])
       .transform((v) =>
         isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
       )
-      .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-        message: 'Must be a Decimal',
-      })
+      .refine(
+        (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+        { message: 'Must be a Decimal' },
+      )
       .optional()
       .nullable(),
     date: z.date().optional(),
@@ -2961,14 +3038,16 @@ export const MyPrismaScalarsTypeUpdateInputSchema: z.ZodType<
             z.number(),
             z.string(),
             z.instanceof(PrismaClient.Prisma.Decimal),
-            z.instanceof(Decimal),
+            DecimalJSLikeSchema,
           ])
           .transform((v) =>
             isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
           )
-          .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-            message: 'Must be a Decimal',
-          }),
+          .refine(
+            (v) =>
+              PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+            { message: 'Must be a Decimal' },
+          ),
         z.lazy(() => DecimalFieldUpdateOperationsInputSchema),
       ])
       .optional(),
@@ -2979,14 +3058,16 @@ export const MyPrismaScalarsTypeUpdateInputSchema: z.ZodType<
             z.number(),
             z.string(),
             z.instanceof(PrismaClient.Prisma.Decimal),
-            z.instanceof(Decimal),
+            DecimalJSLikeSchema,
           ])
           .transform((v) =>
             isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
           )
-          .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-            message: 'Must be a Decimal',
-          }),
+          .refine(
+            (v) =>
+              PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+            { message: 'Must be a Decimal' },
+          ),
         z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema),
       ])
       .optional()
@@ -3126,14 +3207,16 @@ export const MyPrismaScalarsTypeUncheckedUpdateInputSchema: z.ZodType<
             z.number(),
             z.string(),
             z.instanceof(PrismaClient.Prisma.Decimal),
-            z.instanceof(Decimal),
+            DecimalJSLikeSchema,
           ])
           .transform((v) =>
             isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
           )
-          .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-            message: 'Must be a Decimal',
-          }),
+          .refine(
+            (v) =>
+              PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+            { message: 'Must be a Decimal' },
+          ),
         z.lazy(() => DecimalFieldUpdateOperationsInputSchema),
       ])
       .optional(),
@@ -3144,14 +3227,16 @@ export const MyPrismaScalarsTypeUncheckedUpdateInputSchema: z.ZodType<
             z.number(),
             z.string(),
             z.instanceof(PrismaClient.Prisma.Decimal),
-            z.instanceof(Decimal),
+            DecimalJSLikeSchema,
           ])
           .transform((v) =>
             isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
           )
-          .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-            message: 'Must be a Decimal',
-          }),
+          .refine(
+            (v) =>
+              PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+            { message: 'Must be a Decimal' },
+          ),
         z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema),
       ])
       .optional()
@@ -3253,27 +3338,29 @@ export const MyPrismaScalarsTypeCreateManyInputSchema: z.ZodType<
         z.number(),
         z.string(),
         z.instanceof(PrismaClient.Prisma.Decimal),
-        z.instanceof(Decimal),
+        DecimalJSLikeSchema,
       ])
       .transform((v) =>
         isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
       )
-      .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-        message: 'Must be a Decimal',
-      }),
+      .refine(
+        (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+        { message: 'Must be a Decimal' },
+      ),
     decimalOpt: z
       .union([
         z.number(),
         z.string(),
         z.instanceof(PrismaClient.Prisma.Decimal),
-        z.instanceof(Decimal),
+        DecimalJSLikeSchema,
       ])
       .transform((v) =>
         isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
       )
-      .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-        message: 'Must be a Decimal',
-      })
+      .refine(
+        (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+        { message: 'Must be a Decimal' },
+      )
       .optional()
       .nullable(),
     date: z.date().optional(),
@@ -3382,14 +3469,16 @@ export const MyPrismaScalarsTypeUpdateManyMutationInputSchema: z.ZodType<
             z.number(),
             z.string(),
             z.instanceof(PrismaClient.Prisma.Decimal),
-            z.instanceof(Decimal),
+            DecimalJSLikeSchema,
           ])
           .transform((v) =>
             isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
           )
-          .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-            message: 'Must be a Decimal',
-          }),
+          .refine(
+            (v) =>
+              PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+            { message: 'Must be a Decimal' },
+          ),
         z.lazy(() => DecimalFieldUpdateOperationsInputSchema),
       ])
       .optional(),
@@ -3400,14 +3489,16 @@ export const MyPrismaScalarsTypeUpdateManyMutationInputSchema: z.ZodType<
             z.number(),
             z.string(),
             z.instanceof(PrismaClient.Prisma.Decimal),
-            z.instanceof(Decimal),
+            DecimalJSLikeSchema,
           ])
           .transform((v) =>
             isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
           )
-          .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-            message: 'Must be a Decimal',
-          }),
+          .refine(
+            (v) =>
+              PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+            { message: 'Must be a Decimal' },
+          ),
         z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema),
       ])
       .optional()
@@ -3550,14 +3641,16 @@ export const MyPrismaScalarsTypeUncheckedUpdateManyInputSchema: z.ZodType<
             z.number(),
             z.string(),
             z.instanceof(PrismaClient.Prisma.Decimal),
-            z.instanceof(Decimal),
+            DecimalJSLikeSchema,
           ])
           .transform((v) =>
             isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
           )
-          .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-            message: 'Must be a Decimal',
-          }),
+          .refine(
+            (v) =>
+              PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+            { message: 'Must be a Decimal' },
+          ),
         z.lazy(() => DecimalFieldUpdateOperationsInputSchema),
       ])
       .optional(),
@@ -3568,14 +3661,16 @@ export const MyPrismaScalarsTypeUncheckedUpdateManyInputSchema: z.ZodType<
             z.number(),
             z.string(),
             z.instanceof(PrismaClient.Prisma.Decimal),
-            z.instanceof(Decimal),
+            DecimalJSLikeSchema,
           ])
           .transform((v) =>
             isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
           )
-          .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-            message: 'Must be a Decimal',
-          }),
+          .refine(
+            (v) =>
+              PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+            { message: 'Must be a Decimal' },
+          ),
         z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema),
       ])
       .optional()
@@ -4735,27 +4830,29 @@ export const DecimalModelCreateInputSchema: z.ZodType<PrismaClient.Prisma.Decima
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        }),
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        ),
       decimalOpt: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional()
         .nullable(),
     })
@@ -4770,27 +4867,29 @@ export const DecimalModelUncheckedCreateInputSchema: z.ZodType<PrismaClient.Pris
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        }),
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        ),
       decimalOpt: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional()
         .nullable(),
     })
@@ -4806,14 +4905,16 @@ export const DecimalModelUpdateInputSchema: z.ZodType<PrismaClient.Prisma.Decima
               z.number(),
               z.string(),
               z.instanceof(PrismaClient.Prisma.Decimal),
-              z.instanceof(Decimal),
+              DecimalJSLikeSchema,
             ])
             .transform((v) =>
               isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
             )
-            .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-              message: 'Must be a Decimal',
-            }),
+            .refine(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+              { message: 'Must be a Decimal' },
+            ),
           z.lazy(() => DecimalFieldUpdateOperationsInputSchema),
         ])
         .optional(),
@@ -4824,14 +4925,16 @@ export const DecimalModelUpdateInputSchema: z.ZodType<PrismaClient.Prisma.Decima
               z.number(),
               z.string(),
               z.instanceof(PrismaClient.Prisma.Decimal),
-              z.instanceof(Decimal),
+              DecimalJSLikeSchema,
             ])
             .transform((v) =>
               isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
             )
-            .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-              message: 'Must be a Decimal',
-            }),
+            .refine(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+              { message: 'Must be a Decimal' },
+            ),
           z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema),
         ])
         .optional()
@@ -4855,14 +4958,16 @@ export const DecimalModelUncheckedUpdateInputSchema: z.ZodType<PrismaClient.Pris
               z.number(),
               z.string(),
               z.instanceof(PrismaClient.Prisma.Decimal),
-              z.instanceof(Decimal),
+              DecimalJSLikeSchema,
             ])
             .transform((v) =>
               isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
             )
-            .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-              message: 'Must be a Decimal',
-            }),
+            .refine(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+              { message: 'Must be a Decimal' },
+            ),
           z.lazy(() => DecimalFieldUpdateOperationsInputSchema),
         ])
         .optional(),
@@ -4873,14 +4978,16 @@ export const DecimalModelUncheckedUpdateInputSchema: z.ZodType<PrismaClient.Pris
               z.number(),
               z.string(),
               z.instanceof(PrismaClient.Prisma.Decimal),
-              z.instanceof(Decimal),
+              DecimalJSLikeSchema,
             ])
             .transform((v) =>
               isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
             )
-            .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-              message: 'Must be a Decimal',
-            }),
+            .refine(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+              { message: 'Must be a Decimal' },
+            ),
           z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema),
         ])
         .optional()
@@ -4897,27 +5004,29 @@ export const DecimalModelCreateManyInputSchema: z.ZodType<PrismaClient.Prisma.De
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        }),
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        ),
       decimalOpt: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional()
         .nullable(),
     })
@@ -4933,14 +5042,16 @@ export const DecimalModelUpdateManyMutationInputSchema: z.ZodType<PrismaClient.P
               z.number(),
               z.string(),
               z.instanceof(PrismaClient.Prisma.Decimal),
-              z.instanceof(Decimal),
+              DecimalJSLikeSchema,
             ])
             .transform((v) =>
               isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
             )
-            .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-              message: 'Must be a Decimal',
-            }),
+            .refine(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+              { message: 'Must be a Decimal' },
+            ),
           z.lazy(() => DecimalFieldUpdateOperationsInputSchema),
         ])
         .optional(),
@@ -4951,14 +5062,16 @@ export const DecimalModelUpdateManyMutationInputSchema: z.ZodType<PrismaClient.P
               z.number(),
               z.string(),
               z.instanceof(PrismaClient.Prisma.Decimal),
-              z.instanceof(Decimal),
+              DecimalJSLikeSchema,
             ])
             .transform((v) =>
               isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
             )
-            .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-              message: 'Must be a Decimal',
-            }),
+            .refine(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+              { message: 'Must be a Decimal' },
+            ),
           z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema),
         ])
         .optional()
@@ -4982,14 +5095,16 @@ export const DecimalModelUncheckedUpdateManyInputSchema: z.ZodType<PrismaClient.
               z.number(),
               z.string(),
               z.instanceof(PrismaClient.Prisma.Decimal),
-              z.instanceof(Decimal),
+              DecimalJSLikeSchema,
             ])
             .transform((v) =>
               isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
             )
-            .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-              message: 'Must be a Decimal',
-            }),
+            .refine(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+              { message: 'Must be a Decimal' },
+            ),
           z.lazy(() => DecimalFieldUpdateOperationsInputSchema),
         ])
         .optional(),
@@ -5000,14 +5115,16 @@ export const DecimalModelUncheckedUpdateManyInputSchema: z.ZodType<PrismaClient.
               z.number(),
               z.string(),
               z.instanceof(PrismaClient.Prisma.Decimal),
-              z.instanceof(Decimal),
+              DecimalJSLikeSchema,
             ])
             .transform((v) =>
               isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
             )
-            .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-              message: 'Must be a Decimal',
-            }),
+            .refine(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+              { message: 'Must be a Decimal' },
+            ),
           z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema),
         ])
         .optional()
@@ -5345,21 +5462,22 @@ export const DecimalFilterSchema: z.ZodType<PrismaClient.Prisma.DecimalFilter> =
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       in: z
         .union([
           z.number().array(),
           z.string().array(),
           z.instanceof(PrismaClient.Prisma.Decimal).array(),
-          z.instanceof(Decimal).array(),
+          DecimalJSLikeSchema.array(),
         ])
         .transform((v) =>
           isValidDecimalListInput(v)
@@ -5367,7 +5485,11 @@ export const DecimalFilterSchema: z.ZodType<PrismaClient.Prisma.DecimalFilter> =
             : v,
         )
         .refine(
-          (v) => v.every((v) => PrismaClient.Prisma.Decimal.isDecimal(v)),
+          (v) =>
+            v.every(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+            ),
           { message: 'Must be a Decimal' },
         )
         .optional(),
@@ -5376,7 +5498,7 @@ export const DecimalFilterSchema: z.ZodType<PrismaClient.Prisma.DecimalFilter> =
           z.number().array(),
           z.string().array(),
           z.instanceof(PrismaClient.Prisma.Decimal).array(),
-          z.instanceof(Decimal).array(),
+          DecimalJSLikeSchema.array(),
         ])
         .transform((v) =>
           isValidDecimalListInput(v)
@@ -5384,7 +5506,11 @@ export const DecimalFilterSchema: z.ZodType<PrismaClient.Prisma.DecimalFilter> =
             : v,
         )
         .refine(
-          (v) => v.every((v) => PrismaClient.Prisma.Decimal.isDecimal(v)),
+          (v) =>
+            v.every(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+            ),
           { message: 'Must be a Decimal' },
         )
         .optional(),
@@ -5393,56 +5519,60 @@ export const DecimalFilterSchema: z.ZodType<PrismaClient.Prisma.DecimalFilter> =
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       lte: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       gt: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       gte: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       not: z
         .union([
@@ -5451,14 +5581,16 @@ export const DecimalFilterSchema: z.ZodType<PrismaClient.Prisma.DecimalFilter> =
               z.number(),
               z.string(),
               z.instanceof(PrismaClient.Prisma.Decimal),
-              z.instanceof(Decimal),
+              DecimalJSLikeSchema,
             ])
             .transform((v) =>
               isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
             )
-            .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-              message: 'Must be a Decimal',
-            }),
+            .refine(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+              { message: 'Must be a Decimal' },
+            ),
           z.lazy(() => NestedDecimalFilterSchema),
         ])
         .optional(),
@@ -5473,14 +5605,15 @@ export const DecimalNullableFilterSchema: z.ZodType<PrismaClient.Prisma.DecimalN
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional()
         .nullable(),
       in: z
@@ -5488,14 +5621,21 @@ export const DecimalNullableFilterSchema: z.ZodType<PrismaClient.Prisma.DecimalN
           z.number().array(),
           z.string().array(),
           z.instanceof(PrismaClient.Prisma.Decimal).array(),
-          z.instanceof(Decimal).array(),
+          DecimalJSLikeSchema.array(),
         ])
         .transform((v) =>
-          isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
+          isValidDecimalListInput(v)
+            ? v.map((v) => new PrismaClient.Prisma.Decimal(v))
+            : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) =>
+            v.every(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+            ),
+          { message: 'Must be a Decimal' },
+        )
         .optional()
         .nullable(),
       notIn: z
@@ -5503,14 +5643,21 @@ export const DecimalNullableFilterSchema: z.ZodType<PrismaClient.Prisma.DecimalN
           z.number().array(),
           z.string().array(),
           z.instanceof(PrismaClient.Prisma.Decimal).array(),
-          z.instanceof(Decimal).array(),
+          DecimalJSLikeSchema.array(),
         ])
         .transform((v) =>
-          isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
+          isValidDecimalListInput(v)
+            ? v.map((v) => new PrismaClient.Prisma.Decimal(v))
+            : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) =>
+            v.every(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+            ),
+          { message: 'Must be a Decimal' },
+        )
         .optional()
         .nullable(),
       lt: z
@@ -5518,56 +5665,60 @@ export const DecimalNullableFilterSchema: z.ZodType<PrismaClient.Prisma.DecimalN
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       lte: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       gt: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       gte: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       not: z
         .union([
@@ -5576,14 +5727,16 @@ export const DecimalNullableFilterSchema: z.ZodType<PrismaClient.Prisma.DecimalN
               z.number(),
               z.string(),
               z.instanceof(PrismaClient.Prisma.Decimal),
-              z.instanceof(Decimal),
+              DecimalJSLikeSchema,
             ])
             .transform((v) =>
               isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
             )
-            .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-              message: 'Must be a Decimal',
-            }),
+            .refine(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+              { message: 'Must be a Decimal' },
+            ),
           z.lazy(() => NestedDecimalNullableFilterSchema),
         ])
         .optional()
@@ -5892,98 +6045,117 @@ export const DecimalWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.De
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       in: z
         .union([
           z.number().array(),
           z.string().array(),
           z.instanceof(PrismaClient.Prisma.Decimal).array(),
-          z.instanceof(Decimal).array(),
+          DecimalJSLikeSchema.array(),
         ])
         .transform((v) =>
-          isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
+          isValidDecimalListInput(v)
+            ? v.map((v) => new PrismaClient.Prisma.Decimal(v))
+            : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) =>
+            v.every(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+            ),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       notIn: z
         .union([
           z.number().array(),
           z.string().array(),
           z.instanceof(PrismaClient.Prisma.Decimal).array(),
-          z.instanceof(Decimal).array(),
+          DecimalJSLikeSchema.array(),
         ])
         .transform((v) =>
-          isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
+          isValidDecimalListInput(v)
+            ? v.map((v) => new PrismaClient.Prisma.Decimal(v))
+            : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) =>
+            v.every(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+            ),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       lt: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       lte: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       gt: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       gte: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       not: z
         .union([
@@ -5992,14 +6164,16 @@ export const DecimalWithAggregatesFilterSchema: z.ZodType<PrismaClient.Prisma.De
               z.number(),
               z.string(),
               z.instanceof(PrismaClient.Prisma.Decimal),
-              z.instanceof(Decimal),
+              DecimalJSLikeSchema,
             ])
             .transform((v) =>
               isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
             )
-            .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-              message: 'Must be a Decimal',
-            }),
+            .refine(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+              { message: 'Must be a Decimal' },
+            ),
           z.lazy(() => NestedDecimalWithAggregatesFilterSchema),
         ])
         .optional(),
@@ -6019,14 +6193,15 @@ export const DecimalNullableWithAggregatesFilterSchema: z.ZodType<PrismaClient.P
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional()
         .nullable(),
       in: z
@@ -6034,14 +6209,21 @@ export const DecimalNullableWithAggregatesFilterSchema: z.ZodType<PrismaClient.P
           z.number().array(),
           z.string().array(),
           z.instanceof(PrismaClient.Prisma.Decimal).array(),
-          z.instanceof(Decimal).array(),
+          DecimalJSLikeSchema.array(),
         ])
         .transform((v) =>
-          isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
+          isValidDecimalListInput(v)
+            ? v.map((v) => new PrismaClient.Prisma.Decimal(v))
+            : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) =>
+            v.every(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+            ),
+          { message: 'Must be a Decimal' },
+        )
         .optional()
         .nullable(),
       notIn: z
@@ -6049,14 +6231,21 @@ export const DecimalNullableWithAggregatesFilterSchema: z.ZodType<PrismaClient.P
           z.number().array(),
           z.string().array(),
           z.instanceof(PrismaClient.Prisma.Decimal).array(),
-          z.instanceof(Decimal).array(),
+          DecimalJSLikeSchema.array(),
         ])
         .transform((v) =>
-          isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
+          isValidDecimalListInput(v)
+            ? v.map((v) => new PrismaClient.Prisma.Decimal(v))
+            : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) =>
+            v.every(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+            ),
+          { message: 'Must be a Decimal' },
+        )
         .optional()
         .nullable(),
       lt: z
@@ -6064,56 +6253,60 @@ export const DecimalNullableWithAggregatesFilterSchema: z.ZodType<PrismaClient.P
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       lte: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       gt: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       gte: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       not: z
         .union([
@@ -6122,14 +6315,16 @@ export const DecimalNullableWithAggregatesFilterSchema: z.ZodType<PrismaClient.P
               z.number(),
               z.string(),
               z.instanceof(PrismaClient.Prisma.Decimal),
-              z.instanceof(Decimal),
+              DecimalJSLikeSchema,
             ])
             .transform((v) =>
               isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
             )
-            .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-              message: 'Must be a Decimal',
-            }),
+            .refine(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+              { message: 'Must be a Decimal' },
+            ),
           z.lazy(() => NestedDecimalNullableWithAggregatesFilterSchema),
         ])
         .optional()
@@ -6972,70 +7167,75 @@ export const DecimalFieldUpdateOperationsInputSchema: z.ZodType<PrismaClient.Pri
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       increment: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       decrement: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       multiply: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       divide: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
     })
     .strict();
@@ -7048,14 +7248,15 @@ export const NullableDecimalFieldUpdateOperationsInputSchema: z.ZodType<PrismaCl
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional()
         .nullable(),
       increment: z
@@ -7063,56 +7264,60 @@ export const NullableDecimalFieldUpdateOperationsInputSchema: z.ZodType<PrismaCl
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       decrement: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       multiply: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       divide: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
     })
     .strict();
@@ -8106,98 +8311,117 @@ export const NestedDecimalFilterSchema: z.ZodType<PrismaClient.Prisma.NestedDeci
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       in: z
         .union([
           z.number().array(),
           z.string().array(),
           z.instanceof(PrismaClient.Prisma.Decimal).array(),
-          z.instanceof(Decimal).array(),
+          DecimalJSLikeSchema.array(),
         ])
         .transform((v) =>
-          isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
+          isValidDecimalListInput(v)
+            ? v.map((v) => new PrismaClient.Prisma.Decimal(v))
+            : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) =>
+            v.every(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+            ),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       notIn: z
         .union([
           z.number().array(),
           z.string().array(),
           z.instanceof(PrismaClient.Prisma.Decimal).array(),
-          z.instanceof(Decimal).array(),
+          DecimalJSLikeSchema.array(),
         ])
         .transform((v) =>
-          isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
+          isValidDecimalListInput(v)
+            ? v.map((v) => new PrismaClient.Prisma.Decimal(v))
+            : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) =>
+            v.every(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+            ),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       lt: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       lte: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       gt: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       gte: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       not: z
         .union([
@@ -8206,14 +8430,16 @@ export const NestedDecimalFilterSchema: z.ZodType<PrismaClient.Prisma.NestedDeci
               z.number(),
               z.string(),
               z.instanceof(PrismaClient.Prisma.Decimal),
-              z.instanceof(Decimal),
+              DecimalJSLikeSchema,
             ])
             .transform((v) =>
               isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
             )
-            .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-              message: 'Must be a Decimal',
-            }),
+            .refine(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+              { message: 'Must be a Decimal' },
+            ),
           z.lazy(() => NestedDecimalFilterSchema),
         ])
         .optional(),
@@ -8228,14 +8454,15 @@ export const NestedDecimalNullableFilterSchema: z.ZodType<PrismaClient.Prisma.Ne
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional()
         .nullable(),
       in: z
@@ -8243,14 +8470,21 @@ export const NestedDecimalNullableFilterSchema: z.ZodType<PrismaClient.Prisma.Ne
           z.number().array(),
           z.string().array(),
           z.instanceof(PrismaClient.Prisma.Decimal).array(),
-          z.instanceof(Decimal).array(),
+          DecimalJSLikeSchema.array(),
         ])
         .transform((v) =>
-          isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
+          isValidDecimalListInput(v)
+            ? v.map((v) => new PrismaClient.Prisma.Decimal(v))
+            : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) =>
+            v.every(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+            ),
+          { message: 'Must be a Decimal' },
+        )
         .optional()
         .nullable(),
       notIn: z
@@ -8258,14 +8492,21 @@ export const NestedDecimalNullableFilterSchema: z.ZodType<PrismaClient.Prisma.Ne
           z.number().array(),
           z.string().array(),
           z.instanceof(PrismaClient.Prisma.Decimal).array(),
-          z.instanceof(Decimal).array(),
+          DecimalJSLikeSchema.array(),
         ])
         .transform((v) =>
-          isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
+          isValidDecimalListInput(v)
+            ? v.map((v) => new PrismaClient.Prisma.Decimal(v))
+            : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) =>
+            v.every(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+            ),
+          { message: 'Must be a Decimal' },
+        )
         .optional()
         .nullable(),
       lt: z
@@ -8273,56 +8514,60 @@ export const NestedDecimalNullableFilterSchema: z.ZodType<PrismaClient.Prisma.Ne
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       lte: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       gt: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       gte: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       not: z
         .union([
@@ -8331,14 +8576,16 @@ export const NestedDecimalNullableFilterSchema: z.ZodType<PrismaClient.Prisma.Ne
               z.number(),
               z.string(),
               z.instanceof(PrismaClient.Prisma.Decimal),
-              z.instanceof(Decimal),
+              DecimalJSLikeSchema,
             ])
             .transform((v) =>
               isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
             )
-            .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-              message: 'Must be a Decimal',
-            }),
+            .refine(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+              { message: 'Must be a Decimal' },
+            ),
           z.lazy(() => NestedDecimalNullableFilterSchema),
         ])
         .optional()
@@ -8506,98 +8753,117 @@ export const NestedDecimalWithAggregatesFilterSchema: z.ZodType<PrismaClient.Pri
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       in: z
         .union([
           z.number().array(),
           z.string().array(),
           z.instanceof(PrismaClient.Prisma.Decimal).array(),
-          z.instanceof(Decimal).array(),
+          DecimalJSLikeSchema.array(),
         ])
         .transform((v) =>
-          isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
+          isValidDecimalListInput(v)
+            ? v.map((v) => new PrismaClient.Prisma.Decimal(v))
+            : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) =>
+            v.every(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+            ),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       notIn: z
         .union([
           z.number().array(),
           z.string().array(),
           z.instanceof(PrismaClient.Prisma.Decimal).array(),
-          z.instanceof(Decimal).array(),
+          DecimalJSLikeSchema.array(),
         ])
         .transform((v) =>
-          isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
+          isValidDecimalListInput(v)
+            ? v.map((v) => new PrismaClient.Prisma.Decimal(v))
+            : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) =>
+            v.every(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+            ),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       lt: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       lte: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       gt: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       gte: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       not: z
         .union([
@@ -8606,14 +8872,16 @@ export const NestedDecimalWithAggregatesFilterSchema: z.ZodType<PrismaClient.Pri
               z.number(),
               z.string(),
               z.instanceof(PrismaClient.Prisma.Decimal),
-              z.instanceof(Decimal),
+              DecimalJSLikeSchema,
             ])
             .transform((v) =>
               isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
             )
-            .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-              message: 'Must be a Decimal',
-            }),
+            .refine(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+              { message: 'Must be a Decimal' },
+            ),
           z.lazy(() => NestedDecimalWithAggregatesFilterSchema),
         ])
         .optional(),
@@ -8633,14 +8901,15 @@ export const NestedDecimalNullableWithAggregatesFilterSchema: z.ZodType<PrismaCl
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional()
         .nullable(),
       in: z
@@ -8648,14 +8917,21 @@ export const NestedDecimalNullableWithAggregatesFilterSchema: z.ZodType<PrismaCl
           z.number().array(),
           z.string().array(),
           z.instanceof(PrismaClient.Prisma.Decimal).array(),
-          z.instanceof(Decimal).array(),
+          DecimalJSLikeSchema.array(),
         ])
         .transform((v) =>
-          isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
+          isValidDecimalListInput(v)
+            ? v.map((v) => new PrismaClient.Prisma.Decimal(v))
+            : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) =>
+            v.every(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+            ),
+          { message: 'Must be a Decimal' },
+        )
         .optional()
         .nullable(),
       notIn: z
@@ -8663,14 +8939,21 @@ export const NestedDecimalNullableWithAggregatesFilterSchema: z.ZodType<PrismaCl
           z.number().array(),
           z.string().array(),
           z.instanceof(PrismaClient.Prisma.Decimal).array(),
-          z.instanceof(Decimal).array(),
+          DecimalJSLikeSchema.array(),
         ])
         .transform((v) =>
-          isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
+          isValidDecimalListInput(v)
+            ? v.map((v) => new PrismaClient.Prisma.Decimal(v))
+            : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) =>
+            v.every(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+            ),
+          { message: 'Must be a Decimal' },
+        )
         .optional()
         .nullable(),
       lt: z
@@ -8678,56 +8961,60 @@ export const NestedDecimalNullableWithAggregatesFilterSchema: z.ZodType<PrismaCl
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       lte: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       gt: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       gte: z
         .union([
           z.number(),
           z.string(),
           z.instanceof(PrismaClient.Prisma.Decimal),
-          z.instanceof(Decimal),
+          DecimalJSLikeSchema,
         ])
         .transform((v) =>
           isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
         )
-        .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-          message: 'Must be a Decimal',
-        })
+        .refine(
+          (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+          { message: 'Must be a Decimal' },
+        )
         .optional(),
       not: z
         .union([
@@ -8736,14 +9023,16 @@ export const NestedDecimalNullableWithAggregatesFilterSchema: z.ZodType<PrismaCl
               z.number(),
               z.string(),
               z.instanceof(PrismaClient.Prisma.Decimal),
-              z.instanceof(Decimal),
+              DecimalJSLikeSchema,
             ])
             .transform((v) =>
               isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
             )
-            .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-              message: 'Must be a Decimal',
-            }),
+            .refine(
+              (v) =>
+                PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+              { message: 'Must be a Decimal' },
+            ),
           z.lazy(() => NestedDecimalNullableWithAggregatesFilterSchema),
         ])
         .optional()

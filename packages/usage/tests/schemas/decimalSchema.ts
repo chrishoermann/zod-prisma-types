@@ -1,80 +1,71 @@
 import { Prisma } from '@prisma/client';
-import Decimal from 'decimal.js';
+import { DecimalJsLike } from '@prisma/client/runtime';
 import { z } from 'zod';
 
-const AcceptedDecimalInput = z.union([
-  z.number(),
-  z.string(),
-  z.instanceof(Prisma.Decimal),
-  z.instanceof(Decimal),
-]);
-const AcceptedDecimalListInput = z.union([
-  z.number().array(),
-  z.string().array(),
-  z.instanceof(Prisma.Decimal).array(),
-  z.instanceof(Decimal).array(),
-]);
+export const DecimalJSLikeSchema = z.object({
+  d: z.array(z.number()),
+  e: z.number(),
+  s: z.number(),
+});
 
-const isValidDecimalInput = (
-  v: string | number | Prisma.Decimal | Decimal,
+// TYPEGURADS
+// ------------------------------
+
+export const DECIMAL_STRING_REGEX = /^[0-9.,e+\-bxffo_cp]+$|Infinity|NaN/;
+
+export const isValidDecimalInput = (
+  v: string | number | Prisma.Decimal | DecimalJsLike,
 ): v is number | string =>
-  typeof v === 'number' || (typeof v === 'string' && !!v.match(/[0-9.]/));
+  typeof v === 'number' ||
+  (typeof v === 'string' && DECIMAL_STRING_REGEX.test(v));
 
-const isValidDecimalListInput = (
-  v: string[] | number[] | Prisma.Decimal[] | Decimal[],
+export const isValidDecimalListInput = (
+  v: string[] | number[] | Prisma.Decimal[] | DecimalJsLike[],
 ): v is number[] | string[] =>
   (v as number[]).every((v) => typeof v === 'number') ||
-  (v as string[]).every((v) => typeof v === 'string' && !!v.match(/[0-9.]/));
+  (v as string[]).every(
+    (v) => typeof v === 'string' && DECIMAL_STRING_REGEX.test(v),
+  );
 
-// implementation that should work
-const test = z
+const isDecimalJsLike = (v: unknown): v is DecimalJsLike =>
+  !!v && typeof v === 'object' && 'd' in v && 'e' in v && 's' in v;
+
+// TEST SCHEMAS
+// ------------------------------
+
+export const DecimalListSchema = z
   .union([
     z.number().array(),
     z.string().array(),
     z.instanceof(Prisma.Decimal).array(),
-    z.instanceof(Decimal).array(),
+    DecimalJSLikeSchema.array(),
   ])
   .transform((v) =>
     isValidDecimalListInput(v) ? v.map((v) => new Prisma.Decimal(v)) : v,
   )
-  .refine((v) => v.every((v) => Prisma.Decimal.isDecimal(v)), {
-    message: 'Must be a Decimal',
-  })
-  .optional();
-
-export const decimalSchema = z
-  .union(
-    [
-      z.number(),
-      z.string(),
-      z.instanceof(Prisma.Decimal),
-      z.instanceof(Decimal),
-    ],
+  .refine(
+    (v) => v.every((v) => Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v)),
     {
-      invalid_type_error: 'Field "decimal" must be a Decimal',
+      message: 'Field "decimal" must be a Decimal',
+      path: ['Models', 'DecimalModel'],
     },
-  )
+  );
+
+export const DecimalSchema = z
+  .union([
+    z.number(),
+    z.string(),
+    z.instanceof(Prisma.Decimal),
+    DecimalJSLikeSchema,
+  ])
   .transform((v) => (isValidDecimalInput(v) ? new Prisma.Decimal(v) : v))
-  .refine((v) => Prisma.Decimal.isDecimal(v), {
+  .refine((v) => Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v), {
     message: 'Field "decimal" must be a Decimal',
     path: ['Models', 'DecimalModel'],
   });
 
 export const DecimalModelSchema = z.object({
   id: z.number().int(),
-  decimal: z
-    .any()
-    .transform((v) => (isValidDecimalInput(v) ? new Prisma.Decimal(v) : v))
-    .refine((v) => Prisma.Decimal.isDecimal(v), {
-      message: 'Field "decimal" must be a Decimal',
-      path: ['Models', 'DecimalModel'],
-    }),
-  decimalOpt: z
-    .any()
-    .transform((v) => (isValidDecimalInput(v) ? new Prisma.Decimal(v) : v))
-    .refine((v) => Prisma.Decimal.isDecimal(v), {
-      message: 'Field "decimalOpt" must be a Decimal',
-      path: ['Models', 'DecimalModel'],
-    })
-    .nullish(),
+  decimal: DecimalSchema,
+  decimalOpt: DecimalSchema.nullish(),
 });

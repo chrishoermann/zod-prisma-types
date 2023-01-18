@@ -1,8 +1,8 @@
 import { Prisma } from '@prisma/client';
 import { initTRPC } from '@trpc/server';
 import { createHTTPServer } from '@trpc/server/adapters/standalone';
-import { JsonModelSchema } from '../../prisma/zod';
-import { DecimalModelSchema, decimalSchema } from '../schemas/decimalSchema';
+import { isDecimalJsLike, JsonModelSchema } from '../../prisma/zod';
+import { DecimalModelSchema, DecimalSchema } from '../schemas/decimalSchema';
 
 export type AppRouter = typeof appRouter;
 
@@ -15,8 +15,8 @@ const router = t.router;
 // the zod schemas need to be generated to complete the tests
 
 const appRouter = router({
-  decimal: publicProcedure.input(decimalSchema).query(({ input }) => {
-    const isDecimal = Prisma.Decimal.isDecimal(input);
+  decimal: publicProcedure.input(DecimalSchema).query(({ input }) => {
+    const isDecimal = Prisma.Decimal.isDecimal(input) || isDecimalJsLike(input);
     return isDecimal;
   }),
   decimalModel: publicProcedure.input(DecimalModelSchema).query(({ input }) => {

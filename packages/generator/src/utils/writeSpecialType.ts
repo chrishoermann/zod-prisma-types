@@ -43,34 +43,48 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
     inputType.isDecimalType &&
     !inputType.generatorConfig.useInstanceOfForDecimal
   ) {
-    return (
-      writer
+    if (inputType.isList) {
+      return writer
         .write(`z.union([`)
-        .write(`z.number()${inputType.isList ? '.array()' : ''},`)
-        .write(`z.string()${inputType.isList ? '.array()' : ''},`)
-        .write(
-          `z.instanceof(PrismaClient.Prisma.Decimal)${
-            inputType.isList ? '.array()' : ''
-          },`,
-        )
-        .conditionalWrite(
-          !!inputType.generatorConfig.useDecimalJs,
-          `z.instanceof(Decimal)${inputType.isList ? '.array()' : ''}`,
-        )
+        .write(`z.number().array(),`)
+        .write(`z.string().array(),`)
+        .write(`z.instanceof(PrismaClient.Prisma.Decimal).array(),`)
+        .write(`DecimalJSLikeSchema.array(),`)
         .write(`]`)
         .conditionalWrite(!!zodCustomErrors, `, ${zodCustomErrors!}`)
         .write(`)`)
         .write(
-          `.transform((v) => isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v)`,
+          `.transform((v) => isValidDecimalListInput(v) ? v.map((v) => new PrismaClient.Prisma.Decimal(v)) : v)`,
         )
         .write(`.refine((v) => `)
-        .write(`PrismaClient.Prisma.Decimal.isDecimal(v),`)
+        .write(
+          `v.every((v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v)),`,
+        )
         .write(` { message: 'Must be a Decimal' })`)
-        // .conditionalWrite(inputType.isList, `.array()`)
         .conditionalWrite(isOptional, `.optional()`)
         .conditionalWrite(isNullable, `.nullable()`)
-        .conditionalWrite(writeComma, `,`)
-    );
+        .conditionalWrite(writeComma, `,`);
+    }
+
+    return writer
+      .write(`z.union([`)
+      .write(`z.number(),`)
+      .write(`z.string(),`)
+      .write(`z.instanceof(PrismaClient.Prisma.Decimal),`)
+      .write(`DecimalJSLikeSchema,`)
+
+      .write(`]`)
+      .conditionalWrite(!!zodCustomErrors, `, ${zodCustomErrors!}`)
+      .write(`)`)
+      .write(
+        `.transform((v) => isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v)`,
+      )
+      .write(`.refine((v) => `)
+      .write(`PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),`)
+      .write(` { message: 'Must be a Decimal' })`)
+      .conditionalWrite(isOptional, `.optional()`)
+      .conditionalWrite(isNullable, `.nullable()`)
+      .conditionalWrite(writeComma, `,`);
   }
 
   if (
