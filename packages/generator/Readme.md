@@ -28,7 +28,7 @@
   - [`imports`](#imports)
   - [`tsConfigFilePath`](#tsconfigfilepath)
 - [Json null values](#json-null-values)
-- [Decimal](#handling-of-decimal)
+- [Decimal](#decimal)
 - [Skip schema generation](#skip-schema-generation)
 - [Field validators](#field-validators)
   - [Custom type error messages](#custom-type-error-messages)
