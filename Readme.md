@@ -388,7 +388,7 @@ To adhere to this concept you can pass `"DbNull"` or `"JsonNull"` as string to a
 
 ## Decimal
 
-When using Decimal a `transform` and a `refine` method are used to validate the input in a way that the prisma input union `string | number | Decimal | DecimalJsLike` can be used via the generated schema. If you provide a decimal as `string` it is checked against a basic regex that matches the syntax shown in the [decimal.js docs](https://mikemcl.github.io/decimal.js/#decimal) to see if it is a valid decimal value.
+When using Decimal a `refine` method is used to validate if the input adheres to the prisma input union `string | number | Decimal | DecimalJsLike`.
 
 ```prisma
 model MyModel {
@@ -409,30 +409,25 @@ export interface DecimalJsLike {
   s: number;
 }
 
-export const DECIMAL_STRING_REGEX = /^[0-9.,e+-bxffo_cp]+$|Infinity|NaN/;
-
 export const DecimalJSLikeSchema = z.object({
   d: z.array(z.number()),
   e: z.number(),
   s: z.number(),
 });
 
+export const DECIMAL_STRING_REGEX = /^[0-9.,e+-bxffo_cp]+$|Infinity|NaN/;
+
 export const isValidDecimalInput = (
-  v: string | number | PrismaClient.Prisma.Decimal | DecimalJsLike,
-): v is number | string =>
-  typeof v === 'number' ||
-  (typeof v === 'string' && DECIMAL_STRING_REGEX.test(v));
-
-export const isValidDecimalListInput = (
-  v: string[] | number[] | PrismaClient.Prisma.Decimal[] | DecimalJsLike[],
-): v is number[] | string[] =>
-  (v as number[]).every((v) => typeof v === 'number') ||
-  (v as string[]).every(
-    (v) => typeof v === 'string' && DECIMAL_STRING_REGEX.test(v),
+  v?: null | string | number | PrismaClient.Prisma.Decimal | DecimalJsLike,
+) => {
+  if (!v) return false;
+  return (
+    (typeof v === 'object' && PrismaClient.Prisma.Decimal.isDecimal(v)) ||
+    (typeof v === 'object' && 'd' in v && 'e' in v && 's' in v) ||
+    (typeof v === 'string' && DECIMAL_STRING_REGEX.test(v)) ||
+    typeof v === 'number'
   );
-
-export const isDecimalJsLike = (v: unknown): v is DecimalJsLike =>
-  !!v && typeof v === 'object' && 'd' in v && 'e' in v && 's' in v;
+};
 
 // SCHEMA
 //------------------------------------------------------
@@ -446,16 +441,10 @@ export const MyModelSchema = z.object({
       z.instanceof(PrismaClient.Prisma.Decimal),
       DecimalJSLikeSchema,
     ])
-    .transform((v) =>
-      isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
-    )
-    .refine(
-      (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
-      {
-        message: 'Field "decimal" must be a Decimal',
-        path: ['Models', 'DecimalModel'],
-      },
-    ),
+    .refine((v) => isValidDecimalInput(v), {
+      message: 'Field "decimal" must be a Decimal',
+      path: ['Models', 'DecimalModel'],
+    }),
 });
 ```
 

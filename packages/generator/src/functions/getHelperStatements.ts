@@ -74,55 +74,28 @@ export const getHelperStatements: GetStatements = ({ schema }) => {
           {
             name: `isValidDecimalInput`,
             initializer(writer) {
-              writer.writeLine(
-                `(v: string | number | PrismaClient.Prisma.Decimal | DecimalJsLike): v is number | string => `,
-              );
-              writer.withIndentationLevel(2, () => {
-                writer
-                  .writeLine(`typeof v === 'number' ||`)
-                  .write(
-                    `(typeof v === 'string' && DECIMAL_STRING_REGEX.test(v))`,
-                  );
-              });
-            },
-          },
-        ],
-      }),
-
-      writeConstStatement({
-        leadingTrivia: (writer) => writer.newLine(),
-        declarations: [
-          {
-            name: `isValidDecimalListInput`,
-            initializer(writer) {
-              writer.writeLine(
-                `(v: string[] | number[] | PrismaClient.Prisma.Decimal[] | DecimalJsLike[]): v is number[] | string[] => `,
-              );
-              writer.withIndentationLevel(2, () => {
-                writer
-                  .writeLine(
-                    `(v as number[]).every((v) => typeof v === 'number') ||`,
-                  )
-                  .write(
-                    `(v as string[]).every((v) => typeof v === 'string' && DECIMAL_STRING_REGEX.test(v))`,
-                  );
-              });
-            },
-          },
-        ],
-      }),
-
-      writeConstStatement({
-        leadingTrivia: (writer) => writer.newLine(),
-        declarations: [
-          {
-            name: `isDecimalJsLike`,
-            initializer(writer) {
               writer
-                .write(`(v: unknown): v is DecimalJsLike => `)
                 .write(
-                  `!!v && typeof v === 'object' && 'd' in v && 'e' in v && 's' in v`,
-                );
+                  `(v?: null | string | number | PrismaClient.Prisma.Decimal | DecimalJsLike) => `,
+                )
+                .inlineBlock(() => {
+                  writer.writeLine(`if (!v) return false;`);
+                  writer.writeLine(`return (`);
+                  writer.withIndentationLevel(2, () => {
+                    writer
+                      .writeLine(
+                        `(typeof v === 'object' && PrismaClient.Prisma.Decimal.isDecimal(v)) ||`,
+                      )
+                      .writeLine(
+                        `(typeof v === 'object' && 'd' in v && 'e' in v && 's' in v) ||`,
+                      )
+                      .writeLine(
+                        `(typeof v === 'string' && DECIMAL_STRING_REGEX.test(v)) ||`,
+                      )
+                      .writeLine(`typeof v === 'number'`);
+                  });
+                  writer.writeLine(`)`);
+                });
             },
           },
         ],

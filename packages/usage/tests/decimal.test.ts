@@ -8,7 +8,6 @@ import {
 import { client } from './trpc/client';
 import { getServer } from './trpc/server';
 import Decimal from 'decimal.js';
-import { isDecimalJsLike } from '../prisma/zod';
 import { DecimalJsLike } from '@prisma/client/runtime';
 
 ///////////////////////////////////////
@@ -25,6 +24,14 @@ export const decimalJsLikeTwo: DecimalJsLike = {
   d: [1234], // array of digits
   e: -1, // exponent
   s: 1, // sign
+};
+
+///////////////////////////////////////
+// HELPERS
+///////////////////////////////////////
+
+const isDecimalJsLike = (v: any): v is DecimalJsLike => {
+  return !!v && 'd' in v && 'e' in v && 's' in v;
 };
 
 ///////////////////////////////////////
