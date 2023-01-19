@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { MYValueSchema } from '../enums/MYValueSchema';
+import { MYValueSchema } from '../inputTypes/MYValueSchema';
 
 export const MODELWithUpperCaseSchema = z.object({
   MYValue: MYValueSchema,

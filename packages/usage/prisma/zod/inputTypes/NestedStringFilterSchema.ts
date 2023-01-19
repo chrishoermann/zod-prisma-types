@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
-import { NestedStringFilterSchema } from './NestedStringFilterSchema';
 
 export const NestedStringFilterSchema: z.ZodType<PrismaClient.Prisma.NestedStringFilter> = z.object({
   equals: z.string().optional(),

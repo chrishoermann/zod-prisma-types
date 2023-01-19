@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
-import { SortOrderSchema } from '../enums';
+import { SortOrderSchema } from './SortOrderSchema';
 import { UserOrderByRelationAggregateInputSchema } from './UserOrderByRelationAggregateInputSchema';
 
 export const LocationOrderByWithRelationInputSchema: z.ZodType<PrismaClient.Prisma.LocationOrderByWithRelationInput> = z.object({

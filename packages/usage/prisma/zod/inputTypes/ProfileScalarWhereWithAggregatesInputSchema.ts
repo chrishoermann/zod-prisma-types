@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
-import { ProfileScalarWhereWithAggregatesInputSchema } from './ProfileScalarWhereWithAggregatesInputSchema';
 import { IntWithAggregatesFilterSchema } from './IntWithAggregatesFilterSchema';
 import { StringWithAggregatesFilterSchema } from './StringWithAggregatesFilterSchema';
 import { EnumRoleNullableListFilterSchema } from './EnumRoleNullableListFilterSchema';

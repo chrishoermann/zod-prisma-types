@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
-import { NestedBigIntNullableFilterSchema } from './NestedBigIntNullableFilterSchema';
 
 export const NestedBigIntNullableFilterSchema: z.ZodType<PrismaClient.Prisma.NestedBigIntNullableFilter> = z.object({
   equals: z.bigint().optional().nullable(),

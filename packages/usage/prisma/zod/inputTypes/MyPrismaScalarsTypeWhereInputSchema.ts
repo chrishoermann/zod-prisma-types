@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
-import { MyPrismaScalarsTypeWhereInputSchema } from './MyPrismaScalarsTypeWhereInputSchema';
 import { StringFilterSchema } from './StringFilterSchema';
 import { StringNullableFilterSchema } from './StringNullableFilterSchema';
 import { FloatFilterSchema } from './FloatFilterSchema';
@@ -28,8 +27,8 @@ export const MyPrismaScalarsTypeWhereInputSchema: z.ZodType<PrismaClient.Prisma.
   floatOpt: z.union([ z.lazy(() => FloatNullableFilterSchema),z.number() ]).optional().nullable(),
   int: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   intOpt: z.union([ z.lazy(() => IntNullableFilterSchema),z.number() ]).optional().nullable(),
-  decimal: z.union([ z.lazy(() => DecimalFilterSchema),z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }) ]).optional(),
-  decimalOpt: z.union([ z.lazy(() => DecimalNullableFilterSchema),z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }) ]).optional().nullable(),
+  decimal: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(PrismaClient.Prisma.Decimal),DecimalJSLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
+  decimalOpt: z.union([ z.lazy(() => DecimalNullableFilterSchema),z.union([z.number(),z.string(),z.instanceof(PrismaClient.Prisma.Decimal),DecimalJSLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional().nullable(),
   date: z.union([ z.lazy(() => DateTimeFilterSchema),z.date() ]).optional(),
   dateOpt: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.date() ]).optional().nullable(),
   bigIntOpt: z.union([ z.lazy(() => BigIntNullableFilterSchema),z.bigint() ]).optional().nullable(),

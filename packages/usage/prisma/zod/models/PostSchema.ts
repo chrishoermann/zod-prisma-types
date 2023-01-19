@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AnotherEnumSchema } from '../enums/AnotherEnumSchema';
+import { AnotherEnumSchema } from '../inputTypes/AnotherEnumSchema';
 
 export const PostSchema = z.object({
   anotherEnum: AnotherEnumSchema.array(),

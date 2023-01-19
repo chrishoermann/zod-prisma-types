@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
-import { LocationWhereInputSchema } from './LocationWhereInputSchema';
 import { FloatFilterSchema } from './FloatFilterSchema';
 import { UserListRelationFilterSchema } from './UserListRelationFilterSchema';
 

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
-import { SortOrderSchema } from '../enums';
+import { SortOrderSchema } from './SortOrderSchema';
 import { LocationCountOrderByAggregateInputSchema } from './LocationCountOrderByAggregateInputSchema';
 import { LocationAvgOrderByAggregateInputSchema } from './LocationAvgOrderByAggregateInputSchema';
 import { LocationMaxOrderByAggregateInputSchema } from './LocationMaxOrderByAggregateInputSchema';

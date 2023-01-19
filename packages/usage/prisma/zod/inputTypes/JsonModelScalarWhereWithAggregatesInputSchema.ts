@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
-import { JsonModelScalarWhereWithAggregatesInputSchema } from './JsonModelScalarWhereWithAggregatesInputSchema';
 import { IntWithAggregatesFilterSchema } from './IntWithAggregatesFilterSchema';
 import { JsonWithAggregatesFilterSchema } from './JsonWithAggregatesFilterSchema';
 import { JsonNullableWithAggregatesFilterSchema } from './JsonNullableWithAggregatesFilterSchema';

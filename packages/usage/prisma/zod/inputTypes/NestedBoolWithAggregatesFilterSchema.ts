@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
-import { NestedBoolWithAggregatesFilterSchema } from './NestedBoolWithAggregatesFilterSchema';
 import { NestedIntFilterSchema } from './NestedIntFilterSchema';
 import { NestedBoolFilterSchema } from './NestedBoolFilterSchema';
 

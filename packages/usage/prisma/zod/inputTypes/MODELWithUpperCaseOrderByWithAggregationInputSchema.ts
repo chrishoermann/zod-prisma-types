@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
-import { SortOrderSchema } from '../enums';
+import { SortOrderSchema } from './SortOrderSchema';
 import { MODELWithUpperCaseCountOrderByAggregateInputSchema } from './MODELWithUpperCaseCountOrderByAggregateInputSchema';
 import { MODELWithUpperCaseAvgOrderByAggregateInputSchema } from './MODELWithUpperCaseAvgOrderByAggregateInputSchema';
 import { MODELWithUpperCaseMaxOrderByAggregateInputSchema } from './MODELWithUpperCaseMaxOrderByAggregateInputSchema';

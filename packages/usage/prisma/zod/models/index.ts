@@ -1,3 +1,4 @@
+export { DecimalModelSchema } from "./DecimalModelSchema";
 export { JsonModelSchema } from "./JsonModelSchema";
 export { LocationSchema } from "./LocationSchema";
 export { ModelWithCommentsSchema } from "./ModelWithCommentsSchema";

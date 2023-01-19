@@ -1,5 +1,5 @@
 import {
-  getPrismaImportStatemnt,
+  getPrismaImportStatement,
   TRANSFORM_JSON_IMPORT_STATEMENT,
   ZOD_IMPORT_STATEMENT,
 } from '../constants';
@@ -23,7 +23,7 @@ export const writeEnumFiles: CreateFiles = async (options) => {
               if (useNativeEnum) {
                 source.addImportDeclarations([
                   ZOD_IMPORT_STATEMENT,
-                  getPrismaImportStatemnt(
+                  getPrismaImportStatement(
                     extendedDMMF.generatorConfig.prismaClientPath,
                   ),
                 ]);
@@ -84,7 +84,7 @@ export const writeEnumFiles: CreateFiles = async (options) => {
           writeStatement: (source) => {
             source.addImportDeclarations([
               ZOD_IMPORT_STATEMENT,
-              getPrismaImportStatemnt(
+              getPrismaImportStatement(
                 extendedDMMF.generatorConfig.prismaClientPath,
               ),
             ]);

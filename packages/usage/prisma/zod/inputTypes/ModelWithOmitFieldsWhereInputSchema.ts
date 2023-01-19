@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
-import { ModelWithOmitFieldsWhereInputSchema } from './ModelWithOmitFieldsWhereInputSchema';
 import { StringFilterSchema } from './StringFilterSchema';
 import { StringNullableFilterSchema } from './StringNullableFilterSchema';
 

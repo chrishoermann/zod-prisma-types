@@ -136,20 +136,24 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
    */
   private _getAutomaticImports() {
     const statements: string[] = [];
-    if (this.fields.some((field) => field.isJsonType && !field.isRequired))
+    if (this.fields.some((field) => field.isJsonType && !field.isRequired)) {
       statements.push('import { NullableJsonValue } from "../helpers');
+    }
 
-    if (this.fields.some((field) => field.isJsonType && field.isRequired))
+    if (this.fields.some((field) => field.isJsonType && field.isRequired)) {
       statements.push('import { InputJsonValue } from "../helpers');
+    }
 
-    if (this.fields.some((field) => field.isDecimalType))
+    if (this.fields.some((field) => field.isDecimalType)) {
       statements.push(
         `import * as PrismaClient from '${this.generatorConfig.prismaClientPath}'`,
+        `import { DecimalJSLikeSchema, isValidDecimalInput } from "../helpers`,
       );
+    }
 
     this.enumFields.forEach((field) => {
       statements.push(
-        `import { ${field.type}Schema } from '../enums/${field.type}Schema'`,
+        `import { ${field.type}Schema } from '../inputTypes/${field.type}Schema'`,
       );
     });
 

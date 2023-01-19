@@ -1,7 +1,7 @@
 import { ZOD_IMPORT_STATEMENT } from '../constants';
 import { CreateFiles } from '../types';
 import { multiFileWriter, writeConstStatement, writeJsDoc } from '../utils';
-import { writeModelFields } from '.';
+import { writeModelFields } from '../utils';
 
 /////////////////////////////////////////////////
 // FUNCTION

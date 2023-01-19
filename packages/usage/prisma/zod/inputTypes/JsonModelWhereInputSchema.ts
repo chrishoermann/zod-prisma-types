@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
-import { JsonModelWhereInputSchema } from './JsonModelWhereInputSchema';
 import { IntFilterSchema } from './IntFilterSchema';
 import { JsonFilterSchema } from './JsonFilterSchema';
 import { JsonNullableFilterSchema } from './JsonNullableFilterSchema';

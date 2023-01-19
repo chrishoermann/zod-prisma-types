@@ -18,7 +18,7 @@ export const PRIMSA_IMPORT_STATEMENT: ImportDeclarationStructure = {
   moduleSpecifier: '@prisma/client',
 };
 
-export const getPrismaImportStatemnt = (
+export const getPrismaImportStatement = (
   prismaClientPath: string,
 ): ImportDeclarationStructure => ({
   ...PRIMSA_IMPORT_STATEMENT,

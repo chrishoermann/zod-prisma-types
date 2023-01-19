@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
 import { SecondEnumSchema } from './SecondEnumSchema';
-import { NestedEnumSecondEnumWithAggregatesFilterSchema } from './NestedEnumSecondEnumWithAggregatesFilterSchema';
 import { NestedIntFilterSchema } from './NestedIntFilterSchema';
 import { NestedEnumSecondEnumFilterSchema } from './NestedEnumSecondEnumFilterSchema';
 

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
-import { SortOrderSchema } from '../enums';
+import { SortOrderSchema } from './SortOrderSchema';
 
 export const MyPrismaScalarsTypeSumOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.MyPrismaScalarsTypeSumOrderByAggregateInput> = z.object({
   float: z.lazy(() => SortOrderSchema).optional(),

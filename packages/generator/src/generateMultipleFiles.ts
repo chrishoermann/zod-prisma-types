@@ -2,7 +2,7 @@ import { DirectoryHelper } from './classes';
 import fs from 'fs';
 import { CreateOptions } from './types';
 import {
-  writeEnumFiles,
+  // writeEnumFiles,
   writeHelperFiles,
   writeInputTypeFiles,
   writeModelFiles,
@@ -33,10 +33,10 @@ export const generateMultipleFiles = ({
   const indexSource = project.createSourceFile(`${outputPath}/index.ts`);
 
   indexSource.addExportDeclarations([
-    {
-      namespaceExport: '',
-      moduleSpecifier: './enums',
-    },
+    // {
+    //   namespaceExport: '',
+    //   moduleSpecifier: './enums',
+    // },
     {
       namespaceExport: '',
       moduleSpecifier: './helpers',
@@ -55,7 +55,7 @@ export const generateMultipleFiles = ({
 
   writeHelperFiles({ outputPath, project, extendedDMMF });
 
-  writeEnumFiles({ outputPath, project, extendedDMMF });
+  // writeEnumFiles({ outputPath, project, extendedDMMF });
 
   writeModelFiles({ outputPath, project, extendedDMMF });
 

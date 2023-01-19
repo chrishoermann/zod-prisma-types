@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
-import { NestedIntNullableFilterSchema } from './NestedIntNullableFilterSchema';
 
 export const NestedIntNullableFilterSchema: z.ZodType<PrismaClient.Prisma.NestedIntNullableFilter> = z.object({
   equals: z.number().optional().nullable(),

@@ -166,7 +166,9 @@ export class ExtendedDMMFInputType
   }
 
   private _setImports() {
-    return new Set(this.fields.map((field) => field.getImports()).flat());
+    return new Set(
+      this.fields.map((field) => field.getImports(this.name)).flat(),
+    );
     // .flat()
     // .filter((importString) => importString);
   }

@@ -131,7 +131,7 @@ export class ExtendedDMMFSchemaArg
     return !!this.name.match(/create|update|upsert|delete|data/);
   }
 
-  getImports() {
+  getImports(fieldName: string) {
     const imports = this.inputTypes
       .map((type) => {
         if (type.isJsonType) {
@@ -142,20 +142,9 @@ export class ExtendedDMMFSchemaArg
         const importType = type.getZodNonScalarType();
         const stringImportType = importType?.toString();
 
-        // if (stringImportType?.includes('JsonNullValueInput')) {
-        //   return `import { ${importType}Schema } from '../enums';`;
-        // }
-
-        // if (stringImportType?.includes('JsonNullValueFilter')) {
-        //   return `import { ${importType}Schema } from '../enums';`;
-        // }
-
-        // if (stringImportType?.includes('NullableJsonNullValueInput')) {
-        //   return `import { ${importType}Schema } from '../enums';`;
-        // }
-
-        if (stringImportType?.includes('SortOrder')) {
-          return `import { ${importType}Schema } from '../enums';`;
+        // exclude the import for the current model if it references itself
+        if (stringImportType === fieldName) {
+          return;
         }
 
         if (importType) {

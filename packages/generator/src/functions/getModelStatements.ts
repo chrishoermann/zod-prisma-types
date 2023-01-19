@@ -1,6 +1,6 @@
 import { GetStatements, Statement } from '../types';
 import { writeConstStatement, writeHeading, writeJsDoc } from '../utils';
-import { writeModelFields } from '.';
+import { writeModelFields } from '../utils';
 
 /////////////////////////////////////////////////
 // FUNCTION

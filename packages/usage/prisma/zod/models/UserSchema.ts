@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { AnotherEnumSchema } from '../enums/AnotherEnumSchema';
-import { RoleSchema } from '../enums/RoleSchema';
+import { AnotherEnumSchema } from '../inputTypes/AnotherEnumSchema';
+import { RoleSchema } from '../inputTypes/RoleSchema';
 
 export const UserSchema = z.object({
   role: RoleSchema.array(),

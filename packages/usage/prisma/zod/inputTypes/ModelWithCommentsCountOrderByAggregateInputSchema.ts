@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
-import { SortOrderSchema } from '../enums';
+import { SortOrderSchema } from './SortOrderSchema';
 
 export const ModelWithCommentsCountOrderByAggregateInputSchema: z.ZodType<PrismaClient.Prisma.ModelWithCommentsCountOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),

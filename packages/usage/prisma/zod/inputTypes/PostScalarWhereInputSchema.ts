@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
-import { PostScalarWhereInputSchema } from './PostScalarWhereInputSchema';
 import { IntFilterSchema } from './IntFilterSchema';
 import { StringFilterSchema } from './StringFilterSchema';
 import { StringNullableFilterSchema } from './StringNullableFilterSchema';

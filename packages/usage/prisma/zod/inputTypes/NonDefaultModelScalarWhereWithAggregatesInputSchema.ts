@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
-import { NonDefaultModelScalarWhereWithAggregatesInputSchema } from './NonDefaultModelScalarWhereWithAggregatesInputSchema';
 import { IntWithAggregatesFilterSchema } from './IntWithAggregatesFilterSchema';
 import { StringWithAggregatesFilterSchema } from './StringWithAggregatesFilterSchema';
 

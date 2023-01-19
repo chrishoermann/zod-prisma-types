@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
-import { MyPrismaScalarsTypeScalarWhereWithAggregatesInputSchema } from './MyPrismaScalarsTypeScalarWhereWithAggregatesInputSchema';
 import { StringWithAggregatesFilterSchema } from './StringWithAggregatesFilterSchema';
 import { StringNullableWithAggregatesFilterSchema } from './StringNullableWithAggregatesFilterSchema';
 import { FloatWithAggregatesFilterSchema } from './FloatWithAggregatesFilterSchema';
@@ -28,8 +27,8 @@ export const MyPrismaScalarsTypeScalarWhereWithAggregatesInputSchema: z.ZodType<
   floatOpt: z.union([ z.lazy(() => FloatNullableWithAggregatesFilterSchema),z.number() ]).optional().nullable(),
   int: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
   intOpt: z.union([ z.lazy(() => IntNullableWithAggregatesFilterSchema),z.number() ]).optional().nullable(),
-  decimal: z.union([ z.lazy(() => DecimalWithAggregatesFilterSchema),z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }) ]).optional(),
-  decimalOpt: z.union([ z.lazy(() => DecimalNullableWithAggregatesFilterSchema),z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Must be a Decimal' }) ]).optional().nullable(),
+  decimal: z.union([ z.lazy(() => DecimalWithAggregatesFilterSchema),z.union([z.number(),z.string(),z.instanceof(PrismaClient.Prisma.Decimal),DecimalJSLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
+  decimalOpt: z.union([ z.lazy(() => DecimalNullableWithAggregatesFilterSchema),z.union([z.number(),z.string(),z.instanceof(PrismaClient.Prisma.Decimal),DecimalJSLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional().nullable(),
   date: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.date() ]).optional(),
   dateOpt: z.union([ z.lazy(() => DateTimeNullableWithAggregatesFilterSchema),z.date() ]).optional().nullable(),
   bigIntOpt: z.union([ z.lazy(() => BigIntNullableWithAggregatesFilterSchema),z.bigint() ]).optional().nullable(),

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
-import { SortOrderSchema } from '../enums';
+import { SortOrderSchema } from './SortOrderSchema';
 import { MyPrismaScalarsTypeCountOrderByAggregateInputSchema } from './MyPrismaScalarsTypeCountOrderByAggregateInputSchema';
 import { MyPrismaScalarsTypeAvgOrderByAggregateInputSchema } from './MyPrismaScalarsTypeAvgOrderByAggregateInputSchema';
 import { MyPrismaScalarsTypeMaxOrderByAggregateInputSchema } from './MyPrismaScalarsTypeMaxOrderByAggregateInputSchema';

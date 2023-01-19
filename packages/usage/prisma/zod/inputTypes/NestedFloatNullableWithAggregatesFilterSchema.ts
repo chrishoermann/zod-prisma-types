@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
-import { NestedFloatNullableWithAggregatesFilterSchema } from './NestedFloatNullableWithAggregatesFilterSchema';
 import { NestedIntNullableFilterSchema } from './NestedIntNullableFilterSchema';
 import { NestedFloatNullableFilterSchema } from './NestedFloatNullableFilterSchema';
 

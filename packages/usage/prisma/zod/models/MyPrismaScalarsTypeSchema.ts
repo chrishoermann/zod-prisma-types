@@ -2,7 +2,7 @@ import * as PrismaClient from '@prisma/client';
 import validator from 'validator';
 import { z } from "zod";
 import { myFunction } from '../../../utils/myFunction';
-import { InputJsonValue, NullableJsonValue } from "../helpers";
+import { DecimalJSLikeSchema, InputJsonValue, isValidDecimalInput, NullableJsonValue } from "../helpers";
 
 export const MyPrismaScalarsTypeSchema = z.object({
   id: z.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid(),
@@ -15,8 +15,8 @@ export const MyPrismaScalarsTypeSchema = z.object({
   floatOpt: z.number().nullish(),
   int: z.number().int({ message: "error" }).gt(5, { message: "gt error" }),
   intOpt: z.number().int().nullish(),
-  decimal: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Field "decimal" must be a Decimal', path: ['Models', 'MyPrismaScalarsType'] }),
-  decimalOpt: z.number().refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), { message: 'Field "decimalOpt" must be a Decimal', path: ['Models', 'MyPrismaScalarsType'] }).nullish(),
+  decimal: z.union([z.number(), z.string(), z.instanceof(PrismaClient.Prisma.Decimal), DecimalJSLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Field "decimal" must be a Decimal', path: ['Models', 'MyPrismaScalarsType'] }),
+  decimalOpt: z.union([z.number(), z.string(), z.instanceof(PrismaClient.Prisma.Decimal), DecimalJSLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Field "decimalOpt" must be a Decimal', path: ['Models', 'MyPrismaScalarsType'] }).nullish(),
   date: z.date(),
   dateOpt: z.date({ invalid_type_error: "wrong date type" }).nullish(),
   bigIntOpt: z.bigint().nullish(),

@@ -1,4 +1,4 @@
-import { getPrismaImportStatemnt, ZOD_IMPORT_STATEMENT } from '../constants';
+import { getPrismaImportStatement, ZOD_IMPORT_STATEMENT } from '../constants';
 import { DirectoryHelper } from '../classes';
 import { CreateFiles } from '../types';
 import { getHelperStatements } from './getHelperStatements';
@@ -21,7 +21,7 @@ export const writeHelperFiles: CreateFiles = async ({
   project.createSourceFile(`${outputPath}/helpers/index.ts`, {
     statements: [
       ZOD_IMPORT_STATEMENT,
-      getPrismaImportStatemnt(extendedDMMF.generatorConfig.prismaClientPath),
+      getPrismaImportStatement(extendedDMMF.generatorConfig.prismaClientPath),
       ...statements,
     ],
   });

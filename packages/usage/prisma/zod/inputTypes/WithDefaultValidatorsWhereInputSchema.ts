@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
-import { WithDefaultValidatorsWhereInputSchema } from './WithDefaultValidatorsWhereInputSchema';
 import { StringFilterSchema } from './StringFilterSchema';
 import { IntFilterSchema } from './IntFilterSchema';
 

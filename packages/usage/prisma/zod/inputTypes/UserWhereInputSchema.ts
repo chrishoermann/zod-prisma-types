@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
-import { UserWhereInputSchema } from './UserWhereInputSchema';
 import { StringFilterSchema } from './StringFilterSchema';
 import { StringNullableFilterSchema } from './StringNullableFilterSchema';
 import { PostListRelationFilterSchema } from './PostListRelationFilterSchema';

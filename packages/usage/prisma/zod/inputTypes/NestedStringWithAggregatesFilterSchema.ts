@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import * as PrismaClient from '@prisma/client';
-import { NestedStringWithAggregatesFilterSchema } from './NestedStringWithAggregatesFilterSchema';
 import { NestedIntFilterSchema } from './NestedIntFilterSchema';
 import { NestedStringFilterSchema } from './NestedStringFilterSchema';
 
