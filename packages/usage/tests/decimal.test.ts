@@ -4,8 +4,7 @@ import {
   DecimalSchema,
   DECIMAL_STRING_REGEX,
   isValidDecimalInput,
-  isValidDecimalListInput,
-} from './schemas/decimalSchema';
+} from './implementations/decimalSchema';
 import { client } from './trpc/client';
 import { getServer } from './trpc/server';
 import Decimal from 'decimal.js';
@@ -43,6 +42,33 @@ afterAll(() => {
 });
 
 ///////////////////////////////////////
+// REGEX
+///////////////////////////////////////
+
+it('should check validity of strings as decimal', () => {
+  expect(
+    DECIMAL_STRING_REGEX.test(
+      '5032485723458348569331745.33434346346912144534543',
+    ),
+  ).toBe(true);
+  expect(DECIMAL_STRING_REGEX.test('4.321e+4')).toBe(true);
+  expect(DECIMAL_STRING_REGEX.test('-735.0918e-430')).toBe(true);
+  expect(DECIMAL_STRING_REGEX.test('5.6700000')).toBe(true);
+  expect(DECIMAL_STRING_REGEX.test('Infinity')).toBe(true);
+  expect(DECIMAL_STRING_REGEX.test('NaN')).toBe(true);
+  expect(DECIMAL_STRING_REGEX.test('.5')).toBe(true);
+  expect(DECIMAL_STRING_REGEX.test('-0b10110100.1')).toBe(true);
+  expect(DECIMAL_STRING_REGEX.test('0xff.8')).toBe(true);
+  expect(DECIMAL_STRING_REGEX.test('468.75e-4')).toBe(true);
+  expect(DECIMAL_STRING_REGEX.test('0b0.000011')).toBe(true);
+  expect(DECIMAL_STRING_REGEX.test('0o0.03')).toBe(true);
+  expect(DECIMAL_STRING_REGEX.test('0x0.0c')).toBe(true);
+  expect(DECIMAL_STRING_REGEX.test('0b1.1p-5')).toBe(true);
+  expect(DECIMAL_STRING_REGEX.test('0o1.4p-5')).toBe(true);
+  expect(DECIMAL_STRING_REGEX.test('0x1.8p-5')).toBe(true);
+});
+
+///////////////////////////////////////
 // BASIC TESTS
 ///////////////////////////////////////
 
@@ -74,52 +100,12 @@ it('should not be a valid input when an invalid string is provided to "isValidDe
   expect(isValidDecimalInput('0.123vyx')).toBe(false);
 });
 
-it('should not be a valid input when a prisma decimal is provided to "isValidDecimalInput"', () => {
-  expect(isValidDecimalInput(new Prisma.Decimal(1.1))).toBe(false);
+it('should be a valid input when a prisma decimal is provided to "isValidDecimalInput"', () => {
+  expect(isValidDecimalInput(new Prisma.Decimal(1.1))).toBe(true);
 });
 
-it('should not be a valid input when a decimalJSLike is provided to "isValidDecimalInput"', () => {
-  expect(isValidDecimalInput(decimalJsLikeTwo)).toBe(false);
-});
-
-it('should not be a valid input when a decimalJS instance is provided to "isValidDecimalInput"', () => {
-  expect(isValidDecimalInput(new Decimal(1.2314))).toBe(false);
-});
-
-// isValidDecimalListInput
-// ------------------------------------
-
-it('should be a valid input when string is provided to "isValidDecimalListInput"', () => {
-  expect(isValidDecimalListInput(['0.123', '4.321e+4'])).toBe(true);
-});
-
-it('should not be a valid input when invalid strings are provided to "isValidDecimalListInput"', () => {
-  expect(isValidDecimalListInput(['0.123', '0.123vyx'])).toBe(false);
-});
-
-it('should be a valid input when numbers are provided to "isValidDecimalListInput"', () => {
-  expect(isValidDecimalListInput([0.123, 4.321e4])).toBe(true);
-});
-
-it('should not be a valid input when prisma decimal is provided to "isValidDecimalListInput"', () => {
-  expect(
-    isValidDecimalListInput([
-      new Prisma.Decimal(0.123),
-      new Prisma.Decimal(4.321e4),
-    ]),
-  ).toBe(false);
-});
-
-it('should not be a valid input when decimalJs is provided to "isValidDecimalListInput"', () => {
-  expect(
-    isValidDecimalListInput([new Decimal(1.234), new Decimal(1.5321)]),
-  ).toBe(false);
-});
-
-it('should not be a valid input when decimalJsLike instances are provided to "isValidDecimalListInput"', () => {
-  expect(isValidDecimalListInput([decimalJsLikeOne, decimalJsLikeTwo])).toBe(
-    false,
-  );
+it('should be a valid input when a decimalJSLike is provided to "isValidDecimalInput"', () => {
+  expect(isValidDecimalInput(decimalJsLikeTwo)).toBe(true);
 });
 
 // DecimalSchema
@@ -132,7 +118,7 @@ it('should be able to use prisma decimal as input in DecimalSchema', () => {
 
 it('should be able to use string as input in DecimalSchema', () => {
   const parsedDecimal = DecimalSchema.parse('4.321e+4');
-  expect(Prisma.Decimal.isDecimal(parsedDecimal)).toBe(true);
+  expect(parsedDecimal).toBe('4.321e+4');
 });
 
 it('should not be able to use an invalid string as input in DecimalSchema', () => {
@@ -145,7 +131,7 @@ it('should not be able to use an invalid string as input in DecimalSchema', () =
 
 it('should be able to use number as input in DecimalSchema', () => {
   const parsedDecimal = DecimalSchema.parse(-1.2);
-  expect(Prisma.Decimal.isDecimal(parsedDecimal)).toBe(true);
+  expect(parsedDecimal).toBe(-1.2);
 });
 
 it('should be able to use decimalJS as input in DecimalSchema', () => {
@@ -165,6 +151,7 @@ it('should be able to use prisma decimal as input in DecimalListSchema', () => {
     new Prisma.Decimal(1.1),
     new Prisma.Decimal(1.123),
   ]);
+
   expect(Prisma.Decimal.isDecimal(parsedDecimals[0])).toBe(true);
   expect(Prisma.Decimal.isDecimal(parsedDecimals[1])).toBe(true);
 });
@@ -174,6 +161,7 @@ it('should be able to use decimalJS as input in DecimalListSchema', () => {
     new Decimal(1.1),
     new Decimal(1.123),
   ]);
+
   expect(isDecimalJsLike(parsedDecimals[0])).toBe(true);
   expect(isDecimalJsLike(parsedDecimals[1])).toBe(true);
 });
@@ -183,6 +171,7 @@ it('should be able to use decimalJSLike as input in DecimalListSchema', () => {
     decimalJsLikeOne,
     decimalJsLikeTwo,
   ]);
+
   expect(isDecimalJsLike(parsedDecimals[0])).toBe(true);
   expect(isDecimalJsLike(parsedDecimals[1])).toBe(true);
 });
@@ -197,19 +186,21 @@ it('should not be able to use invalid strings as input in DecimalListSchema', ()
 
 it('should be able to use strings as input in DecimalListSchema', () => {
   const parsedDecimals = DecimalListSchema.parse(['0.123', '4.321e+4']);
-  expect(Prisma.Decimal.isDecimal(parsedDecimals[0])).toBe(true);
-  expect(Prisma.Decimal.isDecimal(parsedDecimals[1])).toBe(true);
+  expect(parsedDecimals).toEqual(['0.123', '4.321e+4']);
 });
 
 it('should be able to use numbers as input in DecimalListSchema', () => {
   const parsedDecimals = DecimalListSchema.parse([0.123, 4.321e4]);
-  expect(Prisma.Decimal.isDecimal(parsedDecimals[0])).toBe(true);
-  expect(Prisma.Decimal.isDecimal(parsedDecimals[1])).toBe(true);
+  expect(parsedDecimals).toEqual([0.123, 4.321e4]);
 });
 
 ///////////////////////////////////////
 // TEST TRPC
 ///////////////////////////////////////
+
+it('should be able to pass a Prisma decimal via trpc', async () => {
+  expect(await client.decimal.query(new Prisma.Decimal(1.16511))).toBe(true);
+});
 
 it('should be able to pass a decimalJS via trpc', async () => {
   expect(await client.decimal.query(new Decimal(1.16511))).toBe(true);
@@ -217,10 +208,6 @@ it('should be able to pass a decimalJS via trpc', async () => {
 
 it('should be able to pass a decimalJSLike via trpc', async () => {
   expect(await client.decimal.query(decimalJsLikeOne)).toBe(true);
-});
-
-it('should be able to pass a Prisma decimal via trpc', async () => {
-  expect(await client.decimal.query(new Prisma.Decimal(1.16511))).toBe(true);
 });
 
 it('should be able to pass a string to decimal via trpc', async () => {
@@ -263,6 +250,79 @@ it('should be able to pass a number via trpc with DecimalModelSchema', async () 
     decimal: 1.16511,
     decimalOpt: 1.16511,
   });
+
+  expect(result.isDecimal).toBe(true);
+  expect(result.isDecimalOpt).toBe(true);
+});
+
+it('should throw when passing an invalid string to decimal via trpc', async () => {
+  await expect(
+    client.decimalModel.query({
+      id: 1,
+      decimal: 'qsdgast',
+      decimalOpt: 'asdgatse',
+    }),
+  ).rejects.toThrow();
+});
+
+// LIST
+// ----------------------------------------------
+
+it('should be able to pass a prisma decimal via trpc with DecimalModelSchema', async () => {
+  const data = {
+    id: 1,
+    decimal: [new Prisma.Decimal(1.16511), new Prisma.Decimal(1.512345)],
+    decimalOpt: [new Prisma.Decimal(1.16511), new Prisma.Decimal(1.512345)],
+  };
+  const result = await client.decimalListModel.query(data);
+
+  expect(result.isDecimal).toBe(true);
+  expect(result.isDecimalOpt).toBe(true);
+});
+
+it('should be able to pass a decimal via trpc with DecimalModelSchema', async () => {
+  const data = {
+    id: 1,
+    decimal: [new Decimal(1.16511), new Decimal(1.512345)],
+    decimalOpt: [new Decimal(1.16511), new Decimal(1.512345)],
+  };
+  const result = await client.decimalListModel.query(data);
+
+  expect(result.isDecimal).toBe(true);
+  expect(result.isDecimalOpt).toBe(true);
+});
+
+it('should be able to pass a decimalLike via trpc with DecimalModelSchema', async () => {
+  const data = {
+    id: 1,
+    decimal: [decimalJsLikeOne, decimalJsLikeTwo],
+    decimalOpt: [decimalJsLikeOne, decimalJsLikeTwo],
+  };
+  const result = await client.decimalListModel.query(data);
+
+  expect(result.isDecimal).toBe(true);
+  expect(result.isDecimalOpt).toBe(true);
+});
+
+it('should be able to pass a string via trpc with DecimalModelSchema', async () => {
+  const data = {
+    id: 1,
+    decimal: ['1.16511', '1.165111341'],
+    decimalOpt: ['1.16511', '1.165111341'],
+  };
+  const result = await client.decimalListModel.query(data);
+
+  expect(result.isDecimal).toBe(true);
+  expect(result.isDecimalOpt).toBe(true);
+});
+
+it('should be able to pass a number via trpc with DecimalModelSchema', async () => {
+  const data = {
+    id: 1,
+    decimal: [1.16511, 1.165111341],
+    decimalOpt: [1.16511, 1.165111341],
+  };
+  const result = await client.decimalListModel.query(data);
 
   expect(result.isDecimal).toBe(true);
   expect(result.isDecimalOpt).toBe(true);
