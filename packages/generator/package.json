@@ -1,6 +1,6 @@
 {
   "name": "zod-prisma-types",
-  "version": "1.6.4",
+  "version": "1.6.7",
   "description": "Generates zod schemas from Prisma models with advanced validation",
   "author": "Chris Hörmann",
   "license": "MIT",
@@ -48,6 +48,7 @@
   "dependencies": {
     "@prisma/generator-helper": "^4.8.0",
     "code-block-writer": "^11.0.3",
+    "decimal.js": "^10.4.3",
     "lodash": "^4.17.21",
     "ts-morph": "^16.0.0",
     "zod": "^3.20.2"

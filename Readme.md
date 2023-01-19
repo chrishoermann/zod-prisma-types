@@ -28,6 +28,7 @@
   - [`imports`](#imports)
   - [`tsConfigFilePath`](#tsconfigfilepath)
 - [Json null values](#json-null-values)
+- [Decimal](#decimal)
 - [Skip schema generation](#skip-schema-generation)
 - [Field validators](#field-validators)
   - [Custom type error messages](#custom-type-error-messages)
@@ -385,6 +386,68 @@ When using json null values prisma has a unique way of handling Database `NULL` 
 
 To adhere to this concept you can pass `"DbNull"` or `"JsonNull"` as string to a nullable Json field. When the schema gets validated these strings are transformed to `Prisma.DbNull` or `Prisma.JsonNull` to satisfy the `prisma.[myModel].create() | .update() | ...` functions.
 
+## Decimal
+
+When using Decimal a `refine` method is used to validate if the input adheres to the prisma input union `string | number | Decimal | DecimalJsLike`.
+
+```prisma
+model MyModel {
+  id      Int     @id @default(autoincrement())
+  decimal Decimal
+}
+```
+
+The above model would generate the following schema:
+
+```ts
+// DECIMAL HELPERS
+//------------------------------------------------------
+
+export interface DecimalJsLike {
+  d: number[];
+  e: number;
+  s: number;
+}
+
+export const DecimalJSLikeSchema = z.object({
+  d: z.array(z.number()),
+  e: z.number(),
+  s: z.number(),
+});
+
+export const DECIMAL_STRING_REGEX = /^[0-9.,e+-bxffo_cp]+$|Infinity|NaN/;
+
+export const isValidDecimalInput = (
+  v?: null | string | number | PrismaClient.Prisma.Decimal | DecimalJsLike,
+) => {
+  if (!v) return false;
+  return (
+    (typeof v === 'object' && PrismaClient.Prisma.Decimal.isDecimal(v)) ||
+    (typeof v === 'object' && 'd' in v && 'e' in v && 's' in v) ||
+    (typeof v === 'string' && DECIMAL_STRING_REGEX.test(v)) ||
+    typeof v === 'number'
+  );
+};
+
+// SCHEMA
+//------------------------------------------------------
+
+export const MyModelSchema = z.object({
+  id: z.number(),
+  decimal: z
+    .union([
+      z.number(),
+      z.string(),
+      z.instanceof(PrismaClient.Prisma.Decimal),
+      DecimalJSLikeSchema,
+    ])
+    .refine((v) => isValidDecimalInput(v), {
+      message: 'Field "decimal" must be a Decimal',
+      path: ['Models', 'DecimalModel'],
+    }),
+});
+```
+
 ## Skip schema generation
 
 You can skip schema generation based on e.g. the environment you are currently working. For example you can only generate the schemas when you're in `development` but not when you run generation in `production` (because in `production` the schemas would already hav been created and pushed to the server via source code of git repo).
@@ -478,16 +541,6 @@ import * as PrismaClient from '@prisma/client';
 import validator from 'validator';
 import { myFunction } from 'mypackage';
 
-export const JsonValue: z.ZodType<PrismaClient.Prisma.JsonValue> = z
-  .union([
-    z.string(),
-    z.number(),
-    z.boolean(),
-    z.lazy(() => z.array(JsonValue)),
-    z.lazy(() => z.record(JsonValue)),
-  ])
-  .nullable();
-
 export const MyPrismaScalarsTypeSchema = z.object({
   id: z
     .string({
@@ -517,23 +570,39 @@ export const MyPrismaScalarsTypeSchema = z.object({
   int: z.number().int({ message: 'error' }).gt(5, { message: 'gt error' }),
   intOpt: z.number().int().nullish(),
   decimal: z
-    .any()
+    .union([
+      z.number(),
+      z.string(),
+      z.instanceof(PrismaClient.Prisma.Decimal),
+      DecimalJSLikeSchema,
+    ])
     .transform((v) =>
       isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
     )
-    .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-      message: 'Field "decimal" must be a Decimal',
-      path: ['Models', 'MyPrismaScalarsType'],
-    }),
+    .refine(
+      (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+      {
+        message: 'Field "decimal" must be a Decimal',
+        path: ['Models', 'MyPrismaScalarsType'],
+      },
+    ),
   decimalOpt: z
-    .any()
+    .union([
+      z.number(),
+      z.string(),
+      z.instanceof(PrismaClient.Prisma.Decimal),
+      DecimalJSLikeSchema,
+    ])
     .transform((v) =>
       isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
     )
-    .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-      message: 'Field "decimalOpt" must be a Decimal',
-      path: ['Models', 'MyPrismaScalarsType'],
-    })
+    .refine(
+      (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
+      {
+        message: 'Field "decimalOpt" must be a Decimal',
+        path: ['Models', 'MyPrismaScalarsType'],
+      },
+    )
     .nullish(),
   date: z.date(),
   dateOpt: z.date({ invalid_type_error: 'wrong date type' }).nullish(),
@@ -553,6 +622,23 @@ export const MyPrismaScalarsTypeSchema = z.object({
   // omitted: exclude: z.string().nullish(),
   updatedAt: z.date(),
 });
+
+export const MyPrismaScalarsTypeOptionalDefaultsSchema =
+  MyPrismaScalarsTypeSchema.merge(
+    z.object({
+      id: z
+        .string({
+          invalid_type_error:
+            "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]",
+          required_error: 'some other',
+          description: 'some description',
+        })
+        .cuid()
+        .optional(),
+      date: z.date().optional(),
+      updatedAt: z.date().optional(),
+    }),
+  );
 ```
 
 > Additionally all the zod schemas for the prisma input-, enum-, filter-, orderby-, select-, include and other necessary types are generated ready to be used in e.g. `trpc` inputs.

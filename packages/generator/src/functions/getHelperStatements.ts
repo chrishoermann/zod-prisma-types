@@ -10,9 +10,105 @@ import { writeConstStatement, writeHeading } from '../utils';
 export const getHelperStatements: GetStatements = ({ schema }) => {
   const statements: Statement[] = [];
 
+  if (schema.hasDecimalTypes || schema.hasJsonTypes) {
+    statements.push(writeHeading(`HELPER TYPES`, 'FAT'));
+  }
+
+  // DECIMAL
+  // ------------------------------------------
+
+  if (
+    schema.hasDecimalTypes &&
+    !schema.generatorConfig.useInstanceOfForDecimal
+  ) {
+    statements.push(
+      writeHeading(`DECIMAL`, 'SLIM'),
+      {
+        kind: StructureKind.Interface,
+        name: 'DecimalJsLike',
+        isExported: true,
+        properties: [
+          {
+            name: 'd',
+            type: 'number[]',
+          },
+          {
+            name: 'e',
+            type: 'number',
+          },
+          {
+            name: 's',
+            type: 'number',
+          },
+        ],
+      },
+
+      writeConstStatement({
+        declarations: [
+          {
+            name: `DECIMAL_STRING_REGEX`,
+            initializer(writer) {
+              writer.write(`/^[0-9.,e+\-bxffo_cp]+$|Infinity|NaN/`);
+            },
+          },
+        ],
+      }),
+
+      writeConstStatement({
+        leadingTrivia: (writer) => writer.newLine(),
+        declarations: [
+          {
+            name: `DecimalJSLikeSchema`,
+            initializer(writer) {
+              writer.write(
+                `z.object({ d: z.array(z.number()), e: z.number(), s: z.number() })`,
+              );
+            },
+          },
+        ],
+      }),
+
+      writeConstStatement({
+        leadingTrivia: (writer) => writer.newLine(),
+        declarations: [
+          {
+            name: `isValidDecimalInput`,
+            initializer(writer) {
+              writer
+                .write(
+                  `(v?: null | string | number | PrismaClient.Prisma.Decimal | DecimalJsLike) => `,
+                )
+                .inlineBlock(() => {
+                  writer.writeLine(`if (!v) return false;`);
+                  writer.writeLine(`return (`);
+                  writer.withIndentationLevel(2, () => {
+                    writer
+                      .writeLine(
+                        `(typeof v === 'object' && PrismaClient.Prisma.Decimal.isDecimal(v)) ||`,
+                      )
+                      .writeLine(
+                        `(typeof v === 'object' && 'd' in v && 'e' in v && 's' in v) ||`,
+                      )
+                      .writeLine(
+                        `(typeof v === 'string' && DECIMAL_STRING_REGEX.test(v)) ||`,
+                      )
+                      .writeLine(`typeof v === 'number'`);
+                  });
+                  writer.writeLine(`)`);
+                });
+            },
+          },
+        ],
+      }),
+    );
+  }
+
+  // JSON
+  // --------------------------------------------
+
   if (schema.hasJsonTypes) {
     statements.push(
-      writeHeading(`HELPER TYPES`, 'FAT'),
+      writeHeading(`JSON`, 'SLIM'),
       {
         leadingTrivia: (writer) => writer.newLine(),
         kind: StructureKind.TypeAlias,
@@ -37,26 +133,6 @@ export const getHelperStatements: GetStatements = ({ schema }) => {
                   );
                   writer.writeLine(`return v;`);
                 });
-            },
-          },
-        ],
-      }),
-
-      writeConstStatement({
-        leadingTrivia: (writer) => writer.newLine(),
-        declarations: [
-          {
-            name: `isValidDecimalInput`,
-            initializer(writer) {
-              writer.writeLine(`(v: any) => `);
-              writer.withIndentationLevel(2, () => {
-                writer
-                  .writeLine(`typeof v === 'number' ||`)
-                  .writeLine(
-                    `(typeof v === 'object' && PrismaClient.Prisma.Decimal.isDecimal(v)) ||`,
-                  )
-                  .write(`(typeof v === 'string' && v.match(/[0-9.]/))`);
-              });
             },
           },
         ],

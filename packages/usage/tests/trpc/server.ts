@@ -1,8 +1,13 @@
-import { Prisma } from '@prisma/client';
+import { Decimal, DecimalJsLike } from '@prisma/client/runtime';
 import { initTRPC } from '@trpc/server';
 import { createHTTPServer } from '@trpc/server/adapters/standalone';
 import { JsonModelSchema } from '../../prisma/zod';
-import { DecimalModelSchema, decimalSchema } from '../schemas/decimalSchema';
+import {
+  DecimalListModelSchema,
+  DecimalModelSchema,
+  DecimalSchema,
+  isValidDecimalInput,
+} from '../implementations/decimalSchema';
 
 export type AppRouter = typeof appRouter;
 
@@ -15,15 +20,28 @@ const router = t.router;
 // the zod schemas need to be generated to complete the tests
 
 const appRouter = router({
-  decimal: publicProcedure.input(decimalSchema).query(({ input }) => {
-    const isDecimal = Prisma.Decimal.isDecimal(input);
+  decimal: publicProcedure.input(DecimalSchema).query(({ input }) => {
+    const isDecimal = isValidDecimalInput(input);
     return isDecimal;
   }),
   decimalModel: publicProcedure.input(DecimalModelSchema).query(({ input }) => {
-    const isDecimal = Prisma.Decimal.isDecimal(input.decimal);
-    const isDecimalOpt = Prisma.Decimal.isDecimal(input.decimalOpt);
+    const isDecimal = isValidDecimalInput(input.decimal);
+    const isDecimalOpt = isValidDecimalInput(input.decimalOpt);
     return { isDecimal, isDecimalOpt };
   }),
+  decimalListModel: publicProcedure
+    .input(DecimalListModelSchema)
+    .query(({ input }) => {
+      const isDecimal = (input.decimal as any[]).every(
+        (i: string | number | Decimal | DecimalJsLike | null | undefined) =>
+          isValidDecimalInput(i),
+      ) as boolean;
+      const isDecimalOpt = (input.decimalOpt as any).every(
+        (i: string | number | Decimal | DecimalJsLike | null | undefined) =>
+          isValidDecimalInput(i),
+      ) as boolean;
+      return { isDecimal, isDecimalOpt };
+    }),
   json: publicProcedure.input(JsonModelSchema).query(({ input }) => {
     return input;
   }),

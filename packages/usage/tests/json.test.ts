@@ -1,10 +1,5 @@
-// !!!!! prisma queries are left in place to check if typescript is happy with the generated types !!!!!
-
-// import { PrismaClient } from '@prisma/client';
 import { JsonModelCreateInputSchema, JsonModelSchema } from '../prisma/zod';
 import { getServer } from './trpc/server';
-
-// const prisma = new PrismaClient();
 
 const httpServer = getServer();
 
@@ -26,12 +21,6 @@ it('should return Prisma.DbNull json null value when "DbNull" is provided with M
     jsonOpt: 'DbNull',
   });
 
-  // await prisma.jsonModel.create({
-  //   data: parsedModel,
-  // });
-
-  console.log('DbNull provided', parsedModel);
-
   expect(parsedModel.jsonOpt).toBeTypeOf('object');
 });
 
@@ -44,12 +33,6 @@ it('should return Prisma.DbNull json null value when "null" is provided with Mod
     },
     jsonOpt: null,
   });
-
-  // await prisma.jsonModel.create({
-  //   data: parsedModel,
-  // });
-
-  console.log('null provided', parsedModel);
 
   expect(parsedModel.jsonOpt).toBeTypeOf('object');
 });
@@ -64,12 +47,6 @@ it('should return Prisma.JsonNull json null value when "JsonNull" is provided wi
     jsonOpt: 'JsonNull',
   });
 
-  // await prisma.jsonModel.create({
-  //   data: parsedModel,
-  // });
-
-  console.log('JsonNull provided', parsedModel);
-
   expect(parsedModel.jsonOpt).toBeTypeOf('object');
 });
 
@@ -82,12 +59,6 @@ it('should return Prisma.DbNull json null value when "DbNull" is provided with C
     jsonOpt: 'DbNull',
   });
 
-  // await prisma.jsonModel.create({
-  //   data: parsedModel,
-  // });
-
-  console.log('JsonModelCreateInputSchema', parsedModel);
-
   expect(parsedModel.jsonOpt).toBeTypeOf('object');
 });
 
@@ -99,12 +70,6 @@ it('should return Prisma.JsonNull json null value when "JsonNull" is provided wi
     },
     jsonOpt: 'JsonNull',
   });
-
-  // await prisma.jsonModel.create({
-  //   data: parsedModel,
-  // });
-
-  console.log('JsonModelCreateInputSchema', parsedModel);
 
   expect(parsedModel.jsonOpt).toBeTypeOf('object');
 });

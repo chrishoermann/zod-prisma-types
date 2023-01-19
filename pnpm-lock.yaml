@@ -22,7 +22,6 @@ importers:
       zod: ^3.20.2
     dependencies:
       '@prisma/generator-helper': 4.8.0
-      code-block-writer: 11.0.3
       lodash: 4.17.21
       ts-morph: 16.0.0
       zod: 3.20.2
@@ -42,29 +41,29 @@ importers:
 
   packages/usage:
     specifiers:
-      '@prisma/client': ^4.8.1
+      '@prisma/client': ^4.9.0
       '@trpc/client': ^10.9.0
       '@trpc/server': ^10.9.0
       '@types/node': ^18.11.18
       '@types/validator': ^13.7.10
       cross-fetch: ^3.1.5
       decimal.js: ^10.4.3
-      prisma: ^4.8.1
+      prisma: ^4.9.0
       prisma-zod-generator: ^0.7.4
       ts-node-dev: ^2.0.0
       typescript: ^4.9.4
       validator: ^13.7.0
       vitest: ^0.25.8
       zod: ^3.20.2
-      zod-prisma-types: workspace:1.6.4
+      zod-prisma-types: workspace:1.6.7
     dependencies:
-      '@prisma/client': 4.8.1_prisma@4.8.1
+      '@prisma/client': 4.9.0_prisma@4.9.0
       '@trpc/client': 10.9.0_@trpc+server@10.9.0
       '@trpc/server': 10.9.0
       '@types/validator': 13.7.10
       cross-fetch: 3.1.5
       decimal.js: 10.4.3
-      prisma-zod-generator: 0.7.4_prisma@4.8.1
+      prisma-zod-generator: 0.7.4_prisma@4.9.0
       ts-node-dev: 2.0.0_awa2wsr5thmg3i7jqycphctjfq
       validator: 13.7.0
       vitest: 0.25.8
@@ -72,7 +71,7 @@ importers:
       zod-prisma-types: link:../generator
     devDependencies:
       '@types/node': 18.11.18
-      prisma: 4.8.1
+      prisma: 4.9.0
       typescript: 4.9.4
 
 packages:
@@ -631,8 +630,8 @@ packages:
       prisma:
         optional: true
     dependencies:
-      '@prisma/engines-version': 4.8.0-61.d6e67a83f971b175a593ccc12e15c4a757f93ffe
-      prisma: 4.8.1
+      '@prisma/engines-version': 4.9.0-42.ceb5c99003b99c9ee2c1d2e618e359c14aef2ea5
+      prisma: 4.9.0
     dev: false
 
   /@prisma/debug/4.8.0:
@@ -692,10 +691,10 @@ packages:
     dependencies:
       '@opentelemetry/api': 1.4.0
       '@opentelemetry/sdk-trace-base': 1.9.0_@opentelemetry+api@1.4.0
-      '@prisma/debug': 4.8.1
-      '@prisma/engines': 4.8.1
-      '@prisma/generator-helper': 4.8.1
-      '@prisma/get-platform': 4.8.1
+      '@prisma/debug': 4.9.0
+      '@prisma/engines': 4.9.0
+      '@prisma/generator-helper': 4.9.0
+      '@prisma/get-platform': 4.9.0
       chalk: 4.1.2
       execa: 5.1.1
       get-stream: 6.0.1
@@ -764,15 +763,15 @@ packages:
         integrity: sha512-RtjDUSp2cwABDQEUhLW3Oofq42psAq19I1JCMpZUTFex76wCd3tjUixmRk5RgJPdc8MqxTriyWcTUw6Ax5ba4g==,
       }
     dependencies:
-      '@prisma/debug': 4.8.1
-      '@prisma/get-platform': 4.8.1
+      '@prisma/debug': 4.9.0
+      '@prisma/get-platform': 4.9.0
       chalk: 4.1.2
       execa: 5.1.1
       find-cache-dir: 3.3.2
+      fs-extra: 11.1.0
       hasha: 5.2.2
       http-proxy-agent: 5.0.0
       https-proxy-agent: 5.0.1
-      make-dir: 3.1.0
       node-fetch: 2.6.7
       p-filter: 2.1.0
       p-map: 4.0.0
@@ -805,7 +804,7 @@ packages:
         integrity: sha512-3JAj4syF2LcojH2fFaW05dLJZrxc0fygoXMFGS+XwA7NHFgUNTBpkvGXlgLUmPH/0uSD8HM7H+ggYgfImc3xTA==,
       }
     dependencies:
-      '@prisma/debug': 4.8.1
+      '@prisma/debug': 4.9.0
       '@types/cross-spawn': 6.0.2
       chalk: 4.1.2
       cross-spawn: 7.0.3
@@ -831,7 +830,8 @@ packages:
         integrity: sha512-KGl/g9WLYxeBPAZSTFeigO50/khsQSun0Qdpa/tmMOWDgruwETw1DQRADAzelD4bWzP0pE3UISAWKObtFfO7Eg==,
       }
     dependencies:
-      '@prisma/debug': 4.8.1
+      '@prisma/debug': 4.9.0
+      chalk: 4.1.2
       ts-pattern: 4.0.6
     transitivePeerDependencies:
       - supports-color
@@ -898,13 +898,13 @@ packages:
         integrity: sha512-ABUNTIZCiKmf2+loMKzQEtWB0hCbi6nB+eLfR+ea17JkpRPItq+59qWClAvY43qhHC/WDh4WQLCawKwDQYv0OQ==,
       }
     dependencies:
-      '@prisma/debug': 4.8.1
-      '@prisma/engine-core': 4.8.1
-      '@prisma/engines': 4.8.1
-      '@prisma/fetch-engine': 4.8.1
-      '@prisma/generator-helper': 4.8.1
-      '@prisma/get-platform': 4.8.1
-      '@prisma/prisma-fmt-wasm': 4.8.0-61.d6e67a83f971b175a593ccc12e15c4a757f93ffe
+      '@prisma/debug': 4.9.0
+      '@prisma/engine-core': 4.9.0
+      '@prisma/engines': 4.9.0
+      '@prisma/fetch-engine': 4.9.0
+      '@prisma/generator-helper': 4.9.0
+      '@prisma/get-platform': 4.9.0
+      '@prisma/prisma-fmt-wasm': 4.9.0-42.ceb5c99003b99c9ee2c1d2e618e359c14aef2ea5
       archiver: 5.3.1
       arg: 5.0.2
       chalk: 4.1.2
@@ -922,7 +922,6 @@ packages:
       has-yarn: 2.1.0
       is-windows: 1.0.2
       is-wsl: 2.2.0
-      make-dir: 3.1.0
       new-github-issue-url: 0.2.1
       node-fetch: 2.6.7
       open: 7.4.2
@@ -932,7 +931,6 @@ packages:
       read-pkg-up: 7.0.1
       replace-string: 3.1.0
       resolve: 1.22.1
-      rimraf: 3.0.2
       string-width: 4.2.3
       strip-ansi: 6.0.1
       strip-indent: 3.0.0
@@ -2970,7 +2968,7 @@ packages:
         integrity: sha512-Xn4fDhLydXkuzepZVsr02jakLlmoARPy+YWIclo4kh0GyNGUHnTqeH/w/qIsVn50dFxtp8otPL2t/HcPJBbxUA==,
       }
     dependencies:
-      minimatch: 5.1.4
+      minimatch: 5.1.6
 
   /fs.realpath/1.0.0:
     resolution:
@@ -4326,9 +4324,9 @@ packages:
       }
     hasBin: true
     dependencies:
-      '@prisma/client': 4.8.1_prisma@4.8.1
-      '@prisma/generator-helper': 4.8.1
-      '@prisma/internals': 4.8.1
+      '@prisma/client': 4.9.0_prisma@4.9.0
+      '@prisma/generator-helper': 4.9.0
+      '@prisma/internals': 4.9.0
       prettier: 2.8.3
       tslib: 2.4.1
       zod: 3.20.2
@@ -4347,7 +4345,7 @@ packages:
     hasBin: true
     requiresBuild: true
     dependencies:
-      '@prisma/engines': 4.8.1
+      '@prisma/engines': 4.9.0
 
   /process-nextick-args/2.0.1:
     resolution:
@@ -4458,7 +4456,7 @@ packages:
         integrity: sha512-6RLVvwJtVwEDfPdn6X6Ille4/lxGl0ATOY4FN/B9nxQcgOazvvI0nodiD19ScKq0PvA/29VpaOQML36o5IzZWA==,
       }
     dependencies:
-      minimatch: 5.1.4
+      minimatch: 5.1.6
 
   /readdirp/3.6.0:
     resolution:
@@ -5498,7 +5496,7 @@ packages:
       acorn-walk: 8.2.0
       chai: 4.3.7
       debug: 4.3.4
-      local-pkg: 0.4.2
+      local-pkg: 0.4.3
       source-map: 0.6.1
       strip-literal: 1.0.0
       tinybench: 2.3.1
