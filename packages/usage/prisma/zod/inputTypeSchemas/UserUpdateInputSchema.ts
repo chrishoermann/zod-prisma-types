@@ -1,0 +1,26 @@
+import { z } from 'zod';
+import { Prisma } from '@prisma/client';
+import { StringFieldUpdateOperationsInputSchema } from './StringFieldUpdateOperationsInputSchema';
+import { NullableStringFieldUpdateOperationsInputSchema } from './NullableStringFieldUpdateOperationsInputSchema';
+import { PostUpdateManyWithoutAuthorNestedInputSchema } from './PostUpdateManyWithoutAuthorNestedInputSchema';
+import { ProfileUpdateOneWithoutUserNestedInputSchema } from './ProfileUpdateOneWithoutUserNestedInputSchema';
+import { UserUpdateroleInputSchema } from './UserUpdateroleInputSchema';
+import { RoleSchema } from './RoleSchema';
+import { AnotherEnumSchema } from './AnotherEnumSchema';
+import { EnumAnotherEnumFieldUpdateOperationsInputSchema } from './EnumAnotherEnumFieldUpdateOperationsInputSchema';
+import { UserUpdatescalarListInputSchema } from './UserUpdatescalarListInputSchema';
+import { LocationUpdateOneWithoutUserNestedInputSchema } from './LocationUpdateOneWithoutUserNestedInputSchema';
+
+export const UserUpdateInputSchema: z.ZodType<Prisma.UserUpdateInput> = z.object({
+  id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  email: z.union([ z.string().email({ message: "Invalid email address" }),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string().min(1).max(100),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  posts: z.lazy(() => PostUpdateManyWithoutAuthorNestedInputSchema).optional(),
+  profile: z.lazy(() => ProfileUpdateOneWithoutUserNestedInputSchema).optional(),
+  role: z.union([ z.lazy(() => UserUpdateroleInputSchema),z.lazy(() => RoleSchema).array() ]).optional(),
+  enum: z.union([ z.lazy(() => AnotherEnumSchema),z.lazy(() => EnumAnotherEnumFieldUpdateOperationsInputSchema) ]).optional(),
+  scalarList: z.union([ z.lazy(() => UserUpdatescalarListInputSchema),z.string().array() ]).optional(),
+  location: z.lazy(() => LocationUpdateOneWithoutUserNestedInputSchema).optional(),
+}).strict()
+
+export default UserUpdateInputSchema

@@ -24,6 +24,7 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
   readonly hasRelationFields: boolean;
   readonly hasOmitFields: boolean;
   readonly imports: Set<string>;
+  readonly customImports?: Set<string>;
   readonly errorLocation: string;
   readonly clearedDocumentation?: string;
 
@@ -47,6 +48,7 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
     const docsContent = this._getDocumentationContent();
 
     this.imports = docsContent.imports;
+    this.customImports = docsContent.customImports;
     this.clearedDocumentation = docsContent?.documentation;
   }
 
@@ -86,15 +88,13 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
 
     if (!zodDirectives)
       return {
-        imports: new Set<string>(automaticImports),
+        imports: new Set(automaticImports),
       };
 
     return {
-      imports: new Set<string>([
-        ...zodDirectives.statements,
-        ...automaticImports,
-      ]),
+      imports: new Set([...zodDirectives.statements, ...automaticImports]),
       documentation: zodDirectives.clearedDocumentation,
+      customImports: new Set(zodDirectives.statements),
     };
   }
 
@@ -125,7 +125,9 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
             .match(/"(?<statement>[\w "'\{\}\/,;.*]+)"/)
             ?.groups?.['statement'].replace(/["']/g, "'"),
         )
-        .filter((statement): statement is string => !!statement),
+        .filter(
+          (statement): statement is string => typeof statement === 'string',
+        ),
       clearedDocumentation: this.documentation.replace(importStatements[0], ''),
     };
   }
@@ -137,23 +139,28 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
   private _getAutomaticImports() {
     const statements: string[] = [];
     if (this.fields.some((field) => field.isJsonType && !field.isRequired)) {
-      statements.push('import { NullableJsonValue } from "../helpers');
+      statements.push(
+        `import { NullableJsonValue } from "../${this.generatorConfig.inputTypePath}/NullableJsonValue"`,
+      );
     }
 
     if (this.fields.some((field) => field.isJsonType && field.isRequired)) {
-      statements.push('import { InputJsonValue } from "../helpers');
+      statements.push(
+        `import { InputJsonValue } from "../${this.generatorConfig.inputTypePath}/InputJsonValue"`,
+      );
     }
 
     if (this.fields.some((field) => field.isDecimalType)) {
       statements.push(
         `import * as PrismaClient from '${this.generatorConfig.prismaClientPath}'`,
-        `import { DecimalJSLikeSchema, isValidDecimalInput } from "../helpers`,
+        `import { DecimalJSLikeSchema } from "../${this.generatorConfig.inputTypePath}/DecimalJsLikeSchema"`,
+        `import { isValidDecimalInput } from "../${this.generatorConfig.inputTypePath}/isValidDecimalInput"`,
       );
     }
 
     this.enumFields.forEach((field) => {
       statements.push(
-        `import { ${field.type}Schema } from '../inputTypes/${field.type}Schema'`,
+        `import { ${field.type}Schema } from '../${this.generatorConfig.inputTypePath}/${field.type}Schema'`,
       );
     });
 
@@ -165,5 +172,9 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
       this.fields.some((field) => field.isOptionalDefaultField()) &&
       this.generatorConfig.createOptionalDefaultValuesTypes
     );
+  }
+
+  hasDecimalFields() {
+    return this.fields.some((field) => field.isDecimalType);
   }
 }

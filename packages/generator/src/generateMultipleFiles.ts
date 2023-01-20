@@ -1,9 +1,9 @@
-import { DirectoryHelper } from './classes';
+import { DirectoryHelper, FileWriter } from './classes';
 import fs from 'fs';
 import { CreateOptions } from './types';
 import {
   // writeEnumFiles,
-  writeHelperFiles,
+  // writeHelperFiles,
   writeInputTypeFiles,
   writeModelFiles,
 } from './functions';
@@ -27,47 +27,22 @@ export const generateMultipleFiles = ({
     }
   }
 
+  const indexFileWriter = new FileWriter();
+
   // Create the path specified in the generator output
-  DirectoryHelper.createDir(outputPath);
+  indexFileWriter.createPath(`${outputPath}`);
 
-  const indexSource = project.createSourceFile(`${outputPath}/index.ts`);
-
-  indexSource.addExportDeclarations([
-    // {
-    //   namespaceExport: '',
-    //   moduleSpecifier: './enums',
-    // },
-    {
-      namespaceExport: '',
-      moduleSpecifier: './helpers',
-    },
-    {
-      namespaceExport: '',
-      moduleSpecifier: './models',
-    },
-    {
-      namespaceExport: '',
-      moduleSpecifier: './inputTypes',
-    },
-  ]);
-
-  indexSource.organizeImports();
-
-  writeHelperFiles({ outputPath, project, extendedDMMF });
-
-  // writeEnumFiles({ outputPath, project, extendedDMMF });
-
-  writeModelFiles({ outputPath, project, extendedDMMF });
-
-  writeInputTypeFiles({ outputPath, project, extendedDMMF });
-
-  // format the source file
-  indexSource.formatText({
-    indentSize: 2,
-    convertTabsToSpaces: true,
-    ensureNewLineAtEndOfFile: true,
+  // Create the index file
+  indexFileWriter.createFile(`${outputPath}/index.ts`, (writer) => {
+    writer.writeLine(`export * from './modelSchema'`);
+    writer.writeLine(
+      `export * from './${extendedDMMF.generatorConfig.inputTypePath}'`,
+    );
   });
 
-  // save the source file and apply all changes
-  return project.save();
+  // Create the model files
+  writeModelFiles({ outputPath, project, extendedDMMF });
+
+  // Create the input type files
+  writeInputTypeFiles({ outputPath, project, extendedDMMF });
 };

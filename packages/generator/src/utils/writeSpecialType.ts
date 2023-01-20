@@ -48,7 +48,7 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
         .write(`z.union([`)
         .write(`z.number().array(),`)
         .write(`z.string().array(),`)
-        .write(`z.instanceof(PrismaClient.Prisma.Decimal).array(),`)
+        .write(`z.instanceof(Prisma.Decimal).array(),`)
         .write(`DecimalJSLikeSchema.array(),`)
         .write(`]`)
         .conditionalWrite(!!zodCustomErrors, `, ${zodCustomErrors!}`)
@@ -66,7 +66,7 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
       .write(`z.union([`)
       .write(`z.number(),`)
       .write(`z.string(),`)
-      .write(`z.instanceof(PrismaClient.Prisma.Decimal),`)
+      .write(`z.instanceof(Prisma.Decimal),`)
       .write(`DecimalJSLikeSchema,`)
       .write(`]`)
       .conditionalWrite(!!zodCustomErrors, `, ${zodCustomErrors!}`)
@@ -83,7 +83,7 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
     inputType.generatorConfig.useInstanceOfForDecimal
   ) {
     return writer
-      .write(`z.instanceof(PrismaClient.Prisma.Decimal)`)
+      .write(`z.instanceof(Prisma.Decimal)`)
       .conditionalWrite(inputType.isList, `.array()`)
       .conditionalWrite(isOptional, `.optional()`)
       .conditionalWrite(isNullable, `.nullable()`)

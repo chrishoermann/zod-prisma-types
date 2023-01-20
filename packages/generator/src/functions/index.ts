@@ -6,7 +6,5 @@ export * from './getImportStatements';
 export * from './getIncludeSelectStatements';
 export * from './getInputTypeStatements';
 export * from './getModelStatements';
-export * from './writeEnumFiles';
-export * from './writeHelperFiles';
 export * from './writeInputTypeFiles';
 export * from './writeModelFiles';

@@ -134,11 +134,6 @@ export class ExtendedDMMFSchemaArg
   getImports(fieldName: string) {
     const imports = this.inputTypes
       .map((type) => {
-        if (type.isJsonType) {
-          return `import { InputJsonValue } from '../helpers';`;
-        }
-
-        // get imports for all non scalar types (e.g. enums, models)
         const importType = type.getZodNonScalarType();
         const stringImportType = importType?.toString();
 
@@ -147,6 +142,17 @@ export class ExtendedDMMFSchemaArg
           return;
         }
 
+        if (type.isJsonType) {
+          return `import { InputJsonValue } from './InputJsonValue';`;
+        }
+
+        if (type.isDecimalType) {
+          return `import { DecimalJSLikeSchema, isValidDecimalInput } from '.';`;
+        }
+
+        // TODO: check how to add custom imports to only the models that need them
+
+        // get imports for all non scalar types (e.g. enums, models)
         if (importType) {
           return `import { ${importType}Schema } from './${importType}Schema';`;
         }

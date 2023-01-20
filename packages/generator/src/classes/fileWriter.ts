@@ -19,6 +19,9 @@ export class FileWriter {
   }
 
   public createPath(path: string) {
+    if (DirectoryHelper.pathOrDirExists(path)) {
+      return path;
+    }
     return DirectoryHelper.createDir(path);
   }
 

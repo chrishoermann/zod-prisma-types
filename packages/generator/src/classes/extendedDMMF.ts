@@ -58,6 +58,7 @@ export const configSchema = z.object({
     .transform((val) => val === 'true'),
   tsConfigFilePath: z.string().optional(),
   prismaClientPath: z.string().default('@prisma/client'),
+  inputTypePath: z.string().default('inputTypeSchemas'), // only used internally
 });
 
 export type GeneratorConfig = z.infer<typeof configSchema>;

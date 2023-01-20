@@ -115,22 +115,6 @@ export class ExtendedDMMFInputType
       linkedField.zodOmitField === 'input' ||
       linkedField.zodOmitField === 'all';
 
-    // If the field is required, it should not be omitted.
-    // Currently, the generator does not throw an error if a required field is marked to be omitted
-    // but logs a message to the console. This behaviour needs to be changed in the future
-    // To support omitting required fields in the future,
-    // all created arg types need to be aware of the omitted fields and
-    // then write use the correct type for e.g. "data" and "upsert" inputs.
-    // if (shouldOmitField && linkedField.isRequired) {
-    //   console.log(
-    //     '\x1b[33m',
-    //     `Field '${linkedField.name}' on '${linkedField.modelName}' is required! It is NOT omitted in '${this.name}Schema'. `,
-    //     '\x1b[37m',
-    //   );
-    //   return undefined;
-    // }
-
-    // return !linkedField.isRequired && shouldOmitField;
     return shouldOmitField;
   }
 
@@ -166,10 +150,17 @@ export class ExtendedDMMFInputType
   }
 
   private _setImports() {
-    return new Set(
-      this.fields.map((field) => field.getImports(this.name)).flat(),
-    );
-    // .flat()
-    // .filter((importString) => importString);
+    const fieldImports = this.fields
+      .map((field) => field.getImports(this.name))
+      .flat();
+
+    if (
+      PRISMA_FUNCTION_TYPES_WITH_VALIDATORS.test(this.name) &&
+      this.linkedModel?.customImports
+    ) {
+      fieldImports.push(...this.linkedModel.customImports);
+    }
+
+    return new Set(fieldImports);
   }
 }
