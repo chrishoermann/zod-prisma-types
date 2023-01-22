@@ -113,11 +113,9 @@ export const writeArgTypeFiles: CreateFiles = async ({
               .write(`z.ZodType<Prisma.${model.name}CountOutputTypeArgs> = `)
               .write('z.object({')
               .inlineBlock(() => {
-                writer
-                  .write('select: z.lazy(() => ')
-                  .write(`${model.name}CountOutputTypeSelectSchema`)
-                  .write(').nullish(),')
-                  .newLine();
+                writer.writeLine(
+                  `select: z.lazy(() => ${model.name}CountOutputTypeSelectSchema).nullish(),`,
+                );
               })
               .write(`).strict()`)
               .blankLine()
@@ -141,15 +139,11 @@ export const writeArgTypeFiles: CreateFiles = async ({
               .blankLine()
               .write(`export const ${model.name}CountOutputTypeSelectSchema: `)
               .write(`z.ZodType<Prisma.${model.name}CountOutputTypeSelect> = `)
-              .write(`z.object({`)
+              .write(`z.object(`)
               .inlineBlock(() => {
                 model.fields.forEach((field) => {
                   if (field.isListOutputType() && field.isObjectOutputType()) {
-                    writer
-                      .write(`${field.name}: `)
-                      .write(`z.boolean().optional()`)
-                      .write(`,`)
-                      .newLine();
+                    writer.writeLine(`${field.name}: z.boolean().optional(),`);
                   }
                 });
               })
