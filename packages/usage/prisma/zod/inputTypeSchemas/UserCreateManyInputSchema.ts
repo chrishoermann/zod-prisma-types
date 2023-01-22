@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { UserCreateroleInputSchema } from './UserCreateroleInputSchema';
 import { RoleSchema } from './RoleSchema';
 import { AnotherEnumSchema } from './AnotherEnumSchema';

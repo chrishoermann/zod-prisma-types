@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { FloatWithAggregatesFilterSchema } from './FloatWithAggregatesFilterSchema';
 
 export const LocationScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.LocationScalarWhereWithAggregatesInput> = z.object({

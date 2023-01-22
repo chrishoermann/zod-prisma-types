@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { SecondEnumSchema } from './SecondEnumSchema';
 import { NestedIntFilterSchema } from './NestedIntFilterSchema';
 import { NestedEnumSecondEnumFilterSchema } from './NestedEnumSecondEnumFilterSchema';

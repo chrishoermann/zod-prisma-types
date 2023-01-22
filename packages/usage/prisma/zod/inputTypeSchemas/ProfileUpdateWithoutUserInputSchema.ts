@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { StringFieldUpdateOperationsInputSchema } from './StringFieldUpdateOperationsInputSchema';
 import { ProfileUpdateroleInputSchema } from './ProfileUpdateroleInputSchema';
 import { RoleSchema } from './RoleSchema';

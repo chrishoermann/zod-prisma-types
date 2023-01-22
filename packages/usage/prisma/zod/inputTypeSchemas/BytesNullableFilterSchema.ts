@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { NestedBytesNullableFilterSchema } from './NestedBytesNullableFilterSchema';
 
 export const BytesNullableFilterSchema: z.ZodType<Prisma.BytesNullableFilter> = z.object({

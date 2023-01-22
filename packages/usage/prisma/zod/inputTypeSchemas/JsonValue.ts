@@ -1,7 +1,7 @@
 import { z } from 'zod'
-import * as PrismaClient from '@prisma/client'
+import { Prisma } from '@prisma/client'
 
-export const JsonValue: z.ZodType<PrismaClient.Prisma.JsonValue> = z.union([
+export const JsonValue: z.ZodType<Prisma.JsonValue> = z.union([
   z.string(),
   z.number(),
   z.boolean(),

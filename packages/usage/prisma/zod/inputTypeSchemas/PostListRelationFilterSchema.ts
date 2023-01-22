@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { PostWhereInputSchema } from './PostWhereInputSchema';
 
 export const PostListRelationFilterSchema: z.ZodType<Prisma.PostListRelationFilter> = z.object({

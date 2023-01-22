@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { IntWithAggregatesFilterSchema } from './IntWithAggregatesFilterSchema';
 import { DecimalWithAggregatesFilterSchema } from './DecimalWithAggregatesFilterSchema';
 import { DecimalJSLikeSchema, isValidDecimalInput } from '.';

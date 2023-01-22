@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { LocationUpdateWithoutUserInputSchema } from './LocationUpdateWithoutUserInputSchema';
 import { LocationUncheckedUpdateWithoutUserInputSchema } from './LocationUncheckedUpdateWithoutUserInputSchema';
 import { LocationCreateWithoutUserInputSchema } from './LocationCreateWithoutUserInputSchema';

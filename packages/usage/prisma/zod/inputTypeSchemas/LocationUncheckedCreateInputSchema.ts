@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { UserUncheckedCreateNestedManyWithoutLocationInputSchema } from './UserUncheckedCreateNestedManyWithoutLocationInputSchema';
 
 export const LocationUncheckedCreateInputSchema: z.ZodType<Prisma.LocationUncheckedCreateInput> = z.object({

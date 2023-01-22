@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { SortOrderSchema } from './SortOrderSchema';
 
 export const DecimalModelCountOrderByAggregateInputSchema: z.ZodType<Prisma.DecimalModelCountOrderByAggregateInput> = z.object({

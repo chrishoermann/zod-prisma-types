@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 
 export const ModelWithOmitFieldsUncheckedCreateInputSchema: z.ZodType<Omit<Prisma.ModelWithOmitFieldsUncheckedCreateInput, "omitField" | "omitRequired">> = z.object({
   id: z.string().cuid().optional(),

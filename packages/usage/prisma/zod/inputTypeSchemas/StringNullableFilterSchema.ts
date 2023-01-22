@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { QueryModeSchema } from './QueryModeSchema';
 import { NestedStringNullableFilterSchema } from './NestedStringNullableFilterSchema';
 

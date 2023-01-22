@@ -107,8 +107,6 @@ export const getIncludeSelectStatements: GetStatements = (dmmf) => {
         }),
       );
 
-      // If a relation field is a list, then the model has a _count field
-      // and then the [Model]CountOutputTypeSelectSchema needs to be generated
       statements.push(
         writeConstStatement({
           leadingTrivia: (writer) => writer.newLine(),

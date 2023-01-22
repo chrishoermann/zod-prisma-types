@@ -52,6 +52,8 @@ export class ExtendedDMMFSchemaField
 
   readonly hasOmitFields: boolean;
 
+  readonly argTypeImports: Set<string>;
+
   constructor(
     readonly generatorConfig: GeneratorConfig,
     field: DMMF.SchemaField,
@@ -70,6 +72,7 @@ export class ExtendedDMMFSchemaField
     this.linkedModel = this._setLinkedModel(datamodel);
     this.args = this._setArgs(field);
     this.hasOmitFields = this._setHasOmitFields();
+    this.argTypeImports = this._setArgTypeImports();
   }
 
   private _setArgs({ args }: DMMF.SchemaField) {
@@ -139,7 +142,7 @@ export class ExtendedDMMFSchemaField
    * @returns `true` if the field contains `create`, `upsert`, `update` or `delete` and the linked model has `omit` fields
    */
   private _setHasOmitFields() {
-    const writeOmit = this.name.match(/create|upsert|update|delete/);
+    const writeOmit = /create|upsert|update|delete/.test(this.name);
     if (writeOmit) return Boolean(this.linkedModel?.hasOmitFields);
     return false;
   }
@@ -152,9 +155,47 @@ export class ExtendedDMMFSchemaField
   createCustomOmitFieldType() {
     return (
       this.hasOmitFields &&
-      this.args.some((arg) =>
-        arg.name.match(/create|update|upsert|delete|data/),
-      )
+      this.args.some((arg) => /create|update|upsert|delete|data/.test(arg.name))
+    );
+  }
+
+  private _setArgTypeImports() {
+    const imports: string[] = [];
+
+    if (this.writeSelectAndIncludeArgs()) {
+      imports.push(
+        `import { ${this.modelType}SelectSchema } from '../${this.generatorConfig.inputTypePath}/${this.modelType}SelectSchema'`,
+      );
+    }
+
+    if (
+      this.writeSelectAndIncludeArgs() &&
+      this.linkedModel?.hasRelationFields
+    ) {
+      imports.push(
+        `import { ${this.modelType}IncludeSchema } from '../${this.generatorConfig.inputTypePath}/${this.modelType}IncludeSchema'`,
+      );
+    }
+
+    this.args.forEach((arg) => {
+      if (arg.hasMultipleTypes) {
+        return arg.inputTypes.forEach((inputType) => {
+          imports.push(
+            `import { ${inputType.type}Schema } from '../${this.generatorConfig.inputTypePath}/${inputType.type}Schema'`,
+          );
+        });
+      }
+
+      return imports.push(
+        `import { ${arg.inputTypes[0].type}Schema } from '../${this.generatorConfig.inputTypePath}/${arg.inputTypes[0].type}Schema'`,
+      );
+    });
+
+    // IntSchema and BooleanSchema are not needed since z.boolen() and z.number() are used
+    return new Set(
+      imports.filter(
+        (imp) => !imp.includes('IntSchema') && !imp.includes('BooleanSchema'),
+      ),
     );
   }
 
@@ -165,9 +206,34 @@ export class ExtendedDMMFSchemaField
    */
   getOmitUnionForCustomType() {
     return this.args
-      .filter((arg) => arg.name.match(/create|update|upsert|delete|data/))
+      .filter((arg) => /create|update|upsert|delete|data/.test(arg.name))
       .map((arg) => `"${arg.name}"`)
       .join(' | ');
+  }
+
+  getOmitArgsForCustomType() {
+    const args: string[] = [];
+
+    this.args.forEach((arg, idx) => {
+      if (arg.rewriteArgWithNewType()) return;
+
+      const writeComma = idx < this.args.length - 1;
+      const argName = `${arg.name}${arg.isRequired ? '' : '?'}: `;
+      const argType = arg.hasMultipleTypes
+        ? arg.inputTypes.map((inputType, idx) => {
+            const writeSeperator = idx !== arg.inputTypes.length - 1;
+            return `z.infer<typeof ${inputType.type}Schema>${
+              writeSeperator ? ' |' : ''
+            }`;
+          })
+        : `z.infer<typeof ${arg.inputTypes[0].type}Schema> ${
+            arg.inputTypes[0].isList ? `[]` : ''
+          }`;
+
+      args.push(argName + argType + (writeComma ? ',' : ''));
+    });
+
+    return args.join('');
   }
 
   isEnumOutputType() {

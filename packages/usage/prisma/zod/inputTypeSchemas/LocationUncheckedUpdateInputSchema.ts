@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { FloatFieldUpdateOperationsInputSchema } from './FloatFieldUpdateOperationsInputSchema';
 import { UserUncheckedUpdateManyWithoutLocationNestedInputSchema } from './UserUncheckedUpdateManyWithoutLocationNestedInputSchema';
 

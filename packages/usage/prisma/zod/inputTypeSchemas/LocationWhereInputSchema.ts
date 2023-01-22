@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { FloatFilterSchema } from './FloatFilterSchema';
 import { UserListRelationFilterSchema } from './UserListRelationFilterSchema';
 

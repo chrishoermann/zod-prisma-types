@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { NestedDateTimeNullableWithAggregatesFilterSchema } from './NestedDateTimeNullableWithAggregatesFilterSchema';
 import { NestedIntNullableFilterSchema } from './NestedIntNullableFilterSchema';
 import { NestedDateTimeNullableFilterSchema } from './NestedDateTimeNullableFilterSchema';

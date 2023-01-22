@@ -19,7 +19,6 @@
 - [Installation](#installation)
 - [Usage](#usage)
   - [`output`](#output)
-  - [`useInstanceOfForDecimal`](#useinstanceoffordecimal)
   - [`createInputTypes`](#createinputtypes)
   - [`createModelTypes`](#createmodeltypes)
   - [`addInputTypeValidation`](#addinputtypevalidation)
@@ -96,7 +95,6 @@ If you want to customize the behaviour of the generator you can use the followin
 generator zod {
   provider                         = "zod-prisma-types"
   output                           = "./zod" // default is ./generated/zod
-  useInstanceOfForDecimal          = true // default is false
   createInputTypes                 = false // default is true
   createModelTypes                 = false // default is true
   addInputTypeValidation           = false // default is true
@@ -114,66 +112,6 @@ generator zod {
 > default: `./generated/zod`
 
 Provide an alternative output path.
-
-### `useInstanceOfForDecimal`
-
-> default: `false`
-
-In Prisma `Decimal` fields are represented by the [decimal.js](https://mikemcl.github.io/decimal.js/) library as stated in the [prisma docs](https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields#working-with-decimal). By default the `Prisma.Decimal` type is used to validate `Decimal` fields by using the built in typeguard `isDecimal(value)` with a custom transform to check if the field value is a `Decimal`.
-
-```prisma
-model MyModel {
-  id         Int      @id @default(autoincrement())
-  decimal    Decimal
-  decimalOpt Decimal?
-}
-```
-
-By default The above model would generate the following output:
-
-```ts
-export const MyModel = z.object({
-  id: z.number().int(),
-  decimal: z
-    .any()
-    .transform((v) =>
-      isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
-    )
-    .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-      message: 'Field "decimal" must be a Decimal',
-      path: ['Models', 'DecimalModel'],
-    }),
-  decimalOpt: z
-    .any()
-    .transform((v) =>
-      isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
-    )
-    .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-      message: 'Field "decimalOpt" must be a Decimal',
-      path: ['Models', 'DecimalModel'],
-    })
-    .nullish(),
-});
-```
-
-If you want to validate `Decimal` with `z.instanceof(PrismaClient.Prisma.Decimal)` you can pass the following config option:
-
-```prisma
-generator zod {
-  // ...rest of config
-  useInstanceOfForDecimal = true
-}
-```
-
-The generated output would look like this:
-
-```ts
-export const MyModel = z.object({
-  id: z.number(),
-  decimal: z.instanceof(PrismaClient.Prisma.Decimal),
-  decimalOpt: z.instanceof(PrismaClient.Prisma.Decimal).nullable(),
-});
-```
 
 ### `createInputTypes`
 

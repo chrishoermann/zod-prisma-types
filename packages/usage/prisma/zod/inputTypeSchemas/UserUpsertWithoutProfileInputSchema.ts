@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { UserUpdateWithoutProfileInputSchema } from './UserUpdateWithoutProfileInputSchema';
 import { UserUncheckedUpdateWithoutProfileInputSchema } from './UserUncheckedUpdateWithoutProfileInputSchema';
 import { UserCreateWithoutProfileInputSchema } from './UserCreateWithoutProfileInputSchema';

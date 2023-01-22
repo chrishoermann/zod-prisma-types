@@ -1,6 +1,8 @@
 import { z } from 'zod'
-import * as PrismaClient from '@prisma/client'
+import { Prisma } from '@prisma/client'
 
-export const NonDefaultModelScalarFieldEnumSchema = z.nativeEnum(PrismaClient.Prisma.NonDefaultModelScalarFieldEnum)
+export const NonDefaultModelScalarFieldEnumSchema = z.nativeEnum(Prisma.NonDefaultModelScalarFieldEnum)
+
+export type NonDefaultModelScalarFieldEnumType = `z.infer<typeof NonDefaultModelScalarFieldEnumSchema>`
 
 export default NonDefaultModelScalarFieldEnumSchema

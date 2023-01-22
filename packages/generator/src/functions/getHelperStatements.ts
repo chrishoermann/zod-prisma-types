@@ -17,10 +17,7 @@ export const getHelperStatements: GetStatements = ({ schema }) => {
   // DECIMAL
   // ------------------------------------------
 
-  if (
-    schema.hasDecimalTypes &&
-    !schema.generatorConfig.useInstanceOfForDecimal
-  ) {
+  if (schema.hasDecimalTypes) {
     statements.push(
       writeHeading(`DECIMAL`, 'SLIM'),
       {

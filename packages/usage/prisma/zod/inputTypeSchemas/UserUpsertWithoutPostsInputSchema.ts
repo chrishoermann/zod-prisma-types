@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { UserUpdateWithoutPostsInputSchema } from './UserUpdateWithoutPostsInputSchema';
 import { UserUncheckedUpdateWithoutPostsInputSchema } from './UserUncheckedUpdateWithoutPostsInputSchema';
 import { UserCreateWithoutPostsInputSchema } from './UserCreateWithoutPostsInputSchema';

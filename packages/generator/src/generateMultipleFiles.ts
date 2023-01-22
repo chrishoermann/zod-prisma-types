@@ -2,6 +2,7 @@ import { DirectoryHelper, FileWriter } from './classes';
 import fs from 'fs';
 import { CreateOptions } from './types';
 import {
+  writeArgTypeFiles,
   // writeEnumFiles,
   // writeHelperFiles,
   writeInputTypeFiles,
@@ -16,8 +17,8 @@ export const generateMultipleFiles = ({
   // If data is present in the directory, delete it.
   // Is necessary to not have old data in the directory e.g.
   // when a model is removed from the schema.
-  // needs to be syncronous because otherwise a race condition
-  // when creating new files occurs.
+  // needs to be syncronous because otherwise a race condition occurs
+  // when creating new files.
   if (DirectoryHelper.pathOrDirExists(outputPath)) {
     try {
       fs.rmdirSync(outputPath, { recursive: true });
@@ -33,10 +34,13 @@ export const generateMultipleFiles = ({
   indexFileWriter.createPath(`${outputPath}`);
 
   // Create the index file
-  indexFileWriter.createFile(`${outputPath}/index.ts`, (writer) => {
+  indexFileWriter.createFile(`${outputPath}/index.ts`, ({ writer }) => {
     writer.writeLine(`export * from './modelSchema'`);
     writer.writeLine(
       `export * from './${extendedDMMF.generatorConfig.inputTypePath}'`,
+    );
+    writer.writeLine(
+      `export * from './${extendedDMMF.generatorConfig.outputTypePath}'`,
     );
   });
 
@@ -45,4 +49,7 @@ export const generateMultipleFiles = ({
 
   // Create the input type files
   writeInputTypeFiles({ outputPath, project, extendedDMMF });
+
+  // Create the arg type files
+  writeArgTypeFiles({ outputPath, project, extendedDMMF });
 };

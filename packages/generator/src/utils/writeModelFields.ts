@@ -4,7 +4,6 @@ import {
   writeBytes,
   writeCustomValidator,
   writeDecimal,
-  writeDecimalInstance,
   writeEnum,
   writeJson,
   writeScalar,
@@ -31,12 +30,8 @@ export const writeModelFields = (options: ExtendedWriteFieldOptions) => {
     return writeBytes(options);
   }
 
-  if (options.field.isDecimalType && !options.dmmf.useInstanceOfForDecimal()) {
+  if (options.field.isDecimalType) {
     return writeDecimal(options);
-  }
-
-  if (options.field.isDecimalType && options.dmmf.useInstanceOfForDecimal()) {
-    return writeDecimalInstance(options);
   }
 
   return writeScalar(options);

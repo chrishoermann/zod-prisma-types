@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { UserScalarWhereInputSchema } from './UserScalarWhereInputSchema';
 import { UserUpdateManyMutationInputSchema } from './UserUpdateManyMutationInputSchema';
 import { UserUncheckedUpdateManyWithoutUserInputSchema } from './UserUncheckedUpdateManyWithoutUserInputSchema';

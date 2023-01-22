@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { PostWhereUniqueInputSchema } from './PostWhereUniqueInputSchema';
 import { PostCreateWithoutAuthorInputSchema } from './PostCreateWithoutAuthorInputSchema';
 import { PostUncheckedCreateWithoutAuthorInputSchema } from './PostUncheckedCreateWithoutAuthorInputSchema';

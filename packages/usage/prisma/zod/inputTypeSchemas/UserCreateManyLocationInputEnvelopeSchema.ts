@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { UserCreateManyLocationInputSchema } from './UserCreateManyLocationInputSchema';
 
 export const UserCreateManyLocationInputEnvelopeSchema: z.ZodType<Prisma.UserCreateManyLocationInputEnvelope> = z.object({

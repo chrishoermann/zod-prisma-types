@@ -10,16 +10,17 @@ import { ExtendedDMMFSchema } from './extendedDMMFSchema';
 /////////////////////////////////////////////////
 
 export const configSchema = z.object({
+  /**
+   * @deprecated
+   */
   useMultipleFiles: z
     .string()
     .optional()
     .default('false')
     .transform((val) => val === 'true'),
-  useInstanceOfForDecimal: z
-    .string()
-    .optional()
-    .default('false')
-    .transform((val) => val === 'true'),
+  /**
+   * @deprecated
+   */
   imports: z
     .string()
     .optional()
@@ -31,6 +32,10 @@ export const configSchema = z.object({
             .filter((v) => v !== '')
         : [],
     ),
+  /**
+   * @deprecated inputTypes need to be generated because enums are generated in the same folder and models rely on enums
+   * it would make the code a bit harder to read if we only generate enums
+   */
   createInputTypes: z
     .string()
     .optional()
@@ -56,9 +61,13 @@ export const configSchema = z.object({
     .optional()
     .default('true')
     .transform((val) => val === 'true'),
+  /**
+   * @deprecated ts-morph is no longer used to generate files
+   */
   tsConfigFilePath: z.string().optional(),
   prismaClientPath: z.string().default('@prisma/client'),
-  inputTypePath: z.string().default('inputTypeSchemas'), // only used internally
+  inputTypePath: z.string().default('inputTypeSchemas'), // currently only used internally
+  outputTypePath: z.string().default('outputTypeSchemas'), // currently only used internally
 });
 
 export type GeneratorConfig = z.infer<typeof configSchema>;
@@ -106,10 +115,6 @@ export class ExtendedDMMF implements DMMF.Document {
 
   private _setGeneratorConfig(config: Dictionary<string>): GeneratorConfig {
     return configSchema.parse(config);
-  }
-
-  useInstanceOfForDecimal() {
-    return Boolean(this.generatorConfig.useInstanceOfForDecimal);
   }
 
   createInputTypes() {

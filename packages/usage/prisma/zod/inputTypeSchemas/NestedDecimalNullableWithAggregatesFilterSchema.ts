@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { DecimalJSLikeSchema, isValidDecimalInput } from '.';
 import { NestedIntNullableFilterSchema } from './NestedIntNullableFilterSchema';
 import { NestedDecimalNullableFilterSchema } from './NestedDecimalNullableFilterSchema';

@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { UserWhereInputSchema } from './UserWhereInputSchema';
 
 export const UserListRelationFilterSchema: z.ZodType<Prisma.UserListRelationFilter> = z.object({

@@ -39,10 +39,7 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
       .conditionalWrite(writeComma, `,`);
   }
 
-  if (
-    inputType.isDecimalType &&
-    !inputType.generatorConfig.useInstanceOfForDecimal
-  ) {
+  if (inputType.isDecimalType) {
     if (inputType.isList) {
       return writer
         .write(`z.union([`)
@@ -73,18 +70,6 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
       .write(`)`)
       .write(`.refine((v) => isValidDecimalInput(v),`)
       .write(` { message: 'Must be a Decimal' })`)
-      .conditionalWrite(isOptional, `.optional()`)
-      .conditionalWrite(isNullable, `.nullable()`)
-      .conditionalWrite(writeComma, `,`);
-  }
-
-  if (
-    inputType.isDecimalType &&
-    inputType.generatorConfig.useInstanceOfForDecimal
-  ) {
-    return writer
-      .write(`z.instanceof(Prisma.Decimal)`)
-      .conditionalWrite(inputType.isList, `.array()`)
       .conditionalWrite(isOptional, `.optional()`)
       .conditionalWrite(isNullable, `.nullable()`)
       .conditionalWrite(writeComma, `,`);

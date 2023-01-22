@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 
 export const WithDefaultValidatorsUncheckedCreateInputSchema: z.ZodType<Prisma.WithDefaultValidatorsUncheckedCreateInput> = z.object({
   id: z.string().cuid().optional(),

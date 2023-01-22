@@ -1,6 +1,8 @@
 import { z } from 'zod'
-import * as PrismaClient from '@prisma/client'
+import { Prisma } from '@prisma/client'
 
-export const TransactionIsolationLevelSchema = z.nativeEnum(PrismaClient.Prisma.TransactionIsolationLevel)
+export const TransactionIsolationLevelSchema = z.nativeEnum(Prisma.TransactionIsolationLevel)
+
+export type TransactionIsolationLevelType = `z.infer<typeof TransactionIsolationLevelSchema>`
 
 export default TransactionIsolationLevelSchema

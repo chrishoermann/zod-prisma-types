@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { AnotherEnumSchema } from './AnotherEnumSchema';
 
 export const PostUpdateanotherEnumInputSchema: z.ZodType<Prisma.PostUpdateanotherEnumInput> = z.object({

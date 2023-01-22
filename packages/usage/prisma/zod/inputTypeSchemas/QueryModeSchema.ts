@@ -1,6 +1,8 @@
 import { z } from 'zod'
-import * as PrismaClient from '@prisma/client'
+import { Prisma } from '@prisma/client'
 
-export const QueryModeSchema = z.nativeEnum(PrismaClient.Prisma.QueryMode)
+export const QueryModeSchema = z.nativeEnum(Prisma.QueryMode)
+
+export type QueryModeType = `z.infer<typeof QueryModeSchema>`
 
 export default QueryModeSchema

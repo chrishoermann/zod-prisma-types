@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { SortOrderSchema } from './SortOrderSchema';
 import { ModelWithOmitFieldsCountOrderByAggregateInputSchema } from './ModelWithOmitFieldsCountOrderByAggregateInputSchema';
 import { ModelWithOmitFieldsMaxOrderByAggregateInputSchema } from './ModelWithOmitFieldsMaxOrderByAggregateInputSchema';

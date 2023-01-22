@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { LocationWhereInputSchema } from './LocationWhereInputSchema';
 
 export const LocationRelationFilterSchema: z.ZodType<Prisma.LocationRelationFilter> = z.object({

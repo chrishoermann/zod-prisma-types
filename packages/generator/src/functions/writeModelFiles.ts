@@ -13,11 +13,9 @@ export const writeModelFiles: CreateFiles = async (options) => {
   const path = indexFileWriter.createPath(`${outputPath}/modelSchema`);
 
   if (path) {
-    indexFileWriter.createFile(`${path}/index.ts`, (writer) => {
+    indexFileWriter.createFile(`${path}/index.ts`, ({ writeExport }) => {
       extendedDMMF.datamodel.models.forEach((model) => {
-        writer.writeLine(
-          `export{ ${model.name}Schema } from './${model.name}Schema'`,
-        );
+        writeExport(`{ ${model.name}Schema }`, `./${model.name}Schema`);
       });
     });
   }
@@ -25,54 +23,52 @@ export const writeModelFiles: CreateFiles = async (options) => {
   extendedDMMF.datamodel.models.forEach((model) => {
     const fileWriter = new FileWriter();
 
-    fileWriter.createFile(`${path}/${model.name}Schema.ts`, (writer) => {
-      writer.writeLine(`import { z } from 'zod'`);
+    fileWriter.createFile(
+      `${path}/${model.name}Schema.ts`,
+      ({ writeImport, writeImportSet, writer }) => {
+        writeImport('{ z }', 'zod');
+        writeImportSet(model.imports);
 
-      if (model.imports.size > 0) {
-        model.imports.forEach((importStatement) => {
-          writer.writeLine(importStatement);
-        });
-      }
-
-      writer.blankLine();
-
-      writer.writeLine(`export const ${model.name}Schema = z.object({`);
-      writer.withIndentationLevel(1, () => {
-        [...model.enumFields, ...model.scalarFields].forEach((field) => {
-          writeModelFields({
-            writer,
-            field,
-            model,
-            dmmf: extendedDMMF,
-          });
-        });
-      });
-      writer.write(`})`);
-
-      if (model.writeOptionalDefaultValuesTypes()) {
         writer.blankLine();
-        writer.writeLine(
-          `export const ${model.name}OptionalDefaultsSchema = ${model.name}Schema.merge(z.object({`,
-        );
+
+        writer.writeLine(`export const ${model.name}Schema = z.object({`);
         writer.withIndentationLevel(1, () => {
           [...model.enumFields, ...model.scalarFields].forEach((field) => {
-            if (!field.isOptionalDefaultField()) return;
-
-            const writeOptions = {
+            writeModelFields({
               writer,
               field,
-              writeOptionalDefaults: true,
-            };
-
-            writeModelFields({
-              ...writeOptions,
               model,
               dmmf: extendedDMMF,
             });
           });
         });
-        writer.write(`}))`);
-      }
-    });
+        writer.write(`})`);
+
+        if (model.writeOptionalDefaultValuesTypes()) {
+          writer.blankLine();
+          writer.writeLine(
+            `export const ${model.name}OptionalDefaultsSchema = ${model.name}Schema.merge(z.object({`,
+          );
+          writer.withIndentationLevel(1, () => {
+            [...model.enumFields, ...model.scalarFields].forEach((field) => {
+              if (!field.isOptionalDefaultField()) return;
+
+              const writeOptions = {
+                writer,
+                field,
+                writeOptionalDefaults: true,
+              };
+
+              writeModelFields({
+                ...writeOptions,
+                model,
+                dmmf: extendedDMMF,
+              });
+            });
+          });
+          writer.write(`}))`);
+        }
+      },
+    );
   });
 };

@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { SortOrderSchema } from './SortOrderSchema';
 
 export const MyPrismaScalarsTypeCountOrderByAggregateInputSchema: z.ZodType<Prisma.MyPrismaScalarsTypeCountOrderByAggregateInput> = z.object({

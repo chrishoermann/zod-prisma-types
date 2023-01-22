@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { NestedBoolFilterSchema } from './NestedBoolFilterSchema';
 
 export const BoolFilterSchema: z.ZodType<Prisma.BoolFilter> = z.object({

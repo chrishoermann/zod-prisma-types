@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { UserCreateNestedOneWithoutPostsInputSchema } from './UserCreateNestedOneWithoutPostsInputSchema';
 import { PostCreateanotherEnumInputSchema } from './PostCreateanotherEnumInputSchema';
 import { AnotherEnumSchema } from './AnotherEnumSchema';

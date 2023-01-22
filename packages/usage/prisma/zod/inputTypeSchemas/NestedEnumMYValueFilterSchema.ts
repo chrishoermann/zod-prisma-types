@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { MYValueSchema } from './MYValueSchema';
 
 export const NestedEnumMYValueFilterSchema: z.ZodType<Prisma.NestedEnumMYValueFilter> = z.object({

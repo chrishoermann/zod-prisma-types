@@ -138,6 +138,7 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
    */
   private _getAutomaticImports() {
     const statements: string[] = [];
+
     if (this.fields.some((field) => field.isJsonType && !field.isRequired)) {
       statements.push(
         `import { NullableJsonValue } from "../${this.generatorConfig.inputTypePath}/NullableJsonValue"`,

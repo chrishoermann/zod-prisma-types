@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { NestedBytesFilterSchema } from './NestedBytesFilterSchema';
 
 export const BytesFilterSchema: z.ZodType<Prisma.BytesFilter> = z.object({

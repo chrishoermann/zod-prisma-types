@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { InputJsonValue } from './InputJsonValue';
 import { JsonNullValueFilterSchema } from './JsonNullValueFilterSchema';
 

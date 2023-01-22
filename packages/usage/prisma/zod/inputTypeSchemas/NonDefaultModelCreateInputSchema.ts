@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 
 export const NonDefaultModelCreateInputSchema: z.ZodType<Prisma.NonDefaultModelCreateInput> = z.object({
   id: z.number().int(),

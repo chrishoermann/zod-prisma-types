@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { RoleSchema } from './RoleSchema';
 
 export const ProfileCreateroleInputSchema: z.ZodType<Prisma.ProfileCreateroleInput> = z.object({

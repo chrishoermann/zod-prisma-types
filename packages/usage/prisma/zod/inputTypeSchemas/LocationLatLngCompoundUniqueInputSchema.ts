@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 
 export const LocationLatLngCompoundUniqueInputSchema: z.ZodType<Prisma.LocationLatLngCompoundUniqueInput> = z.object({
   lat: z.number(),
