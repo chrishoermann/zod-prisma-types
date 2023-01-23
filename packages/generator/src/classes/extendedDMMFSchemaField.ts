@@ -213,37 +213,20 @@ export class ExtendedDMMFSchemaField
     this.args.forEach((arg) => {
       if (!arg.rewriteArgWithNewType()) return;
 
-      // const writeComma = idx < this.args.length - 1;
-
       const argName = `${arg.name}${arg.isRequired ? '' : '?'}: `;
 
-      let argType: string;
-
-      if (arg.hasMultipleTypes) {
-        argType = arg.inputTypes
-          .map((inputType, idx) => {
-            const writeSeperator = idx !== arg.inputTypes.length - 1;
-            return `z.infer<typeof ${inputType.type}Schema>${
-              writeSeperator ? ' | ' : ''
-            }`;
-          })
-          .join('');
-      } else {
-        argType = `z.infer<typeof ${arg.inputTypes[0].type}Schema> ${
-          arg.inputTypes[0].isList ? `[]` : ''
-        }`;
-      }
-
-      // const argType = arg.hasMultipleTypes
-      //   ? arg.inputTypes.map((inputType, idx) => {
-      //       const writeSeperator = idx !== arg.inputTypes.length - 1;
-      //       return `z.infer<typeof ${inputType.type}Schema>${
-      //         writeSeperator ? ' |' : ''
-      //       }`;
-      //     })
-      //   : `z.infer<typeof ${arg.inputTypes[0].type}Schema> ${
-      //       arg.inputTypes[0].isList ? `[]` : ''
-      //     }`;
+      const argType = arg.hasMultipleTypes
+        ? arg.inputTypes
+            .map((inputType, idx) => {
+              const writeSeperator = idx !== arg.inputTypes.length - 1;
+              return `z.infer<typeof ${inputType.type}Schema>${
+                writeSeperator ? ' | ' : ''
+              }`;
+            })
+            .join('')
+        : `z.infer<typeof ${arg.inputTypes[0].type}Schema> ${
+            arg.inputTypes[0].isList ? `[]` : ''
+          }`;
 
       args.push(argName + argType);
     });
