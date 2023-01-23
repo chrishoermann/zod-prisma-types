@@ -206,9 +206,7 @@ export const writeInputTypeFiles: CreateFiles = async ({
       // DECIMAL JS LIKE
       // ------------------------------------------------------------
 
-      const isValidDecimalInputWriter = new FileWriter();
-
-      isValidDecimalInputWriter.createFile(
+      new FileWriter().createFile(
         `${path}/isValidDecimalInput.ts`,
         ({ writer, writeImport }) => {
           writeImport('{ Prisma }', prismaClientPath);
@@ -261,9 +259,7 @@ export const writeInputTypeFiles: CreateFiles = async ({
 
     extendedDMMF.schema.enumTypes.prisma.forEach(
       ({ useNativeEnum, values, name }) => {
-        const fileWriter = new FileWriter();
-
-        fileWriter.createFile(
+        new FileWriter().createFile(
           `${path}/${name}Schema.ts`,
           ({ writer, writeImport }) => {
             writeImport('{ z }', 'zod');

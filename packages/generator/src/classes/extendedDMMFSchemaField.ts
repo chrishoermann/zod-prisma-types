@@ -162,11 +162,11 @@ export class ExtendedDMMFSchemaField
   private _setArgTypeImports() {
     const imports: string[] = [];
 
-    if (this.writeSelectAndIncludeArgs()) {
-      imports.push(
-        `import { ${this.modelType}SelectSchema } from '../${this.generatorConfig.inputTypePath}/${this.modelType}SelectSchema'`,
-      );
-    }
+    // if (this.writeSelectAndIncludeArgs()) {
+    //   imports.push(
+    //     `import { ${this.modelType}SelectSchema } from '../${this.generatorConfig.inputTypePath}/${this.modelType}SelectSchema'`,
+    //   );
+    // }
 
     if (
       this.writeSelectAndIncludeArgs() &&
@@ -245,7 +245,13 @@ export class ExtendedDMMFSchemaField
   }
 
   isObjectOutputType() {
-    return this.outputType?.location === 'outputObjectTypes';
+    // DeleteMany, CreateMany and UpdateMany are not needed since
+    // select and include args are not available for these schemas
+    return (
+      this.outputType?.location === 'outputObjectTypes' &&
+      this.argName &&
+      /DeleteMany|CreateMany|UpdateMany/.test(this.argName)
+    );
   }
 
   isScalarOutputType() {
