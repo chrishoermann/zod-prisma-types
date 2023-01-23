@@ -147,7 +147,23 @@ export class ExtendedDMMFSchemaArg
         }
 
         if (type.isDecimalType) {
-          return `import { DecimalJSLikeSchema, isValidDecimalInput } from '.';`;
+          const decimalImports = [
+            `import { isValidDecimalInput } from './isValidDecimalInput';`,
+          ];
+
+          if (type.isList) {
+            decimalImports.push(
+              `import { DecimalJSLikeListSchema } from './DecimalJsLikeListSchema';`,
+            );
+          }
+
+          if (!type.isList) {
+            decimalImports.push(
+              `import { DecimalJSLikeSchema } from './DecimalJsLikeSchema';`,
+            );
+          }
+
+          return decimalImports;
         }
 
         // TODO: check how to add custom imports to only the models that need them
@@ -159,6 +175,7 @@ export class ExtendedDMMFSchemaArg
 
         return;
       })
+      .flat()
       .filter(
         (importString): importString is string => importString !== undefined,
       );

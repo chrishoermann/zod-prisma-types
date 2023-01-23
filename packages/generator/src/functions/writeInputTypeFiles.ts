@@ -40,6 +40,7 @@ export const writeInputTypeFiles: CreateFiles = async ({
       writeExport(`{ NullableJsonValue }`, `./NullableJsonValue`);
       writeExport(`{ InputJsonValue }`, `./InputJsonValue`);
       writeExport(`{ DecimalJSLikeSchema }`, `./DecimalJsLikeSchema`);
+      writeExport(`{ DecimalJSLikeListSchema }`, `./DecimalJsLikeListSchema`);
       writeExport(`{ isValidDecimalInput }`, `./isValidDecimalInput`);
     });
 
@@ -172,9 +173,7 @@ export const writeInputTypeFiles: CreateFiles = async ({
       // DECIMAL JS LIKE
       // ------------------------------------------------------------
 
-      const decimalJsLikeWriter = new FileWriter();
-
-      decimalJsLikeWriter.createFile(
+      new FileWriter().createFile(
         `${path}/DecimalJsLikeSchema.ts`,
         ({ writer, writeImport }) => {
           writeImport('{ z }', 'zod');
@@ -186,6 +185,21 @@ export const writeInputTypeFiles: CreateFiles = async ({
             )
             .blankLine()
             .writeLine(`export default DecimalJSLikeSchema`);
+        },
+      );
+
+      new FileWriter().createFile(
+        `${path}/DecimalJsLikeListSchema.ts`,
+        ({ writer, writeImport }) => {
+          writeImport('{ z }', 'zod');
+
+          writer
+            .blankLine()
+            .writeLine(
+              `export const DecimalJSLikeListSchema = z.object({ d: z.array(z.number()), e: z.number(), s: z.number() }).array()`,
+            )
+            .blankLine()
+            .writeLine(`export default DecimalJSLikeListSchema`);
         },
       );
 

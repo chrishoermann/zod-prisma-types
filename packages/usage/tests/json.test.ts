@@ -1,4 +1,7 @@
-import { JsonModelCreateInputSchema, JsonModelSchema } from '../prisma/zod';
+import {
+  JsonModelCreateInputSchema,
+  JsonModelSchema,
+} from '../prisma/generated/zod';
 import { getServer } from './trpc/server';
 
 const httpServer = getServer();

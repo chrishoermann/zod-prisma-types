@@ -46,13 +46,15 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
         .write(`z.number().array(),`)
         .write(`z.string().array(),`)
         .write(`z.instanceof(Prisma.Decimal).array(),`)
-        .write(`DecimalJSLikeSchema.array(),`)
+        .write(`DecimalJSLikeListSchema,`)
         .write(`]`)
         .conditionalWrite(!!zodCustomErrors, `, ${zodCustomErrors!}`)
         .write(`)`)
 
         .write(`.refine((v) => `)
-        .write(`(v as any[]).every((v) => isValidDecimalInput(v)),`)
+        .write(
+          `Array.isArray(v) && (v as any[]).every((v) => isValidDecimalInput(v)),`,
+        )
         .write(` { message: 'Must be a Decimal' })`)
         .conditionalWrite(isOptional, `.optional()`)
         .conditionalWrite(isNullable, `.nullable()`)

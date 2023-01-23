@@ -111,7 +111,7 @@ export const writeArgTypeFiles: CreateFiles = async ({
               .blankLine()
               .write(`export const ${model.name}CountOutputTypeArgsSchema: `)
               .write(`z.ZodType<Prisma.${model.name}CountOutputTypeArgs> = `)
-              .write('z.object({')
+              .write('z.object(')
               .inlineBlock(() => {
                 writer.writeLine(
                   `select: z.lazy(() => ${model.name}CountOutputTypeSelectSchema).nullish(),`,

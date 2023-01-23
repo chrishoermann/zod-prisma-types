@@ -1,7 +1,7 @@
 import { Decimal, DecimalJsLike } from '@prisma/client/runtime';
 import { initTRPC } from '@trpc/server';
 import { createHTTPServer } from '@trpc/server/adapters/standalone';
-import { JsonModelSchema } from '../../prisma/zod';
+import { JsonModelSchema } from '../../prisma/generated/zod';
 import {
   DecimalListModelSchema,
   DecimalModelSchema,

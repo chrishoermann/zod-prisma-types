@@ -15,9 +15,10 @@ datasource db {
 // -----------------------------------------------
 
 generator zod {
-  provider                         = "zod-prisma-types"
-  output                           = "./zod" // default is ./generated/zod 
-  useMultipleFiles                 = true // default is false
+  provider                         = "ts-node ../generator/src/bin.ts"
+  output                           = "./generated/zod" // default is ./generated/zod
+  useMultipleFiles                 = true // default is false 
+  // useInstanceOfForDecimal          = true // default is false
   // createInputTypes                 = false // default is true
   // createModelTypes                 = false // default is true
   // createModelTypes                 = false // default is true
@@ -25,7 +26,7 @@ generator zod {
   createOptionalDefaultValuesTypes = true // default is false
   useDefaultValidators             = true // default is true
   useDecimalJs                     = true // default is false
-  imports                          = "import(import { myFunction } from '../../utils/myFunction';).import(import validator from 'validator';)" // optional
+  imports                          = "import(import { myFunction } from '../../../../utils/myFunction';).import(import validator from 'validator';)" // optional
   // tsConfigFilePath                 = "tsconfig.json" // optional
 }
 
@@ -82,7 +83,7 @@ model ModelWithComments {
 // Custom validators should be included in the generated model and input schemas
 // It should not matter if the comments are above or next to the field
 
-/// @zod.import(["import { myFunction } from "../../../utils/myFunction";", "import validator from 'validator';"])
+/// @zod.import(["import { myFunction } from "../../../../utils/myFunction";", "import validator from 'validator';"])
 model MyPrismaScalarsType {
   /// @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid()
   id         String    @id @default(cuid())
