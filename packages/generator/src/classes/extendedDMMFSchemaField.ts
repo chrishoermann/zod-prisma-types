@@ -215,6 +215,9 @@ export class ExtendedDMMFSchemaField
 
       const argName = `${arg.name}${arg.isRequired ? '' : '?'}: `;
 
+      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      // NEEDS SOME REFACTORING
+      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       const argType = arg.hasMultipleTypes
         ? arg.inputTypes
             .map((inputType, idx) => {
