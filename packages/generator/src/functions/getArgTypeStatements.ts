@@ -34,12 +34,12 @@ export const getArgTypeStatements: GetStatements = (dmmf) => {
               // tha type needs to be updated to reflect that.
               // Otherwise typescript will complain that the required fields are missing.
 
-              type: field.createCustomOmitFieldType()
+              type: field.createCustomOmitFieldArgType()
                 ? (writer) => {
                     writer.write(
                       `z.ZodType<Omit<PrismaClient.Prisma.${
                         field.argName
-                      }, ${field.getOmitUnionForCustomType()}> & { `,
+                      }, ${field.getOmitUnionForCustomArgType()}> & { `,
                     );
 
                     field.args.forEach((arg, idx) => {
@@ -76,11 +76,11 @@ export const getArgTypeStatements: GetStatements = (dmmf) => {
                 writer.inlineBlock(() => {
                   writer
                     .conditionalWriteLine(
-                      field.writeSelectAndIncludeArgs(),
+                      field.includeInSelectAndIncludeArgs(),
                       `select :${field.modelType}SelectSchema.optional(),`,
                     )
                     .conditionalWriteLine(
-                      field.writeSelectAndIncludeArgs() &&
+                      field.includeInSelectAndIncludeArgs() &&
                         field.linkedModel?.hasRelationFields,
                       `include: ${field.modelType}IncludeSchema.optional(),`,
                     );

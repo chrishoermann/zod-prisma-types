@@ -160,15 +160,9 @@ export const writeArgTypeFiles: CreateFiles = async ({
       outputType.prismaActionFields.forEach((field) => {
         const fileWriter = new FileWriter();
 
+        // determine if the outputType should include the "select" or "include" field
         const modelWithSelect =
-          extendedDMMF.schema.outputObjectTypes.model.find((model) =>
-            field.name.includes(model.name),
-          );
-
-        console.log({
-          selectModel: modelWithSelect?.name,
-          outputType: field.argName,
-        });
+          extendedDMMF.schema.getModelWithIncludeAndSelect(field);
 
         fileWriter.createFile(
           `${path}/${field.argName}Schema.ts`,
@@ -177,16 +171,19 @@ export const writeArgTypeFiles: CreateFiles = async ({
             writeImport('{ Prisma }', prismaClientPath);
             writeImportSet(field.argTypeImports);
 
+            // If a
             if (modelWithSelect) {
+              // if the outputType has a "select" or "include" field,
+              // the necessary schema needs to be imported
               modelWithSelect.fields.forEach((field) => {
-                if (field.isListOutputType() && field.isObjectOutputType()) {
+                if (field.writeSelectFindManyImports()) {
                   return writeImport(
                     `{ ${field.outputType.type}FindManyArgsSchema }`,
                     `../${outputTypePath}/${field.outputType.type}FindManyArgsSchema`,
                   );
                 }
 
-                if (field.isObjectOutputType()) {
+                if (field.writeSelectImports()) {
                   return writeImport(
                     `{ ${field.outputType.type}ArgsSchema }`,
                     `../${outputTypePath}/${field.outputType.type}ArgsSchema`,
@@ -194,7 +191,7 @@ export const writeArgTypeFiles: CreateFiles = async ({
                 }
               });
 
-              if (field.writeSelectAndIncludeArgs()) {
+              if (field.includeInSelectAndIncludeArgs()) {
                 writer
                   .blankLine()
                   .writeLine(
@@ -253,10 +250,10 @@ export const writeArgTypeFiles: CreateFiles = async ({
               }
             }
 
-            const type = field.createCustomOmitFieldType()
+            const type = field.createCustomOmitFieldArgType()
               ? `z.ZodType<Omit<Prisma.${
                   field.argName
-                }, ${field.getOmitUnionForCustomType()}> & { ${field.getOmitArgsForCustomType()} }>`
+                }, ${field.getOmitUnionForCustomArgType()}> & { ${field.getTypeForCustomArgsType()} }>`
               : `z.ZodType<Prisma.${field.argName}>`;
 
             writer
@@ -268,11 +265,11 @@ export const writeArgTypeFiles: CreateFiles = async ({
               .inlineBlock(() => {
                 writer
                   .conditionalWriteLine(
-                    field.writeSelectAndIncludeArgs(),
+                    field.includeInSelectAndIncludeArgs(),
                     `select: ${field.modelType}SelectSchema.optional(),`,
                   )
                   .conditionalWriteLine(
-                    field.writeSelectAndIncludeArgs() &&
+                    field.includeInSelectAndIncludeArgs() &&
                       field.linkedModel?.hasRelationFields,
                     `include: ${field.modelType}IncludeSchema.optional(),`,
                   );

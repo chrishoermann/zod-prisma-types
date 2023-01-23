@@ -120,7 +120,9 @@ export class ExtendedDMMFSchemaField
       return `${this.modelType}${argName?.formattedNames.pascalCase}OrThrowArgs`;
     }
 
-    return `${this.modelType}${argName?.formattedNames.pascalCase}Args`;
+    if (!argName) return;
+
+    return `${this.modelType}${argName.formattedNames.pascalCase}Args`;
   }
 
   /**
@@ -152,7 +154,7 @@ export class ExtendedDMMFSchemaField
    * Used to determine if the type in the created arg should be recreated with updated arg types.
    * @returns `true` if the field contains `create`, `upsert`, `update` or `delete` in its name
    */
-  createCustomOmitFieldType() {
+  createCustomOmitFieldArgType() {
     return (
       this.hasOmitFields &&
       this.args.some((arg) => /create|update|upsert|delete|data/.test(arg.name))
@@ -162,14 +164,8 @@ export class ExtendedDMMFSchemaField
   private _setArgTypeImports() {
     const imports: string[] = [];
 
-    // if (this.writeSelectAndIncludeArgs()) {
-    //   imports.push(
-    //     `import { ${this.modelType}SelectSchema } from '../${this.generatorConfig.inputTypePath}/${this.modelType}SelectSchema'`,
-    //   );
-    // }
-
     if (
-      this.writeSelectAndIncludeArgs() &&
+      this.includeInSelectAndIncludeArgs() &&
       this.linkedModel?.hasRelationFields
     ) {
       imports.push(
@@ -204,36 +200,55 @@ export class ExtendedDMMFSchemaField
    * it returns the string union of the fields that should be omitted.
    * @returns union of fields that should be omitted in custom type
    */
-  getOmitUnionForCustomType() {
+  getOmitUnionForCustomArgType() {
     return this.args
       .filter((arg) => /create|update|upsert|delete|data/.test(arg.name))
       .map((arg) => `"${arg.name}"`)
       .join(' | ');
   }
 
-  getOmitArgsForCustomType() {
+  getTypeForCustomArgsType() {
     const args: string[] = [];
 
-    this.args.forEach((arg, idx) => {
-      if (arg.rewriteArgWithNewType()) return;
+    this.args.forEach((arg) => {
+      if (!arg.rewriteArgWithNewType()) return;
 
-      const writeComma = idx < this.args.length - 1;
+      // const writeComma = idx < this.args.length - 1;
+
       const argName = `${arg.name}${arg.isRequired ? '' : '?'}: `;
-      const argType = arg.hasMultipleTypes
-        ? arg.inputTypes.map((inputType, idx) => {
+
+      let argType: string;
+
+      if (arg.hasMultipleTypes) {
+        argType = arg.inputTypes
+          .map((inputType, idx) => {
             const writeSeperator = idx !== arg.inputTypes.length - 1;
             return `z.infer<typeof ${inputType.type}Schema>${
-              writeSeperator ? ' |' : ''
+              writeSeperator ? ' | ' : ''
             }`;
           })
-        : `z.infer<typeof ${arg.inputTypes[0].type}Schema> ${
-            arg.inputTypes[0].isList ? `[]` : ''
-          }`;
+          .join('');
+      } else {
+        argType = `z.infer<typeof ${arg.inputTypes[0].type}Schema> ${
+          arg.inputTypes[0].isList ? `[]` : ''
+        }`;
+      }
 
-      args.push(argName + argType + (writeComma ? ',' : ''));
+      // const argType = arg.hasMultipleTypes
+      //   ? arg.inputTypes.map((inputType, idx) => {
+      //       const writeSeperator = idx !== arg.inputTypes.length - 1;
+      //       return `z.infer<typeof ${inputType.type}Schema>${
+      //         writeSeperator ? ' |' : ''
+      //       }`;
+      //     })
+      //   : `z.infer<typeof ${arg.inputTypes[0].type}Schema> ${
+      //       arg.inputTypes[0].isList ? `[]` : ''
+      //     }`;
+
+      args.push(argName + argType);
     });
 
-    return args.join('');
+    return args.join(', ');
   }
 
   isEnumOutputType() {
@@ -245,13 +260,7 @@ export class ExtendedDMMFSchemaField
   }
 
   isObjectOutputType() {
-    // DeleteMany, CreateMany and UpdateMany are not needed since
-    // select and include args are not available for these schemas
-    return (
-      this.outputType?.location === 'outputObjectTypes' &&
-      this.argName &&
-      /DeleteMany|CreateMany|UpdateMany/.test(this.argName)
-    );
+    return this.outputType?.location === 'outputObjectTypes';
   }
 
   isScalarOutputType() {
@@ -266,7 +275,15 @@ export class ExtendedDMMFSchemaField
    * Used to determine if the field should be included in the `select` and `include` args.
    * @returns `true` if the field does not contian `createMany`, `updateMany` or `deleteMany` in its name
    */
-  writeSelectAndIncludeArgs() {
-    return !this.name.match(/createMany|updateMany|deleteMany/);
+  includeInSelectAndIncludeArgs() {
+    return !/createMany|updateMany|deleteMany/.test(this.name);
+  }
+
+  writeSelectFindManyImports() {
+    return this.isObjectOutputType() && this.isListOutputType();
+  }
+
+  writeSelectImports() {
+    return this.isObjectOutputType();
   }
 }

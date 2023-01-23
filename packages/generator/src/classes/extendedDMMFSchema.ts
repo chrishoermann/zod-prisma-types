@@ -6,6 +6,7 @@ import {
   ExtendedDMMFInputType,
   ExtendedDMMFOutputType,
   ExtendedDMMFSchemaEnum,
+  ExtendedDMMFSchemaField,
 } from '.';
 
 export interface ExtendedDMMFSchemaOptions {
@@ -151,5 +152,18 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
 
   private _setHasDecimalTypes() {
     return this.inputObjectTypes.prisma.some((type) => type.isDecimalField);
+  }
+
+  /**
+   * Checks if `include` and `select` args should be added to the field
+   * @param field ExtendedDMMFSchemaField that the model should be found for
+   * @returns ExtendedDMMFOutputType if a matching field is found, otherwise undefined
+   */
+  getModelWithIncludeAndSelect(field: ExtendedDMMFSchemaField) {
+    return this.outputObjectTypes.model.find(
+      (model) =>
+        field.name.includes(model.name) &&
+        field.includeInSelectAndIncludeArgs(),
+    );
   }
 }

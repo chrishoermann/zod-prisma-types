@@ -16,6 +16,7 @@ export interface CreateFileOptions {
   writeImport: (importName: string, importPath: string) => void;
   writeImportSet: (strings: Set<string>) => void;
   writeExport: (importName: string, importPath: string) => void;
+  writeImports: (imports: string[]) => void;
 }
 
 export interface CreateFileComplexOptions {
@@ -65,35 +66,6 @@ export class FileWriter {
     return DirectoryHelper.createDir(path);
   }
 
-  public createFileFromObject({
-    content,
-    path,
-    imports,
-    defaultExport,
-    name,
-    type,
-  }: CreateFileComplexOptions) {
-    this.writeImportSet(imports);
-    this.writer.blankLine();
-
-    if (name) {
-      this.writer.write(`export const ${name}${type ? `: ${type}` : ''} = `);
-    }
-
-    content(this.writer);
-
-    if (defaultExport) {
-      this.writer.blankLine();
-      this.writer.writeLine(`export default ${defaultExport}`);
-    }
-
-    fs.writeFile(path, this.writer.toString(), (err) => {
-      if (err) {
-        throw new Error(err.message);
-      }
-    });
-  }
-
   public createFile(
     path: string,
     writerFn: (options: CreateFileOptions) => void,
@@ -103,6 +75,7 @@ export class FileWriter {
       writeImport: this.writeImport.bind(this),
       writeImportSet: this.writeImportSet.bind(this),
       writeExport: this.writeExport.bind(this),
+      writeImports: this.writeImports.bind(this),
     });
 
     fs.writeFile(path, this.writer.toString(), (err) => {
@@ -130,5 +103,11 @@ export class FileWriter {
 
   writeConstStatement({ name, type }: writeConstStatementOptions) {
     this.writer.writeLine(`export const ${name}: ${type} = `);
+  }
+
+  writeImports(imports: string[] = []) {
+    new Set(imports).forEach((importString) => {
+      this.writer.writeLine(importString);
+    });
   }
 }
