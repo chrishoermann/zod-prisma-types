@@ -25,7 +25,7 @@ generator zod {
   createOptionalDefaultValuesTypes = true // default is false
   useDefaultValidators             = true // default is true
   useDecimalJs                     = true // default is false
-  imports                          = "import(import { myFunction } from '../../utils/myFunction';).import(import validator from 'validator';)" // optional
+  imports                          = "import(import { myFunction } from '../../../utils/myFunction';).import(import validator from 'validator';)" // optional
   // tsConfigFilePath                 = "tsconfig.json" // optional
 }
 
