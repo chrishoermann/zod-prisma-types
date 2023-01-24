@@ -26,11 +26,6 @@ export const generator = async ({ output, config, dmmf }: GeneratorConfig) => {
   const extendedDMMF = new ExtendedDMMF(dmmf, config);
 
   // If data is present in the output directory, delete it.
-  // This is necessary to not have old data in the directory e.g.
-  // when a model is removed from the schema the old files would still be present.
-  // needs to be syncronous because otherwise a race condition occurs
-  // when creating new files.
-
   DirectoryHelper.removeDir(output.value);
 
   // generate single or multiple files

@@ -21,11 +21,9 @@ generator zod {
   // useInstanceOfForDecimal          = true // DEPRECATED default is false
   // createInputTypes                 = false // DEPRECATED  default is true
   // createModelTypes                 = false // default is true
-  // createModelTypes                 = false // default is true
   // addInputTypeValidation           = false // default is true
   createOptionalDefaultValuesTypes = true // default is false
   useDefaultValidators             = true // default is true
-  // useDecimalJs                     = true // DEPRECATED default is false
   // imports                          = "import(import { myFunction } from '../../../../utils/myFunction';).import(import validator from 'validator';)" //DEPRECATED optional
   // tsConfigFilePath                 =  "tsconfig.json" //DEPRECATED optional 
     // prismaClientPath                 = "./generated/client" // optional
