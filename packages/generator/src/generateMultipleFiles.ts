@@ -3,8 +3,6 @@ import fs from 'fs';
 import { CreateOptions } from './types';
 import {
   writeArgTypeFiles,
-  // writeEnumFiles,
-  // writeHelperFiles,
   writeInputTypeFiles,
   writeModelFiles,
 } from './functions';
@@ -12,13 +10,13 @@ import {
 export const generateMultipleFiles = ({
   extendedDMMF,
   outputPath,
-  project,
 }: CreateOptions) => {
   // If data is present in the directory, delete it.
-  // Is necessary to not have old data in the directory e.g.
-  // when a model is removed from the schema.
+  // This is necessary to not have old data in the directory e.g.
+  // when a model is removed from the schema the old files would still be present.
   // needs to be syncronous because otherwise a race condition occurs
   // when creating new files.
+
   if (DirectoryHelper.pathOrDirExists(outputPath)) {
     try {
       fs.rmdirSync(outputPath, { recursive: true });
@@ -45,11 +43,11 @@ export const generateMultipleFiles = ({
   });
 
   // Create the model files
-  writeModelFiles({ outputPath, project, extendedDMMF });
+  writeModelFiles({ outputPath, extendedDMMF });
 
   // Create the input type files
-  writeInputTypeFiles({ outputPath, project, extendedDMMF });
+  writeInputTypeFiles({ outputPath, extendedDMMF });
 
   // Create the arg type files
-  writeArgTypeFiles({ outputPath, project, extendedDMMF });
+  writeArgTypeFiles({ outputPath, extendedDMMF });
 };

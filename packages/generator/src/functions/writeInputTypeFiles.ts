@@ -10,7 +10,7 @@ import {
 // FUNCTION
 /////////////////////////////////////////////////
 
-export const writeInputTypeFiles: CreateFiles = async ({
+export const writeInputTypeFiles: CreateFiles = ({
   outputPath,
   extendedDMMF,
 }) => {
@@ -81,9 +81,7 @@ export const writeInputTypeFiles: CreateFiles = async ({
       // JSON VALUE
       // ------------------------------------------------------------
 
-      const jsonValueWriter = new FileWriter();
-
-      jsonValueWriter.createFile(
+      new FileWriter().createFile(
         `${path}/JsonValue.ts`,
         ({ writer, writeImport }) => {
           writeImport('{ z }', 'zod');
@@ -111,9 +109,7 @@ export const writeInputTypeFiles: CreateFiles = async ({
       // NULLABLE JSON VALUE
       // ------------------------------------------------------------
 
-      const nullableJsonValueWriter = new FileWriter();
-
-      nullableJsonValueWriter.createFile(
+      new FileWriter().createFile(
         `${path}/NullableJsonValue.ts`,
         ({ writer, writeImport }) => {
           writeImport('{ z }', 'zod');
@@ -139,9 +135,7 @@ export const writeInputTypeFiles: CreateFiles = async ({
       // NULLABLE JSON INPUT
       // ------------------------------------------------------------
 
-      const nullableJsonInputWriter = new FileWriter();
-
-      nullableJsonInputWriter.createFile(
+      new FileWriter().createFile(
         `${path}/InputJsonValue.ts`,
         ({ writer, writeImport }) => {
           writeImport('{ z }', 'zod');
@@ -303,9 +297,7 @@ export const writeInputTypeFiles: CreateFiles = async ({
     );
 
     extendedDMMF.datamodel.enums.forEach(({ name }) => {
-      const fileWriter = new FileWriter();
-
-      fileWriter.createFile(
+      new FileWriter().createFile(
         `${path}/${name}Schema.ts`,
         ({ writer, writeImport }) => {
           writeImport('{ z }', 'zod');
@@ -333,9 +325,7 @@ export const writeInputTypeFiles: CreateFiles = async ({
         // INCLUDE SCHEMA
         // ------------------------------------------------------------
 
-        const includeSchemaWriter = new FileWriter();
-
-        includeSchemaWriter.createFile(
+        new FileWriter().createFile(
           `${path}/${model.name}IncludeSchema.ts`,
           ({ writer, writeImport }) => {
             writeImport('{ z }', 'zod');
@@ -357,10 +347,10 @@ export const writeInputTypeFiles: CreateFiles = async ({
 
             writer
               .blankLine()
-              .writeLine(
-                `export const ${model.name}IncludeSchema: z.ZodType<Prisma.${model.name}Include> = z.object({`,
-              )
-              .withIndentationLevel(1, () => {
+              .write(`export const ${model.name}IncludeSchema: `)
+              .write(`z.ZodType<Prisma.${model.name}Include> = `)
+              .write(`z.object(`)
+              .inlineBlock(() => {
                 model.fields.forEach((field) => {
                   if (field.isObjectOutputType()) {
                     writer
@@ -375,15 +365,12 @@ export const writeInputTypeFiles: CreateFiles = async ({
                         !field.isListOutputType(),
                         `z.lazy(() => ${field.outputType.type}ArgsSchema)`,
                       )
-                      .write(`])`)
-                      .write(`.optional()`)
-                      .write(`,`)
+                      .write(`]).optional(),`)
                       .newLine();
                   }
                 });
               })
-              .write(`})`)
-              .write(`.strict()`)
+              .write(`).strict()`)
               .blankLine()
               .writeLine(`export default ${model.name}IncludeSchema`);
           },
@@ -393,87 +380,87 @@ export const writeInputTypeFiles: CreateFiles = async ({
       // SELECT SCHEMA
       // ------------------------------------------------------------
 
-      const selectSchemaWriter = new FileWriter();
+      // const selectSchemaWriter = new FileWriter();
 
-      selectSchemaWriter.createFile(
-        `${path}/${model.name}SelectSchema.ts`,
-        ({ writer, writeImport }) => {
-          writeImport('{ z }', 'zod');
-          writeImport('{ Prisma }', prismaClientPath);
+      // selectSchemaWriter.createFile(
+      //   `${path}/${model.name}SelectSchema.ts`,
+      //   ({ writer, writeImport }) => {
+      //     writeImport('{ z }', 'zod');
+      //     writeImport('{ Prisma }', prismaClientPath);
 
-          model.fields.forEach((field) => {
-            writer;
-            if (field.isListOutputType() && field.isObjectOutputType()) {
-              return writer.writeLine(
-                `import { ${field.outputType.type}FindManyArgsSchema } from '../${outputTypePath}/${field.outputType.type}FindManyArgsSchema'`,
-              );
-            }
+      //     model.fields.forEach((field) => {
+      //       writer;
+      //       if (field.isListOutputType() && field.isObjectOutputType()) {
+      //         return writer.writeLine(
+      //           `import { ${field.outputType.type}FindManyArgsSchema } from '../${outputTypePath}/${field.outputType.type}FindManyArgsSchema'`,
+      //         );
+      //       }
 
-            if (field.isObjectOutputType()) {
-              return writer.writeLine(
-                `import { ${field.outputType.type}ArgsSchema } from '../${outputTypePath}/${field.outputType.type}ArgsSchema'`,
-              );
-            }
+      //       if (field.isObjectOutputType()) {
+      //         return writer.writeLine(
+      //           `import { ${field.outputType.type}ArgsSchema } from '../${outputTypePath}/${field.outputType.type}ArgsSchema'`,
+      //         );
+      //       }
 
-            return;
-          });
+      //       return;
+      //     });
 
-          writer
-            .blankLine()
-            .writeLine(
-              `export const ${model.name}SelectSchema: z.ZodType<Prisma.${model.name}Select> = z.object({`,
-            )
-            .withIndentationLevel(1, () => {
-              model.fields.forEach((field) => {
-                if (field.isEnumOutputType()) {
-                  return writer
-                    .write(`${field.name}: `)
-                    .write(`z.boolean()`)
-                    .write(`.optional(),`)
-                    .newLine();
-                }
+      //     writer
+      //       .blankLine()
+      //       .writeLine(
+      //         `export const ${model.name}SelectSchema: z.ZodType<Prisma.${model.name}Select> = z.object({`,
+      //       )
+      //       .withIndentationLevel(1, () => {
+      //         model.fields.forEach((field) => {
+      //           if (field.isEnumOutputType()) {
+      //             return writer
+      //               .write(`${field.name}: `)
+      //               .write(`z.boolean()`)
+      //               .write(`.optional(),`)
+      //               .newLine();
+      //           }
 
-                if (field.isListOutputType() && field.isObjectOutputType()) {
-                  return writer
-                    .write(`${field.name}: `)
-                    .write(`z.union([`)
-                    .write(`z.boolean(),`)
-                    .write(
-                      `z.lazy(() => ${field.outputType.type}FindManyArgsSchema)`,
-                    )
-                    .write(`])`)
-                    .write(`.optional()`)
-                    .write(`,`)
-                    .newLine();
-                }
+      //           if (field.isListOutputType() && field.isObjectOutputType()) {
+      //             return writer
+      //               .write(`${field.name}: `)
+      //               .write(`z.union([`)
+      //               .write(`z.boolean(),`)
+      //               .write(
+      //                 `z.lazy(() => ${field.outputType.type}FindManyArgsSchema)`,
+      //               )
+      //               .write(`])`)
+      //               .write(`.optional()`)
+      //               .write(`,`)
+      //               .newLine();
+      //           }
 
-                if (field.isObjectOutputType()) {
-                  return writer
-                    .write(`${field.name}: `)
-                    .write(`z.union([`)
-                    .write(`z.boolean(),`)
-                    .write(`z.lazy(() => ${field.outputType.type}ArgsSchema)`)
-                    .write(`])`)
-                    .write(`.optional()`)
-                    .write(`,`)
-                    .newLine();
-                }
+      //           if (field.isObjectOutputType()) {
+      //             return writer
+      //               .write(`${field.name}: `)
+      //               .write(`z.union([`)
+      //               .write(`z.boolean(),`)
+      //               .write(`z.lazy(() => ${field.outputType.type}ArgsSchema)`)
+      //               .write(`])`)
+      //               .write(`.optional()`)
+      //               .write(`,`)
+      //               .newLine();
+      //           }
 
-                return writer
-                  .write(`${field.name}: `)
-                  .write(`z.boolean()`)
-                  .write(`.optional(),`)
-                  .newLine();
-              });
-            });
+      //           return writer
+      //             .write(`${field.name}: `)
+      //             .write(`z.boolean()`)
+      //             .write(`.optional(),`)
+      //             .newLine();
+      //         });
+      //       });
 
-          writer
-            .write(`})`)
-            .write(`.strict()`)
-            .blankLine()
-            .writeLine(`export default ${model.name}SelectSchema`);
-        },
-      );
+      //     writer
+      //       .write(`})`)
+      //       .write(`.strict()`)
+      //       .blankLine()
+      //       .writeLine(`export default ${model.name}SelectSchema`);
+      //   },
+      // );
     });
 
     ////////////////////////////////////////////////////
@@ -481,9 +468,7 @@ export const writeInputTypeFiles: CreateFiles = async ({
     ////////////////////////////////////////////////////
 
     extendedDMMF.schema.inputObjectTypes.prisma.forEach((inputType) => {
-      const fileWriter = new FileWriter();
-
-      fileWriter.createFile(
+      new FileWriter().createFile(
         `${path}/${inputType.name}Schema.ts`,
         ({ writer, writeImport, writeImportSet }) => {
           writeImport('{ z }', 'zod');

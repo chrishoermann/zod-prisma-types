@@ -1,10 +1,7 @@
 import { DMMF } from '@prisma/generator-helper';
+import { GeneratorConfig } from '../utils';
 
-import {
-  GeneratorConfig,
-  ExtendedDMMFField,
-  ExtendedDMMFSchemaArgInputType,
-} from '.';
+import { ExtendedDMMFField, ExtendedDMMFSchemaArgInputType } from '.';
 import { FormattedNames } from './formattedNames';
 
 export interface ExtendedDMMFSchemaArgOptions

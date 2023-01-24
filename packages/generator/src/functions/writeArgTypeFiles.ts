@@ -10,7 +10,7 @@ import {
 // FUNCTION
 /////////////////////////////////////////////////
 
-export const writeArgTypeFiles: CreateFiles = async ({
+export const writeArgTypeFiles: CreateFiles = ({
   outputPath,
   extendedDMMF,
 }) => {
@@ -50,6 +50,7 @@ export const writeArgTypeFiles: CreateFiles = async ({
       if (model.hasRelationField()) {
         // INCLUDE SELECT ARGS SCHEMA
         // ------------------------------------------------------------
+        // The args schema is used in "include" and "select" schemas
 
         const argsSchemaWriter = new FileWriter();
 
@@ -95,6 +96,7 @@ export const writeArgTypeFiles: CreateFiles = async ({
 
         // [Model]CountOutputTypeSelectSchema needs to be generated when the model has a _count field.
         // The _count field is only added when a realtion field is a list.
+
         const countArgsSchemaWriter = new FileWriter();
 
         countArgsSchemaWriter.createFile(
@@ -171,10 +173,16 @@ export const writeArgTypeFiles: CreateFiles = async ({
             writeImport('{ Prisma }', prismaClientPath);
             writeImportSet(field.argTypeImports);
 
-            // If a
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // The select schema needs to be in the same file as
+            // the model's args schema to prevent circular imports.
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
             if (modelWithSelect) {
               // if the outputType has a "select" or "include" field,
-              // the necessary schema needs to be imported
+              // the schemas that are used in the type of the field
+              //  needs to be imported
+
               modelWithSelect.fields.forEach((field) => {
                 if (field.writeSelectFindManyImports()) {
                   return writeImport(
@@ -191,13 +199,17 @@ export const writeArgTypeFiles: CreateFiles = async ({
                 }
               });
 
+              // Only write the select type if the outputType has a "select" or "include" field.
+              // Some outputTypes like "CreateMany", "UpdateMany", "DeleteMany"
+              // do not have a "select" or "include" field.
+
               if (field.includeInSelectAndIncludeArgs()) {
                 writer
                   .blankLine()
-                  .writeLine(
-                    `const ${modelWithSelect.name}SelectSchema: z.ZodType<Prisma.${modelWithSelect.name}Select> = z.object({`,
-                  )
-                  .withIndentationLevel(1, () => {
+                  .write(`const ${modelWithSelect.name}SelectSchema:`)
+                  .write(`z.ZodType<Prisma.${modelWithSelect.name}Select> = `)
+                  .write(`z.object(`)
+                  .inlineBlock(() => {
                     modelWithSelect.fields.forEach((field) => {
                       if (field.isEnumOutputType()) {
                         return writer
@@ -246,7 +258,7 @@ export const writeArgTypeFiles: CreateFiles = async ({
                     });
                   });
 
-                writer.write(`})`).write(`.strict()`);
+                writer.write(`).strict()`);
               }
             }
 
@@ -254,7 +266,7 @@ export const writeArgTypeFiles: CreateFiles = async ({
             // the type information passed to the zod schema needs to be updated.
             // By default, the type is just the prisma client type.
             // But if the model has fields that are required and should be omitted,
-            // tha type needs to be updated to reflect that.
+            // the type needs to be updated to reflect that.
             // Otherwise typescript will complain that the required fields are missing.
 
             const type = field.createCustomOmitFieldArgType()

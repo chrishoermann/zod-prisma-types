@@ -1,6 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
+import { GeneratorConfig } from '../utils';
 
-import { GeneratorConfig } from '.';
 import {
   FilterdPrismaAction,
   PRISMA_ACTION_ARG_MAP,

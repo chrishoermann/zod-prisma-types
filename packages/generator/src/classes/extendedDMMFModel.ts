@@ -1,7 +1,7 @@
 import { DMMF } from '@prisma/generator-helper';
 import { IMPORT_STATEMENT_REGEX } from '../constants';
 
-import { GeneratorConfig } from '.';
+import { GeneratorConfig } from '../utils';
 import { ExtendedDMMFField } from './extendedDMMFField';
 import { FormattedNames } from './formattedNames';
 

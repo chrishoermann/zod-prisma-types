@@ -1,6 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { GeneratorConfig } from '.';
+import { GeneratorConfig } from '../utils';
 import {
   DATE_VALIDATOR_REGEX_MAP,
   NUMBER_VALIDATOR_REGEX_MAP,

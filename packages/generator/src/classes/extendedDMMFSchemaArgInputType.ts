@@ -1,6 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { GeneratorConfig } from '.';
+import { GeneratorConfig } from '../utils';
 import { PRISMA_TO_ZOD_TYPE_MAP } from '../constants/objectMaps';
 import { ZodPrismaScalarType } from '../types';
 

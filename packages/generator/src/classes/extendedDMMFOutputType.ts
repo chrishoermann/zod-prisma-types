@@ -1,6 +1,7 @@
 import { DMMF } from '@prisma/generator-helper';
+import { GeneratorConfig } from '../utils';
 
-import { ExtendedDMMFModel, GeneratorConfig } from '.';
+import { ExtendedDMMFModel } from '.';
 import { PRISMA_ACTION_ARRAY } from '../constants/objectMaps';
 import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
 import { ExtendedDMMFSchemaField } from './extendedDMMFSchemaField';

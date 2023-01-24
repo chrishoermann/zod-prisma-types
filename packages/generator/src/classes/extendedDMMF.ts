@@ -1,76 +1,9 @@
 import { DMMF, Dictionary } from '@prisma/generator-helper';
-import { z } from 'zod';
+import { GeneratorConfig, configSchema } from '../utils';
 
 import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
 import { ExtendedDMMFMappings } from './extendedDMMFMappings';
 import { ExtendedDMMFSchema } from './extendedDMMFSchema';
-
-/////////////////////////////////////////////////
-// SCHEMA
-/////////////////////////////////////////////////
-
-export const configSchema = z.object({
-  /**
-   * @deprecated
-   */
-  useMultipleFiles: z
-    .string()
-    .optional()
-    .default('false')
-    .transform((val) => val === 'true'),
-  /**
-   * @deprecated
-   */
-  imports: z
-    .string()
-    .optional()
-    .transform((val) =>
-      val
-        ? val
-            .split(')')
-            .map((v) => v.replace(/import\(|.import\(/, ''))
-            .filter((v) => v !== '')
-        : [],
-    ),
-  /**
-   * @deprecated inputTypes need to be generated because enums are generated in the same folder and models rely on enums
-   * it would make the code a bit harder to read if we only generate enums
-   */
-  createInputTypes: z
-    .string()
-    .optional()
-    .default('true')
-    .transform((val) => val === 'true'),
-  createModelTypes: z
-    .string()
-    .optional()
-    .default('true')
-    .transform((val) => val === 'true'),
-  createOptionalDefaultValuesTypes: z
-    .string()
-    .optional()
-    .default('false')
-    .transform((val) => val === 'true'),
-  addInputTypeValidation: z
-    .string()
-    .optional()
-    .default('true')
-    .transform((val) => val === 'true'),
-  useDefaultValidators: z
-    .string()
-    .optional()
-    .default('true')
-    .transform((val) => val === 'true'),
-  /**
-   * @deprecated ts-morph is no longer used to generate files
-   */
-  tsConfigFilePath: z.string().optional(),
-  prismaClientPath: z.string().default('@prisma/client'),
-  inputTypePath: z.string().default('inputTypeSchemas'), // currently only used internally
-  outputTypePath: z.string().default('outputTypeSchemas'), // currently only used internally
-});
-
-export type GeneratorConfig = z.infer<typeof configSchema>;
 
 /////////////////////////////////////////////////
 // CLASS

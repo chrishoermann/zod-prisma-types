@@ -3,7 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  // output   = "generated/client"
+  // output   = "./generated/client"
 }
 
 datasource db {
@@ -15,7 +15,7 @@ datasource db {
 // -----------------------------------------------
 
 generator zod {
-  provider                         = "ts-node ../generator/src/bin.ts"
+  provider                         = "ts-node-dev ../generator/src/bin.ts"
   output                           = "./generated/zod" // default is ./generated/zod
   useMultipleFiles                 = true // default is false 
   // useInstanceOfForDecimal          = true // default is false
@@ -28,6 +28,7 @@ generator zod {
   useDecimalJs                     = true // default is false
   imports                          = "import(import { myFunction } from '../../../../utils/myFunction';).import(import validator from 'validator';)" // optional
   // tsConfigFilePath                 = "tsconfig.json" // optional
+  // prismaClientPath                 = "./generated/client" // optional
 }
 
 // MIXED CASE ENUMS AND MODELS

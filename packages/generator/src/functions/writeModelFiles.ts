@@ -6,7 +6,7 @@ import { writeModelFields } from '../utils';
 // FUNCTION
 /////////////////////////////////////////////////
 
-export const writeModelFiles: CreateFiles = async (options) => {
+export const writeModelFiles: CreateFiles = (options) => {
   const { outputPath, extendedDMMF } = options;
   const indexFileWriter = new FileWriter();
 
@@ -21,52 +21,51 @@ export const writeModelFiles: CreateFiles = async (options) => {
   }
 
   extendedDMMF.datamodel.models.forEach((model) => {
-    const fileWriter = new FileWriter();
-
-    fileWriter.createFile(
+    new FileWriter().createFile(
       `${path}/${model.name}Schema.ts`,
       ({ writeImport, writeImportSet, writer }) => {
         writeImport('{ z }', 'zod');
         writeImportSet(model.imports);
 
-        writer.blankLine();
-
-        writer.writeLine(`export const ${model.name}Schema = z.object({`);
-        writer.withIndentationLevel(1, () => {
-          [...model.enumFields, ...model.scalarFields].forEach((field) => {
-            writeModelFields({
-              writer,
-              field,
-              model,
-              dmmf: extendedDMMF,
-            });
-          });
-        });
-        writer.write(`})`);
-
-        if (model.writeOptionalDefaultValuesTypes()) {
-          writer.blankLine();
-          writer.writeLine(
-            `export const ${model.name}OptionalDefaultsSchema = ${model.name}Schema.merge(z.object({`,
-          );
-          writer.withIndentationLevel(1, () => {
+        writer
+          .blankLine()
+          .writeLine(`export const ${model.name}Schema = z.object(`)
+          .inlineBlock(() => {
             [...model.enumFields, ...model.scalarFields].forEach((field) => {
-              if (!field.isOptionalDefaultField()) return;
-
-              const writeOptions = {
+              writeModelFields({
                 writer,
                 field,
-                writeOptionalDefaults: true,
-              };
-
-              writeModelFields({
-                ...writeOptions,
                 model,
                 dmmf: extendedDMMF,
               });
             });
-          });
-          writer.write(`}))`);
+          })
+          .write(`)`);
+
+        if (model.writeOptionalDefaultValuesTypes()) {
+          writer
+            .blankLine()
+            .writeLine(
+              `export const ${model.name}OptionalDefaultsSchema = ${model.name}Schema.merge(z.object(`,
+            )
+            .inlineBlock(() => {
+              [...model.enumFields, ...model.scalarFields].forEach((field) => {
+                if (!field.isOptionalDefaultField()) return;
+
+                const writeOptions = {
+                  writer,
+                  field,
+                  writeOptionalDefaults: true,
+                };
+
+                writeModelFields({
+                  ...writeOptions,
+                  model,
+                  dmmf: extendedDMMF,
+                });
+              });
+            })
+            .write(`))`);
         }
       },
     );

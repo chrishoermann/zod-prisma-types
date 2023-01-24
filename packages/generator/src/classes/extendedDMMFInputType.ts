@@ -1,6 +1,7 @@
 import { DMMF } from '@prisma/generator-helper';
+import { GeneratorConfig } from '../utils';
 
-import { ExtendedDMMFDatamodel, ExtendedDMMFField, GeneratorConfig } from '.';
+import { ExtendedDMMFDatamodel, ExtendedDMMFField } from '.';
 import { PRISMA_FUNCTION_TYPES_WITH_VALIDATORS } from '../constants/regex';
 import { ExtendedDMMFModel } from './extendedDMMFModel';
 import {

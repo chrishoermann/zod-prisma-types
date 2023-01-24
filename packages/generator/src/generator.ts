@@ -42,7 +42,6 @@ export const generator = async ({ output, config, dmmf }: GeneratorConfig) => {
     return generateMultipleFiles({
       extendedDMMF,
       outputPath: output.value,
-      project,
     });
   }
 

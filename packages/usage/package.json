@@ -26,6 +26,7 @@
     "decimal.js": "^10.4.3",
     "prisma-zod-generator": "^0.7.4",
     "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
     "validator": "^13.7.0",
     "vitest": "^0.25.8",
     "zod": "^3.20.2",
