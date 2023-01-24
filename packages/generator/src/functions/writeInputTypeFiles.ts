@@ -5,19 +5,27 @@ import {
   writeScalarType,
   writeSpecialType,
 } from '../utils';
+import {
+  writeCustomEnum,
+  writeDecimalJsLike,
+  writeDecimalJsLikeList,
+  writeInputJsonValue,
+  writeIsValidDecimalInput,
+  writeJsonValue,
+  writeNullableJsonValue,
+  writePrismaEnum,
+  writeTransformJsonNull,
+} from '.';
 
 /////////////////////////////////////////////////
 // FUNCTION
 /////////////////////////////////////////////////
 
-export const writeInputTypeFiles: CreateFiles = ({
-  outputPath,
-  dmmf: extendedDMMF,
-}) => {
-  if (!extendedDMMF.createInputTypes()) return;
+export const writeInputTypeFiles: CreateFiles = ({ outputPath, dmmf }) => {
+  if (!dmmf.createInputTypes()) return;
 
   const { inputTypePath, outputTypePath, prismaClientPath } =
-    extendedDMMF.generatorConfig;
+    dmmf.generatorConfig;
 
   // WRITE INDEX FILE
   // ------------------------------------------------------------
@@ -27,218 +35,75 @@ export const writeInputTypeFiles: CreateFiles = ({
 
   if (path) {
     indexFileWriter.createFile(`${path}/index.ts`, ({ writeExport }) => {
-      extendedDMMF.schema.inputObjectTypes.prisma.forEach(({ name }) => {
+      dmmf.schema.inputObjectTypes.prisma.forEach(({ name }) => {
         writeExport(`{ ${name}Schema }`, `./${name}Schema`);
       });
-      extendedDMMF.schema.enumTypes.prisma.forEach(({ name }) => {
+
+      dmmf.schema.enumTypes.prisma.forEach(({ name }) => {
         writeExport(`{ ${name}Schema }`, `./${name}Schema`);
       });
-      extendedDMMF.datamodel.enums.forEach(({ name }) => {
+
+      dmmf.datamodel.enums.forEach(({ name }) => {
         writeExport(`{ ${name}Schema }`, `./${name}Schema`);
       });
-      writeExport(`{ transformJsonNull }`, `./transformJsonNull`);
-      writeExport(`{ NullableJsonValue }`, `./NullableJsonValue`);
-      writeExport(`{ InputJsonValue }`, `./InputJsonValue`);
-      writeExport(`{ DecimalJSLikeSchema }`, `./DecimalJsLikeSchema`);
-      writeExport(`{ DecimalJSLikeListSchema }`, `./DecimalJsLikeListSchema`);
-      writeExport(`{ isValidDecimalInput }`, `./isValidDecimalInput`);
+
+      if (dmmf.schema.hasJsonTypes) {
+        writeExport(`{ transformJsonNull }`, `./transformJsonNull`);
+        writeExport(`{ NullableJsonValue }`, `./NullableJsonValue`);
+        writeExport(`{ InputJsonValue }`, `./InputJsonValue`);
+      }
+
+      if (dmmf.schema.hasDecimalTypes) {
+        writeExport(`{ DecimalJSLikeSchema }`, `./DecimalJsLikeSchema`);
+        writeExport(`{ DecimalJSLikeListSchema }`, `./DecimalJsLikeListSchema`);
+        writeExport(`{ isValidDecimalInput }`, `./isValidDecimalInput`);
+      }
     });
 
     ////////////////////////////////////////////////////
     // WRITE HELPER FUNCTIONS & SCHEMAS
     ////////////////////////////////////////////////////
 
-    if (extendedDMMF.schema.hasJsonTypes) {
-      // TRANSFORM JSON NULL
-      // ------------------------------------------------------------
+    // JSON
+    // ------------------------------------------------------------
+
+    if (dmmf.schema.hasJsonTypes) {
       new FileWriter().createFile(
         `${path}/transformJsonNull.ts`,
-        ({ writer, writeImport }) => {
-          writeImport('{ Prisma }', prismaClientPath);
-
-          writer
-            .newLine()
-            .writeLine(
-              `export type NullableJsonInput = Prisma.JsonValue | null | 'JsonNull' | 'DbNull' | Prisma.NullTypes.DbNull | Prisma.NullTypes.JsonNull`,
-            )
-            .newLine()
-            .write(
-              `export const transformJsonNull = (v?: NullableJsonInput) => `,
-            )
-            .inlineBlock(() => {
-              writer
-                .writeLine(`if (!v || v === 'DbNull') return Prisma.DbNull;`)
-                .writeLine(`if (v === 'JsonNull') return Prisma.JsonNull;`)
-                .writeLine(`return v;`);
-            })
-            .blankLine()
-            .writeLine(`export default transformJsonNull`);
-        },
+        (fileWriter) => writeTransformJsonNull({ fileWriter, dmmf }),
       );
 
-      // JSON VALUE
-      // ------------------------------------------------------------
-
-      new FileWriter().createFile(
-        `${path}/JsonValue.ts`,
-        ({ writer, writeImport }) => {
-          writeImport('{ z }', 'zod');
-          writeImport('{ Prisma }', prismaClientPath);
-
-          writer
-            .blankLine()
-            .writeLine(
-              `export const JsonValue: z.ZodType<Prisma.JsonValue> = z.union([`,
-            )
-            .withIndentationLevel(1, () => {
-              writer
-                .writeLine(`z.string(),`)
-                .writeLine(`z.number(),`)
-                .writeLine(`z.boolean(),`)
-                .writeLine(`z.lazy(() => z.array(JsonValue)),`)
-                .writeLine(`z.lazy(() => z.record(JsonValue)),`);
-            })
-            .writeLine(`])`)
-            .blankLine()
-            .writeLine(`export default JsonValue`);
-        },
+      new FileWriter().createFile(`${path}/JsonValue.ts`, (fileWriter) =>
+        writeJsonValue({ fileWriter, dmmf }),
       );
-
-      // NULLABLE JSON VALUE
-      // ------------------------------------------------------------
 
       new FileWriter().createFile(
         `${path}/NullableJsonValue.ts`,
-        ({ writer, writeImport }) => {
-          writeImport('{ z }', 'zod');
-          writeImport('transformJsonNull', './transformJsonNull');
-          writeImport('JsonValue', './JsonValue');
-
-          writer
-            .blankLine()
-            .writeLine(`export const NullableJsonValue = z`)
-            .withIndentationLevel(1, () => {
-              writer
-                .writeLine(
-                  `.union([JsonValue, z.literal('DbNull'), z.literal('JsonNull')])`,
-                )
-                .writeLine('.nullable()')
-                .writeLine(`.transform((v) => transformJsonNull(v))`);
-            })
-            .blankLine()
-            .writeLine(`export default NullableJsonValue`);
-        },
+        (fileWriter) => writeNullableJsonValue({ fileWriter, dmmf }),
       );
 
-      // NULLABLE JSON INPUT
-      // ------------------------------------------------------------
-
-      new FileWriter().createFile(
-        `${path}/InputJsonValue.ts`,
-        ({ writer, writeImport }) => {
-          writeImport('{ z }', 'zod');
-          writeImport('{ Prisma }', prismaClientPath);
-
-          writer
-            .blankLine()
-            .writeLine(
-              `export const InputJsonValue: z.ZodType<Prisma.InputJsonValue> = z.union([`,
-            )
-            .withIndentationLevel(1, () => {
-              writer
-                .writeLine(`z.string(),`)
-                .writeLine(`z.number(),`)
-                .writeLine(`z.boolean(),`)
-                .writeLine(`z.lazy(() => z.array(InputJsonValue.nullable())),`)
-                .writeLine(
-                  `z.lazy(() => z.record(InputJsonValue.nullable())),`,
-                );
-            })
-            .write(`])`)
-            .blankLine()
-            .writeLine(`export default InputJsonValue`);
-        },
+      new FileWriter().createFile(`${path}/InputJsonValue.ts`, (fileWriter) =>
+        writeInputJsonValue({ fileWriter, dmmf }),
       );
     }
 
-    if (extendedDMMF.schema.hasDecimalTypes) {
-      // DECIMAL JS LIKE
-      // ------------------------------------------------------------
+    // DECIMAL
+    // ------------------------------------------------------------
 
+    if (dmmf.schema.hasDecimalTypes) {
       new FileWriter().createFile(
         `${path}/DecimalJsLikeSchema.ts`,
-        ({ writer, writeImport }) => {
-          writeImport('{ z }', 'zod');
-
-          writer
-            .blankLine()
-            .writeLine(
-              `export const DecimalJSLikeSchema = z.object({ d: z.array(z.number()), e: z.number(), s: z.number() })`,
-            )
-            .blankLine()
-            .writeLine(`export default DecimalJSLikeSchema`);
-        },
+        (fileWriter) => writeDecimalJsLike({ fileWriter, dmmf }),
       );
 
       new FileWriter().createFile(
         `${path}/DecimalJsLikeListSchema.ts`,
-        ({ writer, writeImport }) => {
-          writeImport('{ z }', 'zod');
-
-          writer
-            .blankLine()
-            .writeLine(
-              `export const DecimalJSLikeListSchema = z.object({ d: z.array(z.number()), e: z.number(), s: z.number() }).array()`,
-            )
-            .blankLine()
-            .writeLine(`export default DecimalJSLikeListSchema`);
-        },
+        (fileWriter) => writeDecimalJsLikeList({ fileWriter, dmmf }),
       );
-
-      // DECIMAL JS LIKE
-      // ------------------------------------------------------------
 
       new FileWriter().createFile(
         `${path}/isValidDecimalInput.ts`,
-        ({ writer, writeImport }) => {
-          writeImport('{ Prisma }', prismaClientPath);
-          writeImport('{ DecimalJsLike }', `${prismaClientPath}/runtime`);
-
-          writer
-            .blankLine()
-            .writeLine(
-              `export const DECIMAL_STRING_REGEX = /^[0-9.,e+\-bxffo_cp]+$|Infinity|NaN/`,
-            )
-            .blankLine()
-            .writeLine(`export const isValidDecimalInput =`)
-            .withIndentationLevel(1, () => {
-              writer
-                .writeLine(
-                  `(v?: null | string | number | Prisma.Decimal | DecimalJsLike) =>`,
-                )
-                .inlineBlock(() => {
-                  writer
-                    .writeLine(`if (!v) return false;`)
-                    .writeLine(`return (`)
-                    .withIndentationLevel(2, () => {
-                      writer
-                        .writeLine(
-                          `(typeof v === 'object' && Prisma.Decimal.isDecimal(v)) ||`,
-                        )
-                        .writeLine(
-                          `(typeof v === 'object' && 'd' in v && 'e' in v && 's' in v) ||`,
-                        )
-                        .writeLine(
-                          `(typeof v === 'string' && DECIMAL_STRING_REGEX.test(v)) ||`,
-                        )
-                        .writeLine(`typeof v === 'number'`);
-                    })
-                    .writeLine(`)`);
-                });
-            })
-            .blankLine()
-            .writeLine(`export default isValidDecimalInput`);
-        },
+        (fileWriter) => writeIsValidDecimalInput({ fileWriter, dmmf }),
       );
     }
 
@@ -246,65 +111,17 @@ export const writeInputTypeFiles: CreateFiles = ({
     // WRITE ENUMS
     ////////////////////////////////////////////////////
 
-    // WRITE ENUMS
-    // ------------------------------------------------------------
-
-    extendedDMMF.schema.enumTypes.prisma.forEach(
-      ({ useNativeEnum, values, name }) => {
-        new FileWriter().createFile(
-          `${path}/${name}Schema.ts`,
-          ({ writer, writeImport }) => {
-            writeImport('{ z }', 'zod');
-
-            if (useNativeEnum) {
-              writeImport('{ Prisma }', prismaClientPath);
-
-              writer
-                .blankLine()
-                .writeLine(
-                  `export const ${name}Schema = z.nativeEnum(Prisma.${name})`,
-                );
-            } else {
-              writer
-                .conditionalWrite(
-                  name.includes('NullableJson'),
-                  `import transformJsonNull from './transformJsonNull'`,
-                )
-                .blankLine()
-                .write(`export const ${name}Schema = z.enum([`);
-              values.forEach((value) => {
-                writer.write(`'${value}',`);
-              });
-              writer
-                .write(`])`)
-                .conditionalWrite(
-                  name.includes('Nullable'),
-                  `.transform((v) => transformJsonNull(v))`,
-                );
-            }
-            writer.blankLine().writeLine(`export default ${name}Schema`);
-          },
-        );
-      },
-    );
-
-    extendedDMMF.datamodel.enums.forEach(({ name }) => {
+    dmmf.schema.enumTypes.prisma.forEach((enumData) => {
       new FileWriter().createFile(
-        `${path}/${name}Schema.ts`,
-        ({ writer, writeImport }) => {
-          writeImport('{ z }', 'zod');
-          writeImport(`{ ${name} }`, prismaClientPath);
+        `${path}/${enumData.name}Schema.ts`,
+        (fileWriter) => writePrismaEnum({ fileWriter, dmmf }, enumData),
+      );
+    });
 
-          writer
-            .blankLine()
-            .writeLine(`export const ${name}Schema = z.nativeEnum(${name})`)
-            .blankLine()
-            .writeLine(
-              `export type ${name}Type = \`\${z.infer<typeof ${name}Schema>}\``,
-            )
-            .blankLine()
-            .writeLine(`export default ${name}Schema`);
-        },
+    dmmf.datamodel.enums.forEach((enumData) => {
+      new FileWriter().createFile(
+        `${path}/${enumData.name}Schema.ts`,
+        (fileWriter) => writeCustomEnum({ fileWriter, dmmf }, enumData),
       );
     });
 
@@ -312,7 +129,7 @@ export const writeInputTypeFiles: CreateFiles = ({
     // WRITER INCLUDE & SELECT
     ////////////////////////////////////////////////////
 
-    extendedDMMF.schema.outputObjectTypes.model.forEach((model) => {
+    dmmf.schema.outputObjectTypes.model.forEach((model) => {
       if (model.hasRelationField()) {
         // INCLUDE SCHEMA
         // ------------------------------------------------------------
@@ -373,7 +190,7 @@ export const writeInputTypeFiles: CreateFiles = ({
       // ------------------------------------------------------------
 
       // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      // TODO: Needs to be moved to same file as args schema
+      // TODO: Needs Check out if it should be moved to same file as arg schema
       // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
       const selectSchemaWriter = new FileWriter();
@@ -463,7 +280,7 @@ export const writeInputTypeFiles: CreateFiles = ({
     // WRITE INPUT TYPE FILES
     ////////////////////////////////////////////////////
 
-    extendedDMMF.schema.inputObjectTypes.prisma.forEach((inputType) => {
+    dmmf.schema.inputObjectTypes.prisma.forEach((inputType) => {
       new FileWriter().createFile(
         `${path}/${inputType.name}Schema.ts`,
         ({ writer, writeImport, writeImportSet }) => {
@@ -510,7 +327,7 @@ export const writeInputTypeFiles: CreateFiles = ({
                     zodValidatorString,
                     zodCustomValidatorString,
                     writeComma,
-                    writeValidation: extendedDMMF.addInputTypeValidation(),
+                    writeValidation: dmmf.addInputTypeValidation(),
                   });
                   writeNonScalarType(writer, {
                     inputType,
@@ -521,7 +338,7 @@ export const writeInputTypeFiles: CreateFiles = ({
                     zodCustomErrors,
                     zodCustomValidatorString,
                     writeComma,
-                    writeValidation: extendedDMMF.addInputTypeValidation(),
+                    writeValidation: dmmf.addInputTypeValidation(),
                   });
                 });
 
@@ -539,7 +356,7 @@ export const writeInputTypeFiles: CreateFiles = ({
                   zodCustomErrors,
                   zodValidatorString,
                   zodCustomValidatorString,
-                  writeValidation: extendedDMMF.addInputTypeValidation(),
+                  writeValidation: dmmf.addInputTypeValidation(),
                 });
                 writeNonScalarType(writer, {
                   inputType,
@@ -552,7 +369,7 @@ export const writeInputTypeFiles: CreateFiles = ({
                   zodCustomValidatorString,
                   isNullable,
                   isOptional,
-                  writeValidation: extendedDMMF.addInputTypeValidation(),
+                  writeValidation: dmmf.addInputTypeValidation(),
                 });
               }
 

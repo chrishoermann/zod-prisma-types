@@ -16,8 +16,8 @@ export const writeSingleFileImportStatements: WriteStatements = (
     writeImport('{ DecimalJsLike }', `${prismaClientPath}/runtime`);
   }
 
-  if (dmmf.generatorConfig.imports) {
-    dmmf.generatorConfig.imports.forEach((statement) => {
+  if (dmmf.customImports) {
+    dmmf.customImports.forEach((statement) => {
       writer.writeLine(statement);
     });
   }

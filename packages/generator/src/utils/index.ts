@@ -1,5 +1,4 @@
 export * from './getStringVariants';
-export * from './generatorConfigSchema';
 export * from './getPrismaClientOutputPath';
 export * from './skipGenerator';
 export * from './DEPR_usesCustomTsConfigFilePath';

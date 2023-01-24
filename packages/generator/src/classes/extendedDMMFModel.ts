@@ -1,7 +1,7 @@
 import { DMMF } from '@prisma/generator-helper';
 import { IMPORT_STATEMENT_REGEX } from '../constants';
 
-import { GeneratorConfig } from '../utils';
+import { GeneratorConfig } from '../schemas';
 import { ExtendedDMMFField } from './extendedDMMFField';
 import { FormattedNames } from './formattedNames';
 
@@ -24,7 +24,7 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
   readonly hasRelationFields: boolean;
   readonly hasOmitFields: boolean;
   readonly imports: Set<string>;
-  readonly customImports?: Set<string>;
+  readonly customImports: Set<string>;
   readonly errorLocation: string;
   readonly clearedDocumentation?: string;
 
@@ -89,12 +89,13 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
     if (!zodDirectives)
       return {
         imports: new Set(automaticImports),
+        customImports: new Set([]),
       };
 
     return {
-      imports: new Set([...zodDirectives.statements, ...automaticImports]),
+      imports: new Set([...zodDirectives.customImports, ...automaticImports]),
       documentation: zodDirectives.clearedDocumentation,
-      customImports: new Set(zodDirectives.statements),
+      customImports: new Set(zodDirectives.customImports),
     };
   }
 
@@ -119,7 +120,7 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
     if (!importsList) return;
 
     return {
-      statements: importsList
+      customImports: importsList
         .map((statement) =>
           statement
             .match(/"(?<statement>[\w "'\{\}\/,;.*]+)"/)
@@ -153,7 +154,7 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
 
     if (this.fields.some((field) => field.isDecimalType)) {
       statements.push(
-        `import * as PrismaClient from '${this.generatorConfig.prismaClientPath}'`,
+        `import { Prisma } from '${this.generatorConfig.prismaClientPath}'`,
         `import { DecimalJSLikeSchema } from "../${this.generatorConfig.inputTypePath}/DecimalJsLikeSchema"`,
         `import { isValidDecimalInput } from "../${this.generatorConfig.inputTypePath}/isValidDecimalInput"`,
       );

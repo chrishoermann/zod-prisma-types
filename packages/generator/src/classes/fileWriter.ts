@@ -90,7 +90,7 @@ export class FileWriter {
   }
 
   writeImport(importName: string, importPath: string) {
-    this.writer.writeLine(`import ${importName} from '${importPath}'`);
+    this.writer.writeLine(`import ${importName} from '${importPath}';`);
   }
 
   writeImportSet(strings: Set<string>) {
@@ -130,8 +130,8 @@ export class FileWriter {
     this.writer.writeLine(` */`);
   }
 
-  writeExport(importName: string, importPath: string) {
-    this.writer.writeLine(`export ${importName} from '${importPath}'`);
+  writeExport(exportName: string, exportPath: string) {
+    this.writer.writeLine(`export ${exportName} from '${exportPath}';`);
   }
 
   writeConstStatement({ name, type }: writeConstStatementOptions) {

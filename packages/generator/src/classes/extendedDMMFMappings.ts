@@ -1,6 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { GeneratorConfig } from '../utils';
+import { GeneratorConfig } from '../schemas';
 
 /////////////////////////////////////////////////
 // CLASS

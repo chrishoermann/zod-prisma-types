@@ -1,3 +1,4 @@
+import { writeCustomEnum, writePrismaEnum } from '.';
 import { type WriteStatements } from '../types';
 
 /////////////////////////////////////////////////
@@ -6,40 +7,17 @@ import { type WriteStatements } from '../types';
 
 export const writeSingleFileEnumStatements: WriteStatements = (
   dmmf,
-  { writer, writeHeading },
+  fileWriter,
 ) => {
-  writeHeading(`ENUMS`, 'FAT');
+  fileWriter.writeHeading(`ENUMS`, 'FAT');
 
-  dmmf.schema.enumTypes.prisma.forEach(({ useNativeEnum, values, name }) => {
-    if (useNativeEnum) {
-      writer
-        .blankLine()
-        .writeLine(
-          `export const ${name}Schema = z.nativeEnum(PrismaClient.Prisma.${name})`,
-        );
-    } else {
-      writer.blankLine().write(`export const ${name}Schema = z.enum([`);
-      values.forEach((value) => {
-        writer.write(`'${value}',`);
-      });
-      writer
-        .write(`])`)
-        .conditionalWrite(
-          name.includes('Nullable'),
-          `.transform((v) => transformJsonNull(v))`,
-        );
-    }
+  dmmf.schema.enumTypes.prisma.forEach((enumData) => {
+    writePrismaEnum({ dmmf, fileWriter }, enumData);
   });
 
-  dmmf.datamodel.enums.forEach(({ name }) => {
-    writer
-      .blankLine()
-      .writeLine(
-        `export const ${name}Schema = z.nativeEnum(PrismaClient.${name})`,
-      )
-      .blankLine()
-      .writeLine(
-        `export type ${name}Type = \`\${z.infer<typeof ${name}Schema>}\``,
-      );
+  dmmf.datamodel.enums.forEach((enumData) => {
+    writeCustomEnum({ fileWriter, dmmf }, enumData);
   });
+
+  fileWriter.writer.newLine();
 };

@@ -13,20 +13,14 @@
 ## Table of contents
 
 - [About this project](#about-this-project)
-  - [Why zod?](#why-zod)
-  - [Why not multiple files?](#why-not-multiple-files)
-  - [IDE performance problems](#ide-performance-problems)
 - [Installation](#installation)
 - [Usage](#usage)
   - [`output`](#output)
-  - [`useInstanceOfForDecimal`](#useinstanceoffordecimal)
   - [`createInputTypes`](#createinputtypes)
   - [`createModelTypes`](#createmodeltypes)
   - [`addInputTypeValidation`](#addinputtypevalidation)
   - [`useDefaultValidators`](#usedefaultvalidators)
   - [`createOptionalDefaultValuesTypes`](#createoptionaldefaultvaluestypes)
-  - [`imports`](#imports)
-  - [`tsConfigFilePath`](#tsconfigfilepath)
 - [Json null values](#json-null-values)
 - [Decimal](#decimal)
 - [Skip schema generation](#skip-schema-generation)
@@ -44,19 +38,7 @@
 
 ## About this project
 
-For one of my projects I was in need of a generator that combines the possibility of adding `zod valdiators` directly in `prisma schema's` [rich-comments](https://www.prisma.io/docs/concepts/components/prisma-schema#comments) with the generation of `zod` schemas for all the prisma models, enums, inputTypes, argTypes, filters and so on. I also wanted to import these schemas for validation use in the frontend (e.g. form validation). Furthermore I wanted to make the generator as flexible as possbile so it covers a large range of use cases. I looked around and found a few packages that generate `zod` schemas from prisma models but none of them met my requirements or they weren't activly maintained anymore. So I decided to write `zod-prisma-type`.
-
-### Why zod?
-
-I decided to use `zod` because it is a very powerful and flexible library that allows you to write complex validators in a simple way and it is I to my knowledge the only validation library that really parses the data that comes in and does not simply validate (please correct me if I'm wrong). It also was the first library I stumbled upon when I started to use [trpc](https://trpc.io/docs/) so I went with it.
-
-### Why not multiple files?
-
-By design the generator only creates a single `index.ts` file in the specified output folder that contains all the `zod`schemas. I decided against a multiple file approach because it makes the handling of custom imports much easier and from a code prespective the generator itself is simpler (no imports from related models, enums, inputTypes and so on need to be handled, no index files need to be created, ...). Also in [`ts-morph`](https://ts-morph.com/manipulation/performance) it is more efficient to write a bunch of statements to a single file at once than creating multiple files where only a few statements are added. This can be beneficial for generating zod schemas for big prisma schemas.
-
-### IDE performance problems
-
-Some people reported that IDE performance is very slow after running the generator. If you encounter similar issues please check out [this issue](https://github.com/chrishoermann/zod-prisma-types/issues/48) and comment if you have any insights.
+For one of my projects I was in need of a generator that has the possibility of adding `zod valdiators` directly in `prisma schema's` [rich-comments](https://www.prisma.io/docs/concepts/components/prisma-schema#comments) and generates `zod` schemas for all prisma models, enums, inputTypes, argTypes, filters and so on. I also wanted to be able to import these schemas in the frontend e.g. for form validation. Furthermore I wanted to make the generator as flexible as possbile so it covers a large range of use cases. I looked around and found a few packages that generate `zod` schemas from prisma models but none of them met my requirements or they weren't activly maintained anymore. So I decided to write `zod-prisma-type`.
 
 ## Installation
 
@@ -96,84 +78,26 @@ If you want to customize the behaviour of the generator you can use the followin
 generator zod {
   provider                         = "zod-prisma-types"
   output                           = "./zod" // default is ./generated/zod
-  useInstanceOfForDecimal          = true // default is false
+  useMultipleFiles                 = false // default is true
   createInputTypes                 = false // default is true
   createModelTypes                 = false // default is true
   addInputTypeValidation           = false // default is true
   useDefaultValidators             = false // default is true
   createOptionalDefaultValuesTypes = true // default is false
-  imports                          = "import(import { myFunction } from '../../utils/myFunction';).import(import validator from 'validator';)" // optional
-  tsConfigFilePath                 = "tsconfig.json" // optional
 }
 ```
 
-> As mentioned above this generator only creates a single `index.ts` file in the specified output folder containing all the zod prisma schemas. I decided to only create a single file because in [`ts-morph`](https://ts-morph.com/manipulation/performance) it is more efficient to write a bunch of statements to a single file at once than creating multiple files where only a few statements are added. This can be beneficial for generating zod schemas for big prisma schemas. Another point is that it makes the codebase of the generator more managable (...no need to create imports, simpler structure of the files) and it's easier to use custom imports (see below).
+### `useMultipleFiles`
+
+> default: `true`
+
+If you want to create multiple files instead of a single `index.ts` file you can set this option to `true`. This will create a file for each model, enum, inputType, argType, filter and so on. The files will be created in the specified output folder.
 
 ### `output`
 
 > default: `./generated/zod`
 
 Provide an alternative output path.
-
-### `useInstanceOfForDecimal`
-
-> default: `false`
-
-In Prisma `Decimal` fields are represented by the [decimal.js](https://mikemcl.github.io/decimal.js/) library as stated in the [prisma docs](https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields#working-with-decimal). By default the `Prisma.Decimal` type is used to validate `Decimal` fields by using the built in typeguard `isDecimal(value)` with a custom transform to check if the field value is a `Decimal`.
-
-```prisma
-model MyModel {
-  id         Int      @id @default(autoincrement())
-  decimal    Decimal
-  decimalOpt Decimal?
-}
-```
-
-By default The above model would generate the following output:
-
-```ts
-export const MyModel = z.object({
-  id: z.number().int(),
-  decimal: z
-    .any()
-    .transform((v) =>
-      isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
-    )
-    .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-      message: 'Field "decimal" must be a Decimal',
-      path: ['Models', 'DecimalModel'],
-    }),
-  decimalOpt: z
-    .any()
-    .transform((v) =>
-      isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
-    )
-    .refine((v) => PrismaClient.Prisma.Decimal.isDecimal(v), {
-      message: 'Field "decimalOpt" must be a Decimal',
-      path: ['Models', 'DecimalModel'],
-    })
-    .nullish(),
-});
-```
-
-If you want to validate `Decimal` with `z.instanceof(PrismaClient.Prisma.Decimal)` you can pass the following config option:
-
-```prisma
-generator zod {
-  // ...rest of config
-  useInstanceOfForDecimal = true
-}
-```
-
-The generated output would look like this:
-
-```ts
-export const MyModel = z.object({
-  id: z.number(),
-  decimal: z.instanceof(PrismaClient.Prisma.Decimal),
-  decimalOpt: z.instanceof(PrismaClient.Prisma.Decimal).nullable(),
-});
-```
 
 ### `createInputTypes`
 
@@ -323,63 +247,6 @@ generator zod {
 
 > If you have some further ideas for default validators feel free to open an issue.
 
-### `imports`
-
-You can specify custom imports that are then added to the `index.ts` file. Since prisma only lets us specify `string` options in the `prisma.schema` generator config the syntax of the imports is a bit clumsy:
-
-```prisma
-generator zod {
-  // ...other config options
-  imports        = "import(import { myFunction } from 'mypackage').import(import { custom } from './myfolder')"
-}
-```
-
-> The function-like syntax is used to easily split the string into an array and remove the unnecessary stuff. To add multiple imports just chain the commands.
-
-```prisma
-generator zod {
-  provider = "zod-prisma-types"
-  imports  = "import(import { myFunction } from '../../myFunction';)" // optional
-}
-
-model MyModel {
-  id     Int     @id @default(autoincrement())
-  /// @zod.custom.use(z.string().refine((val) => myFunction(val), { message: 'Is not valid' }))
-  custom String?
-}
-```
-
-The above schema would add the following imports to the file:
-
-```ts
-// ...standard imports
-
-// your custom imports
-import { myFunction } from '../../myFunction';
-
-// imports are used in your custom validator
-export const MyModelSchema = z.object({
-  id: z.number(),
-  custom: z
-    .string()
-    .refine((val) => myFunction(val), { message: 'Is not valid' })
-    .nullish(),
-});
-```
-
-### `tsConfigFilePath`
-
-If your `tsconfig.json` file resides in another folder than your root (where the `node_modules` folder is located) you can specify a custom path. This path is then consumed by the generator and passed on to the `ts-morph` `Project` instance that is used to create the file. Usually you don't have to provide this option because it defaults in ts-morph to the base directory.
-
-> Don't add `./` or `/` at the beginning of the path!
-
-```prisma
-generator zod {
-  // ...rest of config
-  tsConfigFilePath = "config/tsconfig.json"
-}
-```
-
 ## Json null values
 
 When using json null values prisma has a unique way of handling Database `NULL` and JSON `null` as stated [in the Docs](https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#using-null-values).
@@ -499,9 +366,9 @@ This may look a bit cryptc so here is an example:
 generator zod {
   provider       = "zod-prisma-types"
   output         = "./zod"
-  imports        = "import(import { myFunction } from 'mypackage')"
 }
 
+/// @zod.import(["import { myFunction } from 'mypackage';"])
 model MyPrismaScalarsType {
   /// @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid()
   id         String    @id @default(cuid())
@@ -642,6 +509,31 @@ export const MyPrismaScalarsTypeOptionalDefaultsSchema =
 ```
 
 > Additionally all the zod schemas for the prisma input-, enum-, filter-, orderby-, select-, include and other necessary types are generated ready to be used in e.g. `trpc` inputs.
+
+## Custom imports
+
+To add custom imports to your validator you can add them via `@zod.custom.imports([...myCustom imports as strings])` in prismas rich comments for the model definition.
+
+For example:
+
+```prisma
+/// @zod.custom.imports(["import { myFunction } from 'mypackage'"])
+model MyModel {
+  myField String /// @zod.string().refine((val) => myFunction(val), { message: 'Is not valid' })
+}
+```
+
+This would result in an output like:
+
+```ts
+import { myFunction } from 'mypackage';
+
+export const MyModelSchema = z.object({
+  myField: z
+    .string()
+    .refine((val) => myFunction(val), { message: 'Is not valid' }),
+});
+```
 
 ## Custom type error messages
 

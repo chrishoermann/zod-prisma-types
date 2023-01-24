@@ -1,5 +1,5 @@
 import { DMMF, Dictionary } from '@prisma/generator-helper';
-import { GeneratorConfig, configSchema } from '../utils';
+import { GeneratorConfig, configSchema } from '../schemas';
 
 import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
 import { ExtendedDMMFMappings } from './extendedDMMFMappings';
@@ -15,6 +15,7 @@ export class ExtendedDMMF implements DMMF.Document {
   readonly schema: ExtendedDMMFSchema;
   readonly mappings: DMMF.Mappings;
   readonly imports: Set<string>;
+  readonly customImports: Set<string>;
 
   constructor(dmmf: DMMF.Document, config: Dictionary<string>) {
     this.generatorConfig = this._setGeneratorConfig(config);
@@ -22,6 +23,7 @@ export class ExtendedDMMF implements DMMF.Document {
     this.schema = this._getExtendedSchema(dmmf);
     this.mappings = this._getExtendedMappings(dmmf);
     this.imports = this._getImports();
+    this.customImports = this._getCustomImports();
   }
 
   private _getExtendedDatamodel({ datamodel }: DMMF.Document) {
@@ -39,6 +41,12 @@ export class ExtendedDMMF implements DMMF.Document {
   private _getImports() {
     return new Set(
       this.datamodel.models.map((model) => [...model.imports]).flat(),
+    );
+  }
+
+  private _getCustomImports() {
+    return new Set(
+      this.datamodel.models.map((model) => [...model.customImports]).flat(),
     );
   }
 

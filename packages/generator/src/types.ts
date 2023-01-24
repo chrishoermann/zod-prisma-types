@@ -197,3 +197,8 @@ export interface ExtendedWriteFieldOptions extends WriteFieldOptions {
   model: ExtendedDMMFModel;
   dmmf: ExtendedDMMF;
 }
+
+export interface ContentWriterOptions {
+  fileWriter: CreateFileOptions;
+  dmmf: ExtendedDMMF;
+}

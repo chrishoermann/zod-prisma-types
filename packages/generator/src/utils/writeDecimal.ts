@@ -7,13 +7,16 @@ export const writeDecimal = ({
   model,
   writeOptionalDefaults = false,
 }: ExtendedWriteFieldOptions) => {
+  const { useMultipleFiles } = model.generatorConfig;
+  const addPrismaClient = useMultipleFiles ? '' : 'PrismaClient.';
+
   writer
     .conditionalWrite(field.omitInModel(), '// omitted: ')
     .write(`${field.formattedNames.original}: `)
     .write(`z.union([`)
     .write(`z.number(),`)
     .write(`z.string(),`)
-    .write(`z.instanceof(PrismaClient.Prisma.Decimal),`)
+    .write(`z.instanceof(${addPrismaClient}Prisma.Decimal),`)
     .write(`DecimalJSLikeSchema,`)
     .write(`]`)
     .conditionalWrite(!!field.zodCustomErrors, field.zodCustomErrors!)
