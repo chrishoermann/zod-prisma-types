@@ -1,6 +1,8 @@
 import { GeneratorOptions } from '@prisma/generator-helper';
 import path from 'path';
 
+// bit hacky but does the job
+
 export const getPrismaClientOutputPath = (options: GeneratorOptions) => {
   // find the prisma client config
   const prismaClientOptions = options.otherGenerators.find(

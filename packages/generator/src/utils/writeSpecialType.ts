@@ -27,6 +27,8 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
 ) => {
   if (!inputType.isSpecialType()) return;
 
+  const { useMultipleFiles } = inputType.generatorConfig;
+
   if (
     zodCustomValidatorString &&
     inputType.generatorConfig.addInputTypeValidation
@@ -45,7 +47,11 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
         .write(`z.union([`)
         .write(`z.number().array(),`)
         .write(`z.string().array(),`)
-        .write(`z.instanceof(Prisma.Decimal).array(),`)
+        .write(
+          `z.instanceof(${
+            useMultipleFiles ? '' : 'PrismaClient.'
+          }Prisma.Decimal).array(),`,
+        )
         .write(`DecimalJSLikeListSchema,`)
         .write(`]`)
         .conditionalWrite(!!zodCustomErrors, `, ${zodCustomErrors!}`)
@@ -65,7 +71,11 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
       .write(`z.union([`)
       .write(`z.number(),`)
       .write(`z.string(),`)
-      .write(`z.instanceof(Prisma.Decimal),`)
+      .write(
+        `z.instanceof(${
+          useMultipleFiles ? '' : 'PrismaClient.'
+        }Prisma.Decimal),`,
+      )
       .write(`DecimalJSLikeSchema,`)
       .write(`]`)
       .conditionalWrite(!!zodCustomErrors, `, ${zodCustomErrors!}`)

@@ -7,7 +7,7 @@ import { writeModelFields } from '../utils';
 /////////////////////////////////////////////////
 
 export const writeModelFiles: CreateFiles = (options) => {
-  const { outputPath, extendedDMMF } = options;
+  const { outputPath, dmmf: extendedDMMF } = options;
   const indexFileWriter = new FileWriter();
 
   const path = indexFileWriter.createPath(`${outputPath}/modelSchema`);
@@ -15,7 +15,7 @@ export const writeModelFiles: CreateFiles = (options) => {
   if (path) {
     indexFileWriter.createFile(`${path}/index.ts`, ({ writeExport }) => {
       extendedDMMF.datamodel.models.forEach((model) => {
-        writeExport(`{ ${model.name}Schema }`, `./${model.name}Schema`);
+        writeExport(`*`, `./${model.name}Schema`);
       });
     });
   }
@@ -29,7 +29,7 @@ export const writeModelFiles: CreateFiles = (options) => {
 
         writer
           .blankLine()
-          .writeLine(`export const ${model.name}Schema = z.object(`)
+          .write(`export const ${model.name}Schema = z.object(`)
           .inlineBlock(() => {
             [...model.enumFields, ...model.scalarFields].forEach((field) => {
               writeModelFields({
@@ -45,9 +45,8 @@ export const writeModelFiles: CreateFiles = (options) => {
         if (model.writeOptionalDefaultValuesTypes()) {
           writer
             .blankLine()
-            .writeLine(
-              `export const ${model.name}OptionalDefaultsSchema = ${model.name}Schema.merge(z.object(`,
-            )
+            .write(`export const ${model.name}OptionalDefaultsSchema =`)
+            .write(`${model.name}Schema.merge(z.object(`)
             .inlineBlock(() => {
               [...model.enumFields, ...model.scalarFields].forEach((field) => {
                 if (!field.isOptionalDefaultField()) return;

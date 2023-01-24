@@ -12,7 +12,7 @@ import {
 
 export const writeInputTypeFiles: CreateFiles = ({
   outputPath,
-  extendedDMMF,
+  dmmf: extendedDMMF,
 }) => {
   if (!extendedDMMF.createInputTypes()) return;
 
@@ -51,9 +51,7 @@ export const writeInputTypeFiles: CreateFiles = ({
     if (extendedDMMF.schema.hasJsonTypes) {
       // TRANSFORM JSON NULL
       // ------------------------------------------------------------
-      const transformJsonNullWriter = new FileWriter();
-
-      transformJsonNullWriter.createFile(
+      new FileWriter().createFile(
         `${path}/transformJsonNull.ts`,
         ({ writer, writeImport }) => {
           writeImport('{ Prisma }', prismaClientPath);
@@ -284,13 +282,7 @@ export const writeInputTypeFiles: CreateFiles = ({
                   `.transform((v) => transformJsonNull(v))`,
                 );
             }
-            writer
-              .blankLine()
-              .writeLine(
-                `export type ${name}Type = \`z.infer<typeof ${name}Schema>\``,
-              )
-              .blankLine()
-              .writeLine(`export default ${name}Schema`);
+            writer.blankLine().writeLine(`export default ${name}Schema`);
           },
         );
       },
@@ -380,87 +372,91 @@ export const writeInputTypeFiles: CreateFiles = ({
       // SELECT SCHEMA
       // ------------------------------------------------------------
 
-      // const selectSchemaWriter = new FileWriter();
+      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      // TODO: Needs to be moved to same file as args schema
+      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-      // selectSchemaWriter.createFile(
-      //   `${path}/${model.name}SelectSchema.ts`,
-      //   ({ writer, writeImport }) => {
-      //     writeImport('{ z }', 'zod');
-      //     writeImport('{ Prisma }', prismaClientPath);
+      const selectSchemaWriter = new FileWriter();
 
-      //     model.fields.forEach((field) => {
-      //       writer;
-      //       if (field.isListOutputType() && field.isObjectOutputType()) {
-      //         return writer.writeLine(
-      //           `import { ${field.outputType.type}FindManyArgsSchema } from '../${outputTypePath}/${field.outputType.type}FindManyArgsSchema'`,
-      //         );
-      //       }
+      selectSchemaWriter.createFile(
+        `${path}/${model.name}SelectSchema.ts`,
+        ({ writer, writeImport }) => {
+          writeImport('{ z }', 'zod');
+          writeImport('{ Prisma }', prismaClientPath);
 
-      //       if (field.isObjectOutputType()) {
-      //         return writer.writeLine(
-      //           `import { ${field.outputType.type}ArgsSchema } from '../${outputTypePath}/${field.outputType.type}ArgsSchema'`,
-      //         );
-      //       }
+          model.fields.forEach((field) => {
+            writer;
+            if (field.isListOutputType() && field.isObjectOutputType()) {
+              return writer.writeLine(
+                `import { ${field.outputType.type}FindManyArgsSchema } from '../${outputTypePath}/${field.outputType.type}FindManyArgsSchema'`,
+              );
+            }
 
-      //       return;
-      //     });
+            if (field.isObjectOutputType()) {
+              return writer.writeLine(
+                `import { ${field.outputType.type}ArgsSchema } from '../${outputTypePath}/${field.outputType.type}ArgsSchema'`,
+              );
+            }
 
-      //     writer
-      //       .blankLine()
-      //       .writeLine(
-      //         `export const ${model.name}SelectSchema: z.ZodType<Prisma.${model.name}Select> = z.object({`,
-      //       )
-      //       .withIndentationLevel(1, () => {
-      //         model.fields.forEach((field) => {
-      //           if (field.isEnumOutputType()) {
-      //             return writer
-      //               .write(`${field.name}: `)
-      //               .write(`z.boolean()`)
-      //               .write(`.optional(),`)
-      //               .newLine();
-      //           }
+            return;
+          });
 
-      //           if (field.isListOutputType() && field.isObjectOutputType()) {
-      //             return writer
-      //               .write(`${field.name}: `)
-      //               .write(`z.union([`)
-      //               .write(`z.boolean(),`)
-      //               .write(
-      //                 `z.lazy(() => ${field.outputType.type}FindManyArgsSchema)`,
-      //               )
-      //               .write(`])`)
-      //               .write(`.optional()`)
-      //               .write(`,`)
-      //               .newLine();
-      //           }
+          writer
+            .blankLine()
+            .writeLine(
+              `export const ${model.name}SelectSchema: z.ZodType<Prisma.${model.name}Select> = z.object({`,
+            )
+            .withIndentationLevel(1, () => {
+              model.fields.forEach((field) => {
+                if (field.isEnumOutputType()) {
+                  return writer
+                    .write(`${field.name}: `)
+                    .write(`z.boolean()`)
+                    .write(`.optional(),`)
+                    .newLine();
+                }
 
-      //           if (field.isObjectOutputType()) {
-      //             return writer
-      //               .write(`${field.name}: `)
-      //               .write(`z.union([`)
-      //               .write(`z.boolean(),`)
-      //               .write(`z.lazy(() => ${field.outputType.type}ArgsSchema)`)
-      //               .write(`])`)
-      //               .write(`.optional()`)
-      //               .write(`,`)
-      //               .newLine();
-      //           }
+                if (field.isListOutputType() && field.isObjectOutputType()) {
+                  return writer
+                    .write(`${field.name}: `)
+                    .write(`z.union([`)
+                    .write(`z.boolean(),`)
+                    .write(
+                      `z.lazy(() => ${field.outputType.type}FindManyArgsSchema)`,
+                    )
+                    .write(`])`)
+                    .write(`.optional()`)
+                    .write(`,`)
+                    .newLine();
+                }
 
-      //           return writer
-      //             .write(`${field.name}: `)
-      //             .write(`z.boolean()`)
-      //             .write(`.optional(),`)
-      //             .newLine();
-      //         });
-      //       });
+                if (field.isObjectOutputType()) {
+                  return writer
+                    .write(`${field.name}: `)
+                    .write(`z.union([`)
+                    .write(`z.boolean(),`)
+                    .write(`z.lazy(() => ${field.outputType.type}ArgsSchema)`)
+                    .write(`])`)
+                    .write(`.optional()`)
+                    .write(`,`)
+                    .newLine();
+                }
 
-      //     writer
-      //       .write(`})`)
-      //       .write(`.strict()`)
-      //       .blankLine()
-      //       .writeLine(`export default ${model.name}SelectSchema`);
-      //   },
-      // );
+                return writer
+                  .write(`${field.name}: `)
+                  .write(`z.boolean()`)
+                  .write(`.optional(),`)
+                  .newLine();
+              });
+            });
+
+          writer
+            .write(`})`)
+            .write(`.strict()`)
+            .blankLine()
+            .writeLine(`export default ${model.name}SelectSchema`);
+        },
+      );
     });
 
     ////////////////////////////////////////////////////
@@ -475,6 +471,8 @@ export const writeInputTypeFiles: CreateFiles = ({
           writeImport('{ Prisma }', prismaClientPath);
           writeImportSet(inputType.imports);
 
+          // when an omit field is present, the type is not a native prism type
+          // but a zod union of the native type and an omit type
           const type = inputType.hasOmitFields()
             ? `z.ZodType<Omit<Prisma.${
                 inputType.name

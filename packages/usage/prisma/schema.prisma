@@ -18,17 +18,17 @@ generator zod {
   provider                         = "ts-node-dev ../generator/src/bin.ts"
   output                           = "./generated/zod" // default is ./generated/zod
   useMultipleFiles                 = true // default is false 
-  // useInstanceOfForDecimal          = true // default is false
-  // createInputTypes                 = false // default is true
+  // useInstanceOfForDecimal          = true // DEPRECATED default is false
+  // createInputTypes                 = false // DEPRECATED  default is true
   // createModelTypes                 = false // default is true
   // createModelTypes                 = false // default is true
   // addInputTypeValidation           = false // default is true
   createOptionalDefaultValuesTypes = true // default is false
   useDefaultValidators             = true // default is true
-  useDecimalJs                     = true // default is false
-  imports                          = "import(import { myFunction } from '../../../../utils/myFunction';).import(import validator from 'validator';)" // optional
-  // tsConfigFilePath                 = "tsconfig.json" // optional
-  // prismaClientPath                 = "./generated/client" // optional
+  // useDecimalJs                     = true // DEPRECATED default is false
+  // imports                          = "import(import { myFunction } from '../../../../utils/myFunction';).import(import validator from 'validator';)" //DEPRECATED optional
+  // tsConfigFilePath                 =  "tsconfig.json" //DEPRECATED optional 
+    // prismaClientPath                 = "./generated/client" // optional
 }
 
 // MIXED CASE ENUMS AND MODELS

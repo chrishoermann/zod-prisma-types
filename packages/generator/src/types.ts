@@ -1,7 +1,9 @@
 import { DMMF } from '@prisma/generator-helper';
-import { CodeBlockWriter, StatementStructures, WriterFunction } from 'ts-morph';
+import CodeBlockWriter from 'code-block-writer';
+import { StatementStructures, WriterFunction } from 'ts-morph';
 
 import {
+  CreateFileOptions,
   ExtendedDMMF,
   ExtendedDMMFField,
   ExtendedDMMFModel,
@@ -17,10 +19,19 @@ export interface ExtendedStatement {
   imports: Statement[];
   filename: string;
 }
-export type GetStatements = (datamodel: ExtendedDMMF) => Statement[];
+
+export type GetStatements = (
+  datamodel: ExtendedDMMF,
+  writer: CodeBlockWriter,
+) => Statement[];
+
+export type WriteStatements = (
+  datamodel: ExtendedDMMF,
+  writer: CreateFileOptions,
+) => void;
 
 export interface CreateOptions {
-  extendedDMMF: ExtendedDMMF;
+  dmmf: ExtendedDMMF;
   outputPath: string;
 }
 

@@ -1,56 +1,27 @@
-import { Project } from 'ts-morph';
-import { DirectoryHelper, ExtendedDMMF } from './classes';
+import { FileWriter } from './classes';
 import {
-  getImportStatements,
-  getEnumStatements,
-  getHelperStatements,
-  getModelStatements,
-  getIncludeSelectStatements,
-  getInputTypeStatements,
-  getArgTypeStatements,
+  writeSingleFileEnumStatements,
+  writeSingleFileHelperStatements,
+  writeSingleFileImportStatements,
+  writeSingleFileModelStatements,
+  writeSingleFileIncludeSelectStatements,
+  writeSingleFileInputTypeStatements,
+  writeSingleFileArgTypeStatements,
 } from './functions';
+import { CreateOptions } from './types';
 
-interface CreateOptions {
-  extendedDMMF: ExtendedDMMF;
-  outputPath: string;
-  project: Project;
-}
+export const generateSingleFile = ({ dmmf, outputPath }: CreateOptions) => {
+  const fileWriter = new FileWriter();
 
-export const generateSingleFile = ({
-  extendedDMMF,
-  outputPath,
-  project,
-}: CreateOptions) => {
-  // Create the path specified in the generator output
-  DirectoryHelper.pathExistsElseCreate(outputPath);
+  const path = fileWriter.createPath(outputPath);
 
-  // create the source file containing all zod types
-  const indexSource = project.createSourceFile(
-    `${outputPath}/index.ts`,
-    {
-      statements: [
-        ...getImportStatements(extendedDMMF),
-        ...getEnumStatements(extendedDMMF),
-        ...getHelperStatements(extendedDMMF),
-        ...getModelStatements(extendedDMMF),
-        ...getIncludeSelectStatements(extendedDMMF),
-        // ...getAggregateAndCountStatements(extendedDMMF), // currently not used in any input types
-        ...getInputTypeStatements(extendedDMMF),
-        ...getArgTypeStatements(extendedDMMF),
-      ],
-    },
-    {
-      overwrite: true,
-    },
-  );
-
-  // format the source file
-  indexSource.formatText({
-    indentSize: 2,
-    convertTabsToSpaces: true,
-    ensureNewLineAtEndOfFile: true,
+  fileWriter.createFile(`${path}/index.ts`, (createFileOptions) => {
+    writeSingleFileImportStatements(dmmf, createFileOptions);
+    writeSingleFileHelperStatements(dmmf, createFileOptions);
+    writeSingleFileEnumStatements(dmmf, createFileOptions);
+    writeSingleFileModelStatements(dmmf, createFileOptions);
+    writeSingleFileIncludeSelectStatements(dmmf, createFileOptions);
+    writeSingleFileInputTypeStatements(dmmf, createFileOptions);
+    writeSingleFileArgTypeStatements(dmmf, createFileOptions);
   });
-
-  // save the source file and apply all changes
-  return project.save();
 };

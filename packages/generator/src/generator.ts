@@ -1,10 +1,9 @@
 import { GeneratorOptions } from '@prisma/generator-helper';
-import { Project } from 'ts-morph';
 
-import { ExtendedDMMF } from './classes';
+import { DirectoryHelper, ExtendedDMMF } from './classes';
 import { generateMultipleFiles } from './generateMultipleFiles';
 import { generateSingleFile } from './generateSingleFile';
-import { skipGenerator, usesCustomTsConfigFilePath } from './utils';
+import { skipGenerator } from './utils';
 
 export interface GeneratorConfig {
   output: GeneratorOptions['generator']['output'];
@@ -26,28 +25,24 @@ export const generator = async ({ output, config, dmmf }: GeneratorConfig) => {
   // extend the DMMF with custom functionality - see "classes" folder
   const extendedDMMF = new ExtendedDMMF(dmmf, config);
 
-  // check if a custom tsconfig file is used and log an info if so
-  await usesCustomTsConfigFilePath(
-    extendedDMMF.generatorConfig.tsConfigFilePath,
-  );
+  // If data is present in the output directory, delete it.
+  // This is necessary to not have old data in the directory e.g.
+  // when a model is removed from the schema the old files would still be present.
+  // needs to be syncronous because otherwise a race condition occurs
+  // when creating new files.
 
-  // create ts-morph project - see: https://ts-morph.com/
-  const project = new Project({
-    tsConfigFilePath: extendedDMMF.generatorConfig.tsConfigFilePath,
-    skipAddingFilesFromTsConfig: true,
-  });
+  DirectoryHelper.removeDir(output.value);
 
   // generate single or multiple files
   if (extendedDMMF.generatorConfig.useMultipleFiles) {
     return generateMultipleFiles({
-      extendedDMMF,
+      dmmf: extendedDMMF,
       outputPath: output.value,
     });
   }
 
   return generateSingleFile({
-    extendedDMMF,
+    dmmf: extendedDMMF,
     outputPath: output.value,
-    project,
   });
 };

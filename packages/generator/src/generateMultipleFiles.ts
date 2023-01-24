@@ -1,5 +1,4 @@
-import { DirectoryHelper, FileWriter } from './classes';
-import fs from 'fs';
+import { FileWriter } from './classes';
 import { CreateOptions } from './types';
 import {
   writeArgTypeFiles,
@@ -7,25 +6,7 @@ import {
   writeModelFiles,
 } from './functions';
 
-export const generateMultipleFiles = ({
-  extendedDMMF,
-  outputPath,
-}: CreateOptions) => {
-  // If data is present in the directory, delete it.
-  // This is necessary to not have old data in the directory e.g.
-  // when a model is removed from the schema the old files would still be present.
-  // needs to be syncronous because otherwise a race condition occurs
-  // when creating new files.
-
-  if (DirectoryHelper.pathOrDirExists(outputPath)) {
-    try {
-      fs.rmdirSync(outputPath, { recursive: true });
-    } catch (err) {
-      if (err instanceof Error)
-        throw new Error(`Error while deleting old data: ${err.message}`);
-    }
-  }
-
+export const generateMultipleFiles = ({ dmmf, outputPath }: CreateOptions) => {
   const indexFileWriter = new FileWriter();
 
   // Create the path specified in the generator output
@@ -34,20 +15,18 @@ export const generateMultipleFiles = ({
   // Create the index file
   indexFileWriter.createFile(`${outputPath}/index.ts`, ({ writer }) => {
     writer.writeLine(`export * from './modelSchema'`);
+    writer.writeLine(`export * from './${dmmf.generatorConfig.inputTypePath}'`);
     writer.writeLine(
-      `export * from './${extendedDMMF.generatorConfig.inputTypePath}'`,
-    );
-    writer.writeLine(
-      `export * from './${extendedDMMF.generatorConfig.outputTypePath}'`,
+      `export * from './${dmmf.generatorConfig.outputTypePath}'`,
     );
   });
 
   // Create the model files
-  writeModelFiles({ outputPath, extendedDMMF });
+  writeModelFiles({ outputPath, dmmf: dmmf });
 
   // Create the input type files
-  writeInputTypeFiles({ outputPath, extendedDMMF });
+  writeInputTypeFiles({ outputPath, dmmf: dmmf });
 
   // Create the arg type files
-  writeArgTypeFiles({ outputPath, extendedDMMF });
+  writeArgTypeFiles({ outputPath, dmmf: dmmf });
 };

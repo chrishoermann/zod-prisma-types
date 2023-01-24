@@ -40,4 +40,16 @@ export class DirectoryHelper {
   static pathOrDirExists(path: string): boolean {
     return fs.existsSync(path);
   }
+
+  static removeDir(path: string) {
+    if (!this.pathOrDirExists(path)) return;
+    try {
+      fs.rmdirSync(path, { recursive: true });
+    } catch (err) {
+      if (err instanceof Error)
+        throw new Error(
+          `Error while deleting old data in path ${path}: ${err.message}`,
+        );
+    }
+  }
 }

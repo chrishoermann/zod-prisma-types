@@ -12,7 +12,7 @@ import {
 
 export const writeArgTypeFiles: CreateFiles = ({
   outputPath,
-  extendedDMMF,
+  dmmf: extendedDMMF,
 }) => {
   if (!extendedDMMF.createInputTypes()) return;
 
@@ -168,7 +168,7 @@ export const writeArgTypeFiles: CreateFiles = ({
 
         fileWriter.createFile(
           `${path}/${field.argName}Schema.ts`,
-          ({ writer, writeImport, writeImportSet }) => {
+          ({ writer, writeImport, writeImportSet, writeHeading }) => {
             writeImport('{ z }', 'zod');
             writeImport('{ Prisma }', prismaClientPath);
             writeImportSet(field.argTypeImports);
@@ -204,6 +204,9 @@ export const writeArgTypeFiles: CreateFiles = ({
               // do not have a "select" or "include" field.
 
               if (field.includeInSelectAndIncludeArgs()) {
+                writeHeading(
+                  'Select schema needs to be in file because of circular imports',
+                );
                 writer
                   .blankLine()
                   .write(`const ${modelWithSelect.name}SelectSchema:`)

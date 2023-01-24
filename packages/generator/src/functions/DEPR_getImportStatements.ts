@@ -2,7 +2,7 @@ import {
   ZOD_IMPORT_STATEMENT,
   // PRIMSA_IMPORT_STATEMENT,
   getPrismaImportStatement,
-} from '../constants/importStatements';
+} from '../constants/DEPR_importStatements';
 import { GetStatements, Statement } from '../types';
 
 /////////////////////////////////////////////////

@@ -5,9 +5,6 @@ import { z } from 'zod';
 /////////////////////////////////////////////////
 
 export const configSchema = z.object({
-  /**
-   * @deprecated
-   */
   useMultipleFiles: z
     .string()
     .optional()
@@ -56,7 +53,7 @@ export const configSchema = z.object({
     .default('true')
     .transform((val) => val === 'true'),
   /**
-   * @deprecated ts-morph is no longer used to generate files
+   * @deprecated in v2.0.0 ts-morph will no longer be used to generate files
    */
   tsConfigFilePath: z.string().optional(),
   prismaClientPath: z.string().default('@prisma/client'),

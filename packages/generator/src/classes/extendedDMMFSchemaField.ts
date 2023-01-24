@@ -149,18 +149,6 @@ export class ExtendedDMMFSchemaField
     return false;
   }
 
-  /**
-   * Checkst if the field contains `create`, `upsert`, `update` or `delete` in its name.
-   * Used to determine if the type in the created arg should be recreated with updated arg types.
-   * @returns `true` if the field contains `create`, `upsert`, `update` or `delete` in its name
-   */
-  createCustomOmitFieldArgType() {
-    return (
-      this.hasOmitFields &&
-      this.args.some((arg) => /create|update|upsert|delete|data/.test(arg.name))
-    );
-  }
-
   private _setArgTypeImports() {
     const imports: string[] = [];
 
@@ -192,6 +180,18 @@ export class ExtendedDMMFSchemaField
       imports.filter(
         (imp) => !imp.includes('IntSchema') && !imp.includes('BooleanSchema'),
       ),
+    );
+  }
+
+  /**
+   * Checkst if the field contains `create`, `upsert`, `update` or `delete` in its name.
+   * Used to determine if the type in the created arg should be recreated with updated arg types.
+   * @returns `true` if the field contains `create`, `upsert`, `update` or `delete` in its name
+   */
+  createCustomOmitFieldArgType() {
+    return (
+      this.hasOmitFields &&
+      this.args.some((arg) => /create|update|upsert|delete|data/.test(arg.name))
     );
   }
 

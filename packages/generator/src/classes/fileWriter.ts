@@ -17,6 +17,8 @@ export interface CreateFileOptions {
   writeImportSet: (strings: Set<string>) => void;
   writeExport: (importName: string, importPath: string) => void;
   writeImports: (imports: string[]) => void;
+  writeHeading: (headline: string, type?: 'SLIM' | 'FAT') => void;
+  writeJSDoc: (documentation?: string) => void;
 }
 
 export interface CreateFileComplexOptions {
@@ -76,6 +78,8 @@ export class FileWriter {
       writeImportSet: this.writeImportSet.bind(this),
       writeExport: this.writeExport.bind(this),
       writeImports: this.writeImports.bind(this),
+      writeHeading: this.writeHeading.bind(this),
+      writeJSDoc: this.writeJSDoc.bind(this),
     });
 
     fs.writeFile(path, this.writer.toString(), (err) => {
@@ -95,6 +99,35 @@ export class FileWriter {
         this.writer.writeLine(importString);
       });
     }
+  }
+
+  writeHeading(heading: string, type: 'SLIM' | 'FAT' = 'SLIM') {
+    if (type === 'SLIM') {
+      return this.writer
+        .newLine()
+        .writeLine(`// ${heading}`)
+        .writeLine('//------------------------------------------------------');
+    }
+
+    return this.writer
+      .newLine()
+      .writeLine('/////////////////////////////////////////')
+      .writeLine(`// ${heading}`)
+      .writeLine('/////////////////////////////////////////');
+  }
+
+  writeJSDoc(doc?: string) {
+    if (!doc) return;
+
+    const splitDoc = doc.split(/\n\r?/);
+
+    this.writer.writeLine(`/**`);
+
+    splitDoc.forEach((line) => {
+      this.writer.writeLine(` * ${line.trim()}`);
+    });
+
+    this.writer.writeLine(` */`);
   }
 
   writeExport(importName: string, importPath: string) {
