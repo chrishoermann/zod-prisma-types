@@ -69,8 +69,4 @@ export class ExtendedDMMF implements DMMF.Document {
   addInputTypeValidation() {
     return Boolean(this.generatorConfig.addInputTypeValidation);
   }
-
-  hasCustomImports() {
-    return this.generatorConfig.imports.length > 0;
-  }
 }

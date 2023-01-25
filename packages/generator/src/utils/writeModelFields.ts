@@ -1,13 +1,13 @@
-import { writeJsDoc } from '.';
-import { ExtendedWriteFieldOptions } from '../types';
 import {
+  writeJsDoc,
   writeBytes,
   writeCustomValidator,
   writeDecimal,
   writeEnum,
   writeJson,
   writeScalar,
-} from '.';
+} from '../functions';
+import { ExtendedWriteFieldOptions } from '../types';
 
 export const writeModelFields = (options: ExtendedWriteFieldOptions) => {
   if (options.field.clearedDocumentation) {
