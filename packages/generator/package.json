@@ -4,8 +4,8 @@
   "description": "Generates zod schemas from Prisma models with advanced validation",
   "author": "Chris Hörmann",
   "license": "MIT",
-  "main": ".",
-  "types": "dist",
+  "main": "dist/generator.js",
+  "types": "dist/generator.d.ts",
   "keywords": [
     "zod",
     "prisma",
