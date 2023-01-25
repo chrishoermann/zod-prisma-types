@@ -22,6 +22,7 @@ generator zod {
   // createModelTypes                 = false // default is true
   // createModelTypes                 = false // default is true
   // addInputTypeValidation           = false // default is true
+  createRelationValuesTypes        = true // default is false
   createOptionalDefaultValuesTypes = true // default is false
   useDefaultValidators             = true // default is true
   useDecimalJs                     = true // default is false

@@ -102,6 +102,7 @@ generator zod {
   addInputTypeValidation           = false // default is true
   useDefaultValidators             = false // default is true
   createOptionalDefaultValuesTypes = true // default is false
+  createRelationValuesTypes        = true // default is false
   imports                          = "import(import { myFunction } from '../../utils/myFunction';).import(import validator from 'validator';)" // optional
   tsConfigFilePath                 = "tsconfig.json" // optional
 }
