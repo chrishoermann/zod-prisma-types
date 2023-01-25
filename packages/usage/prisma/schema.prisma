@@ -22,8 +22,9 @@ generator zod {
   // createModelTypes                 = false // default is true
   // addInputTypeValidation           = false // default is true
   createOptionalDefaultValuesTypes = true // default is false
+  createRelationValuesTypes        = true // default is false
   useDefaultValidators             = true // default is true
-  prismaClientPath                 = "./generated/client" // optional
+  // prismaClientPath                 = "./generated/client" // optional
 }
 
 // MIXED CASE ENUMS AND MODELS
