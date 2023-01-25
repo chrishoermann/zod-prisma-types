@@ -3,11 +3,14 @@ import { type ContentWriterOptions } from '../../types';
 export const writeTransformJsonNull = ({
   fileWriter: { writer, writeImport },
   dmmf,
+  getSingleFileContent = false,
 }: ContentWriterOptions) => {
   const { useMultipleFiles, prismaClientPath } = dmmf.generatorConfig;
-  const addPrismaClient = useMultipleFiles ? '' : 'PrismaClient.';
 
-  if (useMultipleFiles) {
+  const addPrismaClient =
+    useMultipleFiles || getSingleFileContent ? '' : 'PrismaClient.';
+
+  if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ Prisma }', prismaClientPath);
   }
 
@@ -36,7 +39,7 @@ export const writeTransformJsonNull = ({
     })
     .write(`;`);
 
-  if (useMultipleFiles) {
+  if (useMultipleFiles && !getSingleFileContent) {
     writer.blankLine().writeLine(`export default transformJsonNull;`);
   }
 };

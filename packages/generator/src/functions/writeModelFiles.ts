@@ -1,72 +1,30 @@
 import { FileWriter } from '../classes';
 import { CreateFiles } from '../types';
-import { writeModelFields } from '../utils';
+import { writeModel } from './contentWriters';
 
 /////////////////////////////////////////////////
 // FUNCTION
 /////////////////////////////////////////////////
 
-export const writeModelFiles: CreateFiles = (options) => {
-  const { outputPath, dmmf: extendedDMMF } = options;
+export const writeModelFiles: CreateFiles = ({ path, dmmf }) => {
+  if (!dmmf.generatorConfig.createModelTypes) return;
+
   const indexFileWriter = new FileWriter();
 
-  const path = indexFileWriter.createPath(`${outputPath}/modelSchema`);
+  const modelPath = indexFileWriter.createPath(`${path}/modelSchema`);
 
-  if (path) {
-    indexFileWriter.createFile(`${path}/index.ts`, ({ writeExport }) => {
-      extendedDMMF.datamodel.models.forEach((model) => {
+  if (modelPath) {
+    indexFileWriter.createFile(`${modelPath}/index.ts`, ({ writeExport }) => {
+      dmmf.datamodel.models.forEach((model) => {
         writeExport(`*`, `./${model.name}Schema`);
       });
     });
   }
 
-  extendedDMMF.datamodel.models.forEach((model) => {
+  dmmf.datamodel.models.forEach((model) => {
     new FileWriter().createFile(
-      `${path}/${model.name}Schema.ts`,
-      ({ writeImport, writeImportSet, writer }) => {
-        writeImport('{ z }', 'zod');
-        writeImportSet(model.imports);
-
-        writer
-          .blankLine()
-          .write(`export const ${model.name}Schema = z.object(`)
-          .inlineBlock(() => {
-            [...model.enumFields, ...model.scalarFields].forEach((field) => {
-              writeModelFields({
-                writer,
-                field,
-                model,
-                dmmf: extendedDMMF,
-              });
-            });
-          })
-          .write(`)`);
-
-        if (model.writeOptionalDefaultValuesTypes()) {
-          writer
-            .blankLine()
-            .write(`export const ${model.name}OptionalDefaultsSchema =`)
-            .write(`${model.name}Schema.merge(z.object(`)
-            .inlineBlock(() => {
-              [...model.enumFields, ...model.scalarFields].forEach((field) => {
-                if (!field.isOptionalDefaultField()) return;
-
-                const writeOptions = {
-                  writer,
-                  field,
-                  writeOptionalDefaults: true,
-                };
-
-                writeModelFields({
-                  ...writeOptions,
-                  model,
-                  dmmf: extendedDMMF,
-                });
-              });
-            })
-            .write(`))`);
-        }
-      },
+      `${modelPath}/${model.name}Schema.ts`,
+      (fileWriter) => writeModel({ fileWriter, dmmf }, model),
     );
   });
 };

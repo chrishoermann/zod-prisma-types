@@ -2,13 +2,19 @@ import { ExtendedDMMFSchemaEnum } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
 
 export const writePrismaEnum = (
-  { fileWriter: { writer, writeImport }, dmmf }: ContentWriterOptions,
+  {
+    fileWriter: { writer, writeImport },
+    dmmf,
+    getSingleFileContent = false,
+  }: ContentWriterOptions,
   { useNativeEnum, values, name }: ExtendedDMMFSchemaEnum,
 ) => {
   const { useMultipleFiles, prismaClientPath } = dmmf.generatorConfig;
-  const addPrismaClient = useMultipleFiles ? '' : 'PrismaClient.';
 
-  if (useMultipleFiles) {
+  const addPrismaClient =
+    useMultipleFiles || getSingleFileContent ? '' : 'PrismaClient.';
+
+  if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
   }
 
@@ -42,7 +48,7 @@ export const writePrismaEnum = (
       );
   }
 
-  if (useMultipleFiles) {
+  if (useMultipleFiles && !getSingleFileContent) {
     writer.blankLine().writeLine(`export default ${name}Schema;`);
   }
 };

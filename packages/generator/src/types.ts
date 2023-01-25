@@ -32,7 +32,7 @@ export type WriteStatements = (
 
 export interface CreateOptions {
   dmmf: ExtendedDMMF;
-  outputPath: string;
+  path: string;
 }
 
 export type CreateFiles = (options: CreateOptions) => void;
@@ -201,4 +201,5 @@ export interface ExtendedWriteFieldOptions extends WriteFieldOptions {
 export interface ContentWriterOptions {
   fileWriter: CreateFileOptions;
   dmmf: ExtendedDMMF;
+  getSingleFileContent?: boolean;
 }

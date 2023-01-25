@@ -108,7 +108,12 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
     if (!this.documentation) return;
 
     const importStatements = this.documentation?.match(IMPORT_STATEMENT_REGEX);
-    if (!importStatements) return;
+    if (!importStatements) {
+      return {
+        customImports: [],
+        clearedDocumentation: this.documentation,
+      };
+    }
 
     const type = importStatements.groups?.['type'];
     if (type !== 'import')
@@ -117,7 +122,12 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
       );
 
     const importsList = importStatements.groups?.['imports']?.split(', ');
-    if (!importsList) return;
+    if (!importsList) {
+      return {
+        customImports: [],
+        clearedDocumentation: this.documentation,
+      };
+    }
 
     return {
       customImports: importsList
@@ -129,7 +139,9 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
         .filter(
           (statement): statement is string => typeof statement === 'string',
         ),
-      clearedDocumentation: this.documentation.replace(importStatements[0], ''),
+      clearedDocumentation: this.documentation
+        .replace(IMPORT_STATEMENT_REGEX, '')
+        .trim(),
     };
   }
 

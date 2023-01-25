@@ -21,6 +21,7 @@
   - [`addInputTypeValidation`](#addinputtypevalidation)
   - [`useDefaultValidators`](#usedefaultvalidators)
   - [`createOptionalDefaultValuesTypes`](#createoptionaldefaultvaluestypes)
+  - [`prismaClientPath`](#prismaclientpath)
 - [Json null values](#json-null-values)
 - [Decimal](#decimal)
 - [Skip schema generation](#skip-schema-generation)
@@ -84,6 +85,8 @@ generator zod {
   addInputTypeValidation           = false // default is true
   useDefaultValidators             = false // default is true
   createOptionalDefaultValuesTypes = true // default is false
+  prismaClientPath                 = "./generated/client" // optional
+
 }
 ```
 
@@ -246,6 +249,19 @@ generator zod {
 ```
 
 > If you have some further ideas for default validators feel free to open an issue.
+
+### `prismaClientPath`
+
+> default: `infereed from prisma schema`
+
+By default the prisma client path is inferred from the path provided in the `prisma.schema` file. If you need to use a custom path that is not inferred you can pass it to the generator config via this option. The custom path taks precedence over the inferred path.
+
+```prisma
+generator zod {
+  // ...rest of config
+  prismaClientPath = "./path/to/prisma/client"
+}
+```
 
 ## Json null values
 

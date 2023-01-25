@@ -3,10 +3,11 @@ import { type ContentWriterOptions } from '../../types';
 export const writeNullableJsonValue = ({
   fileWriter: { writer, writeImport },
   dmmf,
+  getSingleFileContent = false,
 }: ContentWriterOptions) => {
   const { useMultipleFiles } = dmmf.generatorConfig;
 
-  if (useMultipleFiles) {
+  if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
     writeImport('transformJsonNull', './transformJsonNull');
     writeImport('JsonValue', './JsonValue');
@@ -24,7 +25,7 @@ export const writeNullableJsonValue = ({
         .writeLine(`.transform((v) => transformJsonNull(v));`);
     });
 
-  if (useMultipleFiles) {
+  if (useMultipleFiles && !getSingleFileContent) {
     writer.blankLine().writeLine(`export default NullableJsonValue;`);
   }
 };

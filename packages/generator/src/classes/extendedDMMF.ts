@@ -62,6 +62,10 @@ export class ExtendedDMMF implements DMMF.Document {
     return Boolean(this.generatorConfig.createInputTypes);
   }
 
+  createModelTypes() {
+    return Boolean(this.generatorConfig.createModelTypes);
+  }
+
   addInputTypeValidation() {
     return Boolean(this.generatorConfig.addInputTypeValidation);
   }

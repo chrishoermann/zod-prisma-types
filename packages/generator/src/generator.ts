@@ -28,16 +28,19 @@ export const generator = async ({ output, config, dmmf }: GeneratorConfig) => {
   // If data is present in the output directory, delete it.
   DirectoryHelper.removeDir(output.value);
 
+  // Create the output directory
+  DirectoryHelper.createDir(output.value);
+
   // generate single or multiple files
   if (extendedDMMF.generatorConfig.useMultipleFiles) {
     return generateMultipleFiles({
       dmmf: extendedDMMF,
-      outputPath: output.value,
+      path: output.value,
     });
   }
 
   return generateSingleFile({
     dmmf: extendedDMMF,
-    outputPath: output.value,
+    path: output.value,
   });
 };

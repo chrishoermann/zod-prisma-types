@@ -10,18 +10,14 @@ import {
 } from './functions';
 import { CreateOptions } from './types';
 
-export const generateSingleFile = ({ dmmf, outputPath }: CreateOptions) => {
-  const fileWriter = new FileWriter();
-
-  const path = fileWriter.createPath(outputPath);
-
-  fileWriter.createFile(`${path}/index.ts`, (createFileOptions) => {
-    writeSingleFileImportStatements(dmmf, createFileOptions);
-    writeSingleFileHelperStatements(dmmf, createFileOptions);
-    writeSingleFileEnumStatements(dmmf, createFileOptions);
-    writeSingleFileModelStatements(dmmf, createFileOptions);
-    writeSingleFileIncludeSelectStatements(dmmf, createFileOptions);
-    writeSingleFileInputTypeStatements(dmmf, createFileOptions);
-    writeSingleFileArgTypeStatements(dmmf, createFileOptions);
+export const generateSingleFile = ({ dmmf, path }: CreateOptions) => {
+  new FileWriter().createFile(`${path}/index.ts`, (fileWriter) => {
+    writeSingleFileImportStatements(dmmf, fileWriter);
+    writeSingleFileHelperStatements(dmmf, fileWriter);
+    writeSingleFileEnumStatements(dmmf, fileWriter);
+    writeSingleFileModelStatements(dmmf, fileWriter);
+    writeSingleFileIncludeSelectStatements(dmmf, fileWriter);
+    writeSingleFileInputTypeStatements(dmmf, fileWriter);
+    writeSingleFileArgTypeStatements(dmmf, fileWriter);
   });
 };

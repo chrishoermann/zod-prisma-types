@@ -17,13 +17,13 @@ datasource db {
 generator zod {
   provider                         = "ts-node-dev ../generator/src/bin.ts"
   output                           = "./generated/zod" // default is ./generated/zod
-  useMultipleFiles                 = false // default is false 
-  // createInputTypes                 = false // DEPRECATED  default is true
+  useMultipleFiles                 = true // default is false 
+  createInputTypes                 = false // DEPRECATED  default is true
   // createModelTypes                 = false // default is true
   // addInputTypeValidation           = false // default is true
   createOptionalDefaultValuesTypes = true // default is false
   useDefaultValidators             = true // default is true
-  // prismaClientPath                 = "./generated/client" // optional
+  prismaClientPath                 = "./generated/client" // optional
 }
 
 // MIXED CASE ENUMS AND MODELS
@@ -79,7 +79,9 @@ model ModelWithComments {
 // Custom validators should be included in the generated model and input schemas
 // It should not matter if the comments are above or next to the field
 
+/// comment line one
 /// @zod.import(["import { myFunction } from "../../../../utils/myFunction";", "import validator from 'validator';"])
+/// comment line two
 model MyPrismaScalarsType {
   /// @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid()
   id         String    @id @default(cuid())
