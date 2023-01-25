@@ -181,6 +181,20 @@ const writeScalar = ({
   writeFieldAdditions({ writer, field, writeOptionalDefaults });
 };
 
+// WRITE RELATION
+const writeRelation = ({
+  writer,
+  field,
+  writeOptionalDefaults = false,
+}: WriteFieldOptions) => {
+  writer
+    .conditionalWrite(field.omitInModel(), '// omitted: ')
+    .write(`${field.formattedNames.original}:`)
+    .write(`z.optional(${field.formattedNames.pascalCase}Schema)`);
+
+  writeFieldAdditions({ writer, field, writeOptionalDefaults });
+};
+
 /////////////////////////////////////////////////
 // FUNCTION
 /////////////////////////////////////////////////
@@ -204,6 +218,7 @@ export const getModelStatements: GetStatements = (dmmf) => {
             name: `${model.formattedNames.original}Schema`,
             initializer(writer) {
               writer.write(`z.object({`);
+
               [...model.enumFields, ...model.scalarFields].forEach((field) => {
                 if (field.clearedDocumentation) {
                   writeJsDoc(writer, field.clearedDocumentation);
@@ -234,6 +249,9 @@ export const getModelStatements: GetStatements = (dmmf) => {
                 }
 
                 return writeScalar({ writer, field });
+              });
+              [...model.relationFields].forEach((field) => {
+                return writeRelation({ writer, field });
               });
               writer.write(`})`);
             },
