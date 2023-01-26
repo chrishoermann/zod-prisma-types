@@ -1,4 +1,4 @@
-import { writeModelFields } from '../../utils';
+import { writeModelFields } from '.';
 import { ExtendedDMMFModel } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
 import { writeRelation } from '../fieldWriters';
@@ -11,20 +11,29 @@ export const writeModel = (
   }: ContentWriterOptions,
   model: ExtendedDMMFModel,
 ) => {
-  const { useMultipleFiles, prismaClientPath, createRelationValuesTypes } =
-    dmmf.generatorConfig;
+  const {
+    useMultipleFiles,
+    createRelationValuesTypes: createRelationValuesTypes,
+    inputTypePath,
+  } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
     writeImportSet(model.imports);
 
-    if (createRelationValuesTypes) {
+    if (createRelationValuesTypes && model.hasRelationFields) {
+      if (model.hasOptionalJsonFields) {
+        writeImport(
+          `{ NullableJsonInput }`,
+          `../${inputTypePath}/transformJsonNull`,
+        );
+      }
+
       writeImportSet(
         new Set(
           model.relationFields
             .map((field) => [
-              `import { ${field.type}WithRelationsSchema } from './${field.type}Schema'`,
-              `import { type ${field.type} } from '${prismaClientPath}'`,
+              `import { type ${field.type}WithRelations, ${field.type}WithRelationsSchema } from './${field.type}Schema'`,
             ])
             .flat(),
         ),
@@ -40,6 +49,8 @@ export const writeModel = (
     .write(`export const ${model.name}Schema = z.object(`)
     .inlineBlock(() => {
       [...model.enumFields, ...model.scalarFields].forEach((field) => {
+        writer.conditionalWrite(field.omitInModel(), '// omitted: ');
+
         writeModelFields({
           writer,
           field,
@@ -50,7 +61,7 @@ export const writeModel = (
     })
     .write(`)`);
 
-  if (model.writeOptionalDefaultValuesTypes()) {
+  if (model.writeOptionalDefaultValuesTypes) {
     writer
       .blankLine()
       .write(`export const ${model.name}OptionalDefaultsSchema =`)
@@ -65,6 +76,8 @@ export const writeModel = (
             writeOptionalDefaults: true,
           };
 
+          writer.conditionalWrite(field.omitInModel(), '// omitted: ');
+
           writeModelFields({
             ...writeOptions,
             model,
@@ -75,64 +88,53 @@ export const writeModel = (
       .write(`))`);
   }
 
-  if (createRelationValuesTypes) {
-    // write Type for relations
-
+  if (createRelationValuesTypes && model.hasRelationFields) {
     writer
       .blankLine()
-      .write(`export type ${model.name}WithRelations = `)
-      .inlineBlock(() => {
-        model.scalarFields.forEach((field) => {
-          writer.writeLine(
-            `${field.name}${!field.isRequired ? '?' : ''}: ${field.zodType}${
-              field.isList ? '[]' : ''
-            }${!field.isRequired ? ' | null' : ''};`,
-          );
-        });
+      .conditionalWrite(
+        !model.hasOptionalJsonFields,
+        `export type ${model.name}WithRelations = z.infer<typeof ${model.name}Schema> & `,
+      );
 
-        model.enumFields.forEach((field) => {
-          writer.writeLine(
-            `${field.name}${!field.isRequired ? '?' : ''}: z.infer<typeof ${
-              field.type
-            }Schema>${field.isList ? '[]' : ''}${
-              !field.isRequired ? ' | null' : ''
-            };`,
-          );
-        });
+    if (model.hasOptionalJsonFields) {
+      writer
+        .write(
+          `export type ${model.name}WithRelations = Omit<z.infer<typeof ${model.name}Schema>, ${model.optionalJsonFieldUnion}> & `,
+        )
+        .inlineBlock(() => {
+          model.optionalJsonFields.forEach((field) => {
+            writer.write(`${field.name}?: NullableJsonInput;`).newLine();
+          });
+        })
+        .write(` & `);
+    }
 
-        model.relationFields.forEach((field) => {
-          writer.writeLine(
-            `${field.name}${!field.isRequired ? '?' : ''}: z.infer<typeof ${
-              field.type
-            }WithRelationsSchema>${field.isList ? '[]' : ''}${
-              !field.isRequired ? ' | null' : ''
-            };`,
-          );
-        });
+    writer.inlineBlock(() => {
+      model.relationFields.forEach((field) => {
+        writer
+          .conditionalWrite(field.omitInModel(), '// omitted: ')
+          .write(field.name)
+          .conditionalWrite(!field.isRequired, '?')
+          .write(': ')
+          .write(`${field.type}WithRelations`)
+          .conditionalWrite(field.isList, '[]')
+          .conditionalWrite(!field.isRequired, ' | null')
+          .write(';')
+          .newLine();
       });
+    });
 
     writer
       .blankLine()
       .write(
-        `export const ${model.name}WithRelationsSchema: z.ZodType<${model.name}WithRelations> = z.object(`,
+        `export const ${model.name}WithRelationsSchema: z.ZodType<${model.name}WithRelations> = ${model.name}Schema.merge(z.object(`,
       )
       .inlineBlock(() => {
-        [...model.enumFields, ...model.scalarFields].forEach((field) => {
-          writeModelFields({
-            writer,
-            field,
-            model,
-            dmmf,
-          });
+        model.relationFields.forEach((field) => {
+          writeRelation({ writer, field });
         });
-
-        if (createRelationValuesTypes) {
-          model.relationFields.forEach((field) => {
-            writeRelation({ writer, field });
-          });
-        }
       })
-      .write(`)`);
+      .write(`))`);
   }
 
   if (useMultipleFiles && !getSingleFileContent) {

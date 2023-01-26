@@ -1,10 +1,6 @@
 import { ExtendedDMMFSchemaField } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
-import {
-  writeNonScalarType,
-  writeScalarType,
-  writeSpecialType,
-} from '../../utils';
+import { writeNonScalarType, writeScalarType, writeSpecialType } from '..';
 import { writeSelect } from './writeSelect';
 
 export const writeOutputObjectType = (
@@ -60,7 +56,7 @@ export const writeOutputObjectType = (
 
       if (field.includeInSelectAndIncludeArgs()) {
         writeHeading(
-          'Select schema needs to be in file because of circular imports',
+          'Select schema needs to be in file to prevent circular imports',
         );
 
         writeSelect(

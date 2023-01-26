@@ -6,8 +6,8 @@ import {
   writeEnum,
   writeJson,
   writeScalar,
-} from '../functions';
-import { ExtendedWriteFieldOptions } from '../types';
+} from '..';
+import { ExtendedWriteFieldOptions } from '../../types';
 
 export const writeModelFields = (options: ExtendedWriteFieldOptions) => {
   if (options.field.clearedDocumentation) {

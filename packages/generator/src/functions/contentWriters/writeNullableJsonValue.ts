@@ -23,7 +23,11 @@ export const writeNullableJsonValue = ({
         )
         .writeLine('.nullable()')
         .writeLine(`.transform((v) => transformJsonNull(v));`);
-    });
+    })
+    .blankLine()
+    .writeLine(
+      `export type NullableJsonValueType = z.infer<typeof NullableJsonValue>;`,
+    );
 
   if (useMultipleFiles && !getSingleFileContent) {
     writer.blankLine().writeLine(`export default NullableJsonValue;`);

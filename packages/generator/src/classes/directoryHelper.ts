@@ -41,7 +41,8 @@ export class DirectoryHelper {
     return fs.existsSync(path);
   }
 
-  static removeDir(path: string) {
+  static removeDir(path?: string | null) {
+    if (!path) throw new Error('No path specified');
     if (!this.pathOrDirExists(path)) return;
     try {
       fs.rmdirSync(path, { recursive: true });

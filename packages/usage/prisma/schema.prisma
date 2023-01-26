@@ -18,12 +18,13 @@ generator zod {
   provider                         = "ts-node-dev ../generator/src/bin.ts"
   output                           = "./generated/zod" // default is ./generated/zod
   useMultipleFiles                 = true // default is false 
-  // createInputTypes                 = false // DEPRECATED  default is true
+  // createInputTypes                 = false // default is true
   // createModelTypes                 = false // default is true
   // addInputTypeValidation           = false // default is true
   createOptionalDefaultValuesTypes = true // default is false
   createRelationValuesTypes        = true // default is false
   useDefaultValidators             = true // default is true
+  coerceDate                       = true // default is true
   // prismaClientPath                 = "./generated/client" // optional
 }
 
@@ -164,13 +165,15 @@ model User {
 }
 
 model Post {
-  id          Int           @id @default(autoincrement())
-  title       String
-  content     String?
-  published   Boolean       @default(false)
-  author      User          @relation(fields: [authorId], references: [id])
-  authorId    String
-  anotherEnum AnotherEnum[]
+  id             Int           @id @default(autoincrement())
+  title          String
+  content        String?
+  published      Boolean       @default(false)
+  author         User          @relation(fields: [authorId], references: [id])
+  authorId       String
+  jsonOpt        Json?
+  anotherJsonOpt Json?
+  anotherEnum    AnotherEnum[]
 }
 
 model Profile {
@@ -205,4 +208,10 @@ model DecimalModel {
   id         Int      @id @default(autoincrement())
   decimal    Decimal
   decimalOpt Decimal?
+}
+
+model DateModel {
+  id      Int       @id @default(autoincrement())
+  date    DateTime
+  dateOpt DateTime?
 }

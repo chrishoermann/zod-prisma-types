@@ -10,26 +10,31 @@
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/chrishoermann)
 
+## Breaking changes in v2
+
+Be aware that a few generator options have been removed and the behaviour of custom imports has changed in v2.0.0.
+
 ## Table of contents
 
 - [About this project](#about-this-project)
-  - [Why zod?](#why-zod)
-  - [Why not multiple files?](#why-not-multiple-files)
-  - [IDE performance problems](#ide-performance-problems)
 - [Installation](#installation)
 - [Usage](#usage)
   - [`output`](#output)
+  - [`useMultipleFiles`](#usemultiplefiles)
   - [`createInputTypes`](#createinputtypes)
   - [`createModelTypes`](#createmodeltypes)
   - [`addInputTypeValidation`](#addinputtypevalidation)
-  - [`useDefaultValidators`](#usedefaultvalidators)
   - [`createOptionalDefaultValuesTypes`](#createoptionaldefaultvaluestypes)
-  - [`imports`](#imports)
-  - [`tsConfigFilePath`](#tsconfigfilepath)
+  - [`createRelationValuesTypes`](#createrelationvaluestypes)
+  - [`useDefaultValidators`](#usedefaultvalidators)
+  - [`coerceDate`](#coercedate)
+  - [`prismaClientPath`](#prismaclientpath)
+- [Skip schema generation](#skip-schema-generation)
+- [Custom Enums](#custom-enums)
 - [Json null values](#json-null-values)
 - [Decimal](#decimal)
-- [Skip schema generation](#skip-schema-generation)
 - [Field validators](#field-validators)
+  - [Custom imports](#custom-imports)
   - [Custom type error messages](#custom-type-error-messages)
   - [String validators](#string-validators)
   - [Number validators](#number-validators)
@@ -43,19 +48,7 @@
 
 ## About this project
 
-For one of my projects I was in need of a generator that combines the possibility of adding `zod valdiators` directly in `prisma schema's` [rich-comments](https://www.prisma.io/docs/concepts/components/prisma-schema#comments) with the generation of `zod` schemas for all the prisma models, enums, inputTypes, argTypes, filters and so on. I also wanted to import these schemas for validation use in the frontend (e.g. form validation). Furthermore I wanted to make the generator as flexible as possbile so it covers a large range of use cases. I looked around and found a few packages that generate `zod` schemas from prisma models but none of them met my requirements or they weren't activly maintained anymore. So I decided to write `zod-prisma-type`.
-
-### Why zod?
-
-I decided to use `zod` because it is a very powerful and flexible library that allows you to write complex validators in a simple way and it is I to my knowledge the only validation library that really parses the data that comes in and does not simply validate (please correct me if I'm wrong). It also was the first library I stumbled upon when I started to use [trpc](https://trpc.io/docs/) so I went with it.
-
-### Why not multiple files?
-
-By design the generator only creates a single `index.ts` file in the specified output folder that contains all the `zod`schemas. I decided against a multiple file approach because it makes the handling of custom imports much easier and from a code prespective the generator itself is simpler (no imports from related models, enums, inputTypes and so on need to be handled, no index files need to be created, ...). Also in [`ts-morph`](https://ts-morph.com/manipulation/performance) it is more efficient to write a bunch of statements to a single file at once than creating multiple files where only a few statements are added. This can be beneficial for generating zod schemas for big prisma schemas.
-
-### IDE performance problems
-
-Some people reported that IDE performance is very slow after running the generator. If you encounter similar issues please check out [this issue](https://github.com/chrishoermann/zod-prisma-types/issues/48) and comment if you have any insights.
+For one of my projects I was in need of a generator that has the possibility of adding `zod valdiators` directly in `prisma schema's` [rich-comments](https://www.prisma.io/docs/concepts/components/prisma-schema#comments) and generates `zod` schemas for all prisma models, enums, inputTypes, argTypes, filters and so on. I also wanted to be able to import these schemas in the frontend e.g. for form validation. Furthermore I wanted to make the generator as flexible as possbile so it covers a large range of use cases. I looked around and found a few packages that generate `zod` schemas from prisma models but none of them met my requirements or they weren't activly maintained anymore. So I decided to write `zod-prisma-type`.
 
 ## Installation
 
@@ -93,19 +86,32 @@ If you want to customize the behaviour of the generator you can use the followin
 
 ```prisma
 generator zod {
-  provider                         = "zod-prisma-types"
-  output                           = "./zod" // default is ./generated/zod
+  provider                         = "ts-node-dev ../generator/src/bin.ts"
+  output                           = "./generated/zod" // default is ./generated/zod
+  useMultipleFiles                 = true // default is false
   createInputTypes                 = false // default is true
   createModelTypes                 = false // default is true
   addInputTypeValidation           = false // default is true
-  useDefaultValidators             = false // default is true
   createOptionalDefaultValuesTypes = true // default is false
-  imports                          = "import(import { myFunction } from '../../utils/myFunction';).import(import validator from 'validator';)" // optional
-  tsConfigFilePath                 = "tsconfig.json" // optional
+  createRelationValuesType         = true // default is false
+  useDefaultValidators             = false // default is true
+  coerceDate                       = false // default is true
+  prismaClientPath                 = "./path/to/prisma/client" // default is client output path
 }
 ```
 
-> As mentioned above this generator only creates a single `index.ts` file in the specified output folder containing all the zod prisma schemas. I decided to only create a single file because in [`ts-morph`](https://ts-morph.com/manipulation/performance) it is more efficient to write a bunch of statements to a single file at once than creating multiple files where only a few statements are added. This can be beneficial for generating zod schemas for big prisma schemas. Another point is that it makes the codebase of the generator more managable (...no need to create imports, simpler structure of the files) and it's easier to use custom imports (see below).
+### `useMultipleFiles`
+
+> default: `true`
+
+If you want to create multiple files instead of a single `index.ts` file you can set this option to `true`. This will create a file for each model, enum, inputType, argType, filter and so on. The files will be created in the specified output folder.
+
+```prisma
+generator zod {
+  // ...rest of config
+  useMultipleFiles = false
+}
+```
 
 ### `output`
 
@@ -209,6 +215,65 @@ export const ModelWithDefaultValuesOptionalDefaultsSchema =
   );
 ```
 
+### `createRelationValuesTypes`
+
+> default: `false`
+
+If you pass the following config option the generator will create a separate model type that includes all the relation fields. Due do the type annotation, that is needed to have recursive types, this model has some limitations since `z.ZodType<myType>` does not allow some object methods like `.merge()` or `.omit()`.
+
+```prisma
+generator zod {
+  // ...rest of config
+  createRelationValuesTypes = true
+}
+
+model User {
+  id         String      @id @default(cuid())
+  email      String      @unique
+  name       String?
+  posts      Post[]
+  profile    Profile?
+  role       Role[]      @default([USER, ADMIN])
+  enum       AnotherEnum @default(ONE)
+  scalarList String[]
+
+  lat Float
+  lng Float
+
+  location Location? @relation(fields: [lat, lng], references: [lat, lng])
+}
+```
+
+The above model would generate the following model schemas:
+
+```ts
+export const UserSchema = z.object({
+  role: RoleSchema.array(),
+  enum: AnotherEnumSchema,
+  id: z.string().cuid(),
+  email: z.string(),
+  name: z.string(),
+  scalarList: z.string().array(),
+  lat: z.number(),
+  lng: z.number(),
+});
+
+export type UserWithRelations = z.infer<typeof UserSchema> & {
+  posts: PostWithRelations[];
+  profile?: ProfileWithRelations | null;
+  location?: LocationWithRelations | null;
+};
+
+export const UserWithRelationsSchema: z.ZodType<UserWithRelations> =
+  UserSchema.merge(
+    z.object({
+      posts: z.lazy(() => PostWithRelationsSchema).array(),
+      profile: z.lazy(() => ProfileWithRelationsSchema).nullish(),
+      location: z.lazy(() => LocationWithRelationsSchema).nullish(),
+    }),
+  );
+```
+
 ### `useDefaultValidators`
 
 > default: `true`
@@ -261,61 +326,87 @@ generator zod {
 
 > If you have some further ideas for default validators feel free to open an issue.
 
-### `imports`
+### `coerceDate`
 
-You can specify custom imports that are then added to the `index.ts` file. Since prisma only lets us specify `string` options in the `prisma.schema` generator config the syntax of the imports is a bit clumsy:
+> default: true
 
-```prisma
-generator zod {
-  // ...other config options
-  imports        = "import(import { myFunction } from 'mypackage').import(import { custom } from './myfolder')"
-}
-```
-
-> The function-like syntax is used to easily split the string into an array and remove the unnecessary stuff. To add multiple imports just chain the commands.
-
-```prisma
-generator zod {
-  provider = "zod-prisma-types"
-  imports  = "import(import { myFunction } from '../../myFunction';)" // optional
-}
-
-model MyModel {
-  id     Int     @id @default(autoincrement())
-  /// @zod.custom.use(z.string().refine((val) => myFunction(val), { message: 'Is not valid' }))
-  custom String?
-}
-```
-
-The above schema would add the following imports to the file:
-
-```ts
-// ...standard imports
-
-// your custom imports
-import { myFunction } from '../../myFunction';
-
-// imports are used in your custom validator
-export const MyModelSchema = z.object({
-  id: z.number(),
-  custom: z
-    .string()
-    .refine((val) => myFunction(val), { message: 'Is not valid' })
-    .nullish(),
-});
-```
-
-### `tsConfigFilePath`
-
-If your `tsconfig.json` file resides in another folder than your root (where the `node_modules` folder is located) you can specify a custom path. This path is then consumed by the generator and passed on to the `ts-morph` `Project` instance that is used to create the file. Usually you don't have to provide this option because it defaults in ts-morph to the base directory.
-
-> Don't add `./` or `/` at the beginning of the path!
+Per default `DateTime` values are coerced to `Date` objects as long as you pass in a valid ISO string or an instance of Date. You can change this behavior to generate a simple `z.date()` by passing the following option to the generator config:
 
 ```prisma
 generator zod {
   // ...rest of config
-  tsConfigFilePath = "config/tsconfig.json"
+  coerceDate = false
 }
+```
+
+### `prismaClientPath`
+
+> default: `infereed from prisma schema`
+
+By default the prisma client path is taken from the `output` path provided in the `prisma.schema` file under `generator client`. If you still need to use a custom path you can pass it to the generator config via this option. A custom path takes precedence over the prisma client output path.
+
+```prisma
+generator zod {
+  // ...rest of config
+  prismaClientPath = "./path/to/prisma/client"
+}
+```
+
+## Skip schema generation
+
+You can skip schema generation based on e.g. the environment you are currently working. For example you can only generate the schemas when you're in `development` but not when you run generation in `production` (because in `production` the schemas would already hav been created and pushed to the server via source code of git repo).
+
+Since Prisma only lets us define `strings` in the generator config we cannot use the `env(MY_ENV_VARIABLE)` method that is used when e.g. the `url` under `datasource db` is loaded:
+
+```prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+```
+
+To still be able to load environment variables into the generator, just create a `zodGenConfig.js` in your root directory (where the `node_modules` folder is located) and add the following code:
+
+```ts
+module.exports = {
+  skipGenerator: process.env['SKIP_ZOD_PRISMA'],
+};
+```
+
+Then add
+
+```js
+SKIP_ZOD_PRISMA = 'true';
+```
+
+or
+
+```js
+SKIP_ZOD_PRISMA = 'false';
+```
+
+to your respective `.env` file. This will load the `SKIP_ZOD_PRISMA` environment variable on the `skipGenerator` prop that will then be consumed by the generator.
+
+> You can choose to name your environment variable whatever you want - just make shure to load the right variable in `zodGenConfig.js`.
+
+## Custom Enums
+
+For custom enums a separate type is generated that represents the enum values as a union. Since in typescript unions are more useful than enums this can come in handy.
+
+```prisma
+enum MyEnum {
+  A
+  B
+  C
+}
+```
+
+This will generate the following output:
+
+```ts
+export const MyEnumSchema = z.nativeEnum(PrismaClient.MyEnum);
+
+export type MyEnumType = `${z.infer<typeof MyEnumSchema>}`; // union of "A" | "B" | "C"
 ```
 
 ## Json null values
@@ -386,43 +477,6 @@ export const MyModelSchema = z.object({
 });
 ```
 
-## Skip schema generation
-
-You can skip schema generation based on e.g. the environment you are currently working. For example you can only generate the schemas when you're in `development` but not when you run generation in `production` (because in `production` the schemas would already hav been created and pushed to the server via source code of git repo).
-
-Since Prisma only lets us define `strings` in the generator config we cannot use the `env(MY_ENV_VARIABLE)` method that is used when e.g. the `url` under `datasource db` is loaded:
-
-```prisma
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-```
-
-To still be able to load environment variables into the generator, just create a `zodGenConfig.js` in your root directory (where the `node_modules` folder is located) and add the following code:
-
-```ts
-module.exports = {
-  skipGenerator: process.env['SKIP_ZOD_PRISMA'],
-};
-```
-
-Then add
-
-```js
-SKIP_ZOD_PRISMA = 'true';
-```
-
-or
-
-```js
-SKIP_ZOD_PRISMA = 'false';
-```
-
-to your respective `.env` file. This will load the `SKIP_ZOD_PRISMA` environment variable on the `skipGenerator` prop that will then be consumed by the generator.
-
-> You can choose to name your environment variable whatever you want - just make shure to load the right variable in `zodGenConfig.js`.
-
 ## Field validators
 
 It is possible to add zod validators in the comments of the `prisma.schema` file with the following syntax (use [rich-comments](https://www.prisma.io/docs/concepts/components/prisma-schema#comments) `///` instead of `//`).
@@ -437,9 +491,9 @@ This may look a bit cryptc so here is an example:
 generator zod {
   provider       = "zod-prisma-types"
   output         = "./zod"
-  imports        = "import(import { myFunction } from 'mypackage')"
 }
 
+/// @zod.import(["import { myFunction } from 'mypackage';"])
 model MyPrismaScalarsType {
   /// @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid()
   id         String    @id @default(cuid())
@@ -542,8 +596,8 @@ export const MyPrismaScalarsTypeSchema = z.object({
       },
     )
     .nullish(),
-  date: z.date(),
-  dateOpt: z.date({ invalid_type_error: 'wrong date type' }).nullish(),
+  date: z.coerce.date(),
+  dateOpt: z.coerce.date({ invalid_type_error: 'wrong date type' }).nullish(),
   bigIntOpt: z.bigint().nullish(),
   json: z
     .lazy(() => InputJsonValue)
@@ -580,6 +634,31 @@ export const MyPrismaScalarsTypeOptionalDefaultsSchema =
 ```
 
 > Additionally all the zod schemas for the prisma input-, enum-, filter-, orderby-, select-, include and other necessary types are generated ready to be used in e.g. `trpc` inputs.
+
+## Custom imports
+
+To add custom imports to your validator you can add them via `@zod.custom.imports([...myCustom imports as strings])` in prismas rich comments of the model definition.
+
+For example:
+
+```prisma
+/// @zod.custom.imports(["import { myFunction } from 'mypackage'"])
+model MyModel {
+  myField String /// @zod.string().refine((val) => myFunction(val), { message: 'Is not valid' })
+}
+```
+
+This would result in an output like:
+
+```ts
+import { myFunction } from 'mypackage';
+
+export const MyModelSchema = z.object({
+  myField: z
+    .string()
+    .refine((val) => myFunction(val), { message: 'Is not valid' }),
+});
+```
 
 ## Custom type error messages
 

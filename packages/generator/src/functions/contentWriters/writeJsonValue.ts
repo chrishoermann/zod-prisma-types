@@ -28,7 +28,9 @@ export const writeJsonValue = ({
         .writeLine(`z.lazy(() => z.array(JsonValue)),`)
         .writeLine(`z.lazy(() => z.record(JsonValue)),`);
     })
-    .writeLine(`]);`);
+    .writeLine(`]);`)
+    .blankLine()
+    .writeLine(`export type JsonValueType = z.infer<typeof JsonValue>;`);
 
   if (useMultipleFiles && !getSingleFileContent) {
     writer.blankLine().writeLine(`export default JsonValue`);

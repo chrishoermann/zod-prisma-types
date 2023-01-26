@@ -1,4 +1,5 @@
 import { GeneratorOptions } from '@prisma/generator-helper';
+import { z } from 'zod';
 
 import { DirectoryHelper, ExtendedDMMF } from './classes';
 import { generateMultipleFiles } from './generateMultipleFiles';
@@ -11,8 +12,13 @@ export interface GeneratorConfig {
   dmmf: GeneratorOptions['dmmf'];
 }
 
-export const generator = async ({ output, config, dmmf }: GeneratorConfig) => {
-  if (!output) throw new Error('No output path specified');
+const outputSchema = z.object({
+  fromEnvVar: z.string().nullable(),
+  value: z.string({ required_error: 'No output path specified' }),
+});
+
+export const generator = async (config: GeneratorConfig) => {
+  const output = outputSchema.parse(config.output);
 
   if (await skipGenerator()) {
     return console.log(
@@ -23,7 +29,7 @@ export const generator = async ({ output, config, dmmf }: GeneratorConfig) => {
   }
 
   // extend the DMMF with custom functionality - see "classes" folder
-  const extendedDMMF = new ExtendedDMMF(dmmf, config);
+  const extendedDMMF = new ExtendedDMMF(config.dmmf, config.config);
 
   // If data is present in the output directory, delete it.
   DirectoryHelper.removeDir(output.value);

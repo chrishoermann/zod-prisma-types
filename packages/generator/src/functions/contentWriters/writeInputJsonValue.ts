@@ -28,7 +28,11 @@ export const writeInputJsonValue = ({
         .writeLine(`z.lazy(() => z.array(InputJsonValue.nullable())),`)
         .writeLine(`z.lazy(() => z.record(InputJsonValue.nullable())),`);
     })
-    .write(`]);`);
+    .write(`]);`)
+    .blankLine()
+    .writeLine(
+      `export type InputJsonValueType = z.infer<typeof InputJsonValue>;`,
+    );
 
   if (useMultipleFiles && !getSingleFileContent) {
     writer.blankLine().writeLine(`export default InputJsonValue;`);

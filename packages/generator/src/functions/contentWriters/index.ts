@@ -10,6 +10,7 @@ export * from './writeInputObjectType';
 export * from './writeIsValidDecimalInput';
 export * from './writeJsonValue';
 export * from './writeModel';
+export * from './writeModelFields';
 export * from './writeNullableJsonValue';
 export * from './writeOutputObjectType';
 export * from './writePrismaEnum';

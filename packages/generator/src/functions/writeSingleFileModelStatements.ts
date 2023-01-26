@@ -11,17 +11,12 @@ export const writeSingleFileModelStatements: WriteStatements = (
 ) => {
   if (!dmmf.generatorConfig.createModelTypes) return;
 
-  const { writer, writeHeading } = fileWriter;
-
-  writeHeading(`MODELS`, 'FAT');
+  fileWriter.writeHeading(`MODELS`, 'FAT');
 
   dmmf.datamodel.models.forEach((model) => {
-    // write standard model that represents the model type from prismas "index.d.ts"
-
-    writeHeading(`${model.formattedNames.upperCaseSpace}`, 'SLIM');
-
-    writer.blankLine();
-
+    fileWriter.writeHeading(`${model.formattedNames.upperCaseSpace}`, 'SLIM');
+    fileWriter.writer.newLine();
     writeModel({ fileWriter, dmmf }, model);
+    fileWriter.writer.newLine();
   });
 };

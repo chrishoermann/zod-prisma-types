@@ -10,9 +10,6 @@ export const configSchema = z.object({
     .optional()
     .default('false')
     .transform((val) => val === 'true'),
-  /**
-   * @deprecated will be deprecaten in v2.0.0 - imports will then be added directly on the model in the prisma schema
-   */
   createInputTypes: z
     .string()
     .optional()
@@ -43,9 +40,14 @@ export const configSchema = z.object({
     .optional()
     .default('false')
     .transform((val) => val === 'true'),
+  coerceDate: z
+    .string()
+    .optional()
+    .default('false')
+    .transform((val) => val === 'true'),
   prismaClientPath: z.string().default('@prisma/client'),
-  inputTypePath: z.string().default('inputTypeSchemas'), // currently only used internally
-  outputTypePath: z.string().default('outputTypeSchemas'), // currently only used internally
+  inputTypePath: z.string().optional().default('inputTypeSchemas'), // currently only used internally
+  outputTypePath: z.string().optional().default('outputTypeSchemas'), // currently only used internally
 });
 
 export type GeneratorConfig = z.infer<typeof configSchema>;

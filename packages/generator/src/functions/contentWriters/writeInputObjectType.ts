@@ -1,10 +1,6 @@
 import { ExtendedDMMFInputType } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
-import {
-  writeNonScalarType,
-  writeScalarType,
-  writeSpecialType,
-} from '../../utils';
+import { writeNonScalarType, writeScalarType, writeSpecialType } from '..';
 
 export const writeInputObjectType = (
   {

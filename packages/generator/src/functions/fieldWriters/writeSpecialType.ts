@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { WriteTypeFunction, WriteTypeOptions } from '../types';
+import { WriteTypeFunction, WriteTypeOptions } from '../../types';
 
 /////////////////////////////////////////////////
 // FUNCTION

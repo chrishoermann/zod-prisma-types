@@ -51,6 +51,7 @@ export const writeInputTypeFiles: CreateFiles = ({
         writeExport(`{ transformJsonNull }`, `./transformJsonNull`);
         writeExport(`{ NullableJsonValue }`, `./NullableJsonValue`);
         writeExport(`{ InputJsonValue }`, `./InputJsonValue`);
+        writeExport(`{ JsonValue }`, `./JsonValue`);
       }
 
       if (dmmf.schema.hasDecimalTypes) {

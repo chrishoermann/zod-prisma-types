@@ -6,13 +6,30 @@ export const writeScalar = ({
   field,
   writeOptionalDefaults = false,
 }: WriteFieldOptions) => {
-  writer
-    .conditionalWrite(field.omitInModel(), '// omitted: ')
-    .write(`${field.formattedNames.original}: `)
-    .write(`z.${field.zodType}(`)
-    .conditionalWrite(!!field.zodCustomErrors, field.zodCustomErrors!)
-    .write(`)`)
-    .conditionalWrite(!!field.zodValidatorString, field.zodValidatorString!);
+  if (field.type === 'DateTime') {
+    writer
+      .write(`${field.formattedNames.original}: `)
+      .conditionalWrite(
+        !field.generatorConfig.coerceDate,
+        `z.${field.zodType}(`,
+      )
+      .conditionalWrite(
+        field.generatorConfig.coerceDate,
+        `z.coerce.${field.zodType}(`,
+      )
+      .conditionalWrite(!!field.zodCustomErrors, field.zodCustomErrors!)
+      .write(`)`)
+      .conditionalWrite(!!field.zodValidatorString, field.zodValidatorString!);
 
-  writeFieldAdditions({ writer, field, writeOptionalDefaults });
+    writeFieldAdditions({ writer, field, writeOptionalDefaults });
+  } else {
+    writer
+      .write(`${field.formattedNames.original}: `)
+      .write(`z.${field.zodType}(`)
+      .conditionalWrite(!!field.zodCustomErrors, field.zodCustomErrors!)
+      .write(`)`)
+      .conditionalWrite(!!field.zodValidatorString, field.zodValidatorString!);
+
+    writeFieldAdditions({ writer, field, writeOptionalDefaults });
+  }
 };

@@ -27,6 +27,10 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
   readonly customImports: Set<string>;
   readonly errorLocation: string;
   readonly clearedDocumentation?: string;
+  readonly hasOptionalJsonFields: boolean;
+  readonly optionalJsonFields: ExtendedDMMFField[];
+  readonly optionalJsonFieldUnion: string;
+  readonly writeOptionalDefaultValuesTypes: boolean;
 
   constructor(generatorConfig: GeneratorConfig, model: DMMF.Model) {
     super(model.name);
@@ -50,6 +54,12 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
     this.imports = docsContent.imports;
     this.customImports = docsContent.customImports;
     this.clearedDocumentation = docsContent?.documentation;
+
+    this.hasOptionalJsonFields = this._setHasOptionalJsonFields();
+    this.optionalJsonFields = this._setOptionalJsonFields();
+    this.optionalJsonFieldUnion = this._setOptionalJsonFieldUnion();
+    this.writeOptionalDefaultValuesTypes =
+      this._setWriteOptionalDefaultValuesTypes();
   }
 
   private _setErrorLocation() {
@@ -181,7 +191,7 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
     return statements;
   }
 
-  writeOptionalDefaultValuesTypes() {
+  _setWriteOptionalDefaultValuesTypes() {
     return (
       this.fields.some((field) => field.isOptionalDefaultField()) &&
       this.generatorConfig.createOptionalDefaultValuesTypes
@@ -190,5 +200,19 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
 
   hasDecimalFields() {
     return this.fields.some((field) => field.isDecimalType);
+  }
+
+  private _setHasOptionalJsonFields() {
+    return this.fields.some((field) => field.isJsonType && !field.isRequired);
+  }
+
+  private _setOptionalJsonFields() {
+    return this.fields.filter((field) => field.isJsonType && !field.isRequired);
+  }
+
+  private _setOptionalJsonFieldUnion() {
+    return this.optionalJsonFields
+      .map((field) => `"${field.name}"`)
+      .join(' | ');
   }
 }
