@@ -14,7 +14,7 @@ Since I'm maintaining the generator in my spare time consider buying me a coffee
 
 ## Breaking changes in v2.x.x
 
-Be aware that a few generator options have been removed and the behaviour of custom imports has changed in v2.0.0.
+Be aware that some generator options have been removed, a few new have been added, the behaviour of custom imports has changed and ts-morph is no longer needed to generate files in v2.0.0.
 
 ## Table of contents
 
