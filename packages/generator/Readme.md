@@ -1006,7 +1006,8 @@ The validator is extracted from the comments and added to the string
 
 ## Migration from `zod-prisma`
 
-If you are already using `zod-prisma` and want to use the advanced `rich-comments` zod validators please consider the following differences:
+There are a few differences between `zod-prisma` and `zod-prisma-types`.
+The following sections should help you migrate from `zod-prisma` to `zod-prisma-types`.
 
 ### Generator options
 
