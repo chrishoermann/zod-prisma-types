@@ -1,5 +1,5 @@
-import { type WriteStatements } from '../types';
 import { writeModel } from './contentWriters';
+import { type WriteStatements } from '../types';
 
 /////////////////////////////////////////////////
 // FUNCTION

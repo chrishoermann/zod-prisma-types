@@ -1,7 +1,7 @@
+import { writeSelect } from './writeSelect';
+import { writeNonScalarType, writeScalarType, writeSpecialType } from '..';
 import { ExtendedDMMFSchemaField } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
-import { writeNonScalarType, writeScalarType, writeSpecialType } from '..';
-import { writeSelect } from './writeSelect';
 
 export const writeOutputObjectType = (
   { fileWriter, dmmf, getSingleFileContent = false }: ContentWriterOptions,

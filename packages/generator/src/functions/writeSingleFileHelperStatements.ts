@@ -1,4 +1,3 @@
-import { type WriteStatements } from '../types';
 import {
   writeDecimalJsLike,
   writeDecimalJsLikeList,
@@ -8,6 +7,7 @@ import {
   writeNullableJsonValue,
   writeTransformJsonNull,
 } from '.';
+import { type WriteStatements } from '../types';
 
 /////////////////////////////////////////////////
 // FUNCTION

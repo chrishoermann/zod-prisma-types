@@ -1,6 +1,6 @@
+import { writeModel } from './contentWriters';
 import { FileWriter } from '../classes';
 import { CreateFiles } from '../types';
-import { writeModel } from './contentWriters';
 
 /////////////////////////////////////////////////
 // FUNCTION

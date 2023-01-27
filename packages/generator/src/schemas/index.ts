@@ -1,1 +1,1 @@
-export * from "./generatorConfigSchema"
+export * from './generatorConfigSchema';

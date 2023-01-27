@@ -1,5 +1,3 @@
-import { FileWriter } from '../classes';
-import { CreateFiles } from '../types';
 import {
   writeCustomEnum,
   writeDecimalJsLike,
@@ -14,6 +12,8 @@ import {
   writeSelect,
   writeTransformJsonNull,
 } from '.';
+import { FileWriter } from '../classes';
+import { CreateFiles } from '../types';
 
 /////////////////////////////////////////////////
 // FUNCTION

@@ -11,11 +11,8 @@ export const writeModel = (
   }: ContentWriterOptions,
   model: ExtendedDMMFModel,
 ) => {
-  const {
-    useMultipleFiles,
-    createRelationValuesTypes: createRelationValuesTypes,
-    inputTypePath,
-  } = dmmf.generatorConfig;
+  const { useMultipleFiles, createRelationValuesTypes, inputTypePath } =
+    dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');

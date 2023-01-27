@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "turbo run test"
+    "test": "turbo run test",
+    "lint": "turbo run lint"
   },
   "keywords": [],
   "author": "",

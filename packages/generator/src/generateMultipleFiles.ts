@@ -1,10 +1,10 @@
 import { FileWriter } from './classes';
-import { CreateOptions } from './types';
 import {
   writeArgTypeFiles,
   writeInputTypeFiles,
   writeModelFiles,
 } from './functions';
+import { CreateOptions } from './types';
 
 export const generateMultipleFiles = ({ dmmf, path }: CreateOptions) => {
   // Create the index file

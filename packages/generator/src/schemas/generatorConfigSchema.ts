@@ -43,7 +43,7 @@ export const configSchema = z.object({
   coerceDate: z
     .string()
     .optional()
-    .default('false')
+    .default('true')
     .transform((val) => val === 'true'),
   prismaClientPath: z.string().default('@prisma/client'),
   inputTypePath: z.string().optional().default('inputTypeSchemas'), // currently only used internally

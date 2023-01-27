@@ -18,7 +18,7 @@ export const writeIsValidDecimalInput = ({
   writer
     .blankLine()
     .writeLine(
-      `export const DECIMAL_STRING_REGEX = /^[0-9.,e+\-bxffo_cp]+$|Infinity|NaN/;`,
+      `export const DECIMAL_STRING_REGEX = /^[0-9.,e+-bxffo_cp]+$|Infinity|NaN/;`,
     )
     .blankLine()
     .writeLine(`export const isValidDecimalInput =`)

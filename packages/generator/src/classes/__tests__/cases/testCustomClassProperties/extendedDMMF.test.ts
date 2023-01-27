@@ -20,8 +20,6 @@ describe('testSimpleModelNoValidators', async () => {
   it('should set default values in ExtendedDMMF class with config', async () => {
     const extendedDMMFConfig = {
       useInstanceOfForDecimal: 'true',
-      imports:
-        "import(import { myFunction } from 'mypackage').import(import { custom } from './myfolder')",
       createInputTypes: 'false',
       addInputTypeValidation: 'false',
     };

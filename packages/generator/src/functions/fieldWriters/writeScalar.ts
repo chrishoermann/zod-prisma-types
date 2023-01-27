@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { writeFieldAdditions } from '.';
 import { WriteFieldOptions } from '../../types';
 
@@ -8,7 +9,7 @@ export const writeScalar = ({
 }: WriteFieldOptions) => {
   if (field.type === 'DateTime') {
     writer
-      .write(`${field.formattedNames.original}: `)
+      .write(`${field.name}: `)
       .conditionalWrite(
         !field.generatorConfig.coerceDate,
         `z.${field.zodType}(`,
@@ -24,7 +25,7 @@ export const writeScalar = ({
     writeFieldAdditions({ writer, field, writeOptionalDefaults });
   } else {
     writer
-      .write(`${field.formattedNames.original}: `)
+      .write(`${field.name}: `)
       .write(`z.${field.zodType}(`)
       .conditionalWrite(!!field.zodCustomErrors, field.zodCustomErrors!)
       .write(`)`)

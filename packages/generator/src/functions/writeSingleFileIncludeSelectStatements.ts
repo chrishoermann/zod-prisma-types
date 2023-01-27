@@ -1,4 +1,3 @@
-import { type WriteStatements } from '../types';
 import {
   writeArgs,
   writeCountArgs,
@@ -6,6 +5,7 @@ import {
   writeInclude,
   writeSelect,
 } from './contentWriters';
+import { type WriteStatements } from '../types';
 
 /////////////////////////////////////////////////
 // FUNCTION

@@ -1,4 +1,5 @@
 import { generatorHandler } from '@prisma/generator-helper';
+
 import { generator } from './generator';
 import { getPrismaClientOutputPath } from './utils';
 

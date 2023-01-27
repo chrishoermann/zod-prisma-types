@@ -1,5 +1,4 @@
 import { DMMF } from '@prisma/generator-helper';
-import { GeneratorConfig } from '../schemas';
 
 import {
   ExtendedDMMFDatamodel,
@@ -8,6 +7,7 @@ import {
   ExtendedDMMFSchemaEnum,
   ExtendedDMMFSchemaField,
 } from '.';
+import { GeneratorConfig } from '../schemas';
 
 export interface ExtendedDMMFSchemaOptions {
   schema: DMMF.Schema;

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { GeneratorConfig } from '../../../../schemas';
 
+import { GeneratorConfig } from '../../../../schemas';
 import { getStringVariants } from '../../../../utils/getStringVariants';
 import { ExtendedDMMF } from '../../../ExtendedDMMF';
 import { loadDMMF } from '../../utils/loadDMMF';

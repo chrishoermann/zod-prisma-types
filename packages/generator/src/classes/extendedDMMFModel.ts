@@ -1,9 +1,9 @@
 import { DMMF } from '@prisma/generator-helper';
-import { IMPORT_STATEMENT_REGEX } from '../constants';
 
-import { GeneratorConfig } from '../schemas';
 import { ExtendedDMMFField } from './extendedDMMFField';
 import { FormattedNames } from './formattedNames';
+import { IMPORT_STATEMENT_REGEX } from '../constants';
+import { GeneratorConfig } from '../schemas';
 
 /////////////////////////////////////////////////
 // TYPES  INTERFACE
@@ -143,7 +143,7 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
       customImports: importsList
         .map((statement) =>
           statement
-            .match(/"(?<statement>[\w "'\{\}\/,;.*]+)"/)
+            .match(/"(?<statement>[\w "'{}/,;.*]+)"/)
             ?.groups?.['statement'].replace(/["']/g, "'"),
         )
         .filter(

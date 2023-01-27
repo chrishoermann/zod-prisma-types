@@ -1,6 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { GeneratorConfig } from '../schemas';
+import { FormattedNames } from './formattedNames';
 import {
   DATE_VALIDATOR_REGEX_MAP,
   NUMBER_VALIDATOR_REGEX_MAP,
@@ -20,6 +20,7 @@ import {
   VALIDATOR_TYPE_IS_VALID_REGEX,
   VALIDATOR_TYPE_REGEX,
 } from '../constants/regex';
+import { GeneratorConfig } from '../schemas';
 import {
   PrismaScalarType,
   ValidatorFunctionMap,
@@ -28,7 +29,6 @@ import {
   ZodPrismaScalarType,
   ZodCustomErrorKey,
 } from '../types';
-import { FormattedNames } from './formattedNames';
 
 /////////////////////////////////////////////////
 // TYPES AND INTERFACES
@@ -224,7 +224,7 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
     if (this._isCuid()) return '.cuid()';
     if (this._isUuid()) return '.uuid()';
     if (this._isInt()) return '.int()';
-    return;
+    return undefined;
   }
 
   private _isCuid() {

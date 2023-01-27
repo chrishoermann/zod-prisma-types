@@ -1,14 +1,14 @@
 import { DMMF } from '@prisma/generator-helper';
-import { GeneratorConfig } from '../schemas';
 
 import { ExtendedDMMFDatamodel, ExtendedDMMFField } from '.';
-import { PRISMA_FUNCTION_TYPES_WITH_VALIDATORS } from '../constants/regex';
 import { ExtendedDMMFModel } from './extendedDMMFModel';
 import {
   ExtendedDMMFSchemaArg,
   ZodValidatorOptions,
 } from './extendedDMMFSchemaArg';
 import { FormattedNames } from './formattedNames';
+import { PRISMA_FUNCTION_TYPES_WITH_VALIDATORS } from '../constants/regex';
+import { GeneratorConfig } from '../schemas';
 
 /////////////////////////////////////////////////
 // CLASS

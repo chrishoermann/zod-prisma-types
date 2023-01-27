@@ -1,6 +1,7 @@
 import CodeBlockWriter, { type Options } from 'code-block-writer';
-import { DirectoryHelper } from './directoryHelper';
 import fs from 'fs';
+
+import { DirectoryHelper } from './directoryHelper';
 
 export interface FileWriterOptions {
   writerOptions?: Options;
@@ -119,14 +120,10 @@ export class FileWriter {
   writeJSDoc(doc?: string) {
     if (!doc) return;
 
-    const splitDoc = doc.split(/\n\r?/);
-
     this.writer.writeLine(`/**`);
-
-    splitDoc.forEach((line) => {
+    doc.split(/\n\r?/).forEach((line) => {
       this.writer.writeLine(` * ${line.trim()}`);
     });
-
     this.writer.writeLine(` */`);
   }
 
