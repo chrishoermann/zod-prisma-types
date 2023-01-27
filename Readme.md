@@ -8,9 +8,11 @@
 
 `zod-prisma-types` is a generator for [prisma](www.prisma.io) that generates [zod](https://github.com/colinhacks/zod) schemas from your prisma models. This includes schemas of models, enums, inputTypes, argTypes, filters and so on. It also provides options to write advanced zod validators directly in the prisma schema comments.
 
+Since I'm maintaining the generator in my spare time consider buying me a coffee if you like the project. Thanks!
+
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/chrishoermann)
 
-## Breaking changes in v2
+## Breaking changes in v2.x.x
 
 Be aware that a few generator options have been removed and the behaviour of custom imports has changed in v2.0.0.
 
@@ -45,10 +47,13 @@ Be aware that a few generator options have been removed and the behaviour of cus
   - [Validation errors](#validation-errors)
 - [Naming of zod schemas](#naming-of-zod-schemas)
 - [Adding comments](#adding-comments)
+- [Migration from `zod-prisma`](#migration-from-zod-prisma)
+  - [Generator options](#generator-options)
+  - [Extending zod fields](#extending-zod-fields)
 
 ## About this project
 
-For one of my projects I was in need of a generator that has the possibility of adding `zod valdiators` directly in `prisma schema's` [rich-comments](https://www.prisma.io/docs/concepts/components/prisma-schema#comments) and generates `zod` schemas for all prisma models, enums, inputTypes, argTypes, filters and so on. I also wanted to be able to import these schemas in the frontend e.g. for form validation. Furthermore I wanted to make the generator as flexible as possbile so it covers a large range of use cases. I looked around and found a few packages that generate `zod` schemas from prisma models but none of them met my requirements or they weren't activly maintained anymore. So I decided to write `zod-prisma-type`.
+For one of my projects I was in need of a generator that has the possibility of adding `zod valdiators` directly in `prisma schema's` [rich-comments](https://www.prisma.io/docs/concepts/components/prisma-schema#comments) and generates `zod` schemas for all prisma models, enums, inputTypes, argTypes, filters and so on. I also wanted to be able to import these schemas in the frontend e.g. for form validation and make the generator as flexible as possbile so it covers a large range of use cases. Since there where no generators out there that my requirements or they weren't activly maintained anymore I decided to write `zod-prisma-type`.
 
 ## Installation
 
@@ -997,3 +1002,67 @@ export const MyModelSchema = z.object({
 ```
 
 The validator is extracted from the comments and added to the string
+
+## Migration from `zod-prisma`
+
+If you are already using `zod-prisma` and want to use the advanced `rich-comments` zod validators please consider the following differences:
+
+### Generator options
+
+The following generator options from `zod-prisma` are not supported or implemented differently by `zod-prisma-types`:
+
+#### `relationModel`
+
+You can generate a schema that contains all relations of a model by passing the following option to the generator:
+
+```prisma
+generator zod {
+  // ... other options
+  createRelationValuesTypes = true
+}
+```
+
+See [`createRelationValuesTypes`](#createrelationvaluestypes) for more information.
+
+#### `modelCase`
+
+The casing of the model is fixed to the casing used in the `prisma schema` and can not be changed. This way model names with mixed casing like `MYModel` will work as expected when generating `inputTypes`, `enums`, `argTypes`, etc.
+
+#### `modelSuffix`
+
+The model suffix in `zod-prisma-types` is fixed to `Schema` and can not be changed.
+
+#### `useDecimalJs`
+
+`zod-prisma-types` does not support `decimal.js` but uses the decimal implementation provided by prisma to validate Decimal types. See [Decimal](#decimal) for more information.
+
+#### `imports`
+
+As of version `2.0.0` imports in `zod-prisma-types` are handled with rich-comments on the model definition. See [Custom imports](#custom-imports) for more information.
+
+#### `prismaJsonNullability`
+
+The nullablility in `zod-prisma-types` is handled differently. See [Json null values](#json-null-values) for more information.
+
+### Extending zod fields
+
+`zod-prisma` allows you to extend the zod fields with custom validators. This is also possible with `zod-prisma-types` and the `@zod.[key].[validator]` syntax. The different syntax is used to check if a validator can be used on a specific prisma type. See [Field validatiors](#field-validatiors) for more information.
+
+```prisma
+
+// zod-prisma
+model MyModel {
+  string String /// @zod.min(3) -> valid - `string` can be used on `String`
+  number Number /// @zod.min(3) -> valid - throws error only at runtime
+}
+
+//zod-prisma-types
+model MyModel {
+  string String /// @zod.string.min(3) -> valid - `string` can be used on `String`
+  number Number /// @zod.string.min(3) -> invalid - throws error during generation
+}
+```
+
+### Importing helpers
+
+You can import custom helpers in the generator. Please refer to the section about [custom imports](#custom-imports) for more information.

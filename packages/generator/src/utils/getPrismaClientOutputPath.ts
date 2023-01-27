@@ -1,14 +1,13 @@
 import { GeneratorOptions } from '@prisma/generator-helper';
 import path from 'path';
 
-// bit hacky but does the job
+// currently a bit hacky but does the job
 
 export const getPrismaClientOutputPath = (options: GeneratorOptions) => {
   // find the prisma client config
   const prismaClientOptions = options.otherGenerators.find(
     (g) => g.provider.value === 'prisma-client-js',
   );
-
   // check if custom output is used on generator or prisma client
   if (
     !options.generator.output?.value ||
@@ -19,6 +18,7 @@ export const getPrismaClientOutputPath = (options: GeneratorOptions) => {
 
   // check if the prisma client path is already set in the generator config
   // if so this path is used instead of the automatically located path
+
   if (options.generator.config?.['prismaClientPath']) {
     const clientPath: string[] = [process.cwd()];
 
