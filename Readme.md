@@ -1048,7 +1048,7 @@ The nullablility in `zod-prisma-types` is handled differently. See [Json null va
 
 ### Extending zod fields
 
-`zod-prisma` allows you to extend the zod fields with custom validators. This is also possible with `zod-prisma-types` and the `@zod.[key].[validator]` syntax. The different syntax is used to check if a validator can be used on a specific prisma type. See [Field validatiors](#field-validatiors) for more information.
+`zod-prisma` allows you to extend the zod fields with custom validators. This is also possible with `zod-prisma-types` and the `@zod.[key].[validator]` syntax. The different syntax is used to check if a validator can be used on a specific prisma type. See [Field validators](#field-validators) for more information.
 
 ```prisma
 
