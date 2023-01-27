@@ -54,7 +54,7 @@ Be aware that a few generator options have been removed and the behaviour of cus
 
 ## About this project
 
-For one of my projects I was in need of a generator that has the possibility of adding `zod valdiators` directly in `prisma schema's` [rich-comments](https://www.prisma.io/docs/concepts/components/prisma-schema#comments) and generates `zod` schemas for all prisma models, enums, inputTypes, argTypes, filters and so on. I also wanted to be able to import these schemas in the frontend e.g. for form validation and make the generator as flexible as possbile so it covers a large range of use cases. Since there where no generators out there that my requirements or they weren't activly maintained anymore I decided to write `zod-prisma-type`.
+For one of my projects I was in need of a generator that offers the possibility of adding `zod valdiators` directly in `prisma schema's` [rich-comments](https://www.prisma.io/docs/concepts/components/prisma-schema#comments) and generates `zod` schemas for all prisma models, enums, inputTypes, argTypes, filters and so on. I also wanted to be able to import these schemas in the frontend e.g. for form validation and make the generator as flexible as possbile so it covers a large range of use cases. Since there where no generators out there that my requirements or they weren't activly maintained anymore I decided to write `zod-prisma-type`.
 
 ## Installation
 
@@ -108,9 +108,9 @@ generator zod {
 
 ### `useMultipleFiles`
 
-> default: `true`
+> default: `false`
 
-If you want to create multiple files instead of a single `index.ts` file you can set this option to `true`. This will create a file for each model, enum, inputType, argType, filter and so on. The files will be created in the specified output folder.
+If you want to create multiple files instead of a single `index.ts` file you can set this option to `true`. This will create a file for each model, enum, inputType, argType, filter, etc. The files will be created in sub folders in the specified output folder and a barrel file will be added at the root of the output folder.
 
 ```prisma
 generator zod {
@@ -129,7 +129,7 @@ Provide an alternative output path.
 
 > default: `true`
 
-If you just want to create zod schemas for your models and enums you can disable the creation of the corresponding input types. This may be useful if you just want to use the zod schemas of your models for validating input types in `react-hook-form` or some similar use cases.
+If you just want to create zod schemas for your models and enums you can disable the creation of the corresponding input types. This may be useful if you just want to use zod schemas of your models for validating input types in `react-hook-form` or some similar use cases.
 
 ```prisma
 generator zod {
@@ -155,7 +155,7 @@ generator zod {
 
 > default: `true`
 
-If you don't want to use your custom validation logic on your input types like `UserCreateInput`, `UserUpdateManyInput` and so on you can disable this feature.
+If you want to use your custom zod validatiors that you added via rich-comments only on your generated model schemas but not on your created input type schemas (`UserCreateInput`, `UserUpdateManyInput`, etc.) you can disable this feature.
 
 ```prisma
 generator zod {
@@ -168,7 +168,7 @@ generator zod {
 
 > default: `false`
 
-If you need an additional model schema where fields with default values are marked as `.optional()` you can pass the following config option:
+If you want to have a schema of your model where where fields with default values are marked as `.optional()` you can pass the following config option:
 
 ```prisma
 generator zod {
@@ -191,7 +191,7 @@ model ModelWithDefaultValues {
 }
 ```
 
-The above model would generate the following model schemas:
+The above model would then generate the following model schemas:
 
 ```ts
 export const ModelWithDefaultValuesSchema = z.object({
@@ -225,7 +225,7 @@ export const ModelWithDefaultValuesOptionalDefaultsSchema =
 
 > default: `false`
 
-If you pass the following config option the generator will create a separate model type that includes all the relation fields. Due do the type annotation, that is needed to have recursive types, this model has some limitations since `z.ZodType<myType>` does not allow some object methods like `.merge()` or `.omit()`.
+If you need a separate model type that includes all the relation fields you can pass the following option. Due do the type annotation, that is needed to have recursive types, this model has some limitations since `z.ZodType<myType>` does not allow some object methods like `.merge()`, `.omit()`, etc.
 
 ```prisma
 generator zod {
@@ -284,7 +284,7 @@ export const UserWithRelationsSchema: z.ZodType<UserWithRelations> =
 
 > default: `true`
 
-The generator adds default validators in certain use cases:
+In certain use cases the generator adds default validators:
 
 ```prisma
 model WithDefaultValidators {
@@ -330,13 +330,13 @@ generator zod {
 }
 ```
 
-> If you have some further ideas for default validators feel free to open an issue.
+> More default validators are planned in future releases (by checking the @db. filds in the schema). If you have some ideas for default validators feel free to open an issue.
 
 ### `coerceDate`
 
 > default: true
 
-Per default `DateTime` values are coerced to `Date` objects as long as you pass in a valid ISO string or an instance of Date. You can change this behavior to generate a simple `z.date()` by passing the following option to the generator config:
+Per default `DateTime` values are coerced to `Date` objects as long as you pass in a `valid ISO string` or an `instance of Date`. You can change this behavior to generate a simple `z.date()` by passing the following option to the generator config:
 
 ```prisma
 generator zod {
@@ -347,9 +347,9 @@ generator zod {
 
 ### `prismaClientPath`
 
-> default: `infereed from prisma schema`
+> default: `infereed from prisma schema path`
 
-By default the prisma client path is taken from the `output` path provided in the `prisma.schema` file under `generator client`. If you still need to use a custom path you can pass it to the generator config via this option. A custom path takes precedence over the prisma client output path.
+By default the prisma client path is infereed from the `output` path provided in the `prisma.schema` file under `generator client`. If you still need to use a custom path you can pass it to the generator config via this option. A custom path takes precedence over the infereed prisma client output path.
 
 ```prisma
 generator zod {
@@ -360,7 +360,7 @@ generator zod {
 
 ## Skip schema generation
 
-You can skip schema generation based on e.g. the environment you are currently working. For example you can only generate the schemas when you're in `development` but not when you run generation in `production` (because in `production` the schemas would already hav been created and pushed to the server via source code of git repo).
+You can skip schema generation based on e.g. the environment you are currently working in. For example you can only generate the schemas when you're in `development` but not when you run generation in `production` (because in `production` the schemas would already hav been created and pushed to the server via your git repo).
 
 Since Prisma only lets us define `strings` in the generator config we cannot use the `env(MY_ENV_VARIABLE)` method that is used when e.g. the `url` under `datasource db` is loaded:
 
@@ -407,8 +407,6 @@ enum MyEnum {
 }
 ```
 
-This will generate the following output:
-
 ```ts
 export const MyEnumSchema = z.nativeEnum(PrismaClient.MyEnum);
 
@@ -438,12 +436,6 @@ The above model would generate the following schema:
 // DECIMAL HELPERS
 //------------------------------------------------------
 
-export interface DecimalJsLike {
-  d: number[];
-  e: number;
-  s: number;
-}
-
 export const DecimalJSLikeSchema = z.object({
   d: z.array(z.number()),
   e: z.number(),
@@ -453,11 +445,11 @@ export const DecimalJSLikeSchema = z.object({
 export const DECIMAL_STRING_REGEX = /^[0-9.,e+-bxffo_cp]+$|Infinity|NaN/;
 
 export const isValidDecimalInput = (
-  v?: null | string | number | PrismaClient.Prisma.Decimal | DecimalJsLike,
+  v?: null | string | number | Prisma.Decimal | DecimalJsLike,
 ) => {
   if (!v) return false;
   return (
-    (typeof v === 'object' && PrismaClient.Prisma.Decimal.isDecimal(v)) ||
+    (typeof v === 'object' && Prisma.Decimal.isDecimal(v)) ||
     (typeof v === 'object' && 'd' in v && 'e' in v && 's' in v) ||
     (typeof v === 'string' && DECIMAL_STRING_REGEX.test(v)) ||
     typeof v === 'number'
@@ -473,7 +465,7 @@ export const MyModelSchema = z.object({
     .union([
       z.number(),
       z.string(),
-      z.instanceof(PrismaClient.Prisma.Decimal),
+      z.instanceof(Prisma.Decimal),
       DecimalJSLikeSchema,
     ])
     .refine((v) => isValidDecimalInput(v), {
@@ -574,16 +566,10 @@ export const MyPrismaScalarsTypeSchema = z.object({
       z.instanceof(PrismaClient.Prisma.Decimal),
       DecimalJSLikeSchema,
     ])
-    .transform((v) =>
-      isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
-    )
-    .refine(
-      (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
-      {
-        message: 'Field "decimal" must be a Decimal',
-        path: ['Models', 'MyPrismaScalarsType'],
-      },
-    ),
+    .refine((v) => isValidDecimalInput(v), {
+      message: 'Field "decimal" must be a Decimal',
+      path: ['Models', 'MyPrismaScalarsType'],
+    }),
   decimalOpt: z
     .union([
       z.number(),
@@ -591,16 +577,10 @@ export const MyPrismaScalarsTypeSchema = z.object({
       z.instanceof(PrismaClient.Prisma.Decimal),
       DecimalJSLikeSchema,
     ])
-    .transform((v) =>
-      isValidDecimalInput(v) ? new PrismaClient.Prisma.Decimal(v) : v,
-    )
-    .refine(
-      (v) => PrismaClient.Prisma.Decimal.isDecimal(v) || isDecimalJsLike(v),
-      {
-        message: 'Field "decimalOpt" must be a Decimal',
-        path: ['Models', 'MyPrismaScalarsType'],
-      },
-    )
+    .refine((v) => isValidDecimalInput(v), {
+      message: 'Field "decimalOpt" must be a Decimal',
+      path: ['Models', 'MyPrismaScalarsType'],
+    })
     .nullish(),
   date: z.coerce.date(),
   dateOpt: z.coerce.date({ invalid_type_error: 'wrong date type' }).nullish(),
@@ -639,11 +619,11 @@ export const MyPrismaScalarsTypeOptionalDefaultsSchema =
   );
 ```
 
-> Additionally all the zod schemas for the prisma input-, enum-, filter-, orderby-, select-, include and other necessary types are generated ready to be used in e.g. `trpc` inputs.
+> Additionally all the zod schemas for the prisma input-, enum-, filter-, orderBy-, select-, include and other necessary types are generated ready to be used in e.g. `trpc` inputs.
 
 ## Custom imports
 
-To add custom imports to your validator you can add them via `@zod.custom.imports([...myCustom imports as strings])` in prismas rich comments of the model definition.
+To add custom imports to your validator you can add them via `@zod.custom.imports([...myCustom imports as strings])` in prismas rich comments on the model definition.
 
 For example:
 
@@ -1048,7 +1028,7 @@ The nullablility in `zod-prisma-types` is handled differently. See [Json null va
 
 ### Extending zod fields
 
-`zod-prisma` allows you to extend the zod fields with custom validators. This is also possible with `zod-prisma-types` and the `@zod.[key].[validator]` syntax. The different syntax is used to check if a validator can be used on a specific prisma type. See [Field validatiors](#field-validatiors) for more information.
+`zod-prisma` allows you to extend the zod fields with custom validators. This is also possible with `zod-prisma-types` and the `@zod.[key].[validator]` syntax. The different syntax is used to check if a validator can be used on a specific prisma type. See [Field validators](#field-validators) for more information.
 
 ```prisma
 

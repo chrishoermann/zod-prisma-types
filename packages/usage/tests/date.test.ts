@@ -25,3 +25,13 @@ it('should coerce a Date instance to Date instance', () => {
   expect(result.dateOpt).toBeTruthy();
   expect(result.dateOpt).toBeInstanceOf(Date);
 });
+
+it('should not coerce an invalid date string to Date instance', () => {
+  expect(() => {
+    DateModelSchema.parse({
+      id: 1,
+      date: 'invalid date string',
+      dateOpt: new Date(Date.now()),
+    });
+  }).toThrowError();
+});

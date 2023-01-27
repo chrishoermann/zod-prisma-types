@@ -17,7 +17,7 @@ datasource db {
 generator zod {
   provider                         = "ts-node-dev ../generator/src/bin.ts"
   output                           = "./generated/zod" // default is ./generated/zod
-  useMultipleFiles                 = true // default is false 
+  useMultipleFiles                 = false // default is false 
   // createInputTypes                 = false // default is true
   // createModelTypes                 = false // default is true
   // addInputTypeValidation           = false // default is true
