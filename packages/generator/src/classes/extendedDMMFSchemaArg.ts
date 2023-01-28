@@ -71,7 +71,7 @@ export class ExtendedDMMFSchemaArg
     // filter "null" from the inputTypes array to prevent the generator
     // from generating a union type with "null" and the actual field type
     // instead of e.g. a scalar type
-    const nonNullTypes = inputTypes.filter((type) => type.type !== 'Null');
+    const nonNullTypes = inputTypes.filter(({ type }) => type !== 'Null');
 
     // FIX: this is a hacky workaround to prevent the generator from
     // generating a union in the "GroupByArgs" at the "by" property.

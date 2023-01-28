@@ -10,7 +10,8 @@ export const writeInputObjectType = (
   }: ContentWriterOptions,
   inputType: ExtendedDMMFInputType,
 ) => {
-  const { useMultipleFiles, prismaClientPath } = dmmf.generatorConfig;
+  const { useMultipleFiles, prismaClientPath, addInputTypeValidation } =
+    dmmf.generatorConfig;
 
   const addPrismaClient =
     useMultipleFiles || getSingleFileContent ? '' : 'PrismaClient.';
@@ -60,7 +61,7 @@ export const writeInputObjectType = (
               zodValidatorString,
               zodCustomValidatorString,
               writeComma,
-              writeValidation: dmmf.addInputTypeValidation(),
+              writeValidation: addInputTypeValidation,
             });
             writeNonScalarType(writer, {
               inputType,
@@ -71,7 +72,7 @@ export const writeInputObjectType = (
               zodCustomErrors,
               zodCustomValidatorString,
               writeComma,
-              writeValidation: dmmf.addInputTypeValidation(),
+              writeValidation: addInputTypeValidation,
             });
           });
 
@@ -89,7 +90,7 @@ export const writeInputObjectType = (
             zodCustomErrors,
             zodValidatorString,
             zodCustomValidatorString,
-            writeValidation: dmmf.addInputTypeValidation(),
+            writeValidation: addInputTypeValidation,
           });
           writeNonScalarType(writer, {
             inputType,
@@ -102,7 +103,7 @@ export const writeInputObjectType = (
             zodCustomValidatorString,
             isNullable,
             isOptional,
-            writeValidation: dmmf.addInputTypeValidation(),
+            writeValidation: addInputTypeValidation,
           });
         }
 

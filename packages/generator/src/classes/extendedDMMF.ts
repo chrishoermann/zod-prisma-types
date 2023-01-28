@@ -57,16 +57,4 @@ export class ExtendedDMMF implements DMMF.Document {
   private _setGeneratorConfig(config: Dictionary<string>): GeneratorConfig {
     return configSchema.parse(config);
   }
-
-  createInputTypes() {
-    return Boolean(this.generatorConfig.createInputTypes);
-  }
-
-  createModelTypes() {
-    return Boolean(this.generatorConfig.createModelTypes);
-  }
-
-  addInputTypeValidation() {
-    return Boolean(this.generatorConfig.addInputTypeValidation);
-  }
 }

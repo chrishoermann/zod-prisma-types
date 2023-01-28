@@ -12,7 +12,7 @@ import { CreateFiles } from '../types';
 /////////////////////////////////////////////////
 
 export const writeArgTypeFiles: CreateFiles = ({ path: outputPath, dmmf }) => {
-  if (!dmmf.createInputTypes()) return;
+  if (!dmmf.generatorConfig.createInputTypes) return;
 
   const { outputTypePath } = dmmf.generatorConfig;
 

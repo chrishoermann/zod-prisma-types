@@ -16,7 +16,7 @@ export interface ExtendedDMMFDatamodelOptions {
 export class ExtendedDMMFDatamodel {
   readonly enums: ExtendedDMMFEnum[];
   readonly models: ExtendedDMMFModel[];
-  readonly types: DMMF.Model[];
+  readonly types: ExtendedDMMFModel[];
 
   constructor(
     readonly generatorConfig: GeneratorConfig,
@@ -25,7 +25,7 @@ export class ExtendedDMMFDatamodel {
     this.generatorConfig = generatorConfig;
     this.enums = this._getExtendedEnums(datamodel.enums);
     this.models = this._getExtendedModels(datamodel.models);
-    this.types = datamodel.types;
+    this.types = this._getExtendedModels(datamodel.types);
   }
 
   private _getExtendedModels(models: DMMF.Model[]) {

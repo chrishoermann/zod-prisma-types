@@ -3,7 +3,7 @@ import { ExtendedDMMFModel } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
 import { writeRelation } from '../fieldWriters';
 
-export const writeModel = (
+export const writeModelOrType = (
   {
     fileWriter: { writer, writeImport, writeImportSet, writeJSDoc },
     dmmf,
@@ -11,8 +11,14 @@ export const writeModel = (
   }: ContentWriterOptions,
   model: ExtendedDMMFModel,
 ) => {
-  const { useMultipleFiles, createRelationValuesTypes, inputTypePath } =
-    dmmf.generatorConfig;
+  const {
+    useMultipleFiles,
+    createRelationValuesTypes,
+    inputTypePath,
+    provider,
+  } = dmmf.generatorConfig;
+
+  const isMongoDb = provider === 'mongodb';
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
@@ -29,9 +35,15 @@ export const writeModel = (
       writeImportSet(
         new Set(
           model.relationFields
-            .map((field) => [
-              `import { type ${field.type}WithRelations, ${field.type}WithRelationsSchema } from './${field.type}Schema'`,
-            ])
+            .map((field) =>
+              !isMongoDb
+                ? [
+                    `import { type ${field.type}WithRelations, ${field.type}WithRelationsSchema } from './${field.type}Schema'`,
+                  ]
+                : [
+                    `import { type ${field.type}, ${field.type}Schema } from './${field.type}Schema'`,
+                  ],
+            )
             .flat(),
         ),
       );
@@ -57,6 +69,12 @@ export const writeModel = (
       });
     })
     .write(`)`);
+
+  if (isMongoDb) {
+    writer
+      .blankLine()
+      .write(`export type ${model.name} = z.infer<typeof ${model.name}Schema>`);
+  }
 
   if (model.writeOptionalDefaultValuesTypes) {
     writer
@@ -113,7 +131,8 @@ export const writeModel = (
           .write(field.name)
           .conditionalWrite(!field.isRequired, '?')
           .write(': ')
-          .write(`${field.type}WithRelations`)
+          .conditionalWrite(!isMongoDb, `${field.type}WithRelations`)
+          .conditionalWrite(isMongoDb, `${field.type}`)
           .conditionalWrite(field.isList, '[]')
           .conditionalWrite(!field.isRequired, ' | null')
           .write(';')

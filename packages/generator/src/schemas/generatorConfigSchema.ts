@@ -46,6 +46,7 @@ export const configSchema = z.object({
     .default('true')
     .transform((val) => val === 'true'),
   prismaClientPath: z.string().default('@prisma/client'),
+  provider: z.string().optional(),
   inputTypePath: z.string().optional().default('inputTypeSchemas'), // currently only used internally
   outputTypePath: z.string().optional().default('outputTypeSchemas'), // currently only used internally
 });

@@ -1,4 +1,4 @@
-import { writeModel } from './contentWriters';
+import { writeModelOrType } from './contentWriters';
 import { type WriteStatements } from '../types';
 
 /////////////////////////////////////////////////
@@ -16,7 +16,7 @@ export const writeSingleFileModelStatements: WriteStatements = (
   dmmf.datamodel.models.forEach((model) => {
     fileWriter.writeHeading(`${model.formattedNames.upperCaseSpace}`, 'SLIM');
     fileWriter.writer.newLine();
-    writeModel({ fileWriter, dmmf }, model);
+    writeModelOrType({ fileWriter, dmmf }, model);
     fileWriter.writer.newLine();
   });
 };

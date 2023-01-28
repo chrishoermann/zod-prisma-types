@@ -16,7 +16,6 @@ export const writeSingleFileIncludeSelectStatements: WriteStatements = (
   fileWriter,
 ) => {
   if (!dmmf.generatorConfig.createInputTypes) return;
-
   fileWriter.writeHeading(`SELECT & INCLUDE`, 'FAT');
 
   fileWriter.writer.blankLine();
@@ -24,8 +23,11 @@ export const writeSingleFileIncludeSelectStatements: WriteStatements = (
   dmmf.schema.outputObjectTypes.model.forEach((model) => {
     fileWriter.writeHeading(`${model.formattedNames.upperCaseSpace}`, 'SLIM');
 
-    if (model.hasRelationField()) {
+    if (model.hasRelationField() || model.writeMongoDbInclude()) {
       writeInclude({ fileWriter, dmmf }, model);
+    }
+
+    if (model.hasRelationField() || model.isMongoDb()) {
       writeArgs({ fileWriter, dmmf }, model);
     }
 

@@ -1,7 +1,7 @@
 import { generatorHandler } from '@prisma/generator-helper';
 
 import { generator } from './generator';
-import { getPrismaClientOutputPath } from './utils';
+import { getPrismaClientOutputPath, getPrismaClientProvider } from './utils';
 
 generatorHandler({
   onManifest: () => {
@@ -19,6 +19,7 @@ generatorHandler({
       config: {
         ...generatorOptions.generator.config,
         ...getPrismaClientOutputPath(generatorOptions),
+        ...getPrismaClientProvider(generatorOptions),
       },
       dmmf: generatorOptions.dmmf,
     });

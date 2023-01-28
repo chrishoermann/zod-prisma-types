@@ -15,10 +15,10 @@ datasource db {
 // -----------------------------------------------
 
 generator zod {
-  // provider                         = "ts-node-dev ../generator/src/bin.ts"
-  provider                         = "zod-prisma-types"
+  provider                         = "ts-node-dev ../generator/src/bin.ts"
+  // provider                         = "zod-prisma-types"
   output                           = "./generated/zod" // default is ./generated/zod
-  useMultipleFiles                 = true // default is false 
+  useMultipleFiles                 = false // default is false 
   // createInputTypes                 = false // default is true
   // createModelTypes                 = false // default is true
   // addInputTypeValidation           = false // default is true
@@ -216,3 +216,19 @@ model DateModel {
   date    DateTime
   dateOpt DateTime?
 }
+
+// model Post {
+//   id    String   @id @default(auto()) @map("_id") @db.ObjectId
+//   title String   @default("")
+//   data  PostData
+// }
+
+// type PostData {
+//   something     String
+//   somethingElse Int
+//   someType      SomeType
+// }
+
+// type SomeType {
+//   someField String
+// }

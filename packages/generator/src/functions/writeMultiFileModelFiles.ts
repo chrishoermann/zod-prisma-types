@@ -1,4 +1,4 @@
-import { writeModel } from './contentWriters';
+import { writeModelOrType } from './contentWriters';
 import { FileWriter } from '../classes';
 import { CreateFiles } from '../types';
 
@@ -18,13 +18,23 @@ export const writeModelFiles: CreateFiles = ({ path, dmmf }) => {
       dmmf.datamodel.models.forEach((model) => {
         writeExport(`*`, `./${model.name}Schema`);
       });
+      dmmf.datamodel.types.forEach((model) => {
+        writeExport(`*`, `./${model.name}Schema`);
+      });
     });
   }
 
   dmmf.datamodel.models.forEach((model) => {
     new FileWriter().createFile(
       `${modelPath}/${model.name}Schema.ts`,
-      (fileWriter) => writeModel({ fileWriter, dmmf }, model),
+      (fileWriter) => writeModelOrType({ fileWriter, dmmf }, model),
+    );
+  });
+
+  dmmf.datamodel.types.forEach((model) => {
+    new FileWriter().createFile(
+      `${modelPath}/${model.name}Schema.ts`,
+      (fileWriter) => writeModelOrType({ fileWriter, dmmf }, model),
     );
   });
 };

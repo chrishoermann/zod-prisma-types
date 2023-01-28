@@ -4,6 +4,7 @@ import {
   writeSingleFileHelperStatements,
   writeSingleFileImportStatements,
   writeSingleFileModelStatements,
+  writeSingleFileTypeStatements,
   writeSingleFileIncludeSelectStatements,
   writeSingleFileInputTypeStatements,
   writeSingleFileArgTypeStatements,
@@ -16,6 +17,7 @@ export const generateSingleFile = ({ dmmf, path }: CreateOptions) => {
     writeSingleFileHelperStatements(dmmf, fileWriter);
     writeSingleFileEnumStatements(dmmf, fileWriter);
     writeSingleFileModelStatements(dmmf, fileWriter);
+    writeSingleFileTypeStatements(dmmf, fileWriter);
     writeSingleFileIncludeSelectStatements(dmmf, fileWriter);
     writeSingleFileInputTypeStatements(dmmf, fileWriter);
     writeSingleFileArgTypeStatements(dmmf, fileWriter);

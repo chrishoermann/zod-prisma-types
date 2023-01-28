@@ -7,10 +7,16 @@ export const writeRelation = ({
   field,
   writeOptionalDefaults = false,
 }: WriteFieldOptions) => {
+  const isMongoDb = field.generatorConfig.provider === 'mongodb';
+
   writer
     .conditionalWrite(field.omitInModel(), '// omitted: ')
     .write(`${field.name}: `)
-    .write(`z.lazy(() => ${field.type}WithRelationsSchema)`);
+    .conditionalWrite(
+      !isMongoDb,
+      `z.lazy(() => ${field.type}WithRelationsSchema)`,
+    )
+    .conditionalWrite(isMongoDb, `z.lazy(() => ${field.type}Schema)`);
 
   writeFieldAdditions({ writer, field, writeOptionalDefaults });
 };

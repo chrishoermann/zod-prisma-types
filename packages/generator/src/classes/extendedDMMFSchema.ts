@@ -118,7 +118,8 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
           (type) =>
             type.name !== 'Query' &&
             type.name !== 'Mutation' &&
-            !type.name.includes('AffectedRows'),
+            !type.name.includes('AffectedRows') &&
+            !type.name.includes('RawAggregate'),
         )
         .map(
           (type) =>

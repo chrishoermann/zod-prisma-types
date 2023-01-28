@@ -22,12 +22,15 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
   readonly relationFields: ExtendedDMMFField[];
   readonly enumFields: ExtendedDMMFField[];
   readonly hasRelationFields: boolean;
+  readonly hasRequiredJsonFields: boolean;
+  readonly hasOptionalJsonFields: boolean;
   readonly hasOmitFields: boolean;
+  readonly hasDecimalFields: boolean;
+  readonly hasOptionalDefaultFields: boolean;
   readonly imports: Set<string>;
   readonly customImports: Set<string>;
   readonly errorLocation: string;
   readonly clearedDocumentation?: string;
-  readonly hasOptionalJsonFields: boolean;
   readonly optionalJsonFields: ExtendedDMMFField[];
   readonly optionalJsonFieldUnion: string;
   readonly writeOptionalDefaultValuesTypes: boolean;
@@ -46,6 +49,10 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
     this.relationFields = this._setRelationFields();
     this.enumFields = this._setEnumfields();
     this.hasRelationFields = this._setHasRelationFields();
+    this.hasRequiredJsonFields = this._setHasRequiredJsonFields();
+    this.hasOptionalJsonFields = this._setHasOptionalJsonFields();
+    this.hasDecimalFields = this._setHasDecimalFields();
+    this.hasOptionalDefaultFields = this._setHasOptionalDefaultFields();
     this.hasOmitFields = this._setHasOmitFields();
     this.errorLocation = this._setErrorLocation();
 
@@ -55,7 +62,6 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
     this.customImports = docsContent.customImports;
     this.clearedDocumentation = docsContent?.documentation;
 
-    this.hasOptionalJsonFields = this._setHasOptionalJsonFields();
     this.optionalJsonFields = this._setOptionalJsonFields();
     this.optionalJsonFieldUnion = this._setOptionalJsonFieldUnion();
     this.writeOptionalDefaultValuesTypes =
@@ -80,6 +86,14 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
     return this.fields.filter((field) => field.kind === 'object');
   }
 
+  private _setHasRequiredJsonFields() {
+    return this.fields.some((field) => field.isJsonType && field.isRequired);
+  }
+
+  private _setHasOptionalJsonFields() {
+    return this.fields.some((field) => field.isJsonType && !field.isRequired);
+  }
+
   private _setEnumfields() {
     return this.fields.filter((field) => field.kind === 'enum');
   }
@@ -90,6 +104,31 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
 
   private _setHasOmitFields() {
     return this.fields.some((field) => field.isOmitField());
+  }
+
+  private _setWriteOptionalDefaultValuesTypes() {
+    return (
+      this.hasOptionalDefaultFields &&
+      this.generatorConfig.createOptionalDefaultValuesTypes
+    );
+  }
+
+  private _setHasOptionalDefaultFields() {
+    return this.fields.some((field) => field.isOptionalDefaultField());
+  }
+
+  private _setHasDecimalFields() {
+    return this.fields.some((field) => field.isDecimalType);
+  }
+
+  private _setOptionalJsonFields() {
+    return this.fields.filter((field) => field.isJsonType && !field.isRequired);
+  }
+
+  private _setOptionalJsonFieldUnion() {
+    return this.optionalJsonFields
+      .map((field) => `"${field.name}"`)
+      .join(' | ');
   }
 
   private _getDocumentationContent() {
@@ -118,6 +157,7 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
     if (!this.documentation) return;
 
     const importStatements = this.documentation?.match(IMPORT_STATEMENT_REGEX);
+
     if (!importStatements) {
       return {
         customImports: [],
@@ -126,12 +166,15 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
     }
 
     const type = importStatements.groups?.['type'];
-    if (type !== 'import')
+
+    if (type !== 'import') {
       throw new Error(
         `[@zod generator error]: '${type}' is not a valid validator key. ${this.errorLocation}`,
       );
+    }
 
     const importsList = importStatements.groups?.['imports']?.split(', ');
+
     if (!importsList) {
       return {
         customImports: [],
@@ -162,57 +205,34 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
   private _getAutomaticImports() {
     const statements: string[] = [];
 
-    if (this.fields.some((field) => field.isJsonType && !field.isRequired)) {
+    const { inputTypePath, prismaClientPath } = this.generatorConfig;
+
+    if (this.hasOptionalJsonFields) {
       statements.push(
-        `import { NullableJsonValue } from "../${this.generatorConfig.inputTypePath}/NullableJsonValue"`,
+        `import { NullableJsonValue } from "../${inputTypePath}/NullableJsonValue"`,
       );
     }
 
-    if (this.fields.some((field) => field.isJsonType && field.isRequired)) {
+    if (this.hasRequiredJsonFields) {
       statements.push(
-        `import { InputJsonValue } from "../${this.generatorConfig.inputTypePath}/InputJsonValue"`,
+        `import { InputJsonValue } from "../${inputTypePath}/InputJsonValue"`,
       );
     }
 
-    if (this.fields.some((field) => field.isDecimalType)) {
+    if (this.hasDecimalFields) {
       statements.push(
-        `import { Prisma } from '${this.generatorConfig.prismaClientPath}'`,
-        `import { DecimalJSLikeSchema } from "../${this.generatorConfig.inputTypePath}/DecimalJsLikeSchema"`,
-        `import { isValidDecimalInput } from "../${this.generatorConfig.inputTypePath}/isValidDecimalInput"`,
+        `import { Prisma } from '${prismaClientPath}'`,
+        `import { DecimalJSLikeSchema } from "../${inputTypePath}/DecimalJsLikeSchema"`,
+        `import { isValidDecimalInput } from "../${inputTypePath}/isValidDecimalInput"`,
       );
     }
 
     this.enumFields.forEach((field) => {
       statements.push(
-        `import { ${field.type}Schema } from '../${this.generatorConfig.inputTypePath}/${field.type}Schema'`,
+        `import { ${field.type}Schema } from '../${inputTypePath}/${field.type}Schema'`,
       );
     });
 
     return statements;
-  }
-
-  _setWriteOptionalDefaultValuesTypes() {
-    return (
-      this.fields.some((field) => field.isOptionalDefaultField()) &&
-      this.generatorConfig.createOptionalDefaultValuesTypes
-    );
-  }
-
-  hasDecimalFields() {
-    return this.fields.some((field) => field.isDecimalType);
-  }
-
-  private _setHasOptionalJsonFields() {
-    return this.fields.some((field) => field.isJsonType && !field.isRequired);
-  }
-
-  private _setOptionalJsonFields() {
-    return this.fields.filter((field) => field.isJsonType && !field.isRequired);
-  }
-
-  private _setOptionalJsonFieldUnion() {
-    return this.optionalJsonFields
-      .map((field) => `"${field.name}"`)
-      .join(' | ');
   }
 }

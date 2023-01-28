@@ -9,7 +9,7 @@ export * from './writeInputJsonValue';
 export * from './writeInputObjectType';
 export * from './writeIsValidDecimalInput';
 export * from './writeJsonValue';
-export * from './writeModel';
+export * from './writeModelOrType';
 export * from './writeModelFields';
 export * from './writeNullableJsonValue';
 export * from './writeOutputObjectType';

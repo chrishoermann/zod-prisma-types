@@ -9,8 +9,6 @@ describe('testSimpleModelNoValidators', async () => {
   it('should set default values in ExtendedDMMF class without config', async () => {
     const extendedDMMF = new ExtendedDMMF(dmmf, {});
 
-    expect(extendedDMMF.createInputTypes()).toStrictEqual(true);
-    expect(extendedDMMF.addInputTypeValidation()).toStrictEqual(true);
     expect(extendedDMMF.generatorConfig.createInputTypes).toStrictEqual(true);
     expect(extendedDMMF.generatorConfig.addInputTypeValidation).toStrictEqual(
       true,
@@ -24,9 +22,6 @@ describe('testSimpleModelNoValidators', async () => {
       addInputTypeValidation: 'false',
     };
     const extendedDMMF = new ExtendedDMMF(dmmf, extendedDMMFConfig);
-
-    expect(extendedDMMF.createInputTypes()).toStrictEqual(false);
-    expect(extendedDMMF.addInputTypeValidation()).toStrictEqual(false);
 
     expect(extendedDMMF.generatorConfig.createInputTypes).toStrictEqual(false);
     expect(extendedDMMF.generatorConfig.addInputTypeValidation).toStrictEqual(

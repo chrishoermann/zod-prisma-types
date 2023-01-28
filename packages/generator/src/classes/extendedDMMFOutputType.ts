@@ -68,8 +68,10 @@ export class ExtendedDMMFOutputType
   ) {
     if (fieldCategory === 'PRISMA_ACTION') {
       return fields
-        .filter((field) =>
-          PRISMA_ACTION_ARRAY.find((elem) => field.name.includes(elem)),
+        .filter(
+          (field) =>
+            !field.name.includes('Raw') && // necessary for mongodb bc a RawAggregate type would otherwise be generated
+            PRISMA_ACTION_ARRAY.some((elem) => field.name.includes(elem)),
         )
         .map(
           (field) =>
@@ -81,7 +83,7 @@ export class ExtendedDMMFOutputType
       return fields
         .filter(
           (field) =>
-            !PRISMA_ACTION_ARRAY.find((elem) => field.name.includes(elem)),
+            !PRISMA_ACTION_ARRAY.some((elem) => field.name.includes(elem)),
         )
         .map(
           (field) =>
@@ -115,6 +117,19 @@ export class ExtendedDMMFOutputType
   hasRelationField() {
     return this.fields.some(
       (field) => field.outputType.location === 'outputObjectTypes',
+    );
+  }
+
+  isMongoDb() {
+    return this.generatorConfig.provider === 'mongodb';
+  }
+
+  // only write the include statement if the type is a prisma model
+  //
+  writeMongoDbInclude() {
+    return (
+      this.isMongoDb() &&
+      this.fields.some((field) => field.isObjectOutputType())
     );
   }
 }

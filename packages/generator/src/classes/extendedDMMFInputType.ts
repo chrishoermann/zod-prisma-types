@@ -142,14 +142,6 @@ export class ExtendedDMMFInputType
       .map((field) => field.name);
   }
 
-  hasOmitFields() {
-    return this.omitFields.length > 0;
-  }
-
-  getOmitFieldsUnion() {
-    return this.omitFields.map((field) => `"${field}"`).join(' | ');
-  }
-
   private _setImports() {
     const fieldImports = this.fields
       .map((field) => field.getImports(this.name))
@@ -163,5 +155,13 @@ export class ExtendedDMMFInputType
     }
 
     return new Set(fieldImports);
+  }
+
+  hasOmitFields() {
+    return this.omitFields.length > 0;
+  }
+
+  getOmitFieldsUnion() {
+    return this.omitFields.map((field) => `"${field}"`).join(' | ');
   }
 }

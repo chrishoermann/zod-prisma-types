@@ -10,3 +10,4 @@ export * from './writeSingleFileImportStatements';
 export * from './writeSingleFileIncludeSelectStatements';
 export * from './writeSingleFileInputTypeStatements';
 export * from './writeSingleFileModelStatements';
+export * from './writeSingleFileTypeStatements';
