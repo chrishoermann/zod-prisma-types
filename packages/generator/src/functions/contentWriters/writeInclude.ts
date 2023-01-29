@@ -9,26 +9,31 @@ export const writeInclude = (
   const { useMultipleFiles, prismaClientPath, outputTypePath } =
     dmmf.generatorConfig;
 
-  const addPrismaClient =
-    useMultipleFiles || getSingleFileContent ? '' : 'PrismaClient.';
+  const addPrismaClient = '';
+  // const addPrismaClient =
+  //   useMultipleFiles || getSingleFileContent ? '' : 'PrismaClient.';
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
-    writeImport('{ Prisma }', prismaClientPath);
+    writeImport('{ type Prisma }', prismaClientPath);
 
     model.fields.forEach((field) => {
-      if (field.isObjectOutputType()) {
-        if (field.isListOutputType()) {
-          writeImport(
-            `{ ${field.outputType.type}FindManyArgsSchema }`,
-            `../${outputTypePath}/${field.outputType.type}FindManyArgsSchema`,
-          );
-        } else {
-          writeImport(
-            `{ ${field.outputType.type}ArgsSchema }`,
-            `../${outputTypePath}/${field.outputType.type}ArgsSchema`,
-          );
-        }
+      // when using mongodb, the `include` type is created but not filled with any fields
+      // So no need to import anything
+      // if (dmmf.generatorConfig.isMongoDb) return;
+
+      if (field.writeIncludeFindManyField) {
+        return writeImport(
+          `{ ${field.outputType.type}FindManyArgsSchema }`,
+          `../${outputTypePath}/${field.outputType.type}FindManyArgsSchema`,
+        );
+      }
+
+      if (field.writeIncludeField) {
+        return writeImport(
+          `{ ${field.outputType.type}ArgsSchema }`,
+          `../${outputTypePath}/${field.outputType.type}ArgsSchema`,
+        );
       }
     });
   }
@@ -40,7 +45,10 @@ export const writeInclude = (
     .write(`z.object(`)
     .inlineBlock(() => {
       model.fields.forEach((field) => {
-        if (field.isObjectOutputType()) {
+        // when using mongodb, the `include` type is created but not filled with any fields
+        // to replicate this behaviour, the `include` schema is also created as empty object
+
+        if (field.writeIncludeField) {
           writer
             .write(`${field.name}: `)
             .write(`z.union([`)

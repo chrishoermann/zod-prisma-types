@@ -1,13 +1,13 @@
 import { Decimal, DecimalJsLike } from '@prisma/client/runtime';
 import { initTRPC } from '@trpc/server';
 import { createHTTPServer } from '@trpc/server/adapters/standalone';
-import { JsonModelSchema } from '../../prisma/generated/zod';
 import {
-  DecimalListModelSchema,
+  DateModelSchema,
   DecimalModelSchema,
-  DecimalSchema,
+  DecimalNullableFilterSchema,
+  JsonModelSchema,
   isValidDecimalInput,
-} from '../implementations/decimalSchema';
+} from '../../prisma/generated/zod';
 
 export type AppRouter = typeof appRouter;
 
@@ -19,33 +19,66 @@ const router = t.router;
 // tests rely on the schema.prisma in the prisma folder
 // the zod schemas need to be generated to complete the tests
 
-const appRouter = router({
-  decimal: publicProcedure.input(DecimalSchema).query(({ input }) => {
-    const isDecimal = isValidDecimalInput(input);
-    return isDecimal;
-  }),
-  decimalModel: publicProcedure.input(DecimalModelSchema).query(({ input }) => {
-    const isDecimal = isValidDecimalInput(input.decimal);
-    const isDecimalOpt = isValidDecimalInput(input.decimalOpt);
-    return { isDecimal, isDecimalOpt };
-  }),
-  decimalListModel: publicProcedure
-    .input(DecimalListModelSchema)
-    .query(({ input }) => {
-      const isDecimal = (input.decimal as any[]).every(
-        (i: string | number | Decimal | DecimalJsLike | null | undefined) =>
-          isValidDecimalInput(i),
-      ) as boolean;
-      const isDecimalOpt = (input.decimalOpt as any).every(
-        (i: string | number | Decimal | DecimalJsLike | null | undefined) =>
-          isValidDecimalInput(i),
-      ) as boolean;
-      return { isDecimal, isDecimalOpt };
-    }),
-  json: publicProcedure.input(JsonModelSchema).query(({ input }) => {
-    return input;
-  }),
+///////////////////////////////////////
+// PROCEDURES
+///////////////////////////////////////
+
+// DECIMAL
+// -----------------------------------
+
+const decimal = publicProcedure.input(DecimalModelSchema).query(({ input }) => {
+  const isDecimal = isValidDecimalInput(input.decimal);
+  const isDecimalOpt = isValidDecimalInput(input.decimalOpt);
+  return { isDecimal, isDecimalOpt };
 });
+
+const decimalList = publicProcedure
+  .input(DecimalNullableFilterSchema)
+  .query(({ input }) => {
+    const isDecimalIn = (input.in as any[]).every(
+      (i: string | number | Decimal | DecimalJsLike | null | undefined) =>
+        isValidDecimalInput(i),
+    ) as boolean;
+    const isDecimalNotIn = (input.notIn as any).every(
+      (i: string | number | Decimal | DecimalJsLike | null | undefined) =>
+        isValidDecimalInput(i),
+    ) as boolean;
+    return { isDecimalIn, isDecimalNotIn };
+  });
+
+// JSON
+// -----------------------------------
+
+const json = publicProcedure.input(JsonModelSchema).query(({ input }) => {
+  console.log(input);
+  const jsonIsObject = input.json instanceof Object;
+  const jsonOptIsObject = input.jsonOpt instanceof Object;
+  return { jsonIsObject, jsonOptIsObject };
+});
+
+// DATE
+// -----------------------------------
+
+const date = publicProcedure.input(DateModelSchema).query(({ input }) => {
+  const dateIsDateInput = input.date instanceof Date;
+  const dateOptIsDateInput = input.dateOpt instanceof Date;
+  return { dateIsDateInput, dateOptIsDateInput };
+});
+
+///////////////////////////////////////
+// ROUTER
+///////////////////////////////////////
+
+const appRouter = router({
+  decimal,
+  decimalList,
+  json,
+  date,
+});
+
+///////////////////////////////////////
+// SERVER
+///////////////////////////////////////
 
 export const getServer = () => {
   return createHTTPServer({

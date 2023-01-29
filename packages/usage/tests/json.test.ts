@@ -2,7 +2,12 @@ import {
   JsonModelCreateInputSchema,
   JsonModelSchema,
 } from '../prisma/generated/zod';
+import { client } from './trpc/client';
 import { getServer } from './trpc/server';
+
+///////////////////////////////////////
+// SETUP
+///////////////////////////////////////
 
 const httpServer = getServer();
 
@@ -13,6 +18,10 @@ beforeAll(() => {
 afterAll(() => {
   httpServer.server.close();
 });
+
+///////////////////////////////////////
+// BASIC TESTS
+///////////////////////////////////////
 
 it('should return Prisma.DbNull json null value when "DbNull" is provided with ModelSchema', async () => {
   const parsedModel = JsonModelSchema.parse({
@@ -75,4 +84,56 @@ it('should return Prisma.JsonNull json null value when "JsonNull" is provided wi
   });
 
   expect(parsedModel.jsonOpt).toBeTypeOf('object');
+});
+
+///////////////////////////////////////
+// TRPC TESTS
+///////////////////////////////////////
+
+it('should be able to pass an object via trpc with JsonModelSchema', async () => {
+  const data = {
+    id: 1,
+    json: { someKey: 'someValue' },
+    jsonOpt: { someKey: 'someValue' },
+  };
+
+  const result = await client.json.query(data);
+
+  expect(result.jsonIsObject).toBe(true);
+  expect(result.jsonOptIsObject).toBe(true);
+});
+
+it('should be able to pass "JsonNull" via trpc with JsonModelSchema', async () => {
+  const data = {
+    id: 1,
+    json: { someKey: 'someValue' },
+    jsonOpt: 'JsonNull',
+  };
+
+  const result = await client.json.query(data);
+
+  expect(result.jsonIsObject).toBe(true);
+  expect(result.jsonOptIsObject).toBe(true);
+});
+
+it('should be able to pass "DbNull" via trpc with JsonModelSchema', async () => {
+  const data = {
+    id: 1,
+    json: { someKey: 'someValue' },
+    jsonOpt: 'DbNull',
+  };
+
+  const result = await client.json.query(data);
+
+  expect(result.jsonIsObject).toBe(true);
+  expect(result.jsonOptIsObject).toBe(true);
+});
+
+it('should throw when passing an invalid string array to decimal via trpc', async () => {
+  await expect(
+    client.decimalList.query({
+      in: ['qsdgast', 'asdgaser'],
+      notIn: ['asdgatse', 'oasdgo'],
+    }),
+  ).rejects.toThrow();
 });

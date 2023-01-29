@@ -15,12 +15,13 @@ export const writeArgs = (
   const { useMultipleFiles, prismaClientPath, inputTypePath } =
     dmmf.generatorConfig;
 
-  const addPrismaClient =
-    useMultipleFiles || getSingleFileContent ? '' : 'PrismaClient.';
+  const addPrismaClient = '';
+  // const addPrismaClient =
+  //   useMultipleFiles || getSingleFileContent ? '' : 'PrismaClient.';
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
-    writeImport('{ Prisma }', prismaClientPath);
+    writeImport('{ type Prisma }', prismaClientPath);
     writeImport(
       `{ ${model.name}SelectSchema }`,
       `../${inputTypePath}/${model.name}SelectSchema`,

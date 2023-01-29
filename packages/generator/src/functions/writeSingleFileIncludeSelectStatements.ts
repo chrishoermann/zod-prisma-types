@@ -23,15 +23,15 @@ export const writeSingleFileIncludeSelectStatements: WriteStatements = (
   dmmf.schema.outputObjectTypes.model.forEach((model) => {
     fileWriter.writeHeading(`${model.formattedNames.upperCaseSpace}`, 'SLIM');
 
-    if (model.hasRelationField() || model.writeMongoDbInclude()) {
+    if (model.writeInclude()) {
       writeInclude({ fileWriter, dmmf }, model);
     }
 
-    if (model.hasRelationField() || model.isMongoDb()) {
+    if (model.writeIncludeArgs()) {
       writeArgs({ fileWriter, dmmf }, model);
     }
 
-    if (model.hasCountField()) {
+    if (model.writeCountArgs()) {
       writeCountArgs({ fileWriter, dmmf }, model);
       writeCountSelect({ fileWriter, dmmf }, model);
     }

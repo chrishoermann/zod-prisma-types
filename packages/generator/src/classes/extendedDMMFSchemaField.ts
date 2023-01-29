@@ -25,34 +25,33 @@ export class ExtendedDMMFSchemaField
   readonly args: ExtendedDMMFSchemaArg[];
   readonly deprecation?: DMMF.SchemaField['deprecation'];
   readonly documentation?: DMMF.SchemaField['documentation'];
-
   /**
    * Prisma action of the field.
    * @example "findManyUser"
    */
   readonly prismaAction: FilterdPrismaAction;
-
   /**
    * String that contains the arg name according to prisma types.
    * @example "UserFindManyArgs"
    */
   readonly argName?: string;
-
   /**
    * Type of the model according to the prisma action.
    * @example "User" for "findManyUser"
    */
   readonly modelType: string | DMMF.OutputType | DMMF.SchemaEnum;
-
   /**
    * Linked `ExtendedDMMFModel`.
    * Used when generating the `select` and `include` args.
    */
   readonly linkedModel?: ExtendedDMMFModel;
-
   readonly hasOmitFields: boolean;
-
   readonly argTypeImports: Set<string>;
+  readonly writeSelectFindManyField: boolean;
+  readonly writeSelectField: boolean;
+  readonly writeIncludeFindManyField: boolean;
+  readonly writeIncludeField: boolean;
+  readonly includeInSelectAndIncludeArgs: boolean;
 
   constructor(
     readonly generatorConfig: GeneratorConfig,
@@ -66,6 +65,12 @@ export class ExtendedDMMFSchemaField
     this.outputType = field.outputType;
     this.deprecation = field.deprecation;
     this.documentation = field.documentation;
+    this.includeInSelectAndIncludeArgs =
+      this._setIncludeInSelectAndIncludeArgs();
+    this.writeSelectFindManyField = this._setWriteSelectFindManyField();
+    this.writeSelectField = this._setWriteSelectField();
+    this.writeIncludeFindManyField = this._setWriteIncludeFindManyField();
+    this.writeIncludeField = this._setWriteIncludeField();
     this.prismaAction = this._setMatchedPrismaAction();
     this.modelType = this._setModelType();
     this.argName = this._setArgName();
@@ -153,7 +158,7 @@ export class ExtendedDMMFSchemaField
     const imports: string[] = [];
 
     if (
-      this.includeInSelectAndIncludeArgs() &&
+      this.includeInSelectAndIncludeArgs &&
       this.linkedModel?.hasRelationFields
     ) {
       imports.push(
@@ -181,6 +186,45 @@ export class ExtendedDMMFSchemaField
         (imp) => !imp.includes('IntSchema') && !imp.includes('BooleanSchema'),
       ),
     );
+  }
+
+  // When using mongodb, there is no `findMany` arg type created even for lists.
+  private _setWriteSelectFindManyField() {
+    return (
+      this.isObjectOutputType() &&
+      this.isListOutputType() &&
+      !this.generatorConfig.isMongoDb
+    );
+  }
+
+  private _setWriteSelectField() {
+    return this.isObjectOutputType();
+  }
+
+  // When using mongodb, there is no `findMany` arg type created even for lists.
+  private _setWriteIncludeFindManyField() {
+    return (
+      this.isObjectOutputType() &&
+      this.isListOutputType() &&
+      !this.generatorConfig.isMongoDb
+    );
+  }
+
+  /**
+   * When using mongodb, the `include` type is created but not filled with any fields.
+   * To replicate this behaviour, the `include` schema is aslso created as empty object
+   * @returns `true` if the field is an object type and the provider is not `mongodb`
+   */
+  private _setWriteIncludeField() {
+    return this.isObjectOutputType() && !this.generatorConfig.isMongoDb;
+  }
+
+  /**
+   * Used to determine if the field should be included in the `select` and `include` args.
+   * @returns `true` if the field does not contian `createMany`, `updateMany` or `deleteMany` in its name
+   */
+  private _setIncludeInSelectAndIncludeArgs() {
+    return !/createMany|updateMany|deleteMany/.test(this.name);
   }
 
   /**
@@ -216,7 +260,7 @@ export class ExtendedDMMFSchemaField
       const argName = `${arg.name}${arg.isRequired ? '' : '?'}: `;
 
       // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      // NEEDS SOME REFACTORING
+      // HACKY - NEEDS SOME REFACTORING
       // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       const argType = arg.hasMultipleTypes
         ? arg.inputTypes
@@ -255,21 +299,5 @@ export class ExtendedDMMFSchemaField
 
   isCountField() {
     return this.name.includes('_count');
-  }
-
-  /**
-   * Used to determine if the field should be included in the `select` and `include` args.
-   * @returns `true` if the field does not contian `createMany`, `updateMany` or `deleteMany` in its name
-   */
-  includeInSelectAndIncludeArgs() {
-    return !/createMany|updateMany|deleteMany/.test(this.name);
-  }
-
-  writeSelectFindManyImports() {
-    return this.isObjectOutputType() && this.isListOutputType();
-  }
-
-  writeSelectImports() {
-    return this.isObjectOutputType();
   }
 }

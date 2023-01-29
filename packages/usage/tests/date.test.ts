@@ -1,4 +1,24 @@
 import { DateModelSchema } from '../prisma/generated/zod';
+import { client } from './trpc/client';
+import { getServer } from './trpc/server';
+
+///////////////////////////////////////
+// SETUP
+///////////////////////////////////////
+
+const httpServer = getServer();
+
+beforeAll(() => {
+  httpServer.listen(2022);
+});
+
+afterAll(() => {
+  httpServer.server.close();
+});
+
+///////////////////////////////////////
+// BASIC TESTS
+///////////////////////////////////////
 
 it('should coerce a date string to Date', () => {
   const result = DateModelSchema.parse({
@@ -34,4 +54,21 @@ it('should not coerce an invalid date string to Date instance', () => {
       dateOpt: new Date(Date.now()),
     });
   }).toThrowError();
+});
+
+///////////////////////////////////////
+// TRPC TESTS
+///////////////////////////////////////
+
+it('should be able to pass a date instance via trpc with DateModelSchema', async () => {
+  const data = {
+    id: 1,
+    date: new Date(Date.now()),
+    dateOpt: new Date(Date.now()),
+  };
+
+  const result = await client.date.query(data);
+
+  expect(result.dateIsDateInput).toBe(true);
+  expect(result.dateOptIsDateInput).toBe(true);
 });

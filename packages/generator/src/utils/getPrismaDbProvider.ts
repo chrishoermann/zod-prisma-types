@@ -5,6 +5,11 @@ const providerSchema = z.string();
 
 export const getPrismaClientProvider = (options: GeneratorOptions) => {
   const provider = providerSchema.parse(options.datasources[0].provider);
-
-  return { provider };
+  if (provider === 'mongodb') {
+    return {
+      provider,
+      isMongoDb: 'true',
+    };
+  }
+  return { provider, isMongoDb: 'false' };
 };

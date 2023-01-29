@@ -47,6 +47,11 @@ export const configSchema = z.object({
     .transform((val) => val === 'true'),
   prismaClientPath: z.string().default('@prisma/client'),
   provider: z.string().optional(),
+  isMongoDb: z
+    .string()
+    .optional()
+    .default('false')
+    .transform((val) => val === 'true'),
   inputTypePath: z.string().optional().default('inputTypeSchemas'), // currently only used internally
   outputTypePath: z.string().optional().default('outputTypeSchemas'), // currently only used internally
 });

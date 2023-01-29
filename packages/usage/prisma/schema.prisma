@@ -232,3 +232,14 @@ model DateModel {
 // type SomeType {
 //   someField String
 // }
+
+// type ModeratedContentFile {
+//   mimetype String
+//   url      String
+// }
+
+// model ModeratedContent {
+//   id    String                 @id @map("_id")
+//   v     Int                    @map("__v")
+//   files ModeratedContentFile[]
+// }

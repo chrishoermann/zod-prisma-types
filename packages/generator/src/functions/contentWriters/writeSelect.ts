@@ -12,26 +12,30 @@ export const writeSelect = (
   const { useMultipleFiles, prismaClientPath, outputTypePath } =
     dmmf.generatorConfig;
 
-  const addPrismaClient =
-    useMultipleFiles || getSingleFileContent ? '' : 'PrismaClient.';
+  const addPrismaClient = '';
+  // const addPrismaClient =
+  //   useMultipleFiles || getSingleFileContent ? '' : 'PrismaClient.';
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
-    writeImport('{ Prisma }', prismaClientPath);
+    writeImport('{ type Prisma }', prismaClientPath);
 
     model.fields.forEach((field) => {
-      if (field.isObjectOutputType()) {
-        if (field.isListOutputType()) {
-          writeImport(
-            `{ ${field.outputType.type}FindManyArgsSchema }`,
-            `../${outputTypePath}/${field.outputType.type}FindManyArgsSchema`,
-          );
-        } else {
-          writeImport(
-            `{ ${field.outputType.type}ArgsSchema }`,
-            `../${outputTypePath}/${field.outputType.type}ArgsSchema`,
-          );
-        }
+      // when using mongodb, there is no `findMany` arg type created even for lists
+      // so the basic arg type needs to be imported instead
+
+      if (field.writeSelectFindManyField) {
+        return writeImport(
+          `{ ${field.outputType.type}FindManyArgsSchema }`,
+          `../${outputTypePath}/${field.outputType.type}FindManyArgsSchema`,
+        );
+      }
+
+      if (field.writeSelectField) {
+        return writeImport(
+          `{ ${field.outputType.type}ArgsSchema }`,
+          `../${outputTypePath}/${field.outputType.type}ArgsSchema`,
+        );
       }
     });
   }
@@ -51,7 +55,10 @@ export const writeSelect = (
             .newLine();
         }
 
-        if (field.isListOutputType() && field.isObjectOutputType()) {
+        // when using mongodb, there is no `findMany` arg type created even for lists
+        // so the basic arg type needs to be used instead
+
+        if (field.writeSelectFindManyField) {
           return writer
             .write(`${field.name}: `)
             .write(`z.union([`)
@@ -63,7 +70,7 @@ export const writeSelect = (
             .newLine();
         }
 
-        if (field.isObjectOutputType()) {
+        if (field.writeSelectField) {
           return writer
             .write(`${field.name}: `)
             .write(`z.union([`)

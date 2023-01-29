@@ -12,12 +12,13 @@ export const writeOutputObjectType = (
   const { useMultipleFiles, prismaClientPath, outputTypePath } =
     dmmf.generatorConfig;
 
-  const addPrismaClient =
-    useMultipleFiles || getSingleFileContent ? '' : 'PrismaClient.';
+  const addPrismaClient = '';
+  // const addPrismaClient =
+  //   useMultipleFiles || getSingleFileContent ? '' : 'PrismaClient.';
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
-    writeImport('{ Prisma }', prismaClientPath);
+    writeImport('{ type Prisma }', prismaClientPath);
     writeImportSet(field.argTypeImports);
 
     // determine if the outputType should include the "select" or "include" field
@@ -35,14 +36,14 @@ export const writeOutputObjectType = (
       //  needs to be imported
 
       modelWithSelect.fields.forEach((field) => {
-        if (field.writeSelectFindManyImports()) {
+        if (field.writeSelectFindManyField) {
           return writeImport(
             `{ ${field.outputType.type}FindManyArgsSchema }`,
             `../${outputTypePath}/${field.outputType.type}FindManyArgsSchema`,
           );
         }
 
-        if (field.writeSelectImports()) {
+        if (field.writeSelectField) {
           return writeImport(
             `{ ${field.outputType.type}ArgsSchema }`,
             `../${outputTypePath}/${field.outputType.type}ArgsSchema`,
@@ -54,7 +55,7 @@ export const writeOutputObjectType = (
       // Some outputTypes like "CreateMany", "UpdateMany", "DeleteMany"
       // do not have a "select" or "include" field.
 
-      if (field.includeInSelectAndIncludeArgs()) {
+      if (field.includeInSelectAndIncludeArgs) {
         writeHeading(
           'Select schema needs to be in file to prevent circular imports',
         );
@@ -89,11 +90,11 @@ export const writeOutputObjectType = (
     .inlineBlock(() => {
       writer
         .conditionalWriteLine(
-          field.includeInSelectAndIncludeArgs(),
+          field.includeInSelectAndIncludeArgs,
           `select: ${field.modelType}SelectSchema.optional(),`,
         )
         .conditionalWriteLine(
-          field.includeInSelectAndIncludeArgs() &&
+          field.includeInSelectAndIncludeArgs &&
             field.linkedModel?.hasRelationFields,
           `include: ${field.modelType}IncludeSchema.optional(),`,
         );

@@ -10,11 +10,7 @@ export const writeSingleFileImportStatements: WriteStatements = (
 ) => {
   const { prismaClientPath } = dmmf.generatorConfig;
   writeImport('{ z }', 'zod');
-  writeImport(`* as PrismaClient`, `${prismaClientPath}`);
-
-  if (dmmf.schema.hasDecimalTypes) {
-    writeImport('{ DecimalJsLike }', `${prismaClientPath}/runtime`);
-  }
+  writeImport(`{ Prisma }`, `${prismaClientPath}`);
 
   if (dmmf.customImports) {
     dmmf.customImports.forEach((statement) => {

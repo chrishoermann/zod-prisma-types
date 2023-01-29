@@ -9,25 +9,23 @@ export const writePrismaEnum = (
   }: ContentWriterOptions,
   { useNativeEnum, values, name }: ExtendedDMMFSchemaEnum,
 ) => {
-  const { useMultipleFiles, prismaClientPath } = dmmf.generatorConfig;
+  const { useMultipleFiles } = dmmf.generatorConfig;
 
-  const addPrismaClient =
-    useMultipleFiles || getSingleFileContent ? '' : 'PrismaClient.';
+  // const addPrismaClient =
+  //   useMultipleFiles || getSingleFileContent ? '' : 'PrismaClient.';
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
   }
 
   if (useNativeEnum) {
-    if (useMultipleFiles) {
-      writeImport('{ Prisma }', prismaClientPath);
-    }
+    writer.blankLine().write(`export const ${name}Schema = z.enum([`);
+    values.forEach((value, idx) => {
+      const writeComma = idx !== values.length - 1;
 
-    writer
-      .blankLine()
-      .writeLine(
-        `export const ${name}Schema = z.nativeEnum(${addPrismaClient}Prisma.${name});`,
-      );
+      writer.write(`'${value}'${writeComma ? ',' : ''}`);
+    });
+    writer.write(`]);`);
   } else {
     writer
       .conditionalWrite(

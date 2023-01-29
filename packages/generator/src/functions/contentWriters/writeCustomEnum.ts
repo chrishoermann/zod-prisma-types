@@ -7,23 +7,21 @@ export const writeCustomEnum = (
     dmmf,
     getSingleFileContent = false,
   }: ContentWriterOptions,
-  { name }: ExtendedDMMFEnum,
+  { name, values }: ExtendedDMMFEnum,
 ) => {
-  const { useMultipleFiles, prismaClientPath } = dmmf.generatorConfig;
-
-  const addPrismaClient =
-    useMultipleFiles || getSingleFileContent ? '' : 'PrismaClient.';
+  const { useMultipleFiles } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
-    writeImport(`{ ${name} }`, prismaClientPath);
   }
 
+  writer.blankLine().write(`export const ${name}Schema = z.enum([`);
+  values.forEach((value, idx) => {
+    const writeComma = idx !== values.length - 1;
+    writer.write(`'${value.name}'${writeComma ? ',' : ''}`);
+  });
   writer
-    .blankLine()
-    .writeLine(
-      `export const ${name}Schema = z.nativeEnum(${addPrismaClient}${name})`,
-    )
+    .write(`]);`)
     .blankLine()
     .writeLine(
       `export type ${name}Type = \`\${z.infer<typeof ${name}Schema>}\``,

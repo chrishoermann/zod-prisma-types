@@ -44,14 +44,14 @@ export const writeArgTypeFiles: CreateFiles = ({ path: outputPath, dmmf }) => {
     ////////////////////////////////////////////////////
 
     dmmf.schema.outputObjectTypes.model.forEach((model) => {
-      if (model.hasRelationField()) {
+      if (model.writeIncludeArgs()) {
         new FileWriter().createFile(
           `${path}/${model.name}ArgsSchema.ts`,
           (fileWriter) => writeArgs({ fileWriter, dmmf }, model),
         );
       }
 
-      if (model.hasCountField()) {
+      if (model.writeCountArgs()) {
         new FileWriter().createFile(
           `${path}/${model.name}CountOutputTypeArgsSchema.ts`,
           (fileWriter) => writeCountArgs({ fileWriter, dmmf }, model),

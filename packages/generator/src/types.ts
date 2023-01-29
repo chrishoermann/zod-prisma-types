@@ -1,6 +1,5 @@
-import { DMMF } from '@prisma/generator-helper';
 import CodeBlockWriter from 'code-block-writer';
-import { StatementStructures, WriterFunction } from 'ts-morph';
+// import { StatementStructures, WriterFunction } from 'ts-morph';
 
 import {
   CreateFileOptions,
@@ -10,20 +9,6 @@ import {
   ExtendedDMMFSchemaArgInputType,
   ZodValidatorOptions,
 } from './classes';
-
-export type StatementsArray = Statement[];
-export type Statement = string | WriterFunction | StatementStructures;
-
-export interface ExtendedStatement {
-  statement: Statement;
-  imports: Statement[];
-  filename: string;
-}
-
-export type GetStatements = (
-  datamodel: ExtendedDMMF,
-  writer: CodeBlockWriter,
-) => Statement[];
 
 export type WriteStatements = (
   datamodel: ExtendedDMMF,
@@ -175,13 +160,6 @@ export interface WriteTypeOptions extends ZodValidatorOptions {
 export type WriteTypeFunction<
   TOptions extends WriteTypeOptions = WriteTypeOptions,
 > = (writer: CodeBlockWriter, options: TOptions) => CodeBlockWriter | undefined;
-
-export type TestFunction = (dmmf: DMMF.Document) => void;
-
-export interface TestConfig {
-  schemaPath: string;
-  tests: TestFunction;
-}
 
 ///////////////////////////////////////////////
 // HELPER TYPES FOR MODEL GENERATION

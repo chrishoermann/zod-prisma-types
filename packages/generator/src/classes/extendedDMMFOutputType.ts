@@ -120,16 +120,23 @@ export class ExtendedDMMFOutputType
     );
   }
 
-  isMongoDb() {
-    return this.generatorConfig.provider === 'mongodb';
-  }
-
   // only write the include statement if the type is a prisma model
-  //
   writeMongoDbInclude() {
     return (
-      this.isMongoDb() &&
+      this.generatorConfig.isMongoDb &&
       this.fields.some((field) => field.isObjectOutputType())
     );
+  }
+
+  writeInclude() {
+    return this.hasRelationField() || this.writeMongoDbInclude();
+  }
+
+  writeIncludeArgs() {
+    return this.hasRelationField() || this.generatorConfig.isMongoDb;
+  }
+
+  writeCountArgs() {
+    return this.hasCountField();
   }
 }

@@ -11,14 +11,8 @@ export const writeModelOrType = (
   }: ContentWriterOptions,
   model: ExtendedDMMFModel,
 ) => {
-  const {
-    useMultipleFiles,
-    createRelationValuesTypes,
-    inputTypePath,
-    provider,
-  } = dmmf.generatorConfig;
-
-  const isMongoDb = provider === 'mongodb';
+  const { useMultipleFiles, createRelationValuesTypes, inputTypePath } =
+    dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
@@ -36,7 +30,7 @@ export const writeModelOrType = (
         new Set(
           model.relationFields
             .map((field) =>
-              !isMongoDb
+              !dmmf.generatorConfig.isMongoDb
                 ? [
                     `import { type ${field.type}WithRelations, ${field.type}WithRelationsSchema } from './${field.type}Schema'`,
                   ]
@@ -70,7 +64,7 @@ export const writeModelOrType = (
     })
     .write(`)`);
 
-  if (isMongoDb) {
+  if (dmmf.generatorConfig.isMongoDb) {
     writer
       .blankLine()
       .write(`export type ${model.name} = z.infer<typeof ${model.name}Schema>`);
@@ -79,7 +73,7 @@ export const writeModelOrType = (
   if (model.writeOptionalDefaultValuesTypes) {
     writer
       .blankLine()
-      .write(`export const ${model.name}OptionalDefaultsSchema =`)
+      .write(`export const ${model.name}OptionalDefaultsSchema = `)
       .write(`${model.name}Schema.merge(z.object(`)
       .inlineBlock(() => {
         [...model.enumFields, ...model.scalarFields].forEach((field) => {
@@ -131,8 +125,11 @@ export const writeModelOrType = (
           .write(field.name)
           .conditionalWrite(!field.isRequired, '?')
           .write(': ')
-          .conditionalWrite(!isMongoDb, `${field.type}WithRelations`)
-          .conditionalWrite(isMongoDb, `${field.type}`)
+          .conditionalWrite(
+            !dmmf.generatorConfig.isMongoDb,
+            `${field.type}WithRelations`,
+          )
+          .conditionalWrite(dmmf.generatorConfig.isMongoDb, `${field.type}`)
           .conditionalWrite(field.isList, '[]')
           .conditionalWrite(!field.isRequired, ' | null')
           .write(';')
