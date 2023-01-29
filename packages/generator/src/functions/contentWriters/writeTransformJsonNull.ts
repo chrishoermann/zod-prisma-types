@@ -11,6 +11,8 @@ export const writeTransformJsonNull = ({
   // const addPrismaClient =
   //   useMultipleFiles || getSingleFileContent ? '' : 'PrismaClient.';
 
+  // TODO: check how to get DbNUll and JsonNull from PrismaClient without importing the whole namespace
+
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ Prisma }', prismaClientPath);
   }
