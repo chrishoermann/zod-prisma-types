@@ -11,7 +11,9 @@ export const writeSingleFileImportStatements: WriteStatements = (
   const { prismaClientPath } = dmmf.generatorConfig;
   writeImport('{ z }', 'zod');
 
-  // TODO: only import whole namespace if there are json fields - otherwise import type
+  // Prisma should primarily be imported as a type, but if there are json fields,
+  // we need to import the whole namespace because the null transformation
+  // relies on the Prisma.JsonNull and Prisma.DbNull objects
 
   if (dmmf.schema.hasJsonTypes) {
     writeImport(`{ Prisma }`, `${prismaClientPath}`);

@@ -20,12 +20,7 @@ export const generateMultipleFiles = ({ dmmf, path }: CreateOptions) => {
     }
   });
 
-  // Create the model files
   writeModelFiles({ path, dmmf });
-
-  // Create the input type files
   writeInputTypeFiles({ path, dmmf });
-
-  // Create the arg type files
   writeArgTypeFiles({ path, dmmf });
 };

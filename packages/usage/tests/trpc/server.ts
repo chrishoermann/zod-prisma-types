@@ -50,7 +50,6 @@ const decimalList = publicProcedure
 // -----------------------------------
 
 const json = publicProcedure.input(JsonModelSchema).query(({ input }) => {
-  console.log(input);
   const jsonIsObject = input.json instanceof Object;
   const jsonOptIsObject = input.jsonOpt instanceof Object;
   return { jsonIsObject, jsonOptIsObject };

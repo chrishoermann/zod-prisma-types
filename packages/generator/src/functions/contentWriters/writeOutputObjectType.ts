@@ -51,7 +51,7 @@ export const writeOutputObjectType = (
       // Some outputTypes like "CreateMany", "UpdateMany", "DeleteMany"
       // do not have a "select" or "include" field.
 
-      if (field.includeInSelectAndIncludeArgs) {
+      if (field.writeInSelectAndIncludeArgs) {
         writeHeading(
           'Select schema needs to be in file to prevent circular imports',
         );
@@ -86,14 +86,18 @@ export const writeOutputObjectType = (
     .inlineBlock(() => {
       writer
         .conditionalWriteLine(
-          field.includeInSelectAndIncludeArgs,
+          field.writeInSelectAndIncludeArgs,
           `select: ${field.modelType}SelectSchema.optional(),`,
         )
         .conditionalWriteLine(
-          field.includeInSelectAndIncludeArgs &&
+          field.writeInSelectAndIncludeArgs &&
             field.linkedModel?.hasRelationFields,
           `include: ${field.modelType}IncludeSchema.optional(),`,
         );
+      // .conditionalWriteLine(
+      //   field.writeInSelectAndIncludeArgs && field.writeIncludeField,
+      //   `include: ${field.modelType}IncludeSchema.optional(),`,
+      // );
       field.args.forEach((arg) => {
         writer.write(`${arg.name}: `);
 

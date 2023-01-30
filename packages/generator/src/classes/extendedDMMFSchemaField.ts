@@ -51,7 +51,8 @@ export class ExtendedDMMFSchemaField
   readonly writeSelectField: boolean;
   readonly writeIncludeFindManyField: boolean;
   readonly writeIncludeField: boolean;
-  readonly includeInSelectAndIncludeArgs: boolean;
+  readonly writeInSelectAndIncludeArgs: boolean;
+  readonly writeInclude: boolean;
 
   constructor(
     readonly generatorConfig: GeneratorConfig,
@@ -65,19 +66,21 @@ export class ExtendedDMMFSchemaField
     this.outputType = field.outputType;
     this.deprecation = field.deprecation;
     this.documentation = field.documentation;
-    this.includeInSelectAndIncludeArgs =
-      this._setIncludeInSelectAndIncludeArgs();
+    this.writeInSelectAndIncludeArgs = this._setWriteInSelectAndIncludeArgs();
     this.writeSelectFindManyField = this._setWriteSelectFindManyField();
     this.writeSelectField = this._setWriteSelectField();
     this.writeIncludeFindManyField = this._setWriteIncludeFindManyField();
     this.writeIncludeField = this._setWriteIncludeField();
     this.prismaAction = this._setMatchedPrismaAction();
+    this.writeInclude = this._setWriteInclude();
     this.modelType = this._setModelType();
     this.argName = this._setArgName();
     this.linkedModel = this._setLinkedModel(datamodel);
     this.args = this._setArgs(field);
     this.hasOmitFields = this._setHasOmitFields();
     this.argTypeImports = this._setArgTypeImports();
+
+    console.log(this.linkedModel?.name, this.modelType);
   }
 
   private _setArgs({ args }: DMMF.SchemaField) {
@@ -136,11 +139,30 @@ export class ExtendedDMMFSchemaField
    * @returns datamodel matching the field
    */
   private _setLinkedModel(datamodel: ExtendedDMMFDatamodel) {
-    return datamodel.models.find((model) =>
-      typeof this.modelType === 'string'
-        ? this.modelType.includes(model.name)
-        : false,
-    );
+    return datamodel.models.find((model) => {
+      // TODO: check out where the related model is used and
+      // determin if the related model can be set via the second implementation
+
+      // console.log(this.modelType, model.name);
+
+      if (typeof this.modelType === 'string') {
+        return this.modelType.includes(model.name);
+      }
+
+      if (
+        this._getOutputObjectType(this.outputType) &&
+        typeof this.outputType.type === 'string'
+      ) {
+        // console.log(model.name, this.outputType.type);
+        return this.outputType.type.includes(model.name);
+      }
+
+      return false;
+    });
+    //   typeof this.modelType === 'string' || typ
+    //     ? this.modelType.includes(model.name)
+    //     : false,
+    // );
   }
 
   /**
@@ -158,7 +180,7 @@ export class ExtendedDMMFSchemaField
     const imports: string[] = [];
 
     if (
-      this.includeInSelectAndIncludeArgs &&
+      this.writeInSelectAndIncludeArgs &&
       this.linkedModel?.hasRelationFields
     ) {
       imports.push(
@@ -210,6 +232,20 @@ export class ExtendedDMMFSchemaField
     );
   }
 
+  private _getOutputObjectType(
+    type: DMMF.OutputTypeRef,
+  ): type is DMMF.TypeRefOutputObject {
+    return type.location === 'outputObjectTypes';
+  }
+
+  private _setWriteInclude() {
+    // const isType = this._getOutputObjectType(this.outputType);
+
+    // // console.log(this.name, isType, this.outputType);
+
+    return this.isObjectOutputType();
+  }
+
   /**
    * When using mongodb, the `include` type is created but not filled with any fields.
    * To replicate this behaviour, the `include` schema is aslso created as empty object
@@ -223,7 +259,7 @@ export class ExtendedDMMFSchemaField
    * Used to determine if the field should be included in the `select` and `include` args.
    * @returns `true` if the field does not contian `createMany`, `updateMany` or `deleteMany` in its name
    */
-  private _setIncludeInSelectAndIncludeArgs() {
+  private _setWriteInSelectAndIncludeArgs() {
     return !/createMany|updateMany|deleteMany/.test(this.name);
   }
 
