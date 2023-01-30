@@ -131,10 +131,6 @@ export class FileWriter {
     this.writer.writeLine(`export ${exportName} from '${exportPath}';`);
   }
 
-  writeConstStatement({ name, type }: writeConstStatementOptions) {
-    this.writer.writeLine(`export const ${name}: ${type} = `);
-  }
-
   writeImports(imports: string[] = []) {
     new Set(imports).forEach((importString) => {
       this.writer.writeLine(importString);

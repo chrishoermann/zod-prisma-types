@@ -163,8 +163,6 @@ export class ExtendedDMMFSchemaArg
           return decimalImports;
         }
 
-        // TODO: check how to add custom imports to only the models that need them
-
         // get imports for all non scalar types (e.g. enums, models)
         if (importType) {
           return `import { ${importType}Schema } from './${importType}Schema';`;

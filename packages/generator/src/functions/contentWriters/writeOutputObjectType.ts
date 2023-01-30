@@ -64,23 +64,10 @@ export const writeOutputObjectType = (
     }
   }
 
-  // if the model contains fields that should be omitted,
-  // the type information passed to the zod schema needs to be updated.
-  // By default, the type is just the prisma client type.
-  // But if the model has fields that are required and should be omitted,
-  // the type needs to be updated to reflect that.
-  // Otherwise typescript will complain that the required fields are missing.
-
-  const type = field.createCustomOmitFieldArgType()
-    ? `z.ZodType<Omit<Prisma.${
-        field.argName
-      }, ${field.getOmitUnionForCustomArgType()}> & { ${field.getTypeForCustomArgsType()} }>`
-    : `z.ZodType<Prisma.${field.argName}>`;
-
   writer
     .blankLine()
     .write(`export const ${field.argName}Schema: `)
-    .write(type)
+    .write(field.customArgType)
     .write(` = `)
     .write(`z.object(`)
     .inlineBlock(() => {

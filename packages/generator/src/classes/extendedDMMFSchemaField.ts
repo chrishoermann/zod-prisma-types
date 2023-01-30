@@ -52,6 +52,7 @@ export class ExtendedDMMFSchemaField
   readonly writeIncludeFindManyField: boolean;
   readonly writeIncludeField: boolean;
   readonly writeInSelectAndIncludeArgs: boolean;
+  readonly customArgType: string;
 
   constructor(
     readonly generatorConfig: GeneratorConfig,
@@ -77,6 +78,7 @@ export class ExtendedDMMFSchemaField
     this.args = this._setArgs(field);
     this.hasOmitFields = this._setHasOmitFields();
     this.argTypeImports = this._setArgTypeImports();
+    this.customArgType = this._setCustomArgType();
   }
 
   private _setArgs({ args }: DMMF.SchemaField) {
@@ -241,47 +243,96 @@ export class ExtendedDMMFSchemaField
     );
   }
 
+  // CUSTOM ARG TYPE
+  //---------------------------------------------------------------------
+
+  /**
+   * If the model contains fields that should be omitted, the type information
+   * passed to the zod schema needs to be updated.
+   * By default, the type is just the prisma client type.
+   * But if the model has fields that are required and should be omitted,
+   * the type needs to be updated to reflect that.
+   * Otherwise typescript will complain that the required fields are missing.
+   */
+  private _setCustomArgType() {
+    if (this.createCustomOmitFieldArgType()) {
+      return `z.ZodType<Omit<Prisma.${
+        this.argName
+      }, ${this._getOmitUnionForCustomArgType()}> & { ${this._getTypeForCustomArgsType()} }>`;
+    }
+
+    return `z.ZodType<Prisma.${this.argName}>`;
+  }
+
   /**
    * If the field contains `create`, `upsert`, `update` or `delete` in its name,
    * it returns the string union of the fields that should be omitted.
    * @returns union of fields that should be omitted in custom type
    */
-  getOmitUnionForCustomArgType() {
+  private _getOmitUnionForCustomArgType() {
     return this.args
       .filter((arg) => /create|update|upsert|delete|data/.test(arg.name))
       .map((arg) => `"${arg.name}"`)
       .join(' | ');
   }
 
-  getTypeForCustomArgsType() {
-    const args: string[] = [];
-
-    this.args.forEach((arg) => {
-      if (!arg.rewriteArgWithNewType()) return;
-
-      const argName = `${arg.name}${arg.isRequired ? '' : '?'}: `;
-
-      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      // HACKY - NEEDS SOME REFACTORING
-      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      const argType = arg.hasMultipleTypes
-        ? arg.inputTypes
-            .map((inputType, idx) => {
-              const writeSeperator = idx !== arg.inputTypes.length - 1;
-              return `z.infer<typeof ${inputType.type}Schema>${
-                writeSeperator ? ' | ' : ''
-              }`;
-            })
-            .join('')
-        : `z.infer<typeof ${arg.inputTypes[0].type}Schema> ${
-            arg.inputTypes[0].isList ? `[]` : ''
-          }`;
-
-      args.push(argName + argType);
-    });
-
-    return args.join(', ');
+  /**
+   * If a model contains fields that should be omitted,
+   * the type information passed to the zod schema needs to be updated.
+   */
+  private _getTypeForCustomArgsType() {
+    return this.args
+      .map((arg) => {
+        if (arg.rewriteArgWithNewType()) {
+          return (
+            this._getCustomArgsFieldName(arg) + this._getCustomArgsType(arg)
+          );
+        }
+        return undefined;
+      })
+      .filter((arg): arg is string => arg !== undefined)
+      .join(', ');
   }
+
+  /**
+   * Determins if a custom arg field is optional or required.
+   */
+  private _getCustomArgsFieldName(arg: ExtendedDMMFSchemaArg) {
+    return `${arg.name}${arg.isRequired ? '' : '?'}: `;
+  }
+
+  /**
+   * If the arg has multiple types, the type is a union of the types.
+   */
+  private _getCustomArgsMultipleTypes(arg: ExtendedDMMFSchemaArg) {
+    return arg.inputTypes
+      .map((inputType) => {
+        return `z.infer<typeof ${inputType.type}Schema>`;
+      })
+      .join(' | ');
+  }
+
+  /**
+   * If the arg has a single type, the type is returnd as is or as a list.
+   */
+  private _getCustomArgsSingleType(arg: ExtendedDMMFSchemaArg) {
+    if (arg.inputTypes[0].isList) {
+      return `z.infer<typeof ${arg.inputTypes[0].type}Schema>[]`;
+    }
+    return `z.infer<typeof ${arg.inputTypes[0].type}Schema>`;
+  }
+
+  /**
+   * Returns the union of types or a single type.
+   */
+  private _getCustomArgsType(arg: ExtendedDMMFSchemaArg) {
+    return arg.hasMultipleTypes
+      ? this._getCustomArgsMultipleTypes(arg)
+      : this._getCustomArgsSingleType(arg);
+  }
+
+  // HELPER METHODS
+  //---------------------------------------------------------------------
 
   isEnumOutputType() {
     return this.outputType?.location === 'enumTypes';
