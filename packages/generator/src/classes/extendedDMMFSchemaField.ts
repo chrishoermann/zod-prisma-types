@@ -1,15 +1,15 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
-import { ExtendedDMMFModel } from './extendedDMMFModel';
-import { ExtendedDMMFSchemaArg } from './extendedDMMFSchemaArg';
-import { FormattedNames } from './formattedNames';
 import {
   FilterdPrismaAction,
   PRISMA_ACTION_ARG_MAP,
   PRISMA_ACTION_ARRAY,
 } from '../constants/objectMaps';
 import { GeneratorConfig } from '../schemas';
+import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
+import { ExtendedDMMFModel } from './extendedDMMFModel';
+import { ExtendedDMMFSchemaArg } from './extendedDMMFSchemaArg';
+import { FormattedNames } from './formattedNames';
 
 /////////////////////////////////////////////////
 // CLASS

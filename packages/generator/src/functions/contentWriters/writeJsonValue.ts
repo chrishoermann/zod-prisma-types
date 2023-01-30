@@ -7,10 +7,6 @@ export const writeJsonValue = ({
 }: ContentWriterOptions) => {
   const { useMultipleFiles, prismaClientPath } = dmmf.generatorConfig;
 
-  const addPrismaClient = '';
-  // const addPrismaClient =
-  //   useMultipleFiles || getSingleFileContent ? '' : 'PrismaClient.';
-
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
     writeImport('{ type Prisma }', prismaClientPath);
@@ -19,7 +15,7 @@ export const writeJsonValue = ({
   writer
     .blankLine()
     .writeLine(
-      `export const JsonValue: z.ZodType<${addPrismaClient}Prisma.JsonValue> = z.union([`,
+      `export const JsonValue: z.ZodType<Prisma.JsonValue> = z.union([`,
     )
     .withIndentationLevel(1, () => {
       writer

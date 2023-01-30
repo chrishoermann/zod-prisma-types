@@ -1,7 +1,7 @@
-import { writeSelect } from './writeSelect';
 import { writeNonScalarType, writeScalarType, writeSpecialType } from '..';
 import { ExtendedDMMFSchemaField } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
+import { writeSelect } from './writeSelect';
 
 export const writeOutputObjectType = (
   { fileWriter, dmmf, getSingleFileContent = false }: ContentWriterOptions,
@@ -11,10 +11,6 @@ export const writeOutputObjectType = (
 
   const { useMultipleFiles, prismaClientPath, outputTypePath } =
     dmmf.generatorConfig;
-
-  const addPrismaClient = '';
-  // const addPrismaClient =
-  //   useMultipleFiles || getSingleFileContent ? '' : 'PrismaClient.';
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
@@ -76,10 +72,10 @@ export const writeOutputObjectType = (
   // Otherwise typescript will complain that the required fields are missing.
 
   const type = field.createCustomOmitFieldArgType()
-    ? `z.ZodType<Omit<${addPrismaClient}Prisma.${
+    ? `z.ZodType<Omit<Prisma.${
         field.argName
       }, ${field.getOmitUnionForCustomArgType()}> & { ${field.getTypeForCustomArgsType()} }>`
-    : `z.ZodType<${addPrismaClient}Prisma.${field.argName}>`;
+    : `z.ZodType<Prisma.${field.argName}>`;
 
   writer
     .blankLine()

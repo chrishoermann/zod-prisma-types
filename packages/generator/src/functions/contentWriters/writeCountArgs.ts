@@ -11,10 +11,6 @@ export const writeCountArgs = (
 ) => {
   const { useMultipleFiles, prismaClientPath } = dmmf.generatorConfig;
 
-  const addPrismaClient = '';
-  // const addPrismaClient =
-  //   useMultipleFiles || getSingleFileContent ? '' : 'PrismaClient.';
-
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
     writeImport('{ type Prisma }', prismaClientPath);
@@ -27,9 +23,7 @@ export const writeCountArgs = (
   writer
     .blankLine()
     .write(`export const ${model.name}CountOutputTypeArgsSchema: `)
-    .write(
-      `z.ZodType<${addPrismaClient}Prisma.${model.name}CountOutputTypeArgs> = `,
-    )
+    .write(`z.ZodType<Prisma.${model.name}CountOutputTypeArgs> = `)
     .write('z.object(')
     .inlineBlock(() => {
       writer.writeLine(

@@ -7,10 +7,6 @@ export const writeTransformJsonNull = ({
 }: ContentWriterOptions) => {
   const { useMultipleFiles, prismaClientPath } = dmmf.generatorConfig;
 
-  const addPrismaClient = '';
-  // const addPrismaClient =
-  //   useMultipleFiles || getSingleFileContent ? '' : 'PrismaClient.';
-
   // TODO: check how to get DbNUll and JsonNull from PrismaClient without importing the whole namespace
 
   if (useMultipleFiles && !getSingleFileContent) {
@@ -20,24 +16,20 @@ export const writeTransformJsonNull = ({
   writer
     .newLine()
     .write(`export type NullableJsonInput = `)
-    .write(`${addPrismaClient}Prisma.JsonValue | `)
+    .write(`Prisma.JsonValue | `)
     .write(`null | `)
     .write(`'JsonNull' | `)
     .write(`'DbNull' | `)
-    .write(`${addPrismaClient}Prisma.NullTypes.DbNull | `)
-    .write(`${addPrismaClient}Prisma.NullTypes.JsonNull;`)
+    .write(`Prisma.NullTypes.DbNull | `)
+    .write(`Prisma.NullTypes.JsonNull;`)
     .blankLine();
 
   writer
     .write(`export const transformJsonNull = (v?: NullableJsonInput) => `)
     .inlineBlock(() => {
       writer
-        .writeLine(
-          `if (!v || v === 'DbNull') return ${addPrismaClient}Prisma.DbNull;`,
-        )
-        .writeLine(
-          `if (v === 'JsonNull') return ${addPrismaClient}Prisma.JsonNull;`,
-        )
+        .writeLine(`if (!v || v === 'DbNull') return Prisma.DbNull;`)
+        .writeLine(`if (v === 'JsonNull') return Prisma.JsonNull;`)
         .writeLine(`return v;`);
     })
     .write(`;`);

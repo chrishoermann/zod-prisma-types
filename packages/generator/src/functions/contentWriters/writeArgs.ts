@@ -15,10 +15,6 @@ export const writeArgs = (
   const { useMultipleFiles, prismaClientPath, inputTypePath } =
     dmmf.generatorConfig;
 
-  const addPrismaClient = '';
-  // const addPrismaClient =
-  //   useMultipleFiles || getSingleFileContent ? '' : 'PrismaClient.';
-
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
     writeImport('{ type Prisma }', prismaClientPath);
@@ -35,7 +31,7 @@ export const writeArgs = (
   writer
     .blankLine()
     .write(`export const ${model.name}ArgsSchema: `)
-    .write(`z.ZodType<${addPrismaClient}Prisma.${model.name}Args> = `)
+    .write(`z.ZodType<Prisma.${model.name}Args> = `)
     .write(`z.object(`)
     .inlineBlock(() => {
       writer

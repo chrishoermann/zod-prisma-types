@@ -11,9 +11,6 @@ export const writePrismaEnum = (
 ) => {
   const { useMultipleFiles } = dmmf.generatorConfig;
 
-  // const addPrismaClient =
-  //   useMultipleFiles || getSingleFileContent ? '' : 'PrismaClient.';
-
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
   }

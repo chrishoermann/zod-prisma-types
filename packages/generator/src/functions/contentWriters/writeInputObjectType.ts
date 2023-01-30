@@ -13,10 +13,6 @@ export const writeInputObjectType = (
   const { useMultipleFiles, prismaClientPath, addInputTypeValidation } =
     dmmf.generatorConfig;
 
-  const addPrismaClient = '';
-  // const addPrismaClient =
-  //   useMultipleFiles || getSingleFileContent ? '' : 'PrismaClient.';
-
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
     writeImport('{ type Prisma }', prismaClientPath);
@@ -26,10 +22,10 @@ export const writeInputObjectType = (
   // when an omit field is present, the type is not a native prism type
   // but a zod union of the native type and an omit type
   const type = inputType.hasOmitFields()
-    ? `z.ZodType<Omit<${addPrismaClient}Prisma.${
+    ? `z.ZodType<Omit<Prisma.${
         inputType.name
       }, ${inputType.getOmitFieldsUnion()}>>`
-    : `z.ZodType<${addPrismaClient}Prisma.${inputType.name}>`;
+    : `z.ZodType<Prisma.${inputType.name}>`;
 
   writer
     .blankLine()

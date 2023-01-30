@@ -12,7 +12,12 @@ export const writeSingleFileImportStatements: WriteStatements = (
   writeImport('{ z }', 'zod');
 
   // TODO: only import whole namespace if there are json fields - otherwise import type
-  writeImport(`{ Prisma }`, `${prismaClientPath}`);
+
+  if (dmmf.schema.hasJsonTypes) {
+    writeImport(`{ Prisma }`, `${prismaClientPath}`);
+  } else {
+    writeImport(`{ type Prisma }`, `${prismaClientPath}`);
+  }
 
   if (dmmf.customImports) {
     dmmf.customImports.forEach((statement) => {
