@@ -1,9 +1,9 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { IMPORT_STATEMENT_REGEX } from '../constants';
-import { GeneratorConfig } from '../schemas';
 import { ExtendedDMMFField } from './extendedDMMFField';
 import { FormattedNames } from './formattedNames';
+import { IMPORT_STATEMENT_REGEX } from '../constants';
+import { GeneratorConfig } from '../schemas';
 
 /////////////////////////////////////////////////
 // TYPES  INTERFACE

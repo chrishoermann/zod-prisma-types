@@ -15,6 +15,7 @@ export const DEFAULT_GENERATOR_CONFIG: GeneratorConfig = {
   useDefaultValidators: true,
   prismaClientPath: '@prisma/client',
   coerceDate: true,
+  writeNullishInModelTypes: false,
   isMongoDb: false,
   inputTypePath: 'inputTypeSchemas',
   outputTypePath: 'outputTypeSchemas',

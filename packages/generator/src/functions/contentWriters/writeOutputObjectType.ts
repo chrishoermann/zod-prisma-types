@@ -1,7 +1,7 @@
+import { writeSelect } from './writeSelect';
 import { writeNonScalarType, writeScalarType, writeSpecialType } from '..';
 import { ExtendedDMMFSchemaField } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
-import { writeSelect } from './writeSelect';
 
 export const writeOutputObjectType = (
   { fileWriter, dmmf, getSingleFileContent = false }: ContentWriterOptions,
@@ -94,10 +94,6 @@ export const writeOutputObjectType = (
             field.linkedModel?.hasRelationFields,
           `include: ${field.modelType}IncludeSchema.optional(),`,
         );
-      // .conditionalWriteLine(
-      //   field.writeInSelectAndIncludeArgs && field.writeIncludeField,
-      //   `include: ${field.modelType}IncludeSchema.optional(),`,
-      // );
       field.args.forEach((arg) => {
         writer.write(`${arg.name}: `);
 

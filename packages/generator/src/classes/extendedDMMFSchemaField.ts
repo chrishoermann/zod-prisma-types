@@ -1,15 +1,15 @@
 import { DMMF } from '@prisma/generator-helper';
 
+import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
+import { ExtendedDMMFModel } from './extendedDMMFModel';
+import { ExtendedDMMFSchemaArg } from './extendedDMMFSchemaArg';
+import { FormattedNames } from './formattedNames';
 import {
   FilterdPrismaAction,
   PRISMA_ACTION_ARG_MAP,
   PRISMA_ACTION_ARRAY,
 } from '../constants/objectMaps';
 import { GeneratorConfig } from '../schemas';
-import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
-import { ExtendedDMMFModel } from './extendedDMMFModel';
-import { ExtendedDMMFSchemaArg } from './extendedDMMFSchemaArg';
-import { FormattedNames } from './formattedNames';
 
 /////////////////////////////////////////////////
 // CLASS
@@ -52,7 +52,6 @@ export class ExtendedDMMFSchemaField
   readonly writeIncludeFindManyField: boolean;
   readonly writeIncludeField: boolean;
   readonly writeInSelectAndIncludeArgs: boolean;
-  readonly writeInclude: boolean;
 
   constructor(
     readonly generatorConfig: GeneratorConfig,
@@ -72,15 +71,12 @@ export class ExtendedDMMFSchemaField
     this.writeIncludeFindManyField = this._setWriteIncludeFindManyField();
     this.writeIncludeField = this._setWriteIncludeField();
     this.prismaAction = this._setMatchedPrismaAction();
-    this.writeInclude = this._setWriteInclude();
     this.modelType = this._setModelType();
     this.argName = this._setArgName();
     this.linkedModel = this._setLinkedModel(datamodel);
     this.args = this._setArgs(field);
     this.hasOmitFields = this._setHasOmitFields();
     this.argTypeImports = this._setArgTypeImports();
-
-    console.log(this.linkedModel?.name, this.modelType);
   }
 
   private _setArgs({ args }: DMMF.SchemaField) {
@@ -143,26 +139,10 @@ export class ExtendedDMMFSchemaField
       // TODO: check out where the related model is used and
       // determin if the related model can be set via the second implementation
 
-      // console.log(this.modelType, model.name);
-
-      if (typeof this.modelType === 'string') {
-        return this.modelType.includes(model.name);
-      }
-
-      if (
-        this._getOutputObjectType(this.outputType) &&
-        typeof this.outputType.type === 'string'
-      ) {
-        // console.log(model.name, this.outputType.type);
-        return this.outputType.type.includes(model.name);
-      }
-
-      return false;
+      return typeof this.modelType === 'string'
+        ? this.modelType.includes(model.name)
+        : false;
     });
-    //   typeof this.modelType === 'string' || typ
-    //     ? this.modelType.includes(model.name)
-    //     : false,
-    // );
   }
 
   /**
@@ -230,20 +210,6 @@ export class ExtendedDMMFSchemaField
       this.isListOutputType() &&
       !this.generatorConfig.isMongoDb
     );
-  }
-
-  private _getOutputObjectType(
-    type: DMMF.OutputTypeRef,
-  ): type is DMMF.TypeRefOutputObject {
-    return type.location === 'outputObjectTypes';
-  }
-
-  private _setWriteInclude() {
-    // const isType = this._getOutputObjectType(this.outputType);
-
-    // // console.log(this.name, isType, this.outputType);
-
-    return this.isObjectOutputType();
   }
 
   /**

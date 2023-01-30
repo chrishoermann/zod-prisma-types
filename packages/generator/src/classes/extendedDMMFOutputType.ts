@@ -1,11 +1,11 @@
 import { DMMF } from '@prisma/generator-helper';
 
 import { ExtendedDMMFModel } from '.';
-import { PRISMA_ACTION_ARRAY } from '../constants/objectMaps';
-import { GeneratorConfig } from '../schemas';
 import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
 import { ExtendedDMMFSchemaField } from './extendedDMMFSchemaField';
 import { FormattedNames } from './formattedNames';
+import { PRISMA_ACTION_ARRAY } from '../constants/objectMaps';
+import { GeneratorConfig } from '../schemas';
 
 /////////////////////////////////////////////////
 // CLASS

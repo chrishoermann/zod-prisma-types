@@ -8,10 +8,20 @@ export const writeFieldAdditions = ({
   field,
   writeOptionalDefaults = false,
 }: WriteFieldOptions) => {
+  const { writeNullishInModelTypes } = field.generatorConfig;
+
   writer
     .conditionalWrite(field.isList, `.array()`)
     .conditionalWrite(
-      field.isNullable && !field.isOptionalOnDefaultValue,
+      field.isNullable &&
+        !field.isOptionalOnDefaultValue &&
+        !writeNullishInModelTypes,
+      `.nullable()`,
+    )
+    .conditionalWrite(
+      field.isNullable &&
+        !field.isOptionalOnDefaultValue &&
+        writeNullishInModelTypes,
       `.nullish()`,
     )
     .conditionalWrite(

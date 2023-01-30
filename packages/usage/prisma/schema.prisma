@@ -26,6 +26,7 @@ generator zod {
   createRelationValuesTypes        = true // default is false
   useDefaultValidators             = true // default is true
   coerceDate                       = true // default is true
+  // writeNullishInModelTypes         = false // default is false
   // prismaClientPath                 = "./generated/client" // optional
 }
 

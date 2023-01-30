@@ -1,5 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 
+import { FormattedNames } from './formattedNames';
 import {
   DATE_VALIDATOR_REGEX_MAP,
   NUMBER_VALIDATOR_REGEX_MAP,
@@ -28,7 +29,6 @@ import {
   ZodPrismaScalarType,
   ZodCustomErrorKey,
 } from '../types';
-import { FormattedNames } from './formattedNames';
 
 /////////////////////////////////////////////////
 // TYPES AND INTERFACES

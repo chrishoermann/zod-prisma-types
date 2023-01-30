@@ -30,6 +30,7 @@ Be aware that some generator options have been removed, a few new have been adde
   - [`createRelationValuesTypes`](#createrelationvaluestypes)
   - [`useDefaultValidators`](#usedefaultvalidators)
   - [`coerceDate`](#coercedate)
+  - [`writeNullishInModelTypes`](#writenullishinmodeltypes)
   - [`prismaClientPath`](#prismaclientpath)
 - [Skip schema generation](#skip-schema-generation)
 - [Custom Enums](#custom-enums)
@@ -54,7 +55,7 @@ Be aware that some generator options have been removed, a few new have been adde
 
 ## About this project
 
-For one of my projects I was in need of a generator that offers the possibility of adding `zod valdiators` directly in `prisma schema's` [rich-comments](https://www.prisma.io/docs/concepts/components/prisma-schema#comments) and generates `zod` schemas for all prisma models, enums, inputTypes, argTypes, filters and so on. I also wanted to be able to import these schemas in the frontend e.g. for form validation and make the generator as flexible as possbile so it covers a large range of use cases. Since there where no generators out there that my requirements or they weren't activly maintained anymore I decided to write `zod-prisma-type`.
+For one of my projects I was in need of a generator that offers the possibility of adding `zod valdiators` directly in `prisma schema's` [rich-comments](https://www.prisma.io/docs/concepts/components/prisma-schema#comments) and generates `zod` schemas for all prisma models, enums, inputTypes, argTypes, filters and so on. I also wanted to be able to import these schemas in the frontend e.g. for form validation and make the generator as flexible as possbile so it covers a large range of use cases. Since there where no generators out there that met my requirements or they weren't activly maintained anymore I decided to write `zod-prisma-type`.
 
 ## Installation
 
@@ -102,6 +103,7 @@ generator zod {
   createRelationValuesType         = true // default is false
   useDefaultValidators             = false // default is true
   coerceDate                       = false // default is true
+  writeNullishInModelTypes         = true // default is false
   prismaClientPath                 = "./path/to/prisma/client" // default is client output path
 }
 ```
@@ -342,6 +344,19 @@ Per default `DateTime` values are coerced to `Date` objects as long as you pass 
 generator zod {
   // ...rest of config
   coerceDate = false
+}
+```
+
+### `writeNullishInModelTypes`
+
+> default: false
+
+By default the generator just writes `.nullable()` in the modelTypes when a field in the Prisma type is nullable. If you want these fields to accept `null | undefined`, which would be represented by `.nullish()` in the schema, you can pass the following option to the generator config:
+
+```prisma
+generator zod {
+  // ...rest of config
+  writeNullishInModelTypes = true
 }
 ```
 
