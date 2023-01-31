@@ -205,7 +205,7 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
   private _getAutomaticImports() {
     const statements: string[] = [];
 
-    const { inputTypePath, prismaClientPath } = this.generatorConfig;
+    const { inputTypePath } = this.generatorConfig;
 
     if (this.hasOptionalJsonFields) {
       statements.push(
@@ -221,7 +221,6 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
 
     if (this.hasDecimalFields) {
       statements.push(
-        `import { Prisma } from '${prismaClientPath}'`,
         `import { DecimalJSLikeSchema } from "../${inputTypePath}/DecimalJsLikeSchema"`,
         `import { isValidDecimalInput } from "../${inputTypePath}/isValidDecimalInput"`,
       );

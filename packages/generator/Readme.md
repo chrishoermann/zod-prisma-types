@@ -661,6 +661,8 @@ export const MyModelSchema = z.object({
 });
 ```
 
+> Please be aware that you have to add an additional level to relative imports if you use the `useMultipleFiles` option.
+
 ## Custom type error messages
 
 To add custom zod-type error messages to your validator you can add them via `@zod.[key]({ ...customTypeErrorMessages }).[validator key]`. The custom error messages must adhere to the following type:

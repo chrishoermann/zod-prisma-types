@@ -13,10 +13,6 @@ export class ExtendedDMMFSchemaArgInputType implements DMMF.SchemaArgInputType {
   readonly isBytesType: boolean;
   readonly isDecimalType: boolean;
   readonly isNullType: boolean;
-  /**
-   * @deprecated - just a test
-   */
-  readonly isRelationType: boolean;
   readonly isList: DMMF.SchemaArgInputType['isList'];
   readonly type: DMMF.SchemaArgInputType['type'];
   readonly location: DMMF.SchemaArgInputType['location'];
@@ -31,7 +27,6 @@ export class ExtendedDMMFSchemaArgInputType implements DMMF.SchemaArgInputType {
     this.isBytesType = this._setIsBytesType(arg);
     this.isDecimalType = this._setIsDecimalType(arg);
     this.isNullType = this._setIsNullType(arg);
-    this.isRelationType = this._setIsRelationType(arg);
     this.isList = arg.isList;
     this.type = arg.type;
     this.location = arg.location;
@@ -52,13 +47,6 @@ export class ExtendedDMMFSchemaArgInputType implements DMMF.SchemaArgInputType {
 
   private _setIsNullType(arg: DMMF.SchemaArgInputType) {
     return arg.type === 'Null';
-  }
-
-  /**
-   * @deprecated - just a test
-   */
-  private _setIsRelationType(arg: DMMF.SchemaArgInputType) {
-    return arg.location === 'inputObjectTypes';
   }
 
   /**
