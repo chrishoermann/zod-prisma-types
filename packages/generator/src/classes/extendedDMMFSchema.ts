@@ -1,12 +1,13 @@
 import { DMMF } from '@prisma/generator-helper';
 
 import {
-  GeneratorConfig,
   ExtendedDMMFDatamodel,
   ExtendedDMMFInputType,
   ExtendedDMMFOutputType,
   ExtendedDMMFSchemaEnum,
+  ExtendedDMMFSchemaField,
 } from '.';
+import { GeneratorConfig } from '../schemas';
 
 export interface ExtendedDMMFSchemaOptions {
   schema: DMMF.Schema;
@@ -65,6 +66,7 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
     this.generatorConfig = generatorConfig;
     this.rootQueryType = schema.rootQueryType;
     this.rootMutationType = schema.rootMutationType;
+    this.enumTypes = this._setExtendedEnumTypes(schema);
     this.inputObjectTypes = this._setExtendedInputObjectTypes(
       schema,
       datamodel,
@@ -73,7 +75,6 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
       schema,
       datamodel,
     );
-    this.enumTypes = this._setExtendedEnumTypes(schema);
     this.fieldRefTypes = schema.fieldRefTypes;
     this.hasJsonTypes = this._setHasJsonTypes();
     this.hasBytesTypes = this._setHasBytesTypes();
@@ -117,7 +118,8 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
           (type) =>
             type.name !== 'Query' &&
             type.name !== 'Mutation' &&
-            !type.name.includes('AffectedRows'),
+            !type.name.includes('AffectedRows') &&
+            !type.name.includes('RawAggregate'),
         )
         .map(
           (type) =>
@@ -151,5 +153,17 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
 
   private _setHasDecimalTypes() {
     return this.inputObjectTypes.prisma.some((type) => type.isDecimalField);
+  }
+
+  /**
+   * Checks if `include` and `select` args should be added to the field
+   * @param field ExtendedDMMFSchemaField that the model should be found for
+   * @returns ExtendedDMMFOutputType if a matching field is found, otherwise undefined
+   */
+  getModelWithIncludeAndSelect(field: ExtendedDMMFSchemaField) {
+    return this.outputObjectTypes.model.find(
+      (model) =>
+        field.name.includes(model.name) && field.writeSelectAndIncludeArgs,
+    );
   }
 }

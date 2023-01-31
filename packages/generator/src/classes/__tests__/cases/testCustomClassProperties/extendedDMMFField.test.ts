@@ -1,18 +1,26 @@
 import { describe, it, expect } from 'vitest';
 
+import { GeneratorConfig } from '../../../../schemas';
 import { getStringVariants } from '../../../../utils/getStringVariants';
-import { ExtendedDMMF, GeneratorConfig } from '../../../ExtendedDMMF';
+import { ExtendedDMMF } from '../../../ExtendedDMMF';
 import { loadDMMF } from '../../utils/loadDMMF';
 
 export const DEFAULT_GENERATOR_CONFIG: GeneratorConfig = {
-  useInstanceOfForDecimal: false,
-  imports: [],
+  useMultipleFiles: false,
   createInputTypes: true,
+  createModelTypes: true,
+  createOptionalDefaultValuesTypes: false,
+  createRelationValuesTypes: false,
   addInputTypeValidation: true,
-  tsConfigFilePath: undefined,
+  useDefaultValidators: true,
   prismaClientPath: '@prisma/client',
-  defaultValuesOptionalInModel: false,
+  coerceDate: true,
+  writeNullishInModelTypes: false,
+  isMongoDb: false,
+  inputTypePath: 'inputTypeSchemas',
+  outputTypePath: 'outputTypeSchemas',
 };
+
 describe('testSimpleModelNoValidators', async () => {
   const dmmf = await loadDMMF(`${__dirname}/extendedDMMFField.prisma`);
   const extendedDMMF = new ExtendedDMMF(dmmf, {});

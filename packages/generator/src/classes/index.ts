@@ -12,4 +12,5 @@ export * from './extendedDMMFSchemaArg';
 export * from './extendedDMMFSchemaArgInputType';
 export * from './extendedDMMFSchemaEnum';
 export * from './extendedDMMFSchemaField';
+export * from './fileWriter';
 export * from './formattedNames';

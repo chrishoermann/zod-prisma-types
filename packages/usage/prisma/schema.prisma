@@ -3,7 +3,8 @@
 
 generator client {
   provider = "prisma-client-js"
-  // output   = "generated/client"
+  // output   = "./generated/client"
+  previewFeatures = ["views"]
 }
 
 datasource db {
@@ -15,19 +16,19 @@ datasource db {
 // -----------------------------------------------
 
 generator zod {
-  provider                         = "ts-node ../generator/src/bin.ts"
-  output                           = "./generated/zod" // default is ./generated/zod 
-  // useInstanceOfForDecimal          = true // default is false
+  provider = "ts-node-dev ../generator/src/bin.ts"
+  // provider                         = "zod-prisma-types"
+  output   = "./generated/zod" // default is ./generated/zod
+  useMultipleFiles                 = true // default is false 
   // createInputTypes                 = false // default is true
   // createModelTypes                 = false // default is true
-  // createModelTypes                 = false // default is true
   // addInputTypeValidation           = false // default is true
-  createRelationValuesTypes        = true // default is false
-  createOptionalDefaultValuesTypes = true // default is false
-  useDefaultValidators             = true // default is true
-  useDecimalJs                     = true // default is false
-  imports                          = "import(import { myFunction } from '../../../utils/myFunction';).import(import validator from 'validator';)" // optional
-  // tsConfigFilePath                 = "tsconfig.json" // optional
+  // createOptionalDefaultValuesTypes = true // default is false
+  // createRelationValuesTypes        = true // default is false
+  // useDefaultValidators             = true // default is true
+  // coerceDate                       = true // default is true
+  // writeNullishInModelTypes         = false // default is false
+  // prismaClientPath                 = "./generated/client" // optional
 }
 
 // MIXED CASE ENUMS AND MODELS
@@ -83,6 +84,9 @@ model ModelWithComments {
 // Custom validators should be included in the generated model and input schemas
 // It should not matter if the comments are above or next to the field
 
+/// comment line one
+/// @zod.import(["import { myFunction } from "../../../../utils/myFunction";", "import validator from 'validator';"])
+/// comment line two
 model MyPrismaScalarsType {
   /// @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid()
   id         String    @id @default(cuid())
@@ -164,13 +168,15 @@ model User {
 }
 
 model Post {
-  id          Int           @id @default(autoincrement())
-  title       String
-  content     String?
-  published   Boolean       @default(false)
-  author      User          @relation(fields: [authorId], references: [id])
-  authorId    String
-  anotherEnum AnotherEnum[]
+  id             Int           @id @default(autoincrement())
+  title          String
+  content        String?
+  published      Boolean       @default(false)
+  author         User          @relation(fields: [authorId], references: [id])
+  authorId       String
+  jsonOpt        Json?
+  anotherJsonOpt Json?
+  anotherEnum    AnotherEnum[]
 }
 
 model Profile {
@@ -206,3 +212,63 @@ model DecimalModel {
   decimal    Decimal
   decimalOpt Decimal?
 }
+
+model DateModel {
+  id      Int       @id @default(autoincrement())
+  date    DateTime
+  dateOpt DateTime?
+}
+
+// model Post {
+//   id    String   @id @default(auto()) @map("_id") @db.ObjectId
+//   title String   @default("")
+//   data  PostData
+// }
+
+// type PostData {
+//   something     String
+//   somethingElse Int
+//   someType      SomeType
+// }
+
+// type SomeType {
+//   someField String
+// }
+
+// type ModeratedContentFile {
+//   mimetype String
+//   url      String
+// }
+
+// model ModeratedContent {
+//   id    String                 @id @map("_id")
+//   v     Int                    @map("__v")
+//   files ModeratedContentFile[]
+// }
+
+// view StatisticActiveUsers {
+//   date  DateTime @unique @db.Date
+//   count Int
+// }
+
+// model User {
+//   id    Int    @id @default(autoincrement())
+//   email String @unique
+//   name  String
+
+//   posts Post[]
+// }
+
+// model Post {
+//   id      Int     @id @default(autoincrement())
+//   title   String
+//   content String?
+//   author  User    @relation(fields: [authorId], references: [id])
+//   authorId Int
+// }
+
+// view AbcUser {
+//   date                  DateTime    @unique @db.Date
+//   count                 Int
+// }
+

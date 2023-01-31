@@ -1,18 +1,10 @@
 import { GeneratorOptions } from '@prisma/generator-helper';
-import { Project } from 'ts-morph';
+import { z } from 'zod';
 
 import { DirectoryHelper, ExtendedDMMF } from './classes';
-import {
-  getArgTypeStatements,
-  getEnumStatements,
-  getHelperStatements,
-  getIncludeSelectStatements,
-  getInputTypeStatements,
-  getImportStatements,
-  getModelStatements,
-  // getAggregateAndCountStatements // currently not used in any input types
-} from './functions';
-import { skipGenerator, usesCustomTsConfigFilePath } from './utils';
+import { generateMultipleFiles } from './generateMultipleFiles';
+import { generateSingleFile } from './generateSingleFile';
+import { skipGenerator } from './utils';
 
 export interface GeneratorConfig {
   output: GeneratorOptions['generator']['output'];
@@ -20,8 +12,13 @@ export interface GeneratorConfig {
   dmmf: GeneratorOptions['dmmf'];
 }
 
-export const generator = async ({ output, config, dmmf }: GeneratorConfig) => {
-  if (!output) throw new Error('No output path specified');
+const outputSchema = z.object({
+  fromEnvVar: z.string().nullable(),
+  value: z.string({ required_error: 'No output path specified' }),
+});
+
+export const generator = async (config: GeneratorConfig) => {
+  const output = outputSchema.parse(config.output);
 
   if (await skipGenerator()) {
     return console.log(
@@ -32,49 +29,24 @@ export const generator = async ({ output, config, dmmf }: GeneratorConfig) => {
   }
 
   // extend the DMMF with custom functionality - see "classes" folder
-  const extendendDMMF = new ExtendedDMMF(dmmf, config);
+  const extendedDMMF = new ExtendedDMMF(config.dmmf, config.config);
 
-  // check if a custom tsconfig file is used and log an info if so
-  await usesCustomTsConfigFilePath(
-    extendendDMMF.generatorConfig.tsConfigFilePath,
-  );
+  // If data is present in the output directory, delete it.
+  DirectoryHelper.removeDir(output.value);
 
-  // create ts-morph project - see: https://ts-morph.com/
-  const project = new Project({
-    tsConfigFilePath: extendendDMMF.generatorConfig.tsConfigFilePath,
-    skipAddingFilesFromTsConfig: true,
+  // Create the output directory
+  DirectoryHelper.createDir(output.value);
+
+  // generate single or multiple files
+  if (extendedDMMF.generatorConfig.useMultipleFiles) {
+    return generateMultipleFiles({
+      dmmf: extendedDMMF,
+      path: output.value,
+    });
+  }
+
+  return generateSingleFile({
+    dmmf: extendedDMMF,
+    path: output.value,
   });
-
-  // Create the path specified in the generator output
-  DirectoryHelper.pathExistsElseCreate(output.value);
-
-  // create the source file containing all zod types
-  const indexSource = project.createSourceFile(
-    `${output.value}/index.ts`,
-    {
-      statements: [
-        ...getImportStatements(extendendDMMF),
-        ...getEnumStatements(extendendDMMF),
-        ...getHelperStatements(extendendDMMF),
-        ...getModelStatements(extendendDMMF),
-        ...getIncludeSelectStatements(extendendDMMF),
-        // ...getAggregateAndCountStatements(extendendDMMF), // currently not used in any input types
-        ...getInputTypeStatements(extendendDMMF),
-        ...getArgTypeStatements(extendendDMMF),
-      ],
-    },
-    {
-      overwrite: true,
-    },
-  );
-
-  // format the source file
-  indexSource.formatText({
-    indentSize: 2,
-    convertTabsToSpaces: true,
-    ensureNewLineAtEndOfFile: true,
-  });
-
-  // save the source file and apply all changes
-  return project.save();
 };

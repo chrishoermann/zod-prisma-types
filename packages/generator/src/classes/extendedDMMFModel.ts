@@ -1,6 +1,7 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { GeneratorConfig } from '.';
+import { IMPORT_STATEMENT_REGEX } from '../constants';
+import { GeneratorConfig } from '../schemas';
 import { ExtendedDMMFField } from './extendedDMMFField';
 import { FormattedNames } from './formattedNames';
 
@@ -21,7 +22,18 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
   readonly relationFields: ExtendedDMMFField[];
   readonly enumFields: ExtendedDMMFField[];
   readonly hasRelationFields: boolean;
+  readonly hasRequiredJsonFields: boolean;
+  readonly hasOptionalJsonFields: boolean;
   readonly hasOmitFields: boolean;
+  readonly hasDecimalFields: boolean;
+  readonly hasOptionalDefaultFields: boolean;
+  readonly imports: Set<string>;
+  readonly customImports: Set<string>;
+  readonly errorLocation: string;
+  readonly clearedDocumentation?: string;
+  readonly optionalJsonFields: ExtendedDMMFField[];
+  readonly optionalJsonFieldUnion: string;
+  readonly writeOptionalDefaultValuesTypes: boolean;
 
   constructor(generatorConfig: GeneratorConfig, model: DMMF.Model) {
     super(model.name);
@@ -37,7 +49,27 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
     this.relationFields = this._setRelationFields();
     this.enumFields = this._setEnumfields();
     this.hasRelationFields = this._setHasRelationFields();
+    this.hasRequiredJsonFields = this._setHasRequiredJsonFields();
+    this.hasOptionalJsonFields = this._setHasOptionalJsonFields();
+    this.hasDecimalFields = this._setHasDecimalFields();
+    this.hasOptionalDefaultFields = this._setHasOptionalDefaultFields();
     this.hasOmitFields = this._setHasOmitFields();
+    this.errorLocation = this._setErrorLocation();
+
+    const docsContent = this._getDocumentationContent();
+
+    this.imports = docsContent.imports;
+    this.customImports = docsContent.customImports;
+    this.clearedDocumentation = docsContent?.documentation;
+
+    this.optionalJsonFields = this._setOptionalJsonFields();
+    this.optionalJsonFieldUnion = this._setOptionalJsonFieldUnion();
+    this.writeOptionalDefaultValuesTypes =
+      this._setWriteOptionalDefaultValuesTypes();
+  }
+
+  private _setErrorLocation() {
+    return `[Error Location]: Model: '${this.name}'.`;
   }
 
   private _getExtendedFields(model: DMMF.Model) {
@@ -54,6 +86,14 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
     return this.fields.filter((field) => field.kind === 'object');
   }
 
+  private _setHasRequiredJsonFields() {
+    return this.fields.some((field) => field.isJsonType && field.isRequired);
+  }
+
+  private _setHasOptionalJsonFields() {
+    return this.fields.some((field) => field.isJsonType && !field.isRequired);
+  }
+
   private _setEnumfields() {
     return this.fields.filter((field) => field.kind === 'enum');
   }
@@ -66,10 +106,132 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
     return this.fields.some((field) => field.isOmitField());
   }
 
-  writeOptionalDefaultValuesTypes() {
+  private _setWriteOptionalDefaultValuesTypes() {
     return (
-      this.fields.some((field) => field.isOptionalDefaultField()) &&
+      this.hasOptionalDefaultFields &&
       this.generatorConfig.createOptionalDefaultValuesTypes
     );
+  }
+
+  private _setHasOptionalDefaultFields() {
+    return this.fields.some((field) => field.isOptionalDefaultField());
+  }
+
+  private _setHasDecimalFields() {
+    return this.fields.some((field) => field.isDecimalType);
+  }
+
+  private _setOptionalJsonFields() {
+    return this.fields.filter((field) => field.isJsonType && !field.isRequired);
+  }
+
+  private _setOptionalJsonFieldUnion() {
+    return this.optionalJsonFields
+      .map((field) => `"${field.name}"`)
+      .join(' | ');
+  }
+
+  private _getDocumentationContent() {
+    const zodDirectives = this._extractZodDirectives();
+    const automaticImports = this._getAutomaticImports();
+
+    if (!zodDirectives)
+      return {
+        imports: new Set(automaticImports),
+        customImports: new Set([]),
+      };
+
+    return {
+      imports: new Set([...zodDirectives.customImports, ...automaticImports]),
+      documentation: zodDirectives.clearedDocumentation,
+      customImports: new Set(zodDirectives.customImports),
+    };
+  }
+
+  /**
+   * extracts import statements  from the model's documentation and removes them from the documentation.
+   * @returns array of import statements from the model's documentation and
+   * a string of the documentation with the import statements removed.
+   */
+  private _extractZodDirectives() {
+    if (!this.documentation) return;
+
+    const importStatements = this.documentation?.match(IMPORT_STATEMENT_REGEX);
+
+    if (!importStatements) {
+      return {
+        customImports: [],
+        clearedDocumentation: this.documentation,
+      };
+    }
+
+    const type = importStatements.groups?.['type'];
+
+    if (type !== 'import') {
+      throw new Error(
+        `[@zod generator error]: '${type}' is not a valid validator key. ${this.errorLocation}`,
+      );
+    }
+
+    const importsList = importStatements.groups?.['imports']?.split(', ');
+
+    if (!importsList) {
+      return {
+        customImports: [],
+        clearedDocumentation: this.documentation,
+      };
+    }
+
+    return {
+      customImports: importsList
+        .map((statement) =>
+          statement
+            .match(/"(?<statement>[\w "'{}/,;.*]+)"/)
+            ?.groups?.['statement'].replace(/["']/g, "'"),
+        )
+        .filter(
+          (statement): statement is string => typeof statement === 'string',
+        ),
+      clearedDocumentation: this.documentation
+        .replace(IMPORT_STATEMENT_REGEX, '')
+        .trim(),
+    };
+  }
+
+  /**
+   * Checks for certain field types and conditions and adds the necessary import statements to the model's imports.
+   * @returns array of import statements that are automatically added to the model's imports.
+   */
+  private _getAutomaticImports() {
+    const statements: string[] = [];
+
+    const { inputTypePath } = this.generatorConfig;
+
+    if (this.hasOptionalJsonFields) {
+      statements.push(
+        `import { NullableJsonValue } from "../${inputTypePath}/NullableJsonValue"`,
+      );
+    }
+
+    if (this.hasRequiredJsonFields) {
+      statements.push(
+        `import { InputJsonValue } from "../${inputTypePath}/InputJsonValue"`,
+      );
+    }
+
+    if (this.hasDecimalFields) {
+      statements.push(
+        `import { DecimalJSLikeSchema } from "../${inputTypePath}/DecimalJsLikeSchema"`,
+        `import { isValidDecimalInput } from "../${inputTypePath}/isValidDecimalInput"`,
+      );
+    }
+
+    this.enumFields.forEach((field) => {
+      statements.push(
+        `import { ${field.type}Schema } from '../${inputTypePath}/${field.type}Schema'`,
+      );
+    });
+
+    return statements;
   }
 }

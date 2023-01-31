@@ -1,15 +1,26 @@
-import { DMMF } from '@prisma/generator-helper';
-import { CodeBlockWriter, StatementStructures, WriterFunction } from 'ts-morph';
+import CodeBlockWriter from 'code-block-writer';
+// import { StatementStructures, WriterFunction } from 'ts-morph';
 
 import {
+  CreateFileOptions,
   ExtendedDMMF,
+  ExtendedDMMFField,
+  ExtendedDMMFModel,
   ExtendedDMMFSchemaArgInputType,
   ZodValidatorOptions,
 } from './classes';
 
-export type StatementsArray = Statement[];
-export type Statement = string | WriterFunction | StatementStructures;
-export type GetStatements = (datamodel: ExtendedDMMF) => Statement[];
+export type WriteStatements = (
+  datamodel: ExtendedDMMF,
+  writer: CreateFileOptions,
+) => void;
+
+export interface CreateOptions {
+  dmmf: ExtendedDMMF;
+  path: string;
+}
+
+export type CreateFiles = (options: CreateOptions) => void;
 
 export interface ScalarValidatorFunctionOptions {
   key: string;
@@ -114,7 +125,7 @@ export type ZodNumberValidatorKeys =
 
 export type ZodDateValidatorKeys = 'min' | 'max';
 
-export type ZodCustomValidatorKeys = 'use' | 'omit';
+export type ZodCustomValidatorKeys = 'use' | 'omit' | 'import';
 
 export type WriteBaseFilterTypesFunction = (options?: {
   nullable?: boolean;
@@ -150,9 +161,23 @@ export type WriteTypeFunction<
   TOptions extends WriteTypeOptions = WriteTypeOptions,
 > = (writer: CodeBlockWriter, options: TOptions) => CodeBlockWriter | undefined;
 
-export type TestFunction = (dmmf: DMMF.Document) => void;
+///////////////////////////////////////////////
+// HELPER TYPES FOR MODEL GENERATION
+///////////////////////////////////////////////
 
-export interface TestConfig {
-  schemaPath: string;
-  tests: TestFunction;
+export interface WriteFieldOptions {
+  writer: CodeBlockWriter;
+  field: ExtendedDMMFField;
+  writeOptionalDefaults?: boolean;
+}
+
+export interface ExtendedWriteFieldOptions extends WriteFieldOptions {
+  model: ExtendedDMMFModel;
+  dmmf: ExtendedDMMF;
+}
+
+export interface ContentWriterOptions {
+  fileWriter: CreateFileOptions;
+  dmmf: ExtendedDMMF;
+  getSingleFileContent?: boolean;
 }

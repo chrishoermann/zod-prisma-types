@@ -1,66 +1,9 @@
 import { DMMF, Dictionary } from '@prisma/generator-helper';
-import { z } from 'zod';
 
+import { GeneratorConfig, configSchema } from '../schemas';
 import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
 import { ExtendedDMMFMappings } from './extendedDMMFMappings';
 import { ExtendedDMMFSchema } from './extendedDMMFSchema';
-
-/////////////////////////////////////////////////
-// SCHEMA
-/////////////////////////////////////////////////
-
-export const configSchema = z.object({
-  useInstanceOfForDecimal: z
-    .string()
-    .optional()
-    .default('false')
-    .transform((val) => val === 'true'),
-  imports: z
-    .string()
-    .optional()
-    .transform((val) =>
-      val
-        ? val
-            .split(')')
-            .map((v) => v.replace(/import\(|.import\(/, ''))
-            .filter((v) => v !== '')
-        : [],
-    ),
-  createInputTypes: z
-    .string()
-    .optional()
-    .default('true')
-    .transform((val) => val === 'true'),
-  createModelTypes: z
-    .string()
-    .optional()
-    .default('true')
-    .transform((val) => val === 'true'),
-  createOptionalDefaultValuesTypes: z
-    .string()
-    .optional()
-    .default('false')
-    .transform((val) => val === 'true'),
-  addInputTypeValidation: z
-    .string()
-    .optional()
-    .default('true')
-    .transform((val) => val === 'true'),
-  useDefaultValidators: z
-    .string()
-    .optional()
-    .default('true')
-    .transform((val) => val === 'true'),
-  createRelationValuesTypes: z
-    .string()
-    .optional()
-    .default('false')
-    .transform((val) => val === 'true'),
-  tsConfigFilePath: z.string().optional(),
-  prismaClientPath: z.string().default('@prisma/client'),
-});
-
-export type GeneratorConfig = z.infer<typeof configSchema>;
 
 /////////////////////////////////////////////////
 // CLASS
@@ -71,12 +14,16 @@ export class ExtendedDMMF implements DMMF.Document {
   readonly datamodel: ExtendedDMMFDatamodel;
   readonly schema: ExtendedDMMFSchema;
   readonly mappings: DMMF.Mappings;
+  readonly imports: Set<string>;
+  readonly customImports: Set<string>;
 
   constructor(dmmf: DMMF.Document, config: Dictionary<string>) {
     this.generatorConfig = this._setGeneratorConfig(config);
     this.datamodel = this._getExtendedDatamodel(dmmf);
     this.schema = this._getExtendedSchema(dmmf);
     this.mappings = this._getExtendedMappings(dmmf);
+    this.imports = this._getImports();
+    this.customImports = this._getCustomImports();
   }
 
   private _getExtendedDatamodel({ datamodel }: DMMF.Document) {
@@ -91,27 +38,23 @@ export class ExtendedDMMF implements DMMF.Document {
     );
   }
 
+  private _getImports() {
+    return new Set(
+      this.datamodel.models.map((model) => [...model.imports]).flat(),
+    );
+  }
+
+  private _getCustomImports() {
+    return new Set(
+      this.datamodel.models.map((model) => [...model.customImports]).flat(),
+    );
+  }
+
   private _getExtendedMappings(dmmf: DMMF.Document) {
     return new ExtendedDMMFMappings(this.generatorConfig, dmmf.mappings);
   }
 
   private _setGeneratorConfig(config: Dictionary<string>): GeneratorConfig {
     return configSchema.parse(config);
-  }
-
-  useInstanceOfForDecimal() {
-    return Boolean(this.generatorConfig.useInstanceOfForDecimal);
-  }
-
-  createInputTypes() {
-    return Boolean(this.generatorConfig.createInputTypes);
-  }
-
-  addInputTypeValidation() {
-    return Boolean(this.generatorConfig.addInputTypeValidation);
-  }
-
-  hasCustomImports() {
-    return this.generatorConfig.imports.length > 0;
   }
 }

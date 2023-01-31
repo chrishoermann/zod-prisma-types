@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { WriteTypeFunction } from '../types';
+import { WriteTypeFunction, WriteTypeOptions } from '../../types';
 
 /////////////////////////////////////////////////
 // FUNCTION
@@ -15,7 +15,7 @@ import { WriteTypeFunction } from '../types';
  * @param options WriteTypeOptions
  * @returns CodeBlockWriter | undefined
  */
-export const writeNonScalarType: WriteTypeFunction = (
+export const writeNonScalarType: WriteTypeFunction<WriteTypeOptions> = (
   writer,
   { inputType, isOptional, isNullable, writeLazy = true, writeComma = true },
 ) => {

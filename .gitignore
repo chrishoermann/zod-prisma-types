@@ -14,4 +14,6 @@ dist
 # Vscode
 .vscode
 
+# Turborepo
+.turbo
 

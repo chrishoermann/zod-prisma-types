@@ -1,7 +1,8 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { ExtendedDMMFDatamodel, ExtendedDMMFField, GeneratorConfig } from '.';
+import { ExtendedDMMFDatamodel, ExtendedDMMFField } from '.';
 import { PRISMA_FUNCTION_TYPES_WITH_VALIDATORS } from '../constants/regex';
+import { GeneratorConfig } from '../schemas';
 import { ExtendedDMMFModel } from './extendedDMMFModel';
 import {
   ExtendedDMMFSchemaArg,
@@ -27,6 +28,7 @@ export class ExtendedDMMFInputType
   readonly isBytesField: boolean;
   readonly isDecimalField: boolean;
   readonly omitFields: string[] = [];
+  readonly imports: Set<string>;
 
   constructor(
     readonly generatorConfig: GeneratorConfig,
@@ -45,6 +47,7 @@ export class ExtendedDMMFInputType
     this.isBytesField = this._setIsBytesField();
     this.isDecimalField = this._setIsDecimalField();
     this.omitFields = this._setOmitFields();
+    this.imports = this._setImports();
   }
 
   /**
@@ -113,22 +116,6 @@ export class ExtendedDMMFInputType
       linkedField.zodOmitField === 'input' ||
       linkedField.zodOmitField === 'all';
 
-    // If the field is required, it should not be omitted.
-    // Currently, the generator does not throw an error if a required field is marked to be omitted
-    // but logs a message to the console. This behaviour needs to be changed in the future
-    // To support omitting required fields in the future,
-    // all created arg types need to be aware of the omitted fields and
-    // then write use the correct type for e.g. "data" and "upsert" inputs.
-    // if (shouldOmitField && linkedField.isRequired) {
-    //   console.log(
-    //     '\x1b[33m',
-    //     `Field '${linkedField.name}' on '${linkedField.modelName}' is required! It is NOT omitted in '${this.name}Schema'. `,
-    //     '\x1b[37m',
-    //   );
-    //   return undefined;
-    // }
-
-    // return !linkedField.isRequired && shouldOmitField;
     return shouldOmitField;
   }
 
@@ -153,6 +140,21 @@ export class ExtendedDMMFInputType
     return this.fields
       .filter((field) => field.zodOmitField)
       .map((field) => field.name);
+  }
+
+  private _setImports() {
+    const fieldImports = this.fields
+      .map((field) => field.getImports(this.name))
+      .flat();
+
+    if (
+      PRISMA_FUNCTION_TYPES_WITH_VALIDATORS.test(this.name) &&
+      this.linkedModel?.customImports
+    ) {
+      fieldImports.push(...this.linkedModel.customImports);
+    }
+
+    return new Set(fieldImports);
   }
 
   hasOmitFields() {

@@ -1,10 +1,7 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import {
-  GeneratorConfig,
-  ExtendedDMMFField,
-  ExtendedDMMFSchemaArgInputType,
-} from '.';
+import { ExtendedDMMFField, ExtendedDMMFSchemaArgInputType } from '.';
+import { GeneratorConfig } from '../schemas';
 import { FormattedNames } from './formattedNames';
 
 export interface ExtendedDMMFSchemaArgOptions
@@ -74,7 +71,7 @@ export class ExtendedDMMFSchemaArg
     // filter "null" from the inputTypes array to prevent the generator
     // from generating a union type with "null" and the actual field type
     // instead of e.g. a scalar type
-    const nonNullTypes = inputTypes.filter((type) => type.type !== 'Null');
+    const nonNullTypes = inputTypes.filter(({ type }) => type !== 'Null');
 
     // FIX: this is a hacky workaround to prevent the generator from
     // generating a union in the "GroupByArgs" at the "by" property.
@@ -129,5 +126,55 @@ export class ExtendedDMMFSchemaArg
    */
   rewriteArgWithNewType() {
     return !!this.name.match(/create|update|upsert|delete|data/);
+  }
+
+  getImports(fieldName: string) {
+    const imports = this.inputTypes
+      .map((type) => {
+        const importType = type.getZodNonScalarType();
+        const stringImportType = importType?.toString();
+
+        // exclude the import for the current model if it references itself
+        if (stringImportType === fieldName) {
+          return;
+        }
+
+        if (type.isJsonType) {
+          return `import { InputJsonValue } from './InputJsonValue';`;
+        }
+
+        if (type.isDecimalType) {
+          const decimalImports = [
+            `import { isValidDecimalInput } from './isValidDecimalInput';`,
+          ];
+
+          if (type.isList) {
+            decimalImports.push(
+              `import { DecimalJSLikeListSchema } from './DecimalJsLikeListSchema';`,
+            );
+          }
+
+          if (!type.isList) {
+            decimalImports.push(
+              `import { DecimalJSLikeSchema } from './DecimalJsLikeSchema';`,
+            );
+          }
+
+          return decimalImports;
+        }
+
+        // get imports for all non scalar types (e.g. enums, models)
+        if (importType) {
+          return `import { ${importType}Schema } from './${importType}Schema';`;
+        }
+
+        return undefined;
+      })
+      .flat()
+      .filter(
+        (importString): importString is string => importString !== undefined,
+      );
+
+    return imports;
   }
 }

@@ -205,32 +205,8 @@ it('should be able to use numbers as input in DecimalListSchema', () => {
 // TEST TRPC
 ///////////////////////////////////////
 
-it('should be able to pass a Prisma decimal via trpc', async () => {
-  expect(await client.decimal.query(new Prisma.Decimal(1.16511))).toBe(true);
-});
-
-it('should be able to pass a decimalJS via trpc', async () => {
-  expect(await client.decimal.query(new Decimal(1.16511))).toBe(true);
-});
-
-it('should be able to pass a decimalJSLike via trpc', async () => {
-  expect(await client.decimal.query(decimalJsLikeOne)).toBe(true);
-});
-
-it('should be able to pass a string to decimal via trpc', async () => {
-  expect(await client.decimal.query('1.16511')).toBe(true);
-});
-
-it('should be able to pass number to decimal via trpc', async () => {
-  expect(await client.decimal.query(1.16511)).toBe(true);
-});
-
-it('should throw when passing an invalid string to decimal via trpc', async () => {
-  await expect(client.decimal.query('1.16511a')).rejects.toThrow();
-});
-
 it('should be able to pass a decimal via trpc with DecimalModelSchema', async () => {
-  const result = await client.decimalModel.query({
+  const result = await client.decimal.query({
     id: 1,
     decimal: new Prisma.Decimal(1.16511),
     decimalOpt: new Prisma.Decimal(1.16511),
@@ -241,7 +217,7 @@ it('should be able to pass a decimal via trpc with DecimalModelSchema', async ()
 });
 
 it('should be able to pass a string via trpc with DecimalModelSchema', async () => {
-  const result = await client.decimalModel.query({
+  const result = await client.decimal.query({
     id: 1,
     decimal: '1.16511',
     decimalOpt: '1.16511',
@@ -252,7 +228,7 @@ it('should be able to pass a string via trpc with DecimalModelSchema', async () 
 });
 
 it('should be able to pass a number via trpc with DecimalModelSchema', async () => {
-  const result = await client.decimalModel.query({
+  const result = await client.decimal.query({
     id: 1,
     decimal: 1.16511,
     decimalOpt: 1.16511,
@@ -264,7 +240,7 @@ it('should be able to pass a number via trpc with DecimalModelSchema', async () 
 
 it('should throw when passing an invalid string to decimal via trpc', async () => {
   await expect(
-    client.decimalModel.query({
+    client.decimal.query({
       id: 1,
       decimal: 'qsdgast',
       decimalOpt: 'asdgatse',
@@ -277,70 +253,64 @@ it('should throw when passing an invalid string to decimal via trpc', async () =
 
 it('should be able to pass a prisma decimal via trpc with DecimalModelSchema', async () => {
   const data = {
-    id: 1,
-    decimal: [new Prisma.Decimal(1.16511), new Prisma.Decimal(1.512345)],
-    decimalOpt: [new Prisma.Decimal(1.16511), new Prisma.Decimal(1.512345)],
+    in: [new Prisma.Decimal(1.16511), new Prisma.Decimal(1.512345)],
+    notIn: [new Prisma.Decimal(1.16511), new Prisma.Decimal(1.512345)],
   };
-  const result = await client.decimalListModel.query(data);
+  const result = await client.decimalList.query(data);
 
-  expect(result.isDecimal).toBe(true);
-  expect(result.isDecimalOpt).toBe(true);
+  expect(result.isDecimalIn).toBe(true);
+  expect(result.isDecimalNotIn).toBe(true);
 });
 
 it('should be able to pass a decimal via trpc with DecimalModelSchema', async () => {
   const data = {
-    id: 1,
-    decimal: [new Decimal(1.16511), new Decimal(1.512345)],
-    decimalOpt: [new Decimal(1.16511), new Decimal(1.512345)],
+    in: [new Decimal(1.16511), new Decimal(1.512345)],
+    notIn: [new Decimal(1.16511), new Decimal(1.512345)],
   };
-  const result = await client.decimalListModel.query(data);
+  const result = await client.decimalList.query(data);
 
-  expect(result.isDecimal).toBe(true);
-  expect(result.isDecimalOpt).toBe(true);
+  expect(result.isDecimalIn).toBe(true);
+  expect(result.isDecimalNotIn).toBe(true);
 });
 
 it('should be able to pass a decimalLike via trpc with DecimalModelSchema', async () => {
   const data = {
-    id: 1,
-    decimal: [decimalJsLikeOne, decimalJsLikeTwo],
-    decimalOpt: [decimalJsLikeOne, decimalJsLikeTwo],
+    in: [decimalJsLikeOne, decimalJsLikeTwo],
+    notIn: [decimalJsLikeOne, decimalJsLikeTwo],
   };
-  const result = await client.decimalListModel.query(data);
+  const result = await client.decimalList.query(data);
 
-  expect(result.isDecimal).toBe(true);
-  expect(result.isDecimalOpt).toBe(true);
+  expect(result.isDecimalIn).toBe(true);
+  expect(result.isDecimalNotIn).toBe(true);
 });
 
 it('should be able to pass a string via trpc with DecimalModelSchema', async () => {
   const data = {
-    id: 1,
-    decimal: ['1.16511', '1.165111341'],
-    decimalOpt: ['1.16511', '1.165111341'],
+    in: ['1.16511', '1.165111341'],
+    notIn: ['1.16511', '1.165111341'],
   };
-  const result = await client.decimalListModel.query(data);
+  const result = await client.decimalList.query(data);
 
-  expect(result.isDecimal).toBe(true);
-  expect(result.isDecimalOpt).toBe(true);
+  expect(result.isDecimalIn).toBe(true);
+  expect(result.isDecimalNotIn).toBe(true);
 });
 
 it('should be able to pass a number via trpc with DecimalModelSchema', async () => {
   const data = {
-    id: 1,
-    decimal: [1.16511, 1.165111341],
-    decimalOpt: [1.16511, 1.165111341],
+    in: [1.16511, 1.165111341],
+    notIn: [1.16511, 1.165111341],
   };
-  const result = await client.decimalListModel.query(data);
+  const result = await client.decimalList.query(data);
 
-  expect(result.isDecimal).toBe(true);
-  expect(result.isDecimalOpt).toBe(true);
+  expect(result.isDecimalIn).toBe(true);
+  expect(result.isDecimalNotIn).toBe(true);
 });
 
-it('should throw when passing an invalid string to decimal via trpc', async () => {
+it('should throw when passing an invalid string array to decimal via trpc', async () => {
   await expect(
-    client.decimalModel.query({
-      id: 1,
-      decimal: 'qsdgast',
-      decimalOpt: 'asdgatse',
+    client.decimalList.query({
+      in: ['qsdgast', 'asdgaser'],
+      notIn: ['asdgatse', 'oasdgo'],
     }),
   ).rejects.toThrow();
 });
