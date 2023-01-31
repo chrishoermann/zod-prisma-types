@@ -51,8 +51,10 @@ export class ExtendedDMMFSchemaField
   readonly writeSelectField: boolean;
   readonly writeIncludeFindManyField: boolean;
   readonly writeIncludeField: boolean;
-  readonly writeInSelectAndIncludeArgs: boolean;
+  readonly writeSelectAndIncludeArgs: boolean;
   readonly customArgType: string;
+  readonly writeSelectArg: boolean;
+  readonly writeIncludeArg: boolean;
 
   constructor(
     readonly generatorConfig: GeneratorConfig,
@@ -66,7 +68,7 @@ export class ExtendedDMMFSchemaField
     this.outputType = field.outputType;
     this.deprecation = field.deprecation;
     this.documentation = field.documentation;
-    this.writeInSelectAndIncludeArgs = this._setWriteInSelectAndIncludeArgs();
+    this.writeSelectAndIncludeArgs = this._setWriteSelectAndIncludeArgs();
     this.writeSelectFindManyField = this._setWriteSelectFindManyField();
     this.writeSelectField = this._setWriteSelectField();
     this.writeIncludeFindManyField = this._setWriteIncludeFindManyField();
@@ -79,6 +81,12 @@ export class ExtendedDMMFSchemaField
     this.hasOmitFields = this._setHasOmitFields();
     this.argTypeImports = this._setArgTypeImports();
     this.customArgType = this._setCustomArgType();
+    this.writeSelectArg = this._setWriteSelectArg();
+    this.writeIncludeArg = this._setWriteIncludeArg();
+  }
+
+  testOutputType() {
+    return this.outputType.namespace === 'model';
   }
 
   private _setArgs({ args }: DMMF.SchemaField) {
@@ -138,9 +146,6 @@ export class ExtendedDMMFSchemaField
    */
   private _setLinkedModel(datamodel: ExtendedDMMFDatamodel) {
     return datamodel.models.find((model) => {
-      // TODO: check out where the related model is used and
-      // determin if the related model can be set via the second implementation
-
       return typeof this.modelType === 'string'
         ? this.modelType.includes(model.name)
         : false;
@@ -161,10 +166,7 @@ export class ExtendedDMMFSchemaField
   private _setArgTypeImports() {
     const imports: string[] = [];
 
-    if (
-      this.writeInSelectAndIncludeArgs &&
-      this.linkedModel?.hasRelationFields
-    ) {
+    if (this.writeSelectAndIncludeArgs && this.linkedModel?.hasRelationFields) {
       imports.push(
         `import { ${this.modelType}IncludeSchema } from '../${this.generatorConfig.inputTypePath}/${this.modelType}IncludeSchema'`,
       );
@@ -227,8 +229,25 @@ export class ExtendedDMMFSchemaField
    * Used to determine if the field should be included in the `select` and `include` args.
    * @returns `true` if the field does not contian `createMany`, `updateMany` or `deleteMany` in its name
    */
-  private _setWriteInSelectAndIncludeArgs() {
+  private _setWriteSelectAndIncludeArgs() {
     return !/createMany|updateMany|deleteMany/.test(this.name);
+  }
+
+  /**
+   * Checks if the `select` field should be written in the arg types schema.
+   */
+  private _setWriteSelectArg() {
+    return this._setWriteSelectAndIncludeArgs();
+  }
+
+  /**
+   * Checks if the `include` field should be written in the arg types schema.
+   */
+  private _setWriteIncludeArg() {
+    return (
+      this._setWriteSelectAndIncludeArgs() &&
+      Boolean(this.linkedModel?.hasRelationFields)
+    );
   }
 
   /**
