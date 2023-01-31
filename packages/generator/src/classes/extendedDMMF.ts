@@ -1,9 +1,9 @@
 import { DMMF, Dictionary } from '@prisma/generator-helper';
 
+import { GeneratorConfig, configSchema } from '../schemas';
 import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
 import { ExtendedDMMFMappings } from './extendedDMMFMappings';
 import { ExtendedDMMFSchema } from './extendedDMMFSchema';
-import { GeneratorConfig, configSchema } from '../schemas';
 
 /////////////////////////////////////////////////
 // CLASS

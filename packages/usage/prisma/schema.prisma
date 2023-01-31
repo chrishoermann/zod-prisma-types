@@ -4,7 +4,7 @@
 generator client {
   provider = "prisma-client-js"
   // output   = "./generated/client"
-  // previewFeatures = ["views"]
+  previewFeatures = ["views"]
 }
 
 datasource db {
@@ -250,3 +250,25 @@ model DateModel {
 //   date  DateTime @unique @db.Date
 //   count Int
 // }
+
+// model User {
+//   id    Int    @id @default(autoincrement())
+//   email String @unique
+//   name  String
+
+//   posts Post[]
+// }
+
+// model Post {
+//   id      Int     @id @default(autoincrement())
+//   title   String
+//   content String?
+//   author  User    @relation(fields: [authorId], references: [id])
+//   authorId Int
+// }
+
+// view AbcUser {
+//   date                  DateTime    @unique @db.Date
+//   count                 Int
+// }
+

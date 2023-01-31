@@ -1,15 +1,15 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
-import { ExtendedDMMFModel } from './extendedDMMFModel';
-import { ExtendedDMMFSchemaArg } from './extendedDMMFSchemaArg';
-import { FormattedNames } from './formattedNames';
 import {
   FilterdPrismaAction,
   PRISMA_ACTION_ARG_MAP,
   PRISMA_ACTION_ARRAY,
 } from '../constants/objectMaps';
 import { GeneratorConfig } from '../schemas';
+import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
+import { ExtendedDMMFModel } from './extendedDMMFModel';
+import { ExtendedDMMFSchemaArg } from './extendedDMMFSchemaArg';
+import { FormattedNames } from './formattedNames';
 
 /////////////////////////////////////////////////
 // CLASS
@@ -147,7 +147,7 @@ export class ExtendedDMMFSchemaField
   private _setLinkedModel(datamodel: ExtendedDMMFDatamodel) {
     return datamodel.models.find((model) => {
       return typeof this.modelType === 'string'
-        ? this.modelType.includes(model.name)
+        ? this.modelType === model.name
         : false;
     });
   }

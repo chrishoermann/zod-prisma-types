@@ -1,11 +1,11 @@
+import { FileWriter } from '../classes';
+import { CreateFiles } from '../types';
 import {
   writeArgs,
   writeCountArgs,
   writeCountSelect,
   writeOutputObjectType,
 } from './contentWriters';
-import { FileWriter } from '../classes';
-import { CreateFiles } from '../types';
 
 /////////////////////////////////////////////////
 // FUNCTION
