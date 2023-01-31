@@ -457,14 +457,15 @@ export const DecimalJSLikeSchema = z.object({
   s: z.number(),
 });
 
+export type DecimalJSLike = z.infer<typeof DecimalJSLikeSchema>;
+
 export const DECIMAL_STRING_REGEX = /^[0-9.,e+-bxffo_cp]+$|Infinity|NaN/;
 
 export const isValidDecimalInput = (
-  v?: null | string | number | Prisma.Decimal | DecimalJsLike,
+  v?: null | string | number | DecimalJsLike,
 ) => {
   if (!v) return false;
   return (
-    (typeof v === 'object' && Prisma.Decimal.isDecimal(v)) ||
     (typeof v === 'object' && 'd' in v && 'e' in v && 's' in v) ||
     (typeof v === 'string' && DECIMAL_STRING_REGEX.test(v)) ||
     typeof v === 'number'
@@ -477,12 +478,7 @@ export const isValidDecimalInput = (
 export const MyModelSchema = z.object({
   id: z.number(),
   decimal: z
-    .union([
-      z.number(),
-      z.string(),
-      z.instanceof(Prisma.Decimal),
-      DecimalJSLikeSchema,
-    ])
+    .union([z.number(), z.string(), DecimalJSLikeSchema])
     .refine((v) => isValidDecimalInput(v), {
       message: 'Field "decimal" must be a Decimal',
       path: ['Models', 'DecimalModel'],
