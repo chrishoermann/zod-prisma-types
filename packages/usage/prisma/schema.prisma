@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   // output   = "./generated/client"
   previewFeatures = ["views"]
 }
@@ -16,10 +16,10 @@ datasource db {
 // -----------------------------------------------
 
 generator zod {
-  provider = "ts-node-dev ../generator/src/bin.ts"
+  provider         = "ts-node-dev ../generator/src/bin.ts"
   // provider                         = "zod-prisma-types"
-  output   = "./generated/zod" // default is ./generated/zod
-  useMultipleFiles                 = true // default is false 
+  output           = "./generated/zod" // default is ./generated/zod
+  useMultipleFiles = true // default is false 
   // createInputTypes                 = false // default is true
   // createModelTypes                 = false // default is true
   // addInputTypeValidation           = false // default is true
@@ -271,4 +271,3 @@ model DateModel {
 //   date                  DateTime    @unique @db.Date
 //   count                 Int
 // }
-
