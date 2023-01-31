@@ -1,4 +1,4 @@
-import { CodeBlockWriter } from 'ts-morph';
+import CodeBlockWriter from 'code-block-writer';
 
 export const writeJsDoc = (writer: CodeBlockWriter, jsDoc?: string) => {
   if (!jsDoc) return;
