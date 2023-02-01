@@ -21,6 +21,7 @@ export class ExtendedDMMFOutputType
   readonly prismaActionFields: ExtendedDMMFSchemaField[];
   readonly prismaOtherFields: ExtendedDMMFSchemaField[];
   readonly linkedModel?: ExtendedDMMFModel;
+  readonly includeImports: Set<string>;
 
   constructor(
     readonly generatorConfig: GeneratorConfig,
@@ -43,6 +44,7 @@ export class ExtendedDMMFOutputType
       'OTHER_FIELDS',
     );
     this.linkedModel = this._setLinkedModel(datamodel);
+    this.includeImports = this._setIncludeImports();
   }
 
   /**
@@ -100,6 +102,32 @@ export class ExtendedDMMFOutputType
     });
   }
 
+  /**
+   * All import statements that are necessary for the `include` arguments are collected in a set.
+   * @returns a set of import statements for the `include` and `select` arguments
+   */
+  private _setIncludeImports() {
+    const { outputTypePath } = this.generatorConfig;
+
+    const imports = this.fields
+      .map((field) => {
+        if (field.writeIncludeFindManyField) {
+          return `import { ${field.outputType.type}FindManyArgsSchema } from '../${outputTypePath}/${field.outputType.type}FindManyArgsSchema'`;
+        }
+
+        if (field.writeIncludeField) {
+          return `import { ${field.outputType.type}ArgsSchema } from '../${outputTypePath}/${field.outputType.type}ArgsSchema'`;
+        }
+
+        return undefined;
+      })
+      .filter(
+        (importStatement?: string): importStatement is string =>
+          importStatement !== undefined,
+      );
+
+    return new Set(imports);
+  }
   /**
    * This function checks if the output type has a field with the name "_count".
    * This information is necessary when generating the `include` and `select` arguments.

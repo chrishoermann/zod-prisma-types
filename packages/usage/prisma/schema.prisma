@@ -8,7 +8,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
@@ -36,215 +36,227 @@ generator zod {
 
 // Check if EnumS and modelS with mixed casing work 
 
-enum MYValue {
-  A
-  B
-  C
-}
+// enum MYValue {
+//   A
+//   B
+//   C
+// }
 
-model MODELWithUpperCase {
-  id      Int     @id @default(autoincrement())
-  STRING  String
-  MYValue MYValue
-}
+// model MODELWithUpperCase {
+//   id      Int     @id @default(autoincrement())
+//   STRING  String
+//   MYValue MYValue
+// }
 
-// OMITTED FIELDS
-// -----------------------------------------------
+// // OMITTED FIELDS
+// // -----------------------------------------------
 
-// Omitted fields should not be included in the generated model or input schemas
-// Furthermore, for the required field the generated arg schema should have an updated z.ZodType<...> type
+// // Omitted fields should not be included in the generated model or input schemas
+// // Furthermore, for the required field the generated arg schema should have an updated z.ZodType<...> type
 
-model ModelWithOmitFields {
-  id           String  @id @default(cuid())
-  string       String?
-  omitField    String? /// @zod.custom.omit([model, input])
-  omitRequired String /// @zod.custom.omit([model, input])
-}
+// model ModelWithOmitFields {
+//   id           String  @id @default(cuid())
+//   string       String?
+//   omitField    String? /// @zod.custom.omit([model, input])
+//   omitRequired String /// @zod.custom.omit([model, input])
+// }
 
-// JS DOC COMMENTS
-// -----------------------------------------------
+// // JS DOC COMMENTS
+// // -----------------------------------------------
 
-// JSDoc comments should be included in the generated model and input schemas
-// The validator comments should be removed from the generated model and input schemas
+// // JSDoc comments should be included in the generated model and input schemas
+// // The validator comments should be removed from the generated model and input schemas
 
-/// comment line one
-/// comment line two
-model ModelWithComments {
-  id           String  @id @default(uuid())
-  /// comment before validator @zod.string.min(4).max(10) 
-  /// comment after validator
-  string       String?
-  omitField    String? /// @zod.custom.omit([model, input])
-  omitRequired String /// @zod.custom.omit([model, input])
-}
+// /// comment line one
+// /// comment line two
+// model ModelWithComments {
+//   id           String  @id @default(uuid())
+//   /// comment before validator @zod.string.min(4).max(10) 
+//   /// comment after validator
+//   string       String?
+//   omitField    String? /// @zod.custom.omit([model, input])
+//   omitRequired String /// @zod.custom.omit([model, input])
+// }
 
-// CUSTOM VALIDATORS ON SCALARS
-// -----------------------------------------------
+// // CUSTOM VALIDATORS ON SCALARS
+// // -----------------------------------------------
 
-// Custom validators should be included in the generated model and input schemas
-// It should not matter if the comments are above or next to the field
+// // Custom validators should be included in the generated model and input schemas
+// // It should not matter if the comments are above or next to the field
 
-/// comment line one
-/// @zod.import(["import { myFunction } from "../../../../utils/myFunction";", "import validator from 'validator';"])
-/// comment line two
-model MyPrismaScalarsType {
-  /// @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid()
-  id         String    @id @default(cuid())
-  /// Some comment about string @zod.string.min(3, { message: "min error" }).max(10, { message: "max error" })
-  string     String?
-  /// @zod.custom.use(z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }))
-  bic        String?
-  /// @zod.number.lt(10, { message: "lt error" }).gt(5, { message: "gt error" })
-  float      Float
-  floatOpt   Float?
-  /// @zod.number.int({ message: "error" }).gt(5, { message: "gt error" })
-  int        Int
-  intOpt     Int?
-  decimal    Decimal
-  decimalOpt Decimal?
-  date       DateTime  @default(now())
-  dateOpt    DateTime? /// @zod.date({ invalid_type_error: "wrong date type" })  bigInt     BigInt /// @zod.bigint({ invalid_type_error: "error" })
-  bigIntOpt  BigInt?
-  /// @zod.custom.use(z.lazy(() => InputJsonValue).refine((val) => myFunction(val), { message: 'Is not valid' }))
-  json       Json
-  jsonOpt    Json?
-  bytes      Bytes /// @zod.custom.use(z.instanceof(Buffer).refine((val) => val ? true : false, { message: 'Value is not valid' }))
-  bytesOpt   Bytes?
-  /// @zod.custom.use(z.string().refine((val) => myFunction(val), { message: 'Is not valid' }))
-  custom     String?
-  exclude    String? /// @zod.custom.omit(["model", "input"])
+// /// comment line one
+// /// @zod.import(["import { myFunction } from "../../../../utils/myFunction";", "import validator from 'validator';"])
+// /// comment line two
+// model MyPrismaScalarsType {
+//   /// @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid()
+//   id         String    @id @default(cuid())
+//   /// Some comment about string @zod.string.min(3, { message: "min error" }).max(10, { message: "max error" })
+//   string     String?
+//   /// @zod.custom.use(z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }))
+//   bic        String?
+//   /// @zod.number.lt(10, { message: "lt error" }).gt(5, { message: "gt error" })
+//   float      Float
+//   floatOpt   Float?
+//   /// @zod.number.int({ message: "error" }).gt(5, { message: "gt error" })
+//   int        Int
+//   intOpt     Int?
+//   decimal    Decimal
+//   decimalOpt Decimal?
+//   date       DateTime  @default(now())
+//   dateOpt    DateTime? /// @zod.date({ invalid_type_error: "wrong date type" })  bigInt     BigInt /// @zod.bigint({ invalid_type_error: "error" })
+//   bigIntOpt  BigInt?
+//   /// @zod.custom.use(z.lazy(() => InputJsonValue).refine((val) => myFunction(val), { message: 'Is not valid' }))
+//   json       Json
+//   jsonOpt    Json?
+//   bytes      Bytes /// @zod.custom.use(z.instanceof(Buffer).refine((val) => val ? true : false, { message: 'Value is not valid' }))
+//   bytesOpt   Bytes?
+//   /// @zod.custom.use(z.string().refine((val) => myFunction(val), { message: 'Is not valid' }))
+//   custom     String?
+//   exclude    String? /// @zod.custom.omit(["model", "input"])
 
-  updatedAt DateTime @updatedAt
-}
+//   updatedAt DateTime @updatedAt
+// }
 
-// JSON MODEL 
-// -----------------------------------------------
+// // JSON MODEL 
+// // -----------------------------------------------
 
-// Used for testing if the Json null types are correctly transformed
+// // Used for testing if the Json null types are correctly transformed
 
-model JsonModel {
-  id      Int   @id @default(autoincrement())
-  json    Json
-  jsonOpt Json?
-}
+// model JsonModel {
+//   id      Int   @id @default(autoincrement())
+//   json    Json
+//   jsonOpt Json?
+// }
 
-// STANDARD BLOG SCHEMA
-// -----------------------------------------------
+// // STANDARD BLOG SCHEMA
+// // -----------------------------------------------
 
-// This is the standard blog schema from the Prisma docs extended with some custom enums and models
-// https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-a-model
+// // This is the standard blog schema from the Prisma docs extended with some custom enums and models
+// // https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-a-model
 
-enum Role {
-  USER
-  ADMIN
-}
+// enum Role {
+//   USER
+//   ADMIN
+// }
 
-enum SecondEnum {
-  ONE
-  TWO
-}
+// enum SecondEnum {
+//   ONE
+//   TWO
+// }
 
-enum AnotherEnum {
-  ONE
-  TWO
-}
+// enum AnotherEnum {
+//   ONE
+//   TWO
+// }
 
-model User {
-  id         String      @id @default(cuid()) /// @zod.string.cuid()
-  email      String      @unique /// @zod.string.email({ message: "Invalid email address" })
-  /// some other comment 
-  /// @zod.string.min(1).max(100) some message after
-  name       String?
-  posts      Post[]
-  profile    Profile?
-  role       Role[]      @default([USER, ADMIN])
-  enum       AnotherEnum @default(ONE)
-  scalarList String[]
+// model User {
+//   id         String      @id @default(cuid()) /// @zod.string.cuid()
+//   email      String      @unique /// @zod.string.email({ message: "Invalid email address" })
+//   /// some other comment 
+//   /// @zod.string.min(1).max(100) some message after
+//   name       String?
+//   posts      Post[]
+//   profile    Profile?
+//   role       Role[]      @default([USER, ADMIN])
+//   enum       AnotherEnum @default(ONE)
+//   scalarList String[]
 
-  lat Float
-  lng Float
+//   lat Float
+//   lng Float
 
-  location Location? @relation(fields: [lat, lng], references: [lat, lng])
-}
-
-model Post {
-  id             Int           @id @default(autoincrement())
-  title          String
-  content        String?
-  published      Boolean       @default(false)
-  author         User          @relation(fields: [authorId], references: [id])
-  authorId       String
-  jsonOpt        Json?
-  anotherJsonOpt Json?
-  anotherEnum    AnotherEnum[]
-}
-
-model Profile {
-  id     Int        @id @default(autoincrement())
-  bio    String
-  user   User       @relation(fields: [userId], references: [id])
-  userId String     @unique
-  role   Role[]     @default([USER, ADMIN])
-  second SecondEnum @default(ONE)
-}
-
-model Location {
-  lat  Float
-  lng  Float
-  User User[]
-
-  @@id([lat, lng])
-}
-
-model NonDefaultModel {
-  id     Int    @id
-  string String
-}
-
-model WithDefaultValidators {
-  id      String @id @default(cuid())
-  idTwo   String @default(uuid()) /// @zod.string.noDefault()
-  integer Int
-}
-
-model DecimalModel {
-  id         Int      @id @default(autoincrement())
-  decimal    Decimal
-  decimalOpt Decimal?
-}
-
-model DateModel {
-  id      Int       @id @default(autoincrement())
-  date    DateTime
-  dateOpt DateTime?
-}
+//   location    Location? @relation("Location", fields: [lat, lng], references: [lat, lng])
+//   target      Location? @relation("Target", fields: [locationLat, locationLng], references: [lat, lng])
+//   locationLat Float?
+//   locationLng Float?
+// }
 
 // model Post {
-//   id    String   @id @default(auto()) @map("_id") @db.ObjectId
-//   title String   @default("")
-//   data  PostData
+//   id             Int           @id @default(autoincrement())
+//   title          String
+//   content        String?
+//   published      Boolean       @default(false)
+//   author         User          @relation(fields: [authorId], references: [id])
+//   authorId       String
+//   jsonOpt        Json?
+//   anotherJsonOpt Json?
+//   anotherEnum    AnotherEnum[]
 // }
 
-// type PostData {
-//   something     String
-//   somethingElse Int
-//   someType      SomeType
+// model Profile {
+//   id     Int        @id @default(autoincrement())
+//   bio    String
+//   user   User       @relation(fields: [userId], references: [id])
+//   userId String     @unique
+//   role   Role[]     @default([USER, ADMIN])
+//   second SecondEnum @default(ONE)
 // }
 
-// type SomeType {
-//   someField String
+// model Location {
+//   lat        Float
+//   lng        Float
+//   User       User[] @relation("Location")
+//   UserTarget User[] @relation("Target")
+
+//   @@id([lat, lng])
 // }
 
-// type ModeratedContentFile {
-//   mimetype String
-//   url      String
+// model NonDefaultModel {
+//   id     Int    @id
+//   string String
 // }
 
-// model ModeratedContent {
-//   id    String                 @id @map("_id")
-//   v     Int                    @map("__v")
-//   files ModeratedContentFile[]
+// model WithDefaultValidators {
+//   id      String @id @default(cuid())
+//   idTwo   String @default(uuid()) /// @zod.string.noDefault()
+//   integer Int
 // }
+
+// model DecimalModel {
+//   id         Int      @id @default(autoincrement())
+//   decimal    Decimal
+//   decimalOpt Decimal?
+// }
+
+// model DateModel {
+//   id      Int       @id @default(autoincrement())
+//   date    DateTime
+//   dateOpt DateTime?
+// }
+
+// model DefaultValidators {
+//   id      String @id @default(cuid())
+//   idTwo   String @default(uuid()) /// @zod.string.noDefault()
+//   integer Int
+//   uuid    String @db.Uuid
+//   varchar String @db.VarChar(30)
+// }
+
+model Post {
+  id    String   @id @default(auto()) @map("_id") @db.ObjectId
+  title String   @default("")
+  data  PostData
+}
+
+type PostData {
+  something     String
+  somethingElse Int
+  someType      SomeType
+}
+
+type SomeType {
+  someField String
+}
+
+type ModeratedContentFile {
+  mimetype String
+  url      String
+}
+
+model ModeratedContent {
+  id    String                 @id @map("_id")
+  v     Int                    @map("__v")
+  files ModeratedContentFile[]
+}
 
 // view StatisticActiveUsers {
 //   date  DateTime @unique @db.Date
