@@ -15,26 +15,6 @@ export const writeInclude = (
     writeImport('{ z }', 'zod');
     writeImport('{ type Prisma }', prismaClientPath);
     writeImportSet(model.includeImports);
-
-    // model.fields.forEach((field) => {
-    //   // when using mongodb, the `include` type is created but not filled with any fields
-    //   // So no need to import anything
-    //   // if (dmmf.generatorConfig.isMongoDb) return;
-
-    //   if (field.writeIncludeFindManyField) {
-    //     return writeImport(
-    //       `{ ${field.outputType.type}FindManyArgsSchema }`,
-    //       `../${outputTypePath}/${field.outputType.type}FindManyArgsSchema`,
-    //     );
-    //   }
-
-    //   if (field.writeIncludeField) {
-    //     return writeImport(
-    //       `{ ${field.outputType.type}ArgsSchema }`,
-    //       `../${outputTypePath}/${field.outputType.type}ArgsSchema`,
-    //     );
-    //   }
-    // });
   }
 
   writer
