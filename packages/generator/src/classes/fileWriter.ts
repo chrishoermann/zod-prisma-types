@@ -84,11 +84,6 @@ export class FileWriter {
     });
 
     fs.writeFileSync(path, this.writer.toString());
-    // fs.writeFile(path, this.writer.toString(), (err) => {
-    //   if (err) {
-    //     throw new Error(err.message);
-    //   }
-    // });
   }
 
   writeImport(importName: string, importPath: string) {
