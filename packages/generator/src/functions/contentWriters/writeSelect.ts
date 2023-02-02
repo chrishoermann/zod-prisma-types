@@ -15,25 +15,6 @@ export const writeSelect = (
     writeImport('{ z }', 'zod');
     writeImport('{ type Prisma }', prismaClientPath);
     writeImportSet(model.selectImports);
-
-    // model.fields.forEach((field) => {
-    //   // when using mongodb, there is no `findMany` arg type created even for lists
-    //   // so the basic arg type needs to be imported instead
-
-    //   // if (field.writeSelectFindManyField) {
-    //   //   return writeImport(
-    //   //     `{ ${field.outputType.type}FindManyArgsSchema }`,
-    //   //     `../${outputTypePath}/${field.outputType.type}FindManyArgsSchema`,
-    //   //   );
-    //   // }
-
-    //   // if (field.writeSelectField) {
-    //   //   return writeImport(
-    //   //     `{ ${field.outputType.type}ArgsSchema }`,
-    //   //     `../${outputTypePath}/${field.outputType.type}ArgsSchema`,
-    //   //   );
-    //   // }
-    // });
   }
 
   writer
