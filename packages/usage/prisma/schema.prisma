@@ -200,28 +200,28 @@ model Location {
   @@id([lat, lng])
 }
 
-// model NonDefaultModel {
-//   id     Int    @id
-//   string String
-// }
+model NonDefaultModel {
+  id     Int    @id
+  string String
+}
 
-// model WithDefaultValidators {
-//   id      String @id @default(cuid())
-//   idTwo   String @default(uuid()) /// @zod.string.noDefault()
-//   integer Int
-// }
+model WithDefaultValidators {
+  id      String @id @default(cuid())
+  idTwo   String @default(uuid()) /// @zod.string.noDefault()
+  integer Int
+}
 
-// model DecimalModel {
-//   id         Int      @id @default(autoincrement())
-//   decimal    Decimal
-//   decimalOpt Decimal?
-// }
+model DecimalModel {
+  id         Int      @id @default(autoincrement())
+  decimal    Decimal
+  decimalOpt Decimal?
+}
 
-// model DateModel {
-//   id      Int       @id @default(autoincrement())
-//   date    DateTime
-//   dateOpt DateTime?
-// }
+model DateModel {
+  id      Int       @id @default(autoincrement())
+  date    DateTime
+  dateOpt DateTime?
+}
 
 // model DefaultValidators {
 //   id      String @id @default(cuid())

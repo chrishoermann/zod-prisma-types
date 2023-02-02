@@ -3,42 +3,43 @@ import { type ContentWriterOptions } from '../../types';
 
 export const writeSelect = (
   {
-    fileWriter: { writer, writeImport },
+    fileWriter: { writer, writeImport, writeImportSet },
     dmmf,
     getSingleFileContent = false,
   }: ContentWriterOptions,
   model: ExtendedDMMFOutputType,
 ) => {
-  const { useMultipleFiles, prismaClientPath, outputTypePath } =
-    dmmf.generatorConfig;
+  const { useMultipleFiles, prismaClientPath } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
     writeImport('{ type Prisma }', prismaClientPath);
+    writeImportSet(model.selectImports);
 
-    model.fields.forEach((field) => {
-      // when using mongodb, there is no `findMany` arg type created even for lists
-      // so the basic arg type needs to be imported instead
+    // model.fields.forEach((field) => {
+    //   // when using mongodb, there is no `findMany` arg type created even for lists
+    //   // so the basic arg type needs to be imported instead
 
-      if (field.writeSelectFindManyField) {
-        return writeImport(
-          `{ ${field.outputType.type}FindManyArgsSchema }`,
-          `../${outputTypePath}/${field.outputType.type}FindManyArgsSchema`,
-        );
-      }
+    //   // if (field.writeSelectFindManyField) {
+    //   //   return writeImport(
+    //   //     `{ ${field.outputType.type}FindManyArgsSchema }`,
+    //   //     `../${outputTypePath}/${field.outputType.type}FindManyArgsSchema`,
+    //   //   );
+    //   // }
 
-      if (field.writeSelectField) {
-        return writeImport(
-          `{ ${field.outputType.type}ArgsSchema }`,
-          `../${outputTypePath}/${field.outputType.type}ArgsSchema`,
-        );
-      }
-    });
+    //   // if (field.writeSelectField) {
+    //   //   return writeImport(
+    //   //     `{ ${field.outputType.type}ArgsSchema }`,
+    //   //     `../${outputTypePath}/${field.outputType.type}ArgsSchema`,
+    //   //   );
+    //   // }
+    // });
   }
 
   writer
     .blankLine()
-    .write(`export const ${model.name}SelectSchema: `)
+    .conditionalWrite(!getSingleFileContent, `export `)
+    .write(`const ${model.name}SelectSchema: `)
     .write(`z.ZodType<Prisma.${model.name}Select> = `)
     .write(`z.object(`)
     .inlineBlock(() => {

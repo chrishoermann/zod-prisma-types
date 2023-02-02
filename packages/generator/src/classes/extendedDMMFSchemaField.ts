@@ -51,7 +51,7 @@ export class ExtendedDMMFSchemaField
   readonly writeSelectField: boolean;
   readonly writeIncludeFindManyField: boolean;
   readonly writeIncludeField: boolean;
-  readonly writeSelectAndIncludeArgs: boolean;
+  readonly shouldWriteSelectAndIncludeArgs: boolean;
   readonly customArgType: string;
   readonly writeSelectArg: boolean;
   readonly writeIncludeArg: boolean;
@@ -68,7 +68,7 @@ export class ExtendedDMMFSchemaField
     this.outputType = field.outputType;
     this.deprecation = field.deprecation;
     this.documentation = field.documentation;
-    this.writeSelectAndIncludeArgs = this._setWriteSelectAndIncludeArgs();
+    this.shouldWriteSelectAndIncludeArgs = this._setWriteSelectAndIncludeArgs();
     this.writeSelectFindManyField = this._setWriteSelectFindManyField();
     this.writeSelectField = this._setWriteSelectField();
     this.writeIncludeFindManyField = this._setWriteIncludeFindManyField();
@@ -166,7 +166,10 @@ export class ExtendedDMMFSchemaField
   private _setArgTypeImports() {
     const imports: string[] = [];
 
-    if (this.writeSelectAndIncludeArgs && this.linkedModel?.hasRelationFields) {
+    if (
+      this.shouldWriteSelectAndIncludeArgs &&
+      this.linkedModel?.hasRelationFields
+    ) {
       imports.push(
         `import { ${this.modelType}IncludeSchema } from '../${this.generatorConfig.inputTypePath}/${this.modelType}IncludeSchema'`,
       );
