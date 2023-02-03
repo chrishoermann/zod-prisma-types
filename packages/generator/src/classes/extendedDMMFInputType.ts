@@ -29,6 +29,7 @@ export class ExtendedDMMFInputType
   readonly isDecimalField: boolean;
   readonly omitFields: string[] = [];
   readonly imports: Set<string>;
+  readonly isWhereUniqueInput?: boolean;
 
   constructor(
     readonly generatorConfig: GeneratorConfig,
@@ -48,6 +49,7 @@ export class ExtendedDMMFInputType
     this.isDecimalField = this._setIsDecimalField();
     this.omitFields = this._setOmitFields();
     this.imports = this._setImports();
+    this.isWhereUniqueInput = this._setIsWhereUniqueInput();
   }
 
   /**
@@ -88,6 +90,10 @@ export class ExtendedDMMFInputType
         linkedField,
       );
     });
+  }
+
+  private _setIsWhereUniqueInput() {
+    return /WhereUniqueInput$/.test(this.name);
   }
 
   private _fieldIsPrismaFunctionType() {
