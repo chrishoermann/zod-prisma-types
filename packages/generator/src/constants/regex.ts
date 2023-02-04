@@ -57,7 +57,7 @@ export const DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
 // ----------------------------------------
 
 export const CUSTOM_VALIDATOR_MESSAGE_REGEX =
-  /(?<validator>use|omit)(\()(?<custom>[\w (),.'":+\-*#!§$%&\/{}\[\]=?~><°^]+)\)/;
+  /(?<validator>use|omit|override)(\()(?<custom>[\w (),.'":+\-*#!§$%&\/{}\[\]=?~><°^]+)\)/;
 
 // PRISMA FUNCTION TYPES W/ VALIDATORS
 // ----------------------------------------
