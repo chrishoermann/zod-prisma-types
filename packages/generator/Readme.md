@@ -266,11 +266,13 @@ export const UserSchema = z.object({
   lng: z.number(),
 });
 
-export type UserWithRelations = z.infer<typeof UserSchema> & {
+export type UserRelations = {
   posts: PostWithRelations[];
   profile?: ProfileWithRelations | null;
   location?: LocationWithRelations | null;
 };
+
+export type UserWithRelations = z.infer<typeof UserSchema> & UserRelations;
 
 export const UserWithRelationsSchema: z.ZodType<UserWithRelations> =
   UserSchema.merge(
@@ -278,6 +280,25 @@ export const UserWithRelationsSchema: z.ZodType<UserWithRelations> =
       posts: z.lazy(() => PostWithRelationsSchema).array(),
       profile: z.lazy(() => ProfileWithRelationsSchema).nullish(),
       location: z.lazy(() => LocationWithRelationsSchema).nullish(),
+    }),
+  );
+```
+
+If the option is combined with `createOptionalDefaultValuesTypes` additionally the following model schemas are generated:
+
+```ts
+export type UserOptionalDefaultsWithRelations = z.infer<
+  typeof UserOptionalDefaultsSchema
+> &
+  UserRelations;
+
+export const UserOptionalDefaultsWithRelationsSchema: z.ZodType<UserOptionalDefaultsWithRelations> =
+  UserOptionalDefaultsSchema.merge(
+    z.object({
+      posts: z.lazy(() => PostWithRelationsSchema).array(),
+      profile: z.lazy(() => ProfileWithRelationsSchema).nullable(),
+      location: z.lazy(() => LocationWithRelationsSchema).nullable(),
+      target: z.lazy(() => LocationWithRelationsSchema).nullable(),
     }),
   );
 ```
