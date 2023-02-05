@@ -38,6 +38,8 @@ export class ExtendedDMMFFieldBase
   readonly isDecimalType: boolean;
   readonly isOptionalOnDefaultValue: boolean;
 
+  readonly errorLocation: string;
+
   constructor(
     field: DMMF.Field,
     generatorConfig: GeneratorConfig,
@@ -71,6 +73,8 @@ export class ExtendedDMMFFieldBase
     this.isBytesType = this._setIsBytesType();
     this.isDecimalType = this._setIsDecimalType();
     this.isOptionalOnDefaultValue = this._setDefaultValueOptional();
+
+    this.errorLocation = this._setErrorLocation();
   }
 
   private _setIsJsonType() {
@@ -94,5 +98,9 @@ export class ExtendedDMMFFieldBase
       (this.hasDefaultValue || Boolean(this.isUpdatedAt)) &&
       this.generatorConfig.createOptionalDefaultValuesTypes
     );
+  }
+
+  private _setErrorLocation() {
+    return `[Error Location]: Model: '${this.modelName}', Field: '${this.name}'.`;
   }
 }

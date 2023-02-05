@@ -157,7 +157,7 @@ model User {
   name       String?
   posts      Post[]
   profile    Profile?
-  role       Role[]      @default([USER, ADMIN])
+  role       Role[]      @default([USER, ADMIN]) /// @zod.enum.array(".length(2)")
   enum       AnotherEnum @default(ONE)
   scalarList String[]
 

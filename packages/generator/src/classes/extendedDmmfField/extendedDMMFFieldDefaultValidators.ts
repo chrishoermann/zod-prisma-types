@@ -12,13 +12,13 @@ export class ExtendedDMMFFieldDefaultValidators extends ExtendedDMMFFieldBase {
     modelName: string,
   ) {
     super(field, generatorConfig, modelName);
-    this.zodValidatorString = this._getZodDefaultValidator();
+    this.zodValidatorString = this._setZodDefaultValidator();
   }
 
   // GET DEFAULT VALIDATOR
   // ----------------------------------------------
 
-  private _getZodDefaultValidator() {
+  private _setZodDefaultValidator() {
     if (!this.generatorConfig.useDefaultValidators) return;
     if (this._isCuid()) return '.cuid()';
     if (this._isUuid()) return '.uuid()';
@@ -42,11 +42,11 @@ export class ExtendedDMMFFieldDefaultValidators extends ExtendedDMMFFieldBase {
     return this.type === 'Int';
   }
 
-  /**
-   * Type guard to check if the field default is a DMMF.FieldDefault.
-   * @param value field default value
-   * @returns boolean if the value is a field default
-   */
+  // Type guard to check if the field default is a DMMF.FieldDefault.
+  // While investigating the DMMF, I found that the default property
+  // is exclusively a DMMF.FieldDefault. Maybe in the future, the
+  // other properties will be used, but for now they are not.
+
   private _IsFieldDefault(
     value?:
       | DMMF.FieldDefault
