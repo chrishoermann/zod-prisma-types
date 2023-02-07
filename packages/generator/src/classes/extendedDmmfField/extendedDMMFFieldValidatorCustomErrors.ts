@@ -1,6 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { ExtendedDMMFFieldValidatorType } from './extendedDMMFFieldValidatorType';
+import { ExtendedDMMFFieldDefaultValidators } from './extendedDMMFFieldDefaultValidators';
 import { GeneratorConfig } from '../../schemas';
 
 /////////////////////////////////////////////////
@@ -38,7 +38,7 @@ export const ZOD_VALID_ERROR_KEYS: ZodCustomErrorKey[] = [
 // CLASS
 /////////////////////////////////////////////////
 
-export class ExtendedDMMFFieldValidatorCustomErrors extends ExtendedDMMFFieldValidatorType {
+export class ExtendedDMMFFieldValidatorCustomErrors extends ExtendedDMMFFieldDefaultValidators {
   protected validatorCustomError?: string;
   readonly zodCustomErrors?: string;
 

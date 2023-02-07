@@ -1,6 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { ExtendedDMMFFieldDefaultValidators } from './extendedDMMFFieldDefaultValidators';
+import { ExtendedDMMFFieldBase } from './extendedDMMFFieldBase';
 import { GeneratorConfig } from '../../schemas';
 
 /////////////////////////////////////////////////
@@ -14,7 +14,7 @@ export const VALIDATOR_TYPE_REGEX =
 // CLASS
 /////////////////////////////////////////////////
 
-export class ExtendedDMMFFieldValidatorMatch extends ExtendedDMMFFieldDefaultValidators {
+export class ExtendedDMMFFieldValidatorMatch extends ExtendedDMMFFieldBase {
   protected validatorMatch?: RegExpMatchArray;
   readonly clearedDocumentation?: string;
 

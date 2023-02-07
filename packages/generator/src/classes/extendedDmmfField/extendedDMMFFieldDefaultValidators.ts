@@ -1,10 +1,10 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { ExtendedDMMFFieldBase } from './extendedDMMFFieldBase';
+import { ExtendedDMMFFieldValidatorPattern } from './extendedDMMFFieldValidatorPattern';
 import { GeneratorConfig } from '../../schemas';
 
-export class ExtendedDMMFFieldDefaultValidators extends ExtendedDMMFFieldBase {
-  readonly zodValidatorString?: string;
+export class ExtendedDMMFFieldDefaultValidators extends ExtendedDMMFFieldValidatorPattern {
+  zodValidatorString?: string;
 
   constructor(
     field: DMMF.Field,
@@ -12,6 +12,7 @@ export class ExtendedDMMFFieldDefaultValidators extends ExtendedDMMFFieldBase {
     modelName: string,
   ) {
     super(field, generatorConfig, modelName);
+
     this.zodValidatorString = this._setZodDefaultValidator();
   }
 
@@ -20,6 +21,7 @@ export class ExtendedDMMFFieldDefaultValidators extends ExtendedDMMFFieldBase {
 
   private _setZodDefaultValidator() {
     if (!this.generatorConfig.useDefaultValidators) return;
+    if (this.validatorList?.includes('.noDefault()')) return;
     if (this._isCuid()) return '.cuid()';
     if (this._isUuid()) return '.uuid()';
     if (this._isInt()) return '.int()';
@@ -27,14 +29,12 @@ export class ExtendedDMMFFieldDefaultValidators extends ExtendedDMMFFieldBase {
   }
 
   private _isCuid() {
-    const defaults = this.default;
-    if (this._IsFieldDefault(defaults)) return defaults.name === 'cuid';
+    if (this._IsFieldDefault(this.default)) return this.default.name === 'cuid';
     return false;
   }
 
   private _isUuid() {
-    const defaults = this.default;
-    if (this._IsFieldDefault(defaults)) return defaults.name === 'uuid';
+    if (this._IsFieldDefault(this.default)) return this.default.name === 'uuid';
     return false;
   }
 

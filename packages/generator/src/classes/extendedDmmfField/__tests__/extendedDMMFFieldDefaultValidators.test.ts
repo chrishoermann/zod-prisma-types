@@ -55,3 +55,18 @@ it(`should load a scalar DMMF.field ExtendedDMMFFieldDefaultValidator class with
   expect(field).toBeDefined();
   expect(field.zodValidatorString).toBe('.int()');
 });
+
+it(`should load a scalar DMMF.field ExtendedDMMFFieldDefaultValidator class with Int default validator`, async () => {
+  const field = new ExtendedDMMFFieldDefaultValidators(
+    {
+      ...FIELD_BASE,
+      type: 'Int',
+      documentation: '@zod.number.noDefault()',
+    },
+    DEFAULT_GENERATOR_CONFIG,
+    'Test',
+  );
+
+  expect(field).toBeDefined();
+  expect(field.zodValidatorString).toBeUndefined();
+});
