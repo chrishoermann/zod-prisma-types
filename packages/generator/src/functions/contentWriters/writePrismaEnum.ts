@@ -26,7 +26,7 @@ export const writePrismaEnum = (
   } else {
     writer
       .conditionalWrite(
-        useMultipleFiles && name.includes('NullableJson'),
+        useMultipleFiles && name?.includes('NullableJson'),
         `import transformJsonNull from './transformJsonNull'`,
       )
       .blankLine()
@@ -36,9 +36,9 @@ export const writePrismaEnum = (
     });
     writer
       .write(`])`)
-      .conditionalWrite(!name.includes('Nullable'), `;`)
+      .conditionalWrite(!name?.includes('Nullable'), `;`)
       .conditionalWrite(
-        name.includes('Nullable'),
+        name?.includes('Nullable'),
         `.transform((v) => transformJsonNull(v));`,
       );
   }

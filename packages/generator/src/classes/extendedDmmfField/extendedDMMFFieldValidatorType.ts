@@ -111,7 +111,7 @@ export class ExtendedDMMFFieldValidatorType extends ExtendedDMMFFieldValidatorMa
   };
 
   private _isPrismaValidatorType(validatorType: ZodValidatorType) {
-    return PRISMA_TO_VALIDATOR_TYPE_MAP[validatorType].includes(
+    return PRISMA_TO_VALIDATOR_TYPE_MAP[validatorType]?.includes(
       this.type as PrismaScalarType,
     );
   }
