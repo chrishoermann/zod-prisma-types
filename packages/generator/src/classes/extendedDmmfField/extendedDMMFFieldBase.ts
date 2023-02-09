@@ -1,6 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
-import { GeneratorConfig } from 'src/schemas';
 
+import { GeneratorConfig } from '../../schemas';
 import { FormattedNames } from '../formattedNames';
 
 /////////////////////////////////////////////////

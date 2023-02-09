@@ -23,12 +23,14 @@ export class ExtendedDMMFFieldValidatorPattern extends ExtendedDMMFFieldValidato
   }
 
   private _getValidatorPattern() {
+    if (!this.validatorMatch) return;
     return this.validatorMatch?.groups?.['validatorPattern'];
   }
 
   // If pattern consists of multiple validators (e.g. .min(1).max(10))
   // the pattern is split into an array for further processing.
   private _getValidatorList() {
+    if (!this.validatorPattern) return;
     return this.validatorPattern?.split(/(?=\.[\w])/);
   }
 }
