@@ -63,7 +63,7 @@ export const CUSTOM_VALIDATOR_MESSAGE_REGEX =
 // ----------------------------------------
 
 export const PRISMA_FUNCTION_TYPES_WITH_VALIDATORS =
-  /CreateInput|CreateMany|UpdateInput|UpdateMany/;
+  /CreateInput|CreateMany|UpdateInput|UpdateMany|WhereUnique/;
 
 // IMPORT STATEMENT
 // ----------------------------------------

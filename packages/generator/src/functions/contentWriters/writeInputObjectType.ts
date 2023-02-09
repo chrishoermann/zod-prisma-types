@@ -13,7 +13,14 @@ export const writeInputObjectType = (
   const { useMultipleFiles, prismaClientPath, addInputTypeValidation } =
     dmmf.generatorConfig;
 
+  // TODO: add validators to whereUniqueInput
+  // mabye with: /* eslint-disable @typescript-eslint/no-unused-vars */
+  // to cool down the linter
+
   if (useMultipleFiles && !getSingleFileContent) {
+    // if (inputType.isWhereUniqueInput) {
+    //   writer.writeLine('/* eslint-disable @typescript-eslint/no-unused-vars */');
+    // }
     writeImport('{ z }', 'zod');
     writeImport('{ type Prisma }', prismaClientPath);
     writeImportSet(inputType.imports);
@@ -109,19 +116,19 @@ export const writeInputObjectType = (
     })
     .write(`).strict()`);
 
-  if (inputType.isWhereUniqueInput && inputType.fields.length > 1) {
-    writer.write(`.refine((data) => `);
-    inputType.fields.forEach((field, idx) => {
-      const writeComma = idx !== inputType.fields.length - 1;
-      writer.write(`!!data.${field?.name}`);
-      if (writeComma) {
-        writer.write(` || `);
-      }
-    });
-    writer.write(
-      `, { message: 'At least one field must be provided @ ${inputType.name}' })`,
-    );
-  }
+  // if (inputType.isWhereUniqueInput && inputType.fields.length > 1) {
+  //   writer.write(`.refine((data) => `);
+  //   inputType.fields.forEach((field, idx) => {
+  //     const writeComma = idx !== inputType.fields.length - 1;
+  //     writer.write(`!!data.${field?.name}`);
+  //     if (writeComma) {
+  //       writer.write(` || `);
+  //     }
+  //   });
+  //   writer.write(
+  //     `, { message: 'At least one field must be provided @ ${inputType.name}' })`,
+  //   );
+  // }
 
   writer.write(`;`);
 

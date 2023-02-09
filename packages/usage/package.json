@@ -6,7 +6,8 @@
   "scripts": {
     "test": "vitest",
     "gen:prisma": "prisma generate",
-    "run:dev": "ts-node-dev app/client.ts"
+    "run:dev": "ts-node-dev app/client.ts",
+    "lint": "eslint --ext ts,tsx,js,jsx --fix ."
   },
   "keywords": [],
   "type": "module",
