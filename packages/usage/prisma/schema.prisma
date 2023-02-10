@@ -23,6 +23,7 @@ generator zod {
   // createInputTypes                 = false // default is true
   // createModelTypes                 = false // default is true
   // addInputTypeValidation           = false // default is true
+  // validateWhereUniqueInput         = true // default is false
   createOptionalDefaultValuesTypes = true // default is false
   createRelationValuesTypes        = true // default is false
   // useDefaultValidators             = true // default is true
@@ -103,7 +104,8 @@ model MyPrismaScalarsType {
   decimal    Decimal
   decimalOpt Decimal?
   date       DateTime  @default(now())
-  dateOpt    DateTime? /// @zod.date({ invalid_type_error: "wrong date type" })  bigInt     BigInt /// @zod.bigint({ invalid_type_error: "error" })
+  dateOpt    DateTime? /// @zod.date({ invalid_type_error: "wrong date type" })  
+  bigInt     BigInt /// @zod.bigint({ invalid_type_error: "error" })
   bigIntOpt  BigInt?
   /// @zod.custom.use(z.lazy(() => InputJsonValue).refine((val) => myFunction(val), { message: 'Is not valid' }))
   json       Json
@@ -126,6 +128,18 @@ model JsonModel {
   id      Int   @id @default(autoincrement())
   json    Json
   jsonOpt Json?
+}
+
+// STRING REGEX VALIDATOR
+// -----------------------------------------------
+
+// Used for testing if the string regex validator is correctly transformed
+
+model StringRegexModel {
+  id          Int    @id @default(autoincrement())
+  string      String /// @zod.string.regex(/^[a-z0-9]+$/i, { message: "error" })
+  stringTwo   String /// @zod.string.regex(/^\\d+\\s*\\d+$/) 
+  stringThree String /// @zod.string.regex(/^d+s*d+$/) 
 }
 
 // STANDARD BLOG SCHEMA

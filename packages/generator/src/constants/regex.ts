@@ -7,7 +7,7 @@
 // ----------------------------------------
 
 export const VALIDATOR_TYPE_REGEX =
-  /@zod\.(?<type>[\w]+){1}(?<customErrors>\({[\w (),'":+\-*#!§$%&\/{}\[\]=?~><°^]+}\))?(?<validatorPattern>[\w (),.'":+\-*#!§$%&\/{}\[\]=?~><°^]+[)])?/;
+  /@zod\.(?<type>[\w]+){1}(?<customErrors>\({[\w (),'":+\-*#!§$%&\/{}[\]=?~><°^]+}\))?(?<validatorPattern>[\w (),.'"\\:+\-*#!§$%&\/{}[\]=?~><°^]+[)])?/;
 
 export const VALIDATOR_TYPE_IS_VALID_REGEX = /string|number|bigint|date|custom/;
 
@@ -65,8 +65,11 @@ export const CUSTOM_VALIDATOR_MESSAGE_REGEX =
 export const PRISMA_FUNCTION_TYPES_WITH_VALIDATORS =
   /CreateInput|CreateMany|UpdateInput|UpdateMany/;
 
+export const PRISMA_FUNCTION_TYPES_WITH_VALIDATORS_WHERE_UNIQUE =
+  /CreateInput|CreateMany|UpdateInput|UpdateMany|WhereUnique/;
+
 // IMPORT STATEMENT
 // ----------------------------------------
 
 export const IMPORT_STATEMENT_REGEX =
-  /@zod\.(?<type>[\w]+)(\(\[)(?<imports>[\w "'\{\}\/,;.*]+)(\]\))/;
+  /@zod\.(?<type>[\w]+)(\(\[)(?<imports>[\w "'$\{\}\/,;.*]+)(\]\))/;

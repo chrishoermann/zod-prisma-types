@@ -31,20 +31,11 @@ export type ValidatorFunction = (
   options: ScalarValidatorFunctionOptions,
 ) => string | undefined;
 
-export type ValidatorFunctionMap = KeyValueMap<
-  ZodValidatorType,
-  ValidatorFunction
->;
-export type KeyValueMap<TKey extends string, TValue> = {
-  [key in TKey]: TValue;
-};
+export type ValidatorFunctionMap = Record<ZodValidatorType, ValidatorFunction>;
 
-export type ZodValidatorTypeMap = KeyValueMap<
-  ZodValidatorType,
-  PrismaScalarType[]
->;
+export type ZodValidatorTypeMap = Record<ZodValidatorType, PrismaScalarType[]>;
 
-export type PrismaScalarTypeMap<T> = KeyValueMap<PrismaScalarType, T>;
+export type PrismaScalarTypeMap<T> = Record<PrismaScalarType, T>;
 
 export type ZodCustomErrorKey =
   | 'invalid_type_error'

@@ -1,6 +1,5 @@
 import { FormattedNames } from '../classes/formattedNames';
 import {
-  KeyValueMap,
   PrismaAction,
   PrismaScalarType,
   ZodCustomErrorKey,
@@ -39,7 +38,7 @@ import {
  * @example myPrismaField: Boolean ///@zod.custom(..some custom implementation) -> valid
  * @example myPrismaField: Int ///@zod.string.max(10) -> invalid throws error during generation
  */
-export const PRISMA_TO_VALIDATOR_TYPE_MAP: KeyValueMap<
+export const PRISMA_TO_VALIDATOR_TYPE_MAP: Record<
   ZodValidatorType | 'custom',
   PrismaScalarType[]
 > = {
@@ -67,7 +66,7 @@ export const PRISMA_TO_VALIDATOR_TYPE_MAP: KeyValueMap<
 /**
  * Map prisma scalar types to their corresponding zod validators.
  */
-export const PRISMA_TO_ZOD_TYPE_MAP: KeyValueMap<
+export const PRISMA_TO_ZOD_TYPE_MAP: Record<
   ZodPrismaScalarType,
   ZodScalarType
 > = {
@@ -97,7 +96,7 @@ export type ValidatorMapValue =
   | RegExp
   | ((pattern: string) => string | undefined);
 
-export type ValidatorMap<TKeys extends string> = KeyValueMap<
+export type ValidatorMap<TKeys extends string> = Record<
   TKeys,
   ValidatorMapValue
 >;
@@ -169,6 +168,7 @@ export const CUSTOM_VALIDATOR_REGEX_MAP: ValidatorMap<ZodCustomValidatorKeys> =
     omit: (pattern) => {
       return pattern.match(CUSTOM_VALIDATOR_MESSAGE_REGEX)?.groups?.['custom'];
     },
+    /** @deprecated */
     import: (pattern) => {
       return pattern.match(CUSTOM_VALIDATOR_MESSAGE_REGEX)?.groups?.['custom'];
     },
@@ -188,7 +188,7 @@ export type FilterdPrismaAction = Exclude<
  * according to the prisma schema.
  * @example type UserFindUnique // becomes const UserFindUnique = ...
  */
-export const PRISMA_ACTION_ARG_MAP: KeyValueMap<
+export const PRISMA_ACTION_ARG_MAP: Record<
   FilterdPrismaAction,
   FormattedNames
 > = {

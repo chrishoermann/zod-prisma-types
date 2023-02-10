@@ -1,4 +1,5 @@
 export * from './getStringVariants';
 export * from './getPrismaClientOutputPath';
 export * from './getPrismaDbProvider';
+export * from './loadDMMF';
 export * from './skipGenerator';

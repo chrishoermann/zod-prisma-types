@@ -109,20 +109,6 @@ export const writeInputObjectType = (
     })
     .write(`).strict()`);
 
-  if (inputType.isWhereUniqueInput && inputType.fields.length > 1) {
-    writer.write(`.refine((data) => `);
-    inputType.fields.forEach((field, idx) => {
-      const writeComma = idx !== inputType.fields.length - 1;
-      writer.write(`!!data.${field?.name}`);
-      if (writeComma) {
-        writer.write(` || `);
-      }
-    });
-    writer.write(
-      `, { message: 'At least one field must be provided @ ${inputType.name}' })`,
-    );
-  }
-
   writer.write(`;`);
 
   if (useMultipleFiles && !getSingleFileContent) {
