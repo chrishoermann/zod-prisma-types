@@ -650,6 +650,8 @@ export const MyPrismaScalarsTypeSchema = z.object({
   updatedAt: z.date(),
 });
 
+export type MyPrismaScalarsType = z.infer<typeof MyPrismaScalarsTypeSchema>;
+
 export const MyPrismaScalarsTypeOptionalDefaultsSchema =
   MyPrismaScalarsTypeSchema.merge(
     z.object({
