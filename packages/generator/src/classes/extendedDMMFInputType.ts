@@ -1,14 +1,17 @@
 import { DMMF } from '@prisma/generator-helper';
 
 import { ExtendedDMMFDatamodel, ExtendedDMMFField } from '.';
-import { PRISMA_FUNCTION_TYPES_WITH_VALIDATORS } from '../constants/regex';
-import { GeneratorConfig } from '../schemas';
 import { ExtendedDMMFModel } from './extendedDMMFModel';
 import {
   ExtendedDMMFSchemaArg,
   ZodValidatorOptions,
 } from './extendedDMMFSchemaArg';
 import { FormattedNames } from './formattedNames';
+import {
+  PRISMA_FUNCTION_TYPES_WITH_VALIDATORS,
+  PRISMA_FUNCTION_TYPES_WITH_VALIDATORS_WHERE_UNIQUE,
+} from '../constants/regex';
+import { GeneratorConfig } from '../schemas';
 
 /////////////////////////////////////////////////
 // CLASS
@@ -92,7 +95,13 @@ export class ExtendedDMMFInputType
   }
 
   private _fieldIsPrismaFunctionType() {
-    return this.name.match(PRISMA_FUNCTION_TYPES_WITH_VALIDATORS);
+    if (
+      !this.generatorConfig.useMultipleFiles ||
+      this.generatorConfig.validateWhereUniqueInput
+    ) {
+      return PRISMA_FUNCTION_TYPES_WITH_VALIDATORS_WHERE_UNIQUE.test(this.name);
+    }
+    return PRISMA_FUNCTION_TYPES_WITH_VALIDATORS.test(this.name);
   }
 
   private _getZodValidatorString(fieldName: string) {
@@ -148,10 +157,7 @@ export class ExtendedDMMFInputType
       .map((field) => field.getImports(this.name))
       .flat();
 
-    if (
-      PRISMA_FUNCTION_TYPES_WITH_VALIDATORS.test(this.name) &&
-      this.linkedModel?.customImports
-    ) {
+    if (this._fieldIsPrismaFunctionType() && this.linkedModel?.customImports) {
       fieldImports.push(...this.linkedModel.customImports);
     }
 
