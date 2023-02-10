@@ -26,6 +26,7 @@ Be aware that some generator options have been removed, a few new have been adde
   - [`createInputTypes`](#createinputtypes)
   - [`createModelTypes`](#createmodeltypes)
   - [`addInputTypeValidation`](#addinputtypevalidation)
+  - [`validateWhereUniqueInput`](#validatewhereuniqueinput)
   - [`createOptionalDefaultValuesTypes`](#createoptionaldefaultvaluestypes)
   - [`createRelationValuesTypes`](#createrelationvaluestypes)
   - [`useDefaultValidators`](#usedefaultvalidators)
