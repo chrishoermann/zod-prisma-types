@@ -20,7 +20,6 @@
   },
   "dependencies": {
     "@prisma/client": "^4.10.1",
-    "@prisma/generator-helper": "4.9.0",
     "@trpc/client": "^10.11.0",
     "@trpc/server": "^10.11.0",
     "@types/validator": "^13.7.12",
@@ -31,7 +30,6 @@
     "ts-node-dev": "^2.0.0",
     "validator": "^13.9.0",
     "vitest": "^0.25.8",
-    "zod": "^3.20.2",
-    "zod-prisma-types": "workspace:2.0.11-beta.0"
+    "zod-prisma-types": "workspace:2.0.11-beta.1"
   }
 }
