@@ -10,23 +10,10 @@ export const writeInputObjectType = (
   }: ContentWriterOptions,
   inputType: ExtendedDMMFInputType,
 ) => {
-  const {
-    useMultipleFiles,
-    prismaClientPath,
-    addInputTypeValidation,
-    // validateWhereUniqueInput,
-  } = dmmf.generatorConfig;
-
-  // TODO: add validators to whereUniqueInput
-  // mabye with: /* eslint-disable @typescript-eslint/no-unused-vars */
-  // to cool down the linter
+  const { useMultipleFiles, prismaClientPath, addInputTypeValidation } =
+    dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    // if (inputType.isWhereUniqueInput && validateWhereUniqueInput) {
-    //   writer.writeLine(
-    //     '/* eslint-disable @typescript-eslint/no-unused-vars */',
-    //   );
-    // }
     writeImport('{ z }', 'zod');
     writeImport('{ type Prisma }', prismaClientPath);
     writeImportSet(inputType.imports);

@@ -100,7 +100,10 @@ export class ExtendedDMMFInputType
   }
 
   private _fieldIsPrismaFunctionType() {
-    if (this.generatorConfig.validateWhereUniqueInput) {
+    if (
+      this.generatorConfig.validateWhereUniqueInput ||
+      !this.generatorConfig.useMultipleFiles
+    ) {
       return PRISMA_FUNCTION_TYPES_WITH_VALIDATORS_WHERE_UNIQUE.test(this.name);
     }
     return PRISMA_FUNCTION_TYPES_WITH_VALIDATORS.test(this.name);
