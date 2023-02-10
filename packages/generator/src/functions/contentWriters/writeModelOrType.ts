@@ -64,11 +64,9 @@ export const writeModelOrType = (
     })
     .write(`)`);
 
-  // if (dmmf.generatorConfig.isMongoDb) {
   writer
     .blankLine()
     .write(`export type ${model.name} = z.infer<typeof ${model.name}Schema>`);
-  // }
 
   if (model.writeOptionalDefaultValuesTypes) {
     writer
