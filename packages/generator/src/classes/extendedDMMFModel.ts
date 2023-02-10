@@ -34,6 +34,8 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
   readonly optionalJsonFields: ExtendedDMMFField[];
   readonly optionalJsonFieldUnion: string;
   readonly writeOptionalDefaultValuesTypes: boolean;
+  readonly writeRelationValueTypes: boolean;
+  readonly writeOptionalDefaultsRelationValueTypes: boolean;
 
   constructor(generatorConfig: GeneratorConfig, model: DMMF.Model) {
     super(model.name);
@@ -66,6 +68,9 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
     this.optionalJsonFieldUnion = this._setOptionalJsonFieldUnion();
     this.writeOptionalDefaultValuesTypes =
       this._setWriteOptionalDefaultValuesTypes();
+    this.writeRelationValueTypes = this._setWriteRelationValueTypes();
+    this.writeOptionalDefaultsRelationValueTypes =
+      this._setWriteOptionalDefaultsRelationValueTypes();
   }
 
   private _setErrorLocation() {
@@ -111,6 +116,16 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
       this.hasOptionalDefaultFields &&
       this.generatorConfig.createOptionalDefaultValuesTypes
     );
+  }
+
+  private _setWriteRelationValueTypes() {
+    return (
+      this.hasRelationFields && this.generatorConfig.createRelationValuesTypes
+    );
+  }
+
+  private _setWriteOptionalDefaultsRelationValueTypes() {
+    return this.writeRelationValueTypes && this.writeOptionalDefaultValuesTypes;
   }
 
   private _setHasOptionalDefaultFields() {

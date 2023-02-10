@@ -29,6 +29,7 @@ export class ExtendedDMMFInputType
   readonly isDecimalField: boolean;
   readonly omitFields: string[] = [];
   readonly imports: Set<string>;
+  readonly isWhereUniqueInput?: boolean;
 
   constructor(
     readonly generatorConfig: GeneratorConfig,

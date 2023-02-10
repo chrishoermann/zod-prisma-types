@@ -97,13 +97,30 @@ export const writeModelOrType = (
       .write(`))`);
   }
 
-  if (createRelationValuesTypes && model.hasRelationFields) {
+  if (model.writeRelationValueTypes) {
     writer
       .blankLine()
-      .conditionalWrite(
-        !model.hasOptionalJsonFields,
-        `export type ${model.name}WithRelations = z.infer<typeof ${model.name}Schema> & `,
-      );
+      .write(`export type ${model.name}Relations = `)
+      .inlineBlock(() => {
+        model.relationFields.forEach((field) => {
+          writer
+            .conditionalWrite(field.omitInModel(), '// omitted: ')
+            .write(field.name)
+            .conditionalWrite(!field.isRequired, '?')
+            .write(': ')
+            .conditionalWrite(
+              !dmmf.generatorConfig.isMongoDb,
+              `${field.type}WithRelations`,
+            )
+            .conditionalWrite(dmmf.generatorConfig.isMongoDb, `${field.type}`)
+            .conditionalWrite(field.isList, '[]')
+            .conditionalWrite(!field.isRequired, ' | null')
+            .write(';')
+            .newLine();
+        });
+      })
+      .write(`;`)
+      .blankLine();
 
     if (model.hasOptionalJsonFields) {
       writer
@@ -116,31 +133,53 @@ export const writeModelOrType = (
           });
         })
         .write(` & `);
+    } else {
+      writer.write(
+        `export type ${model.name}WithRelations = z.infer<typeof ${model.name}Schema> & `,
+      );
     }
 
-    writer.inlineBlock(() => {
-      model.relationFields.forEach((field) => {
-        writer
-          .conditionalWrite(field.omitInModel(), '// omitted: ')
-          .write(field.name)
-          .conditionalWrite(!field.isRequired, '?')
-          .write(': ')
-          .conditionalWrite(
-            !dmmf.generatorConfig.isMongoDb,
-            `${field.type}WithRelations`,
-          )
-          .conditionalWrite(dmmf.generatorConfig.isMongoDb, `${field.type}`)
-          .conditionalWrite(field.isList, '[]')
-          .conditionalWrite(!field.isRequired, ' | null')
-          .write(';')
-          .newLine();
-      });
-    });
+    writer.write(`${model.name}Relations`);
 
     writer
       .blankLine()
       .write(
         `export const ${model.name}WithRelationsSchema: z.ZodType<${model.name}WithRelations> = ${model.name}Schema.merge(z.object(`,
+      )
+      .inlineBlock(() => {
+        model.relationFields.forEach((field) => {
+          writeRelation({ writer, field });
+        });
+      })
+      .write(`))`);
+  }
+
+  if (model.writeOptionalDefaultsRelationValueTypes) {
+    writer.blankLine();
+
+    if (model.hasOptionalJsonFields) {
+      writer
+        .write(
+          `export type ${model.name}OptionalDefaultsWithRelations = Omit<z.infer<typeof ${model.name}OptionalDefaultsSchema>, ${model.optionalJsonFieldUnion}> & `,
+        )
+        .inlineBlock(() => {
+          model.optionalJsonFields.forEach((field) => {
+            writer.write(`${field.name}?: NullableJsonInput;`).newLine();
+          });
+        })
+        .write(` & `);
+    } else {
+      writer.write(
+        `export type ${model.name}OptionalDefaultsWithRelations = z.infer<typeof ${model.name}OptionalDefaultsSchema> & `,
+      );
+    }
+
+    writer.write(`${model.name}Relations`);
+
+    writer
+      .blankLine()
+      .write(
+        `export const ${model.name}OptionalDefaultsWithRelationsSchema: z.ZodType<${model.name}OptionalDefaultsWithRelations> = ${model.name}OptionalDefaultsSchema.merge(z.object(`,
       )
       .inlineBlock(() => {
         model.relationFields.forEach((field) => {

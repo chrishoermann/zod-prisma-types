@@ -16,15 +16,15 @@ datasource db {
 // -----------------------------------------------
 
 generator zod {
-  provider         = "ts-node-dev ../generator/src/bin.ts"
+  provider                         = "ts-node-dev ../generator/src/bin.ts"
   // provider                         = "zod-prisma-types"
-  output           = "./generated/zod" // default is ./generated/zod
-  useMultipleFiles = true // default is false 
+  output                           = "./generated/zod" // default is ./generated/zod
+  useMultipleFiles                 = true // default is false 
   // createInputTypes                 = false // default is true
   // createModelTypes                 = false // default is true
   // addInputTypeValidation           = false // default is true
-  // createOptionalDefaultValuesTypes = true // default is false
-  // createRelationValuesTypes        = true // default is false
+  createOptionalDefaultValuesTypes = true // default is false
+  createRelationValuesTypes        = true // default is false
   // useDefaultValidators             = true // default is true
   // coerceDate                       = true // default is true
   // writeNullishInModelTypes         = false // default is false
