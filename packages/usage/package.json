@@ -32,9 +32,6 @@
     "vitest": "^0.25.8",
 <<<<<<< HEAD
     "zod": "^3.20.2",
-=======
-    "zod": "^3.20.6",
->>>>>>> ff163b3a855bb61748b0a1b9f51a9e91e4c1a44d
-    "zod-prisma-types": "workspace:2.0.8"
+    "zod-prisma-types": "workspace:2.0.4"
   }
 }
