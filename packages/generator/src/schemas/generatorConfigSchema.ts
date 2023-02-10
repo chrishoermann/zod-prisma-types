@@ -55,11 +55,6 @@ export const configSchema = z.object({
     .optional()
     .default('false')
     .transform((val) => val === 'true'),
-  validateWhereUniqueInput: z
-    .string()
-    .optional()
-    .default('false')
-    .transform((val) => val === 'true'),
   prismaClientPath: z.string().default('@prisma/client'),
   provider: z.string().optional(),
   isMongoDb: z
