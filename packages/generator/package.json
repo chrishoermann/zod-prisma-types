@@ -1,6 +1,6 @@
 {
   "name": "zod-prisma-types",
-  "version": "2.0.13",
+  "version": "2.0.14",
   "description": "Generates zod schemas from Prisma models with advanced validation",
   "author": "Chris Hörmann",
   "license": "MIT",
