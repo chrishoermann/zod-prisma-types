@@ -20,8 +20,8 @@
   },
   "dependencies": {
     "@prisma/client": "^4.10.1",
-    "@trpc/client": "^10.10.0",
-    "@trpc/server": "^10.10.0",
+    "@trpc/client": "^10.11.0",
+    "@trpc/server": "^10.11.0",
     "@types/validator": "^13.7.12",
     "cross-fetch": "^3.1.5",
     "decimal.js": "^10.4.3",
@@ -31,6 +31,6 @@
     "validator": "^13.9.0",
     "vitest": "^0.25.8",
     "zod": "^3.20.6",
-    "zod-prisma-types": "workspace:2.0.8"
+    "zod-prisma-types": "workspace:2.0.10"
   }
 }
