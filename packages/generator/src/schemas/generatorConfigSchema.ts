@@ -30,6 +30,11 @@ export const configSchema = z.object({
     .optional()
     .default('true')
     .transform((val) => val === 'true'),
+  validateWhereUniqueInput: z
+    .string()
+    .optional()
+    .default('false')
+    .transform((val) => val === 'true'),
   useDefaultValidators: z
     .string()
     .optional()
