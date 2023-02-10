@@ -634,12 +634,12 @@ export const MyPrismaScalarsTypeOptionalDefaultsSchema =
 
 ## Custom imports
 
-To add custom imports to your validator you can add them via `@zod.custom.imports([...myCustom imports as strings])` in prismas rich comments on the model definition.
+To add custom imports to your validator you can add them via `@zod.import([...myCustom imports as strings])` in prismas rich comments on the model definition.
 
 For example:
 
 ```prisma
-/// @zod.custom.imports(["import { myFunction } from 'mypackage'"])
+/// @zod.import(["import { myFunction } from 'mypackage'"])
 model MyModel {
   myField String /// @zod.string().refine((val) => myFunction(val), { message: 'Is not valid' })
 }
