@@ -220,6 +220,19 @@ model DateModel {
   dateOpt DateTime?
 }
 
+// STRING REGEX VALIDATOR
+// -----------------------------------------------
+
+// Used for testing if the string regex validator is correctly transformed
+
+/// @zod.import(["import * as s from '$lib/schemas'"])
+model StringRegexModel {
+  id          Int    @id @default(autoincrement())
+  string      String /// @zod.string.regex(/^[a-z0-9]+$/i, { message: "error" })
+  stringTwo   String /// @zod.string.regex(/^\\d+\\s*\\d+$/) 
+  stringThree String /// @zod.string.regex(/^d+s*d+$/) 
+}
+
 // model Post {
 //   id    String   @id @default(auto()) @map("_id") @db.ObjectId
 //   title String   @default("")
