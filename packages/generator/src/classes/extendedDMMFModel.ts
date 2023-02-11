@@ -1,6 +1,9 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { IMPORT_STATEMENT_REGEX } from '../constants';
+import {
+  IMPORT_STATEMENT_REGEX,
+  IMPORT_STATEMENT_REGEX_PATTERN,
+} from '../constants';
 import { GeneratorConfig } from '../schemas';
 import { ExtendedDMMFField } from './extendedDMMFField';
 import { FormattedNames } from './formattedNames';
@@ -171,7 +174,9 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
   private _extractZodDirectives() {
     if (!this.documentation) return;
 
-    const importStatements = this.documentation?.match(IMPORT_STATEMENT_REGEX);
+    const importStatements = this.documentation?.match(
+      IMPORT_STATEMENT_REGEX_PATTERN,
+    );
 
     if (!importStatements) {
       return {
@@ -201,14 +206,14 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
       customImports: importsList
         .map((statement) =>
           statement
-            .match(/"(?<statement>[\w "'{}/,;.*]+)"/)
+            .match(IMPORT_STATEMENT_REGEX)
             ?.groups?.['statement'].replace(/["']/g, "'"),
         )
         .filter(
           (statement): statement is string => typeof statement === 'string',
         ),
       clearedDocumentation: this.documentation
-        .replace(IMPORT_STATEMENT_REGEX, '')
+        .replace(IMPORT_STATEMENT_REGEX_PATTERN, '')
         .trim(),
     };
   }
