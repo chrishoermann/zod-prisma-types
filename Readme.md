@@ -102,7 +102,7 @@ generator zod {
   addInputTypeValidation           = false // default is true
   validateWhereUniqueInput         = true // default is false
   createOptionalDefaultValuesTypes = true // default is false
-  createRelationValuesType         = true // default is false
+  createRelationValuesTypes        = true // default is false
   useDefaultValidators             = false // default is true
   coerceDate                       = false // default is true
   writeNullishInModelTypes         = true // default is false
