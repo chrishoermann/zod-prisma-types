@@ -110,16 +110,18 @@ export class ExtendedDMMFOutputType
 
     this.fields.forEach((field) => {
       if (field.writeSelectFindManyField) {
-        imports.add(
+        return imports.add(
           `import { ${field.outputType.type}FindManyArgsSchema } from "../${outputTypePath}/${field.outputType.type}FindManyArgsSchema"`,
         );
       }
 
       if (field.writeSelectField) {
-        imports.add(
+        return imports.add(
           `import { ${field.outputType.type}ArgsSchema } from "../${outputTypePath}/${field.outputType.type}ArgsSchema"`,
         );
       }
+
+      return undefined;
     });
 
     return imports;
@@ -131,16 +133,18 @@ export class ExtendedDMMFOutputType
 
     this.fields.forEach((field) => {
       if (field.writeIncludeFindManyField) {
-        imports.add(
+        return imports.add(
           `import { ${field.outputType.type}FindManyArgsSchema } from "../${outputTypePath}/${field.outputType.type}FindManyArgsSchema"`,
         );
       }
 
       if (field.writeIncludeField) {
-        imports.add(
+        return imports.add(
           `import { ${field.outputType.type}ArgsSchema } from "../${outputTypePath}/${field.outputType.type}ArgsSchema"`,
         );
       }
+
+      return undefined;
     });
 
     return imports;
