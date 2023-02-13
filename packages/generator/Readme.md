@@ -171,7 +171,8 @@ generator zod {
 ### `validateWhereUniqueInput`
 
 > default: `false`
-> By default the generator will not validate the `whereUnique` input types in multifile mode since a bunch of unused imports will often be generated. If you want to validate the `whereUnique` input types you can set this option to `true`.
+
+By default the generator will not validate the `whereUnique` input types in multifile mode since a bunch of unused imports will often be generated. If you want to validate the `whereUnique` input types you can set this option to `true`.
 
 > Be aware that this can lead to eslint errors if you use the `no-unused-vars` rule which you need to resolve manually.
 
