@@ -1,237 +1,237 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// generator client {
-//   provider        = "prisma-client-js"
-//   // output   = "./generated/client"
-//   previewFeatures = ["views"]
-// }
+generator client {
+  provider        = "prisma-client-js"
+  // output   = "./generated/client"
+  previewFeatures = ["views"]
+}
 
-// datasource db {
-//   provider = "postgresql"
-//   url      = env("DATABASE_URL")
-// }
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 
-// // GENERATOR CONFIGURATION
-// // -----------------------------------------------
+// GENERATOR CONFIGURATION
+// -----------------------------------------------
 
-// generator zod {
-//   provider                         = "ts-node-dev ../generator/src/bin.ts"
-//   // provider                         = "zod-prisma-types"
-//   output                           = "./generated/zod" // default is ./generated/zod
-//   useMultipleFiles                 = true // default is false 
-//   // createInputTypes                 = false // default is true
-//   // createModelTypes                 = false // default is true
-//   // addInputTypeValidation           = false // default is true
-//   // validateWhereUniqueInput         = true // default is false
-//   createOptionalDefaultValuesTypes = true // default is false
-//   createRelationValuesTypes        = true // default is false
-//   // useDefaultValidators             = true // default is true
-//   // coerceDate                       = true // default is true
-//   // writeNullishInModelTypes         = false // default is false
-//   // prismaClientPath                 = "./generated/client" // optional
-// }
+generator zod {
+  provider                         = "ts-node-dev ../generator/src/bin.ts"
+  // provider                         = "zod-prisma-types"
+  output                           = "./generated/zod" // default is ./generated/zod
+  useMultipleFiles                 = true // default is false 
+  // createInputTypes                 = false // default is true
+  // createModelTypes                 = false // default is true
+  // addInputTypeValidation           = false // default is true
+  // validateWhereUniqueInput         = true // default is false
+  createOptionalDefaultValuesTypes = true // default is false
+  createRelationValuesTypes        = true // default is false
+  // useDefaultValidators             = true // default is true
+  // coerceDate                       = true // default is true
+  // writeNullishInModelTypes         = false // default is false
+  // prismaClientPath                 = "./generated/client" // optional
+}
 
-// // MIXED CASE ENUMS AND MODELS
-// // -----------------------------------------------
+// MIXED CASE ENUMS AND MODELS
+// -----------------------------------------------
 
-// // Check if EnumS and modelS with mixed casing work 
+// Check if EnumS and modelS with mixed casing work 
 
-// enum MYValue {
-//   A
-//   B
-//   C
-// }
+enum MYValue {
+  A
+  B
+  C
+}
 
-// model MODELWithUpperCase {
-//   id      Int     @id @default(autoincrement())
-//   STRING  String
-//   MYValue MYValue
-// }
+model MODELWithUpperCase {
+  id      Int     @id @default(autoincrement())
+  STRING  String
+  MYValue MYValue
+}
 
-// // OMITTED FIELDS
-// // -----------------------------------------------
+// OMITTED FIELDS
+// -----------------------------------------------
 
-// // Omitted fields should not be included in the generated model or input schemas
-// // Furthermore, for the required field the generated arg schema should have an updated z.ZodType<...> type
+// Omitted fields should not be included in the generated model or input schemas
+// Furthermore, for the required field the generated arg schema should have an updated z.ZodType<...> type
 
-// model ModelWithOmitFields {
-//   id           String  @id @default(cuid())
-//   string       String?
-//   omitField    String? /// @zod.custom.omit([model, input])
-//   omitRequired String /// @zod.custom.omit([model, input])
-// }
+model ModelWithOmitFields {
+  id           String  @id @default(cuid())
+  string       String?
+  omitField    String? /// @zod.custom.omit([model, input])
+  omitRequired String /// @zod.custom.omit([model, input])
+}
 
-// // JS DOC COMMENTS
-// // -----------------------------------------------
+// JS DOC COMMENTS
+// -----------------------------------------------
 
-// // JSDoc comments should be included in the generated model and input schemas
-// // The validator comments should be removed from the generated model and input schemas
+// JSDoc comments should be included in the generated model and input schemas
+// The validator comments should be removed from the generated model and input schemas
 
-// /// comment line one
-// /// comment line two
-// model ModelWithComments {
-//   id           String  @id @default(uuid())
-//   /// comment before validator @zod.string.min(4).max(10) 
-//   /// comment after validator
-//   string       String?
-//   omitField    String? /// @zod.custom.omit([model, input])
-//   omitRequired String /// @zod.custom.omit([model, input])
-// }
+/// comment line one
+/// comment line two
+model ModelWithComments {
+  id           String  @id @default(uuid())
+  /// comment before validator @zod.string.min(4).max(10) 
+  /// comment after validator
+  string       String?
+  omitField    String? /// @zod.custom.omit([model, input])
+  omitRequired String /// @zod.custom.omit([model, input])
+}
 
-// // CUSTOM VALIDATORS ON SCALARS
-// // -----------------------------------------------
+// CUSTOM VALIDATORS ON SCALARS
+// -----------------------------------------------
 
-// // Custom validators should be included in the generated model and input schemas
-// // It should not matter if the comments are above or next to the field
+// Custom validators should be included in the generated model and input schemas
+// It should not matter if the comments are above or next to the field
 
-// /// comment line one
-// /// @zod.import(["import { myFunction } from "../../../../utils/myFunction";", "import validator from 'validator';"])
-// /// comment line two
-// model MyPrismaScalarsType {
-//   /// @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid()
-//   id         String    @id @default(cuid())
-//   /// Some comment about string @zod.string.min(3, { message: "min error" }).max(10, { message: "max error" })
-//   string     String?
-//   /// @zod.custom.use(z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }))
-//   bic        String?
-//   /// @zod.number.lt(10, { message: "lt error" }).gt(5, { message: "gt error" })
-//   float      Float
-//   floatOpt   Float?
-//   /// @zod.number.int({ message: "error" }).gt(5, { message: "gt error" })
-//   int        Int
-//   intOpt     Int?
-//   decimal    Decimal
-//   decimalOpt Decimal?
-//   date       DateTime  @default(now())
-//   dateOpt    DateTime? /// @zod.date({ invalid_type_error: "wrong date type" })  bigInt     BigInt /// @zod.bigint({ invalid_type_error: "error" })
-//   bigIntOpt  BigInt?
-//   /// @zod.custom.use(z.lazy(() => InputJsonValue).refine((val) => myFunction(val), { message: 'Is not valid' }))
-//   json       Json
-//   jsonOpt    Json?
-//   bytes      Bytes /// @zod.custom.use(z.instanceof(Buffer).refine((val) => val ? true : false, { message: 'Value is not valid' }))
-//   bytesOpt   Bytes?
-//   /// @zod.custom.use(z.string().refine((val) => myFunction(val), { message: 'Is not valid' }))
-//   custom     String?
-//   exclude    String? /// @zod.custom.omit(["model", "input"])
+/// comment line one
+/// @zod.import(["import { myFunction } from "../../../../utils/myFunction";", "import validator from 'validator';"])
+/// comment line two
+model MyPrismaScalarsType {
+  /// @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid()
+  id         String    @id @default(cuid())
+  /// Some comment about string @zod.string.min(3, { message: "min error" }).max(10, { message: "max error" })
+  string     String?
+  /// @zod.custom.use(z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }))
+  bic        String?
+  /// @zod.number.lt(10, { message: "lt error" }).gt(5, { message: "gt error" })
+  float      Float
+  floatOpt   Float?
+  /// @zod.number.int({ message: "error" }).gt(5, { message: "gt error" })
+  int        Int
+  intOpt     Int?
+  decimal    Decimal
+  decimalOpt Decimal?
+  date       DateTime  @default(now())
+  dateOpt    DateTime? /// @zod.date({ invalid_type_error: "wrong date type" })  bigInt     BigInt /// @zod.bigint({ invalid_type_error: "error" })
+  bigIntOpt  BigInt?
+  /// @zod.custom.use(z.lazy(() => InputJsonValue).refine((val) => myFunction(val), { message: 'Is not valid' }))
+  json       Json
+  jsonOpt    Json?
+  bytes      Bytes /// @zod.custom.use(z.instanceof(Buffer).refine((val) => val ? true : false, { message: 'Value is not valid' }))
+  bytesOpt   Bytes?
+  /// @zod.custom.use(z.string().refine((val) => myFunction(val), { message: 'Is not valid' }))
+  custom     String?
+  exclude    String? /// @zod.custom.omit(["model", "input"])
 
-//   updatedAt DateTime @updatedAt
-// }
+  updatedAt DateTime @updatedAt
+}
 
-// // JSON MODEL 
-// // -----------------------------------------------
+// JSON MODEL 
+// -----------------------------------------------
 
-// // Used for testing if the Json null types are correctly transformed
+// Used for testing if the Json null types are correctly transformed
 
-// model JsonModel {
-//   id      Int   @id @default(autoincrement())
-//   json    Json
-//   jsonOpt Json?
-// }
+model JsonModel {
+  id      Int   @id @default(autoincrement())
+  json    Json
+  jsonOpt Json?
+}
 
-// // STANDARD BLOG SCHEMA
-// // -----------------------------------------------
+// STANDARD BLOG SCHEMA
+// -----------------------------------------------
 
-// // This is the standard blog schema from the Prisma docs extended with some custom enums and models
-// // https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-a-model
+// This is the standard blog schema from the Prisma docs extended with some custom enums and models
+// https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-a-model
 
-// enum Role {
-//   USER
-//   ADMIN
-// }
+enum Role {
+  USER
+  ADMIN
+}
 
-// enum SecondEnum {
-//   ONE
-//   TWO
-// }
+enum SecondEnum {
+  ONE
+  TWO
+}
 
-// enum AnotherEnum {
-//   ONE
-//   TWO
-// }
+enum AnotherEnum {
+  ONE
+  TWO
+}
 
-// model User {
-//   id         String      @id @default(cuid()) /// @zod.string.cuid()
-//   email      String      @unique /// @zod.string.email({ message: "Invalid email address" })
-//   /// some other comment 
-//   /// @zod.string.min(1).max(100) some message after
-//   name       String?
-//   posts      Post[]
-//   profile    Profile?
-//   role       Role[]      @default([USER, ADMIN])
-//   enum       AnotherEnum @default(ONE)
-//   scalarList String[]
+model User {
+  id         String      @id @default(cuid()) /// @zod.string.cuid()
+  email      String      @unique /// @zod.string.email({ message: "Invalid email address" })
+  /// some other comment 
+  /// @zod.string.min(1).max(100) some message after
+  name       String?
+  posts      Post[]
+  profile    Profile?
+  role       Role[]      @default([USER, ADMIN])
+  enum       AnotherEnum @default(ONE)
+  scalarList String[]
 
-//   lat Float
-//   lng Float
+  lat Float
+  lng Float
 
-//   location Location? @relation(fields: [lat, lng], references: [lat, lng])
-// }
+  location Location? @relation(fields: [lat, lng], references: [lat, lng])
+}
 
-// model Post {
-//   id             Int           @id @default(autoincrement())
-//   title          String
-//   content        String?
-//   published      Boolean       @default(false)
-//   author         User          @relation(fields: [authorId], references: [id])
-//   authorId       String
-//   jsonOpt        Json?
-//   anotherJsonOpt Json?
-//   anotherEnum    AnotherEnum[]
-// }
+model Post {
+  id             Int           @id @default(autoincrement())
+  title          String
+  content        String?
+  published      Boolean       @default(false)
+  author         User          @relation(fields: [authorId], references: [id])
+  authorId       String
+  jsonOpt        Json?
+  anotherJsonOpt Json?
+  anotherEnum    AnotherEnum[]
+}
 
-// model Profile {
-//   id     Int        @id @default(autoincrement())
-//   bio    String
-//   user   User       @relation(fields: [userId], references: [id])
-//   userId String     @unique
-//   role   Role[]     @default([USER, ADMIN])
-//   second SecondEnum @default(ONE)
-// }
+model Profile {
+  id     Int        @id @default(autoincrement())
+  bio    String
+  user   User       @relation(fields: [userId], references: [id])
+  userId String     @unique
+  role   Role[]     @default([USER, ADMIN])
+  second SecondEnum @default(ONE)
+}
 
-// model Location {
-//   lat  Float
-//   lng  Float
-//   User User[]
+model Location {
+  lat  Float
+  lng  Float
+  User User[]
 
-//   @@id([lat, lng])
-// }
+  @@id([lat, lng])
+}
 
-// model NonDefaultModel {
-//   id     Int    @id
-//   string String
-// }
+model NonDefaultModel {
+  id     Int    @id
+  string String
+}
 
-// model WithDefaultValidators {
-//   id      String @id @default(cuid())
-//   idTwo   String @default(uuid()) /// @zod.string.noDefault()
-//   integer Int
-// }
+model WithDefaultValidators {
+  id      String @id @default(cuid())
+  idTwo   String @default(uuid()) /// @zod.string.noDefault()
+  integer Int
+}
 
-// model DecimalModel {
-//   id         Int      @id @default(autoincrement())
-//   decimal    Decimal
-//   decimalOpt Decimal?
-// }
+model DecimalModel {
+  id         Int      @id @default(autoincrement())
+  decimal    Decimal
+  decimalOpt Decimal?
+}
 
-// model DateModel {
-//   id      Int       @id @default(autoincrement())
-//   date    DateTime
-//   dateOpt DateTime?
-// }
+model DateModel {
+  id      Int       @id @default(autoincrement())
+  date    DateTime
+  dateOpt DateTime?
+}
 
-// // STRING REGEX VALIDATOR
-// // -----------------------------------------------
+// STRING REGEX VALIDATOR
+// -----------------------------------------------
 
-// // Used for testing if the string regex validator is correctly transformed
+// Used for testing if the string regex validator is correctly transformed
 
-// /// @zod.import(["import * as s from '$lib/schemas'"])
-// model StringRegexModel {
-//   id          Int    @id @default(autoincrement())
-//   string      String /// @zod.string.regex(/^[a-z0-9]+$/i, { message: "error" })
-//   stringTwo   String /// @zod.string.regex(/^\\d+\\s*\\d+$/) 
-//   stringThree String /// @zod.string.regex(/^d+s*d+$/) 
-// }
+/// @zod.import(["import * as s from '$lib/schemas'"])
+model StringRegexModel {
+  id          Int    @id @default(autoincrement())
+  string      String /// @zod.string.regex(/^[a-z0-9]+$/i, { message: "error" })
+  stringTwo   String /// @zod.string.regex(/^\\d+\\s*\\d+$/) 
+  stringThree String /// @zod.string.regex(/^d+s*d+$/) 
+}
 
 // model Post {
 //   id    String   @id @default(auto()) @map("_id") @db.ObjectId
@@ -285,401 +285,3 @@
 //   date                  DateTime    @unique @db.Date
 //   count                 Int
 // }
-
-generator client {
-  provider        = "prisma-client-js"
-  output          = "../../../../../node_modules/@prisma/client/tech"
-  previewFeatures = ["fullTextSearch", "fullTextIndex"]
-}
-
-datasource db {
-  provider = "mysql"
-  url      = env("TECH_PORTAL_DATABASE_URL")
-}
-
-generator zodPrismaTypes {
-  provider             = "ts-node-dev ../generator/src/bin.ts"
-  output               = "./generated/zod"
-  prismaClientPath     = "@prisma/client/tech"
-  useMultipleFiles     = true
-  useDefaultValidators = false
-}
-
-model SalesOrdersStatus {
-  id          Int          @id @default(autoincrement())
-  name        String       @unique // enum('Rejected', 'Pending approval')
-  description String?
-  salesOrders SalesOrder[]
-
-  @@map("sales_orders_statuses")
-}
-
-model VendorBillsStatus {
-  id          Int          @id @default(autoincrement())
-  name        String       @unique // enum('Rejected', 'No submitted')
-  description String?
-  vendorBills VendorBill[]
-
-  @@map("vendor_bills_statuses")
-}
-
-model ServiceSatisfaction {
-  id                                   Int                                @id @default(autoincrement())
-  name                                 String                             @unique // enum('Poor', 'Fair', 'Good', 'Excellent')
-  description                          String?
-  trainerPreparation                   InstallationAndTrainingQuestions[] @relation("trainer_preparation")
-  trainerProfession                    InstallationAndTrainingQuestions[] @relation("trainer_profession")
-  trainerOpenToQuestions               InstallationAndTrainingQuestions[] @relation("trainer_open_to_questions")
-  trainerAnswerQuestions               InstallationAndTrainingQuestions[] @relation("trainer_answer_questions")
-  individualHelps                      InstallationAndTrainingQuestions[] @relation("individual_help")
-  trainerOverallRates                  InstallationAndTrainingQuestions[] @relation("trainer_overall_rate")
-  trainingSatisfactions                InstallationAndTrainingQuestions[] @relation("training_satisfaction")
-  trainingInstructionAppropriateLevels InstallationAndTrainingQuestions[] @relation("training_instruction_appropriate_level")
-  trainingLengthSatisfactions          InstallationAndTrainingQuestions[] @relation("training_length_satisfaction")
-
-  @@map("service_satisfactions")
-}
-
-model Ticket {
-  id                       Int                       @id @default(autoincrement())
-  zendeskTicketId          Int                       @unique @map("zendesk_ticket_id")
-  createdAt                DateTime                  @default(now()) @map("created_at")
-  updatedAt                DateTime                  @updatedAt @map("updated_at")
-  ticketComments           TicketComment[]
-  salesOrders              SalesOrder[]
-  vendorBills              VendorBill[]
-  serviceReports           ServiceReport[]
-  installationAndTrainings InstallationAndTraining[]
-
-  @@map("tickets")
-}
-
-model Address {
-  id                  Int          @id @default(autoincrement())
-  addr1               String?
-  addressee           String?
-  addrPhone           String?      @map("addr_phone")
-  city                String?
-  country             String?
-  state               String?
-  zip                 String?
-  createdAt           DateTime     @default(now()) @map("created_at")
-  updatedAt           DateTime     @updatedAt @map("updated_at")
-  vendorBills         VendorBill[]
-  salesOrderBillings  SalesOrder[] @relation("sales_order_billing")
-  salesOrderShippings SalesOrder[] @relation("sales_order_shipping")
-
-  @@map("addresses")
-}
-
-model VendorBill {
-  id               Int                @id @default(autoincrement())
-  billingAddressId Int                @map("billing_address_id")
-  transaction      Int?
-  entity           Int
-  memo             String             @db.Text
-  location         Int
-  ticketId         Int                @map("ticket_id")
-  statusId         Int                @map("status_id")
-  createdAt        DateTime           @default(now()) @map("created_at")
-  updatedAt        DateTime           @updatedAt @map("updated_at")
-  billingAddress   Address            @relation(fields: [billingAddressId], references: [id])
-  status           VendorBillsStatus? @relation(fields: [statusId], references: [id])
-  ticket           Ticket             @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-  expenses         Expense[]
-
-  @@map("vendor_bills")
-}
-
-model Expense {
-  id           Int        @id @default(autoincrement())
-  vendorBillId Int        @map("vendor_bill_id")
-  amount       Float
-  class        Int
-  memo         String?    @db.Text
-  createdAt    DateTime   @default(now()) @map("created_at")
-  updatedAt    DateTime   @updatedAt @map("updated_at")
-  vendorBill   VendorBill @relation(fields: [vendorBillId], references: [id], onDelete: Cascade)
-
-  @@map("expenses")
-}
-
-model SalesOrder {
-  id                Int                @id @default(autoincrement())
-  entity            Int?
-  memo              String?            @db.Text
-  billingAddressId  Int                @map("billing_address_id")
-  shippingAddressId Int                @map("shipping_address_id")
-  shipMehod         Int                @map("ship_mehod")
-  statusId          Int                @map("status_id")
-  location          Int
-  ticketId          Int                @map("ticket_id")
-  // netsuite transaction
-  transaction       Int?
-  createdAt         DateTime           @default(now()) @map("created_at")
-  updatedAt         DateTime           @updatedAt @map("updated_at")
-  billingAddress    Address            @relation("sales_order_billing", fields: [billingAddressId], references: [id])
-  shippingAddress   Address            @relation("sales_order_shipping", fields: [shippingAddressId], references: [id])
-  status            SalesOrdersStatus? @relation(fields: [statusId], references: [id])
-  ticket            Ticket             @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-  salesTeams        SalesTeam[]
-  lineItems         LineItem[]
-
-  @@map("sales_orders")
-}
-
-model SalesTeam {
-  id           Int         @id @default(autoincrement())
-  employee     Int
-  contribution Float
-  isPrimary    Boolean     @map("is_primary")
-  salesRole    Int         @map("sales_role")
-  salesOrderId Int?        @map("sales_order_id")
-  createdAt    DateTime    @default(now()) @map("created_at")
-  updatedAt    DateTime    @updatedAt @map("updated_at")
-  salesOrder   SalesOrder? @relation(fields: [salesOrderId], references: [id], onDelete: Cascade)
-
-  @@map("sales_teams")
-}
-
-model LineItem {
-  id           Int        @id @default(autoincrement())
-  item         Int
-  salesOrderId Int        @map("sales_order_id")
-  description  String?    @db.Text
-  price        Int
-  rate         Float
-  amount       Float
-  quantity     Int
-  createdAt    DateTime   @default(now()) @map("created_at")
-  updatedAt    DateTime   @updatedAt @map("updated_at")
-  salesOrder   SalesOrder @relation(fields: [salesOrderId], references: [id], onDelete: Cascade)
-
-  @@map("line_items")
-}
-
-model TicketComment {
-  id        Int      @id @default(autoincrement())
-  ticketId  Int      @map("ticket_id")
-  content   String   @db.Text
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-
-  @@map("ticket_comments")
-}
-
-model ServiceReport {
-  id                         Int      @id @default(autoincrement())
-  ticketId                   Int      @map("ticket_id")
-  issueProblemAndDescription String   @map("issue_problem_and_description") @db.Text
-  reportOfServiceDone        String   @map("report_of_service_done") @db.Text
-  technicianSignature        Bytes    @map("technician_signature")
-  createdAt                  DateTime @default(now()) @map("created_at")
-  updatedAt                  DateTime @updatedAt @map("updated_at")
-  ticket                     Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-
-  @@map("service_reports")
-}
-
-model InstallationAndTraining {
-  id                               Int                                @id @default(autoincrement())
-  ticketId                         Int                                @map("ticket_id")
-  customerSignature                Bytes                              @map("customer_signature")
-  createdAt                        DateTime                           @default(now()) @map("created_at")
-  updatedAt                        DateTime                           @updatedAt @map("updated_at")
-  ticket                           Ticket                             @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-  installationAndTrainingQuestions InstallationAndTrainingQuestions[]
-  visualInspectionChecklists       VisualInspectionChecklist[]
-  instructionalTrainingChecklists  InstructionalTrainingChecklist[]
-  panelOperationChecklists         PanelOperationChecklist[]
-  capEmbroideryChecklists          CapEmbroideryChecklist[]
-  needlesChecklists                NeedlesChecklist[]
-  troubleshootingChecklists        TroubleshootingChecklist[]
-  maintenanceChecklists            MaintenanceChecklist[]
-
-  @@map("installation_and_trainings")
-}
-
-model InstallationAndTrainingQuestions {
-  id                                    Int                     @id @default(autoincrement())
-  installationAndTrainingId             Int                     @map("installation_and_training_id")
-  trainerPreparationId                  Int                     @map("trainer_preparation_id")
-  trainerProfessionId                   Int                     @map("trainer_profession_id")
-  trainerOpenToQuestionId               Int                     @map("trainer_open_to_question_id")
-  trainerAnswerQuestionId               Int                     @map("trainer_answer_question_id")
-  individualHelpId                      Int                     @map("individual_help_id")
-  trainerOverallRateId                  Int                     @map("trainer_overall_rate_id")
-  trainingSatisfactionId                Int                     @map("training_satisfaction_id")
-  trainingInstructionAppropriateLevelId Int                     @map("training_instruction_appropriate_level_id")
-  trainingLengthSatisfactionId          Int                     @map("training_length_satisfaction_id")
-  overallRateToTraining                 String?                 @map("overall_rate_to_training") @db.Text
-  suggestion                            String?                 @db.Text
-  comment                               String?                 @db.Text
-  createdAt                             DateTime                @default(now()) @map("created_at")
-  updatedAt                             DateTime                @updatedAt @map("updated_at")
-  trainerPreparation                    ServiceSatisfaction     @relation("trainer_preparation", fields: [trainerPreparationId], references: [id])
-  trainerProfession                     ServiceSatisfaction     @relation("trainer_profession", fields: [trainerProfessionId], references: [id])
-  trainerOpenToQuestions                ServiceSatisfaction     @relation("trainer_open_to_questions", fields: [trainerOpenToQuestionId], references: [id])
-  trainerAnswerQuestions                ServiceSatisfaction     @relation("trainer_answer_questions", fields: [trainerAnswerQuestionId], references: [id])
-  individualHelp                        ServiceSatisfaction     @relation("individual_help", fields: [individualHelpId], references: [id])
-  trainerOverallRate                    ServiceSatisfaction     @relation("trainer_overall_rate", fields: [trainerOverallRateId], references: [id])
-  trainingSatisfaction                  ServiceSatisfaction     @relation("training_satisfaction", fields: [trainingSatisfactionId], references: [id])
-  trainingInstructionAppropriateLevel   ServiceSatisfaction     @relation("training_instruction_appropriate_level", fields: [trainingInstructionAppropriateLevelId], references: [id])
-  trainingLengthSatisfaction            ServiceSatisfaction     @relation("training_length_satisfaction", fields: [trainingLengthSatisfactionId], references: [id])
-  installationAndTraining               InstallationAndTraining @relation(fields: [installationAndTrainingId], references: [id], onDelete: Cascade)
-
-  @@map("installation_and_training_questions")
-}
-
-model VisualInspectionChecklist {
-  id                        Int                     @id @default(autoincrement())
-  installationAndTrainingId Int                     @map("installation_and_training_id")
-  machineDeliveredOnTime    Boolean?                @map("machine_delivered_on_time")
-  standAssembly             Boolean?                @map("stand_assembly")
-  levelMachine              Boolean?                @map("level_machine")
-  raiseThreadRack           Boolean?                @map("raise_thread_rack")
-  panelPosition             Boolean?                @map("panel_position")
-  powerCordCorrection       Boolean?                @map("power_cord_correction")
-  tableSetUp                Boolean?                @map("table_set_up")
-  deliveredToolbox          Boolean?                @map("delivered_toolbox")
-  delivered12Hoops          Boolean?                @map("delivered_12_hoops")
-  delivered1CapDriver       Boolean?                @map("delivered_1_cap_driver")
-  delivered2CapRings        Boolean?                @map("delivered_2_cap_rings")
-  delivered1CapStation      Boolean?                @map("delivered_1_cap_station")
-  delivered1SetOfBrackets   Boolean?                @map("delivered_1_set_of_brackets")
-  deliveredTable            Boolean?                @map("delivered_table")
-  deliveredWelcomeKit       Boolean?                @map("delivered_welcome_kit")
-  createdAt                 DateTime                @default(now()) @map("created_at")
-  updatedAt                 DateTime                @updatedAt @map("updated_at")
-  installationAndTraining   InstallationAndTraining @relation(fields: [installationAndTrainingId], references: [id], onDelete: Cascade)
-
-  @@map("visual_inspection_checklists")
-}
-
-model InstructionalTrainingChecklist {
-  id                            Int                     @id @default(autoincrement())
-  installationAndTrainingId     Int                     @map("installation_and_training_id")
-  threadingFromBeginningToEnd   Boolean?                @map("threading_from_beginning_to_end")
-  changingASpool                Boolean?                @map("changing_a_spool")
-  springLeveler                 Boolean?                @map("spring_leveler")
-  adjustingTheTensionKnobs      Boolean?                @map("adjusting_the_tension_knobs")
-  adjustingTheBobbinCase        Boolean?                @map("adjusting_the_bobbin_case")
-  insertAndRemovalOfBobbin      Boolean?                @map("insert_and_removal_of_bobbin")
-  setAndChangingABobbin         Boolean?                @map("set_and_changing_a_bobbin")
-  differenceBetweenBobbin       Boolean?                @map("difference_between_bobbin")
-  directionAndAlignment         Boolean?                @map("direction_and_alignment")
-  placementForHoopsAToE         Boolean?                @map("placement_for_hoops_A_to_E")
-  placementForHoopF             Boolean?                @map("placement_for_hoop_F")
-  embroideryHoopsAndAdjustments Boolean?                @map("embroidery_hoops_and_adjustments")
-  directionOfTheHoop            Boolean?                @map("direction_of_the_hoop")
-  centeringADesign              Boolean?                @map("centering_a_design")
-  hoopingFlats                  Boolean?                @map("hooping_flats")
-  tipsAndSuggestionsForHooping  Boolean?                @map("tips_and_suggestions_for_hooping")
-  insertAndRemovalOfHoop        Boolean?                @map("insert_and_removal_of_hoop")
-  createdAt                     DateTime                @default(now()) @map("created_at")
-  updatedAt                     DateTime                @updatedAt @map("updated_at")
-  installationAndTraining       InstallationAndTraining @relation(fields: [installationAndTrainingId], references: [id], onDelete: Cascade)
-
-  @@map("instructional_training_checklist")
-}
-
-model PanelOperationChecklist {
-  id                                Int                     @id @default(autoincrement())
-  installationAndTrainingId         Int                     @map("installation_and_training_id")
-  machineTurnsOn                    Boolean?                @map("machine_turns_on")
-  threadingFromBeginningToEnd       Boolean?                @map("threading_from_beginning_to_end")
-  trimming                          Boolean?                @map("trimming")
-  rotate100Degrees                  Boolean?                @map("rotate_100_degrees")
-  startAndStopButtons               Boolean?                @map("start_and_stop_buttons")
-  importingADesign                  Boolean?                @map("importing_a_design")
-  selectADesignFromMemory           Boolean?                @map("select_a_design_from_memory")
-  deletingADesign                   Boolean?                @map("deleting_a_design")
-  designExport                      Boolean?                @map("design_export")
-  selectingAPresetHoop              Boolean?                @map("selecting_a_preset_hoop")
-  xAndYAxis                         Boolean?                @map("x_and_y_axis")
-  logoDirection                     Boolean?                @map("logo_direction")
-  logoAngle                         Boolean?                @map("logo_angle")
-  logoDuplicateAndDistanceInBetween Boolean?                @map("logo_duplicate_and_distance_in_between")
-  logoSatin                         Boolean?                @map("logo_satin")
-  embroideryParameters              Boolean?                @map("embroidery_parameters")
-  comprehensiveMenuSettings         Boolean?                @map("comprehensive_menu_settings")
-  frameShiftDirectionAndSpeed       Boolean?                @map("frame_shift_direction_and_speed")
-  needleSwitchDisplay               Boolean?                @map("needle_switch_display")
-  colorSequenceSelection            Boolean?                @map("color_sequence_selection")
-  runSheetFilm                      Boolean?                @map("run_sheet_film")
-  colorChangeModeFunctions          Boolean?                @map("color_change_mode_functions")
-  rewindDesign                      Boolean?                @map("rewind_design")
-  adjustingTheSpeed                 Boolean?                @map("adjusting_the_speed")
-  frameOut                          Boolean?                @map("frame_out")
-  abortingAJob                      Boolean?                @map("aborting_a_job")
-  tracingYourDesign                 Boolean?                @map("tracing_your_design")
-  addingFonts                       Boolean?                @map("adding_fonts")
-  fullDesignProcessForFlats         Boolean?                @map("full_design_process_for_flats")
-  createdAt                         DateTime                @default(now()) @map("created_at")
-  updatedAt                         DateTime                @updatedAt @map("updated_at")
-  installationAndTraining           InstallationAndTraining @relation(fields: [installationAndTrainingId], references: [id], onDelete: Cascade)
-
-  @@map("panel_operation_checklists")
-}
-
-model CapEmbroideryChecklist {
-  id                        Int                     @id @default(autoincrement())
-  installationAndTrainingId Int                     @map("installation_and_training_id")
-  capDriverInstallation     Boolean?                @map("cap_driver_installation")
-  capStationInstallation    Boolean?                @map("cap_station_installation")
-  capRingOverview           Boolean?                @map("cap_ring_overview")
-  capHooping                Boolean?                @map("cap_hooping")
-  insertAndRemovalOfCapRing Boolean?                @map("insert_and_removal_of_cap_ring")
-  panelFunctionForCaps      Boolean?                @map("panel_function_for_caps")
-  createdAt                 DateTime                @default(now()) @map("created_at")
-  updatedAt                 DateTime                @updatedAt @map("updated_at")
-  installationAndTraining   InstallationAndTraining @relation(fields: [installationAndTrainingId], references: [id], onDelete: Cascade)
-
-  @@map("cap_embroidery_checklists")
-}
-
-model NeedlesChecklist {
-  id                        Int                     @id @default(autoincrement())
-  installationAndTrainingId Int                     @map("installation_and_training_id")
-  needleTypes               Boolean?                @map("needle_types")
-  removingABrokenNeedle     Boolean?                @map("removing_a_broken_needle")
-  insertingANewNeedle       Boolean?                @map("inserting_a_new_needle")
-  createdAt                 DateTime                @default(now()) @map("created_at")
-  updatedAt                 DateTime                @updatedAt @map("updated_at")
-  installationAndTraining   InstallationAndTraining @relation(fields: [installationAndTrainingId], references: [id], onDelete: Cascade)
-
-  @@map("needles_checklists")
-}
-
-model TroubleshootingChecklist {
-  id                           Int                     @id @default(autoincrement())
-  installationAndTrainingId    Int                     @map("installation_and_training_id")
-  noNeedleError                Boolean?                @map("no_needle_error")
-  mainAxisNotAt100DegreesError Boolean?                @map("main_axis_not_at_100_degrees_error")
-  emergencyStopError           Boolean?                @map("emergency_stop_error")
-  threadBreak                  Boolean?                @map("thread_break")
-  bobbinRunsOut                Boolean?                @map("bobbin_runs_out")
-  presserFootDepthAdjustment   Boolean?                @map("presser_foot_depth_adjustment")
-  createdAt                    DateTime                @default(now()) @map("created_at")
-  updatedAt                    DateTime                @updatedAt @map("updated_at")
-  installationAndTraining      InstallationAndTraining @relation(fields: [installationAndTrainingId], references: [id], onDelete: Cascade)
-
-  @@map("troubleshooting_checklists")
-}
-
-model MaintenanceChecklist {
-  id                        Int                     @id @default(autoincrement())
-  installationAndTrainingId Int                     @map("installation_and_training_id")
-  dailyLubricationPoints    Boolean?                @map("daily_lubrication_points")
-  weeklyLubricationPoints   Boolean?                @map("weekly_lubrication_points")
-  monthlyLubricationPoints  Boolean?                @map("monthly_lubrication_points")
-  longTermLubricationPoints Boolean?                @map("long_term_lubrication_points")
-  bobbinCaseLint            Boolean?                @map("bobbin_case_lint")
-  cutterPlate               Boolean?                @map("cutter_plate")
-  createdAt                 DateTime                @default(now()) @map("created_at")
-  updatedAt                 DateTime                @updatedAt @map("updated_at")
-  installationAndTraining   InstallationAndTraining @relation(fields: [installationAndTrainingId], references: [id], onDelete: Cascade)
-
-  @@map("maintenance_checklists")
-}
