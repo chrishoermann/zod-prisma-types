@@ -163,7 +163,7 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
   getModelWithIncludeAndSelect(field: ExtendedDMMFSchemaField) {
     return this.outputObjectTypes.model.find(
       (model) =>
-        field.name.includes(model.name) && field.writeSelectAndIncludeArgs,
+        field.modelType === model.name && field.writeSelectAndIncludeArgs,
     );
   }
 }

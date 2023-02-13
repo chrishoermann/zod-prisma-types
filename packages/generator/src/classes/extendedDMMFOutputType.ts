@@ -21,6 +21,8 @@ export class ExtendedDMMFOutputType
   readonly prismaActionFields: ExtendedDMMFSchemaField[];
   readonly prismaOtherFields: ExtendedDMMFSchemaField[];
   readonly linkedModel?: ExtendedDMMFModel;
+  readonly selectImports: Set<string>;
+  readonly inlcudeImports: Set<string>;
 
   constructor(
     readonly generatorConfig: GeneratorConfig,
@@ -43,6 +45,8 @@ export class ExtendedDMMFOutputType
       'OTHER_FIELDS',
     );
     this.linkedModel = this._setLinkedModel(datamodel);
+    this.selectImports = this._setSelectImports();
+    this.inlcudeImports = this._setIncludeImports();
   }
 
   /**
@@ -98,6 +102,52 @@ export class ExtendedDMMFOutputType
         datamodel,
       );
     });
+  }
+
+  private _setSelectImports() {
+    const imports = new Set<string>();
+    const { outputTypePath } = this.generatorConfig;
+
+    this.fields.forEach((field) => {
+      if (field.writeSelectFindManyField) {
+        return imports.add(
+          `import { ${field.outputType.type}FindManyArgsSchema } from "../${outputTypePath}/${field.outputType.type}FindManyArgsSchema"`,
+        );
+      }
+
+      if (field.writeSelectField) {
+        return imports.add(
+          `import { ${field.outputType.type}ArgsSchema } from "../${outputTypePath}/${field.outputType.type}ArgsSchema"`,
+        );
+      }
+
+      return undefined;
+    });
+
+    return imports;
+  }
+
+  private _setIncludeImports() {
+    const imports = new Set<string>();
+    const { outputTypePath } = this.generatorConfig;
+
+    this.fields.forEach((field) => {
+      if (field.writeIncludeFindManyField) {
+        return imports.add(
+          `import { ${field.outputType.type}FindManyArgsSchema } from "../${outputTypePath}/${field.outputType.type}FindManyArgsSchema"`,
+        );
+      }
+
+      if (field.writeIncludeField) {
+        return imports.add(
+          `import { ${field.outputType.type}ArgsSchema } from "../${outputTypePath}/${field.outputType.type}ArgsSchema"`,
+        );
+      }
+
+      return undefined;
+    });
+
+    return imports;
   }
 
   /**

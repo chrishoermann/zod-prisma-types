@@ -2,36 +2,39 @@ import { ExtendedDMMFOutputType } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
 
 export const writeInclude = (
-  { fileWriter: { writer, writeImport }, dmmf }: ContentWriterOptions,
+  {
+    fileWriter: { writer, writeImport, writeImportSet },
+    dmmf,
+  }: ContentWriterOptions,
   model: ExtendedDMMFOutputType,
   getSingleFileContent = false,
 ) => {
-  const { useMultipleFiles, prismaClientPath, outputTypePath } =
-    dmmf.generatorConfig;
+  const { useMultipleFiles, prismaClientPath } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
     writeImport('{ type Prisma }', prismaClientPath);
+    writeImportSet(model.inlcudeImports);
 
-    model.fields.forEach((field) => {
-      // when using mongodb, the `include` type is created but not filled with any fields
-      // So no need to import anything
-      // if (dmmf.generatorConfig.isMongoDb) return;
+    // model.fields.forEach((field) => {
+    //   // when using mongodb, the `include` type is created but not filled with any fields
+    //   // So no need to import anything
+    //   // if (dmmf.generatorConfig.isMongoDb) return;
 
-      if (field.writeIncludeFindManyField) {
-        return writeImport(
-          `{ ${field.outputType.type}FindManyArgsSchema }`,
-          `../${outputTypePath}/${field.outputType.type}FindManyArgsSchema`,
-        );
-      }
+    //   if (field.writeIncludeFindManyField) {
+    //     return writeImport(
+    //       `{ ${field.outputType.type}FindManyArgsSchema }`,
+    //       `../${outputTypePath}/${field.outputType.type}FindManyArgsSchema`,
+    //     );
+    //   }
 
-      if (field.writeIncludeField) {
-        return writeImport(
-          `{ ${field.outputType.type}ArgsSchema }`,
-          `../${outputTypePath}/${field.outputType.type}ArgsSchema`,
-        );
-      }
-    });
+    //   if (field.writeIncludeField) {
+    //     return writeImport(
+    //       `{ ${field.outputType.type}ArgsSchema }`,
+    //       `../${outputTypePath}/${field.outputType.type}ArgsSchema`,
+    //     );
+    //   }
+    // });
   }
 
   writer
