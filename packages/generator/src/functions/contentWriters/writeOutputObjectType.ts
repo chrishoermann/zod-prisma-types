@@ -9,8 +9,7 @@ export const writeOutputObjectType = (
 ) => {
   const { writer, writeImport, writeImportSet, writeHeading } = fileWriter;
 
-  const { useMultipleFiles, prismaClientPath, outputTypePath } =
-    dmmf.generatorConfig;
+  const { useMultipleFiles, prismaClientPath } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
@@ -31,21 +30,22 @@ export const writeOutputObjectType = (
       // the schemas that are used in the type of the field
       //  needs to be imported
 
-      modelWithSelect.fields.forEach((field) => {
-        if (field.writeSelectFindManyField) {
-          return writeImport(
-            `{ ${field.outputType.type}FindManyArgsSchema }`,
-            `../${outputTypePath}/${field.outputType.type}FindManyArgsSchema`,
-          );
-        }
+      writeImportSet(modelWithSelect.selectImports);
+      // modelWithSelect.fields.forEach((field) => {
+      //   if (field.writeSelectFindManyField) {
+      //     return writeImport(
+      //       `{ ${field.outputType.type}FindManyArgsSchema }`,
+      //       `../${outputTypePath}/${field.outputType.type}FindManyArgsSchema`,
+      //     );
+      //   }
 
-        if (field.writeSelectField) {
-          return writeImport(
-            `{ ${field.outputType.type}ArgsSchema }`,
-            `../${outputTypePath}/${field.outputType.type}ArgsSchema`,
-          );
-        }
-      });
+      //   if (field.writeSelectField) {
+      //     return writeImport(
+      //       `{ ${field.outputType.type}ArgsSchema }`,
+      //       `../${outputTypePath}/${field.outputType.type}ArgsSchema`,
+      //     );
+      //   }
+      // });
 
       // Only write the select type if the outputType has a "select" or "include" field.
       // Some outputTypes like "CreateMany", "UpdateMany", "DeleteMany"

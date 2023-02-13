@@ -12,6 +12,7 @@ export const writeInclude = (
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
     writeImport('{ type Prisma }', prismaClientPath);
+    // writeImportSet(model.inlcudeImports);
 
     model.fields.forEach((field) => {
       // when using mongodb, the `include` type is created but not filled with any fields
