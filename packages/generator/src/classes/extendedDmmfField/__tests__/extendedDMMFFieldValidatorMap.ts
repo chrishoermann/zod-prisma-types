@@ -18,7 +18,7 @@ it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorString class witho
   expect(field?.zodCustomErrors).toBeUndefined();
 });
 
-it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorString class without docs`, async () => {
+it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorString class and pass valid data to validator map`, async () => {
   const field = new ExtendedDMMFFieldValidatorString(
     { ...FIELD_BASE },
     DEFAULT_GENERATOR_CONFIG,
