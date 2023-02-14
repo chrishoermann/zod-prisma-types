@@ -116,7 +116,9 @@ export type ZodNumberValidatorKeys =
 
 export type ZodDateValidatorKeys = 'min' | 'max';
 
-export type ZodCustomValidatorKeys = 'use' | 'omit' | 'import';
+export type ZodBigIntValidatorKeys = 'array';
+
+export type ZodCustomValidatorKeys = 'use' | 'omit' | 'import' | 'array';
 
 export type WriteBaseFilterTypesFunction = (options?: {
   nullable?: boolean;

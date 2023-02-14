@@ -53,11 +53,11 @@ export const NUMBER_VALIDATOR_MESSAGE_REGEX =
 export const DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
   /.(?<validator>min|max)(\()(?<date>(new Date\((['"\d-]+)?\)))([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\)/;
 
-// DATE
+// CUSTOM
 // ----------------------------------------
 
 export const CUSTOM_VALIDATOR_MESSAGE_REGEX =
-  /(?<validator>use|omit)(\()(?<custom>[\w (),.'":+\-*#!§$%&\/{}\[\]=?~><°^]+)\)/;
+  /(?<validator>use|omit|array)(\()(?<custom>[\w (),.'":+\-*#!§$%&\/{}\[\]=?~><°^]+)\)/;
 
 // PRISMA FUNCTION TYPES W/ VALIDATORS
 // ----------------------------------------

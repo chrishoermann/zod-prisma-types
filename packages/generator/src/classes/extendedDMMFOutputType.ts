@@ -22,7 +22,7 @@ export class ExtendedDMMFOutputType
   readonly prismaOtherFields: ExtendedDMMFSchemaField[];
   readonly linkedModel?: ExtendedDMMFModel;
   readonly selectImports: Set<string>;
-  readonly inlcudeImports: Set<string>;
+  readonly includeImports: Set<string>;
 
   constructor(
     readonly generatorConfig: GeneratorConfig,
@@ -46,7 +46,7 @@ export class ExtendedDMMFOutputType
     );
     this.linkedModel = this._setLinkedModel(datamodel);
     this.selectImports = this._setSelectImports();
-    this.inlcudeImports = this._setIncludeImports();
+    this.includeImports = this._setIncludeImports();
   }
 
   /**
