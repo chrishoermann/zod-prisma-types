@@ -169,6 +169,7 @@ export interface WriteFieldOptions {
   writer: CodeBlockWriter;
   field: ExtendedDMMFField;
   writeOptionalDefaults?: boolean;
+  forcePartial?: boolean;
 }
 
 export interface ExtendedWriteFieldOptions extends WriteFieldOptions {

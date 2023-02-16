@@ -14,8 +14,8 @@ export const writeSingleFileModelStatements: WriteStatements = (
   fileWriter.writeHeading(`MODELS`, 'FAT');
 
   dmmf.datamodel.models.forEach((model) => {
-    fileWriter.writeHeading(`${model.formattedNames.upperCaseSpace}`, 'SLIM');
-    fileWriter.writer.newLine();
+    // fileWriter.writeHeading(`${model.formattedNames.upperCaseSpace}`, 'FAT');
+    // fileWriter.writer.newLine();
     writeModelOrType({ fileWriter, dmmf }, model);
     fileWriter.writer.newLine();
   });

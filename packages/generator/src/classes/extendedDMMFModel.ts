@@ -39,6 +39,8 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
   readonly writeOptionalDefaultValuesTypes: boolean;
   readonly writeRelationValueTypes: boolean;
   readonly writeOptionalDefaultsRelationValueTypes: boolean;
+  readonly writePartialTypes: boolean;
+  readonly writePartialRelationValueTypes: boolean;
 
   constructor(generatorConfig: GeneratorConfig, model: DMMF.Model) {
     super(model.name);
@@ -74,6 +76,9 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
     this.writeRelationValueTypes = this._setWriteRelationValueTypes();
     this.writeOptionalDefaultsRelationValueTypes =
       this._setWriteOptionalDefaultsRelationValueTypes();
+    this.writePartialTypes = this._setWritePartialTypes();
+    this.writePartialRelationValueTypes =
+      this._writePartialRelationValueTypes();
   }
 
   private _setErrorLocation() {
@@ -121,6 +126,10 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
     );
   }
 
+  private _setWritePartialTypes() {
+    return this.generatorConfig.createPartialTypes;
+  }
+
   private _setWriteRelationValueTypes() {
     return (
       this.hasRelationFields && this.generatorConfig.createRelationValuesTypes
@@ -129,6 +138,10 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
 
   private _setWriteOptionalDefaultsRelationValueTypes() {
     return this.writeRelationValueTypes && this.writeOptionalDefaultValuesTypes;
+  }
+
+  private _writePartialRelationValueTypes() {
+    return this.writeRelationValueTypes && this.writePartialTypes;
   }
 
   private _setHasOptionalDefaultFields() {
