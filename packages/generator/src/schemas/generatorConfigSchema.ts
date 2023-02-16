@@ -25,6 +25,16 @@ export const configSchema = z.object({
     .optional()
     .default('false')
     .transform((val) => val === 'true'),
+  createRelationValuesTypes: z
+    .string()
+    .optional()
+    .default('false')
+    .transform((val) => val === 'true'),
+  createPartialTypes: z
+    .string()
+    .optional()
+    .default('false')
+    .transform((val) => val === 'true'),
   addInputTypeValidation: z
     .string()
     .optional()
@@ -39,11 +49,6 @@ export const configSchema = z.object({
     .string()
     .optional()
     .default('true')
-    .transform((val) => val === 'true'),
-  createRelationValuesTypes: z
-    .string()
-    .optional()
-    .default('false')
     .transform((val) => val === 'true'),
   coerceDate: z
     .string()

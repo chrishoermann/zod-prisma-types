@@ -103,6 +103,7 @@ generator zod {
   validateWhereUniqueInput         = true // default is false
   createOptionalDefaultValuesTypes = true // default is false
   createRelationValuesTypes        = true // default is false
+  createPartialTypes               = true // default is false
   useDefaultValidators             = false // default is true
   coerceDate                       = false // default is true
   writeNullishInModelTypes         = true // default is false
@@ -318,6 +319,76 @@ export const UserOptionalDefaultsWithRelationsSchema: z.ZodType<UserOptionalDefa
     }),
   );
 ```
+
+### `createPartialTypes`
+
+> default: `false`
+
+If you need a separate model type that includes all the fields as optional you can pass the following option. Due do the type annotation, that is needed to have recursive types, this model has some limitations since `z.ZodType<myType>` does not allow some object methods like `.merge()`, `.omit()`, etc.
+
+```prisma
+generator zod {
+  // ...rest of config
+  createPartialTypes = true
+}
+
+model User {
+  id         String      @id @default(cuid())
+  email      String      @unique
+  name       String?
+  posts      Post[]
+  profile    Profile?
+  role       Role[]      @default([USER, ADMIN])
+  enum       AnotherEnum @default(ONE)
+  scalarList String[]
+
+  lat Float
+  lng Float
+
+  location Location? @relation(fields: [lat, lng], references: [lat, lng])
+}
+```
+
+The above model would generate the following model schemas:
+
+```ts
+export const UserPartialSchema = z
+  .object({
+    role: RoleSchema.array(),
+    enum: AnotherEnumSchema,
+    id: z.string().cuid(),
+    email: z.string().email({ message: 'Invalid email address' }),
+    name: z.string().min(1).max(100).nullable(),
+    scalarList: z.string().array(),
+    lat: z.number(),
+    lng: z.number(),
+  })
+  .partial();
+```
+
+When using this option in combination with `createRelationValuesTypes` the following model schemas are also generated:
+
+```ts
+export type UserPartialRelations = {
+  posts?: PostPartialWithRelations[];
+  profile?: ProfilePartialWithRelations | null;
+  location?: LocationPartialWithRelations | null;
+};
+
+export type UserPartialWithRelations = z.infer<typeof UserPartialSchema> &
+  UserPartialRelations;
+
+export const UserPartialWithRelationsSchema: z.ZodType<UserPartialWithRelations> =
+  UserPartialSchema.merge(
+    z.object({
+      posts: z.lazy(() => PostPartialWithRelationsSchema).array(),
+      profile: z.lazy(() => ProfilePartialWithRelationsSchema).nullable(),
+      location: z.lazy(() => LocationPartialWithRelationsSchema).nullable(),
+    }),
+  ).partial();
+```
+
+export type UserPartial = z.infer<typeof UserPartialSchema>;
 
 ### `useDefaultValidators`
 

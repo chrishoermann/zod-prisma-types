@@ -100,17 +100,21 @@ export class FileWriter {
 
   writeHeading(heading: string, type: 'SLIM' | 'FAT' = 'SLIM') {
     if (type === 'SLIM') {
-      return this.writer
-        .newLine()
-        .writeLine(`// ${heading}`)
-        .writeLine('//------------------------------------------------------');
+      return (
+        this.writer
+          // .newLine()
+          .writeLine(`// ${heading}`)
+          .writeLine('//------------------------------------------------------')
+      );
     }
 
-    return this.writer
-      .newLine()
-      .writeLine('/////////////////////////////////////////')
-      .writeLine(`// ${heading}`)
-      .writeLine('/////////////////////////////////////////');
+    return (
+      this.writer
+        // .newLine()
+        .writeLine('/////////////////////////////////////////')
+        .writeLine(`// ${heading}`)
+        .writeLine('/////////////////////////////////////////')
+    );
   }
 
   writeJSDoc(doc?: string) {
