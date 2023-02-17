@@ -206,7 +206,9 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
       );
     }
 
-    const importsList = importStatements.groups?.['imports']?.split(', ');
+    const importsList = importStatements.groups?.['imports']
+      ?.split(/(?<="),/g) // split at `"` that is followed by a `,`
+      .map((statement) => statement.trim());
 
     if (!importsList) {
       return {
