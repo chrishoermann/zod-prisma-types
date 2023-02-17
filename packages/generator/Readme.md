@@ -26,9 +26,12 @@ Be aware that some generator options have been removed, a few new have been adde
   - [`createInputTypes`](#createinputtypes)
   - [`createModelTypes`](#createmodeltypes)
   - [`addInputTypeValidation`](#addinputtypevalidation)
+  - [`addIncludeType`](#addincludetype)
+  - [`addSelectType`](#addselecttype)
   - [`validateWhereUniqueInput`](#validatewhereuniqueinput)
   - [`createOptionalDefaultValuesTypes`](#createoptionaldefaultvaluestypes)
   - [`createRelationValuesTypes`](#createrelationvaluestypes)
+  - [`createPartialTypes`](#createpartialtypes)
   - [`useDefaultValidators`](#usedefaultvalidators)
   - [`coerceDate`](#coercedate)
   - [`writeNullishInModelTypes`](#writenullishinmodeltypes)
@@ -100,6 +103,8 @@ generator zod {
   createInputTypes                 = false // default is true
   createModelTypes                 = false // default is true
   addInputTypeValidation           = false // default is true
+  addIncludeType                   = false // default is true
+  addSelectType                    = false // default is true
   validateWhereUniqueInput         = true // default is false
   createOptionalDefaultValuesTypes = true // default is false
   createRelationValuesTypes        = true // default is false
@@ -166,6 +171,32 @@ If you want to use your custom zod validatiors that you added via rich-comments 
 generator zod {
   // ...rest of config
   addInputTypeValidation = false
+}
+```
+
+### `addIncludeType`
+
+> default: `true`
+
+By default the include type is added to the `[Model]ArgTypeSchema`. If you don't want to add a zod schema for the `include` type you can set this option to `false`.
+
+```prisma
+generator zod {
+  // ...rest of config
+  addIncludeType = false
+}
+```
+
+### `addSelectType`
+
+> default: `true`
+
+By default the select type is added to the `[Model]ArgTypeSchema`. If you don't want to add a zod schema for the `select` type you can set this option to `false`.
+
+```prisma
+generator zod {
+  // ...rest of config
+  addSelectType = false
 }
 ```
 
@@ -324,7 +355,7 @@ export const UserOptionalDefaultsWithRelationsSchema: z.ZodType<UserOptionalDefa
 
 > default: `false`
 
-If you need a separate model type that includes all the fields as optional you can pass the following option. Due do the type annotation, that is needed to have recursive types, this model has some limitations since `z.ZodType<myType>` does not allow some object methods like `.merge()`, `.omit()`, etc.
+If you need a separate model type that includes all the fields as optional you can pass the following option.
 
 ```prisma
 generator zod {
@@ -366,7 +397,7 @@ export const UserPartialSchema = z
   .partial();
 ```
 
-When using this option in combination with `createRelationValuesTypes` the following model schemas are also generated:
+When using this option in combination with `createRelationValuesTypes` the following model schemas are also generated. Due do the type annotation, that is needed to have recursive types, this model has some limitations since `z.ZodType<myType>` does not allow some object methods like `.merge()`, `.omit()`, etc.
 
 ```ts
 export type UserPartialRelations = {

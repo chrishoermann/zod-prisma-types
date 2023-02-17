@@ -25,27 +25,12 @@ export const writeOutputObjectType = (
     // the model's args schema to prevent circular imports.
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    if (modelWithSelect) {
+    if (modelWithSelect && field.generatorConfig.addSelectType) {
       // if the outputType has a "select" or "include" field,
       // the schemas that are used in the type of the field
       //  needs to be imported
 
       writeImportSet(modelWithSelect.selectImports);
-      // modelWithSelect.fields.forEach((field) => {
-      //   if (field.writeSelectFindManyField) {
-      //     return writeImport(
-      //       `{ ${field.outputType.type}FindManyArgsSchema }`,
-      //       `../${outputTypePath}/${field.outputType.type}FindManyArgsSchema`,
-      //     );
-      //   }
-
-      //   if (field.writeSelectField) {
-      //     return writeImport(
-      //       `{ ${field.outputType.type}ArgsSchema }`,
-      //       `../${outputTypePath}/${field.outputType.type}ArgsSchema`,
-      //     );
-      //   }
-      // });
 
       // Only write the select type if the outputType has a "select" or "include" field.
       // Some outputTypes like "CreateMany", "UpdateMany", "DeleteMany"

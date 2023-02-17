@@ -11,6 +11,8 @@ export const writeSingleFileInputTypeStatements: WriteStatements = (
 ) => {
   if (!dmmf.generatorConfig.createInputTypes) return;
 
+  fileWriter.writer.blankLine();
+
   fileWriter.writeHeading(`INPUT TYPES`, 'FAT');
 
   dmmf.schema.inputObjectTypes.prisma.forEach((inputType) => {

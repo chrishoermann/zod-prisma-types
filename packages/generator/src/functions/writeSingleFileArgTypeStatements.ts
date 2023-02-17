@@ -11,6 +11,8 @@ export const writeSingleFileArgTypeStatements: WriteStatements = (
 ) => {
   if (!dmmf.generatorConfig.createInputTypes) return;
 
+  fileWriter.writer.blankLine();
+
   fileWriter.writeHeading(`ARGS`, 'FAT');
 
   dmmf.schema.outputObjectTypes.argTypes.forEach((outputType) => {
