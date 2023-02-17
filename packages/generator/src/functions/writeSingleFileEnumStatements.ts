@@ -9,6 +9,8 @@ export const writeSingleFileEnumStatements: WriteStatements = (
   dmmf,
   fileWriter,
 ) => {
+  fileWriter.writer.blankLine();
+
   fileWriter.writeHeading(`ENUMS`, 'FAT');
 
   dmmf.schema.enumTypes.prisma.forEach((enumData) => {

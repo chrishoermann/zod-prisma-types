@@ -79,10 +79,10 @@ export class ExtendedDMMFSchemaField
     this.linkedModel = this._setLinkedModel(datamodel);
     this.args = this._setArgs(field);
     this.hasOmitFields = this._setHasOmitFields();
-    this.argTypeImports = this._setArgTypeImports();
     this.customArgType = this._setCustomArgType();
     this.writeSelectArg = this._setWriteSelectArg();
     this.writeIncludeArg = this._setWriteIncludeArg();
+    this.argTypeImports = this._setArgTypeImports();
   }
 
   testOutputType() {
@@ -166,7 +166,8 @@ export class ExtendedDMMFSchemaField
   private _setArgTypeImports() {
     const imports: string[] = [];
 
-    if (this.writeSelectAndIncludeArgs && this.linkedModel?.hasRelationFields) {
+    if (this.writeIncludeArg) {
+      // if (this.writeSelectAndIncludeArgs && this.linkedModel?.hasRelationFields) {
       imports.push(
         `import { ${this.modelType}IncludeSchema } from '../${this.generatorConfig.inputTypePath}/${this.modelType}IncludeSchema'`,
       );
@@ -237,7 +238,9 @@ export class ExtendedDMMFSchemaField
    * Checks if the `select` field should be written in the arg types schema.
    */
   private _setWriteSelectArg() {
-    return this._setWriteSelectAndIncludeArgs();
+    return (
+      this._setWriteSelectAndIncludeArgs() && this.generatorConfig.addSelectType
+    );
   }
 
   /**
@@ -246,7 +249,8 @@ export class ExtendedDMMFSchemaField
   private _setWriteIncludeArg() {
     return (
       this._setWriteSelectAndIncludeArgs() &&
-      Boolean(this.linkedModel?.hasRelationFields)
+      Boolean(this.linkedModel?.hasRelationFields) &&
+      this.generatorConfig.addIncludeType
     );
   }
 

@@ -15,6 +15,8 @@ export const writeSingleFileTypeStatements: WriteStatements = (
   )
     return;
 
+  fileWriter.writer.blankLine();
+
   fileWriter.writeHeading(`MONGODB TYPES`, 'FAT');
 
   dmmf.datamodel.types.forEach((type) => {

@@ -40,6 +40,16 @@ export const configSchema = z.object({
     .optional()
     .default('true')
     .transform((val) => val === 'true'),
+  addIncludeType: z
+    .string()
+    .optional()
+    .default('true')
+    .transform((val) => val === 'true'),
+  addSelectType: z
+    .string()
+    .optional()
+    .default('true')
+    .transform((val) => val === 'true'),
   validateWhereUniqueInput: z
     .string()
     .optional()

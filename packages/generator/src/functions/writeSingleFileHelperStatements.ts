@@ -17,7 +17,9 @@ export const writeSingleFileHelperStatements: WriteStatements = (
   dmmf,
   fileWriter,
 ) => {
+  fileWriter.writer.blankLine();
   fileWriter.writeHeading('HELPER FUNCTIONS', 'FAT');
+  fileWriter.writer.blankLine();
 
   // JSON
   // ------------------------------------------------------------

@@ -26,6 +26,8 @@ Be aware that some generator options have been removed, a few new have been adde
   - [`createInputTypes`](#createinputtypes)
   - [`createModelTypes`](#createmodeltypes)
   - [`addInputTypeValidation`](#addinputtypevalidation)
+  - [`addIncludeType`](#addincludetype)
+  - [`addSelectType`](#addselecttype)
   - [`validateWhereUniqueInput`](#validatewhereuniqueinput)
   - [`createOptionalDefaultValuesTypes`](#createoptionaldefaultvaluestypes)
   - [`createRelationValuesTypes`](#createrelationvaluestypes)
@@ -101,6 +103,8 @@ generator zod {
   createInputTypes                 = false // default is true
   createModelTypes                 = false // default is true
   addInputTypeValidation           = false // default is true
+  addIncludeType                   = false // default is true
+  addSelectType                    = false // default is true
   validateWhereUniqueInput         = true // default is false
   createOptionalDefaultValuesTypes = true // default is false
   createRelationValuesTypes        = true // default is false
@@ -167,6 +171,32 @@ If you want to use your custom zod validatiors that you added via rich-comments 
 generator zod {
   // ...rest of config
   addInputTypeValidation = false
+}
+```
+
+### `addIncludeType`
+
+> default: `true`
+
+By default the include type is added to the `[Model]ArgTypeSchema`. If you don't want to add a zod schema for the `include` type you can set this option to `false`.
+
+```prisma
+generator zod {
+  // ...rest of config
+  addIncludeType = false
+}
+```
+
+### `addSelectType`
+
+> default: `true`
+
+By default the select type is added to the `[Model]ArgTypeSchema`. If you don't want to add a zod schema for the `select` type you can set this option to `false`.
+
+```prisma
+generator zod {
+  // ...rest of config
+  addSelectType = false
 }
 ```
 

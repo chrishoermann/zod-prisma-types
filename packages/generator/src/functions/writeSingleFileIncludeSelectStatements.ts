@@ -16,6 +16,8 @@ export const writeSingleFileIncludeSelectStatements: WriteStatements = (
   fileWriter,
 ) => {
   if (!dmmf.generatorConfig.createInputTypes) return;
+  fileWriter.writer.blankLine();
+
   fileWriter.writeHeading(`SELECT & INCLUDE`, 'FAT');
 
   fileWriter.writer.blankLine();
@@ -38,6 +40,6 @@ export const writeSingleFileIncludeSelectStatements: WriteStatements = (
 
     writeSelect({ fileWriter, dmmf }, model);
 
-    fileWriter.writer.newLine();
+    fileWriter.writer.blankLine();
   });
 };
