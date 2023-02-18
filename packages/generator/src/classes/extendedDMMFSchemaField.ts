@@ -285,9 +285,9 @@ export class ExtendedDMMFSchemaField
       // "include" or "select" should be added to omit union when they match the regex pattern
       this._setWriteSelectAndIncludeArgs() &&
       // "include" should be added to omit union when it is set to be omitted via generator config
-      !this.generatorConfig.addIncludeType &&
-      // "select" should be added to omit union when it is set to be omitted via generator config
-      !this.generatorConfig.addSelectType
+      (!this.generatorConfig.addIncludeType ||
+        // "select" should be added to omit union when it is set to be omitted via generator config
+        !this.generatorConfig.addSelectType)
     );
   }
 
