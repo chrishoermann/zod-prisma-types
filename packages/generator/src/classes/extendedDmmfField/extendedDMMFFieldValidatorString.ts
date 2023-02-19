@@ -15,6 +15,8 @@ export const VALIDATOR_KEY_REGEX = /(\.(?<validatorKey>[\w]+))/;
 /////////////////////////////////////////////////
 
 export class ExtendedDMMFFieldValidatorString extends ExtendedDMMFFieldValidatorMap {
+  readonly zodCustomValidatorString?: string;
+
   constructor(
     field: DMMF.Field,
     generatorConfig: GeneratorConfig,
@@ -23,11 +25,15 @@ export class ExtendedDMMFFieldValidatorString extends ExtendedDMMFFieldValidator
     super(field, generatorConfig, modelName);
 
     this.zodValidatorString = this._getZodValidatorString();
+    this.zodCustomValidatorString = this._getZodCustomValidatorCustomString();
+
+    console.log('validatorList', this.validatorList);
   }
 
   // GET VALIDATOR STRING
   // ----------------------------------------------
 
+  // only validates types that are not of type 'custom'
   private _getZodValidatorString() {
     if (!this.validatorType || this.validatorType === 'custom')
       return this.zodValidatorString;
@@ -37,14 +43,41 @@ export class ExtendedDMMFFieldValidatorString extends ExtendedDMMFFieldValidator
       : this.zodValidatorString;
   }
 
-  // Check if validator is valid for type by comparing the validator pattern
-  // with a regex stored in a regex map
+  // GET CUSTOM VALIDATOR STRING
+  // ----------------------------------------------
 
-  private _validatorIsValid(type: ZodValidatorType) {
+  // only validates keys that are of type 'custom'
+  private _getZodCustomValidatorCustomString() {
+    if (
+      !this.validatorType ||
+      this.validatorType !== 'custom' ||
+      !this.validatorPattern
+    )
+      return this.zodCustomValidatorString;
+
+    console.log('this.validatorPattern', this.validatorPattern);
+
+    const validatorKey = this._getValidatorKeyFromPattern(
+      this.validatorPattern,
+    );
+
+    console.log('validatorKey', validatorKey);
+    console.log('validatorList', this.validatorList);
+
+    return undefined;
+    // return this._validatorIsValid(this.validatorType)
+    //   ? this.validatorPattern
+    //   : this.zodCustomValidatorString;
+  }
+
+  // HELPER METHODS
+  // ----------------------------------------------
+
+  protected _validatorIsValid(type: ZodValidatorType) {
     return Boolean(
       this.validatorList?.every((pattern) => {
         const key = this._getValidatorKeyFromPattern(pattern);
-        const isValid = this.validatorMap[type]({ pattern, key });
+        const isValid = this._validatorMap[type]({ pattern, key });
 
         if (isValid) {
           return true;
@@ -57,7 +90,7 @@ export class ExtendedDMMFFieldValidatorString extends ExtendedDMMFFieldValidator
     );
   }
 
-  private _getValidatorKeyFromPattern(pattern: string) {
+  protected _getValidatorKeyFromPattern(pattern: string) {
     const key = pattern.match(VALIDATOR_KEY_REGEX)?.groups?.['validatorKey'];
 
     if (!key) {

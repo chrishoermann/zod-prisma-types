@@ -4,6 +4,14 @@ import { ExtendedDMMFFieldValidatorType } from './extendedDMMFFieldValidatorType
 import { GeneratorConfig } from '../../schemas';
 
 /////////////////////////////////////////////////
+// REGEX
+/////////////////////////////////////////////////
+
+// const VALIDATOR_SPLIT_REGEX = /.[\w]+\((?!")/;
+// const VALIDATOR_SPLIT_REGEX = /(?=\.[a-z]+\((?!z))/;
+const VALIDATOR_SPLIT_REGEX = /(?=\.[\w]+)/;
+
+/////////////////////////////////////////////////
 // CLASS
 /////////////////////////////////////////////////
 
@@ -31,6 +39,7 @@ export class ExtendedDMMFFieldValidatorPattern extends ExtendedDMMFFieldValidato
   // the pattern is split into an array for further processing.
   private _getValidatorList() {
     if (!this.validatorPattern) return;
-    return this.validatorPattern?.split(/(?=\.[\w])/);
+    return this.validatorPattern?.split(VALIDATOR_SPLIT_REGEX);
+    // return this.validatorPattern?.split(VALIDATOR_SPLIT_REGEX);
   }
 }

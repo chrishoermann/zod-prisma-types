@@ -1,16 +1,46 @@
 import { ExtendedDMMFFieldValidatorCustomErrors } from './extendedDMMFFieldValidatorCustomErrors';
 import { ZodValidatorType } from './extendedDMMFFieldValidatorType';
-import {
-  ZodBigIntValidatorKeys,
-  ZodCustomValidatorKeys,
-  ZodDateValidatorKeys,
-  ZodNumberValidatorKeys,
-  ZodStringValidatorKeys,
-} from '../../types';
 
 /////////////////////////////////////////////////
 // TYPES
 /////////////////////////////////////////////////
+
+export type ZodStringValidatorKeys =
+  | 'min'
+  | 'max'
+  | 'length'
+  | 'email'
+  | 'url'
+  | 'uuid'
+  | 'cuid'
+  | 'regex'
+  | 'startsWith'
+  | 'endsWith'
+  | 'trim'
+  | 'datetime'
+  | 'noDefault'
+  | 'array';
+
+export type ZodNumberValidatorKeys =
+  | 'gt'
+  | 'gte'
+  | 'lt'
+  | 'lte'
+  | 'int'
+  | 'positive'
+  | 'nonpositive'
+  | 'negative'
+  | 'nonnegative'
+  | 'multipleOf'
+  | 'finite'
+  | 'noDefault'
+  | 'array';
+
+export type ZodDateValidatorKeys = 'min' | 'max' | 'array';
+
+export type ZodBigIntValidatorKeys = 'array';
+
+export type ZodCustomValidatorKeys = 'use' | 'omit' | 'import' | 'array';
 
 export interface ScalarValidatorFnOpts {
   key: string;
@@ -56,7 +86,7 @@ export const NUMBER_VALIDATOR_MESSAGE_REGEX =
 // ----------------------------------------
 
 export const DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
-  /.(?<validator>min|max)(\()(?<date>(new Date\((['"\d-]+)?\)))([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\)/;
+  /.(?<validator>min|max)(\()(?<date>(new Date\((['"()\w.-]+)?\)))([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\)/;
 
 // BIGINT
 // ----------------------------------------
@@ -68,7 +98,15 @@ export const BIGINT_VALIDATOR_MESSAGE_REGEX =
 // ----------------------------------------
 
 export const CUSTOM_VALIDATOR_MESSAGE_REGEX =
-  /(?<validator>use|omit|array)(\()(?<custom>[\w (),.'":+\-*#!§$%&\/{}\[\]=?~><°^]+)\)/;
+  /(?<validator>use|array)(\()(?<custom>[\w (),.'":+\-*#!§$%&/{}[\]=?~><°^]+)\)/;
+
+export const CUSTOM_OMIT_VALIDATOR_MESSAGE_REGEX = /(?<validator>omit)([()])/;
+
+// ARRAY
+// ----------------------------------------
+
+export const ARRAY_VALIDATOR_MESSAGE_REGEX =
+  /(?<validator>array)(\((?<message>[.\w()]+)\))/;
 
 /////////////////////////////////////////////
 // REGEX MAPS
@@ -96,6 +134,7 @@ export const STRING_VALIDATOR_REGEX_MAP: ValidatorMap<ZodStringValidatorKeys> =
     trim: STRING_VALIDATOR_MESSAGE_REGEX,
     datetime: STRING_VALIDATOR_MESSAGE_REGEX,
     noDefault: STRING_VALIDATOR_MESSAGE_REGEX,
+    array: ARRAY_VALIDATOR_MESSAGE_REGEX,
   };
 
 /**
@@ -119,6 +158,7 @@ export const NUMBER_VALIDATOR_REGEX_MAP: ValidatorMap<ZodNumberValidatorKeys> =
     nonnegative: NUMBER_VALIDATOR_MESSAGE_REGEX,
     finite: NUMBER_VALIDATOR_MESSAGE_REGEX,
     noDefault: NUMBER_VALIDATOR_MESSAGE_REGEX,
+    array: ARRAY_VALIDATOR_MESSAGE_REGEX,
   };
 
 /**
@@ -131,6 +171,7 @@ export const NUMBER_VALIDATOR_REGEX_MAP: ValidatorMap<ZodNumberValidatorKeys> =
 export const DATE_VALIDATOR_REGEX_MAP: ValidatorMap<ZodDateValidatorKeys> = {
   min: DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
   max: DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
+  array: ARRAY_VALIDATOR_MESSAGE_REGEX,
 };
 
 /**
@@ -142,15 +183,15 @@ export const DATE_VALIDATOR_REGEX_MAP: ValidatorMap<ZodDateValidatorKeys> = {
 
 export const BIGINT_VALIDATOR_REGEX_MAP: ValidatorMap<ZodBigIntValidatorKeys> =
   {
-    array: BIGINT_VALIDATOR_MESSAGE_REGEX,
+    array: ARRAY_VALIDATOR_MESSAGE_REGEX,
   };
 
 export const CUSTOM_VALIDATOR_REGEX_MAP: ValidatorMap<ZodCustomValidatorKeys> =
   {
     use: CUSTOM_VALIDATOR_MESSAGE_REGEX,
-    omit: CUSTOM_VALIDATOR_MESSAGE_REGEX,
+    omit: CUSTOM_OMIT_VALIDATOR_MESSAGE_REGEX,
     import: CUSTOM_VALIDATOR_MESSAGE_REGEX,
-    array: CUSTOM_VALIDATOR_MESSAGE_REGEX,
+    array: ARRAY_VALIDATOR_MESSAGE_REGEX,
   };
 
 /////////////////////////////////////////////////
@@ -158,42 +199,32 @@ export const CUSTOM_VALIDATOR_REGEX_MAP: ValidatorMap<ZodCustomValidatorKeys> =
 /////////////////////////////////////////////////
 
 export class ExtendedDMMFFieldValidatorMap extends ExtendedDMMFFieldValidatorCustomErrors {
-  readonly validatorMap: ValidatorFunctionMap = {
+  protected _validatorMap: ValidatorFunctionMap = {
     string: (options) =>
       this._validateRegexInMap(STRING_VALIDATOR_REGEX_MAP, options),
     number: (options) =>
       this._validateRegexInMap(NUMBER_VALIDATOR_REGEX_MAP, options),
     date: (options) =>
       this._validateRegexInMap(DATE_VALIDATOR_REGEX_MAP, options),
-    custom: (options) =>
-      this._validateRegexInMap(CUSTOM_VALIDATOR_REGEX_MAP, options),
     bigint: (options) =>
       this._validateRegexInMap(BIGINT_VALIDATOR_REGEX_MAP, options),
+    custom: (options) =>
+      this._validateRegexInMap(CUSTOM_VALIDATOR_REGEX_MAP, options),
   };
 
   //  VALIDATE REGEX IN MAP
   // ----------------------------------------------
 
-  private _validateRegexInMap = <TKeys extends string>(
+  protected _validateRegexInMap = <TKeys extends string>(
     validationMap: ValidatorMap<TKeys>,
     { pattern, key }: ScalarValidatorFnOpts,
-  ): boolean => {
-    const validate = validationMap[key as keyof ValidatorMap<TKeys>];
-
-    if (!validate) {
-      throw new Error(
-        `[@zod generator error]: Validator '${key}' is not valid for type '${this.type}' or for specified '@zod.[key]'. ${this.errorLocation}`,
-      );
+  ) => {
+    if (validationMap[key as keyof ValidatorMap<TKeys>].test(pattern)) {
+      return true;
     }
 
-    const match = validate.test(pattern);
-
-    if (!match) {
-      throw new Error(
-        `[@zod generator error]: Could not match validator '${key}' with validatorPattern '${pattern}'. Please check for typos! ${this.errorLocation}`,
-      );
-    }
-
-    return match;
+    throw new Error(
+      `[@zod generator error]: Could not match validator '${key}' with validatorPattern '${pattern}'. Please check for typos! ${this.errorLocation}`,
+    );
   };
 }

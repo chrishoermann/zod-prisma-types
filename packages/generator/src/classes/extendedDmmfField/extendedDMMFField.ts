@@ -5,7 +5,7 @@
  * The class is structured in multiple sub-classes to keep the code clean,
  * readable and maintainable.
  *
- * The sub-classes are used in the following order and extend the previous one:
+ * The sub-classes are used in the following order and each one extends the previous one:
  * - ExtendedDMMFFieldBase
  * - ExtendedDMMFFieldValidatorMatch
  * - ExtendedDMMFFieldValidatorType

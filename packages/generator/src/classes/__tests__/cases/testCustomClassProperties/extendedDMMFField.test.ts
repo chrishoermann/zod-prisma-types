@@ -12,6 +12,8 @@ export const DEFAULT_GENERATOR_CONFIG: GeneratorConfig = {
   createOptionalDefaultValuesTypes: false,
   createRelationValuesTypes: false,
   createPartialTypes: false,
+  addIncludeType: true,
+  addSelectType: true,
   addInputTypeValidation: true,
   useDefaultValidators: true,
   prismaClientPath: '@prisma/client',
