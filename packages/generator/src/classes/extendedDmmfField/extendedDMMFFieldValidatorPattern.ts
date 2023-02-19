@@ -8,7 +8,8 @@ import { GeneratorConfig } from '../../schemas';
 /////////////////////////////////////////////////
 
 // const VALIDATOR_SPLIT_REGEX = /.[\w]+\((?!")/;
-// const VALIDATOR_SPLIT_REGEX = /(?=\.[a-z]+\((?!z))/;
+// const VALIDATOR_SPLIT_REGEX =
+//   /(?<!\()\.(use|array)\((?:[^()]|\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*\))*\)/g;
 const VALIDATOR_SPLIT_REGEX = /(?=\.[\w]+)/;
 
 /////////////////////////////////////////////////
@@ -39,7 +40,33 @@ export class ExtendedDMMFFieldValidatorPattern extends ExtendedDMMFFieldValidato
   // the pattern is split into an array for further processing.
   private _getValidatorList() {
     if (!this.validatorPattern) return;
-    return this.validatorPattern?.split(VALIDATOR_SPLIT_REGEX);
-    // return this.validatorPattern?.split(VALIDATOR_SPLIT_REGEX);
+
+    const splitIndices = [0];
+    let depth = 0;
+
+    [...this.validatorPattern].forEach((char, idx) => {
+      if (!depth && !char.match(/\w/)) {
+        const position = this.validatorPattern
+          ?.substring(0, idx - 1)
+          .match(/\.\w+$/)?.index;
+        if (position) {
+          splitIndices.push(position);
+        }
+      }
+
+      if (char === '(') {
+        depth++;
+      }
+
+      if (char === ')') {
+        depth--;
+      }
+    });
+
+    const pattern = splitIndices
+      .map((e, i, a) => this.validatorPattern?.substring(e, a[i + 1]))
+      .filter((str): str is string => !!str);
+
+    return pattern;
   }
 }
