@@ -12,6 +12,19 @@ import { ExtendedDMMFSchemaArg } from './extendedDMMFSchemaArg';
 import { FormattedNames } from './formattedNames';
 
 /////////////////////////////////////////////////
+// REGEX
+/////////////////////////////////////////////////
+
+const OMIT_FIELDS_REGEX = /create|upsert|update|delete/;
+
+const OMIT_FIELDS_UNION_REGEX = /create|update|upsert|delete|data/;
+
+const WRITE_INCLUDE_SELECT_FIELDS_REGEX =
+  /findUnique|findUniqueOrThrow|findFirst|findFirstOrThrow|findMany|create|update|upsert|delete/;
+
+const WRITE_NO_INCLUDE_SELECT_FIELDS_REGEX = /createMany|updateMany|deleteMany/;
+
+/////////////////////////////////////////////////
 // CLASS
 /////////////////////////////////////////////////
 
@@ -79,10 +92,10 @@ export class ExtendedDMMFSchemaField
     this.linkedModel = this._setLinkedModel(datamodel);
     this.args = this._setArgs(field);
     this.hasOmitFields = this._setHasOmitFields();
-    this.customArgType = this._setCustomArgType();
     this.writeSelectArg = this._setWriteSelectArg();
     this.writeIncludeArg = this._setWriteIncludeArg();
     this.argTypeImports = this._setArgTypeImports();
+    this.customArgType = this._setCustomArgType();
   }
 
   testOutputType() {
@@ -158,7 +171,7 @@ export class ExtendedDMMFSchemaField
    * @returns `true` if the field contains `create`, `upsert`, `update` or `delete` and the linked model has `omit` fields
    */
   private _setHasOmitFields() {
-    const writeOmit = /create|upsert|update|delete/.test(this.name);
+    const writeOmit = OMIT_FIELDS_REGEX.test(this.name);
     if (writeOmit) return Boolean(this.linkedModel?.hasOmitFields);
     return false;
   }
@@ -167,7 +180,6 @@ export class ExtendedDMMFSchemaField
     const imports: string[] = [];
 
     if (this.writeIncludeArg) {
-      // if (this.writeSelectAndIncludeArgs && this.linkedModel?.hasRelationFields) {
       imports.push(
         `import { ${this.modelType}IncludeSchema } from '../${this.generatorConfig.inputTypePath}/${this.modelType}IncludeSchema'`,
       );
@@ -228,10 +240,12 @@ export class ExtendedDMMFSchemaField
 
   /**
    * Used to determine if the field should be included in the `select` and `include` args.
-   * @returns `true` if the field does not contian `createMany`, `updateMany` or `deleteMany` in its name
    */
   private _setWriteSelectAndIncludeArgs() {
-    return !/createMany|updateMany|deleteMany/.test(this.name);
+    return (
+      WRITE_INCLUDE_SELECT_FIELDS_REGEX.test(this.name) &&
+      !WRITE_NO_INCLUDE_SELECT_FIELDS_REGEX.test(this.name)
+    );
   }
 
   /**
@@ -254,49 +268,96 @@ export class ExtendedDMMFSchemaField
     );
   }
 
-  /**
-   * Checkst if the field contains `create`, `upsert`, `update` or `delete` in its name.
-   * Used to determine if the type in the created arg should be recreated with updated arg types.
-   * @returns `true` if the field contains `create`, `upsert`, `update` or `delete` in its name
-   */
-  createCustomOmitFieldArgType() {
-    return (
-      this.hasOmitFields &&
-      this.args.some((arg) => /create|update|upsert|delete|data/.test(arg.name))
-    );
-  }
-
   // CUSTOM ARG TYPE
   //---------------------------------------------------------------------
 
-  /**
-   * If the model contains fields that should be omitted, the type information
-   * passed to the zod schema needs to be updated.
-   * By default, the type is just the prisma client type.
-   * But if the model has fields that are required and should be omitted,
-   * the type needs to be updated to reflect that.
-   * Otherwise typescript will complain that the required fields are missing.
-   */
-  private _setCustomArgType() {
-    if (this.createCustomOmitFieldArgType()) {
-      return `z.ZodType<Omit<Prisma.${
-        this.argName
-      }, ${this._getOmitUnionForCustomArgType()}> & { ${this._getTypeForCustomArgsType()} }>`;
-    }
+  private _shouldAddOmittedFieldsToOmitUnionArray() {
+    return (
+      // check if the model has fields that should be omitted
+      this.hasOmitFields &&
+      // check if the field contains `create`, `upsert`, `update`, `delete` or `data` in its name
+      this.args.some((arg) => OMIT_FIELDS_UNION_REGEX.test(arg.name))
+    );
+  }
 
-    return `z.ZodType<Prisma.${this.argName}>`;
+  private _shouldAddIncludeOrSelectToOmitUnion() {
+    return (
+      // "include" or "select" should be added to omit union when they match the regex pattern
+      this._setWriteSelectAndIncludeArgs() &&
+      // "include" should be added to omit union when it is set to be omitted via generator config
+      (!this.generatorConfig.addIncludeType ||
+        // "select" should be added to omit union when it is set to be omitted via generator config
+        !this.generatorConfig.addSelectType)
+    );
+  }
+
+  private _addIncludeToOmitUnionArray(omitUnionArray: string[]) {
+    if (
+      // "include" or "select" should be added to omit union when they match the regex pattern
+      this._setWriteSelectAndIncludeArgs() &&
+      // "include" should be added to omit union when field is of type "outputObjectType"
+      this._setWriteIncludeField() &&
+      // "include" should be added to omit union when it is set to be omitted via generator config
+      !this.generatorConfig.addIncludeType &&
+      // "include" should be added to omit union when it has relation fields
+      this.linkedModel?.hasRelationFields
+    ) {
+      omitUnionArray.push('"include"');
+    }
+  }
+
+  private _addSelectToOmitUnionArray(omitUnionArray: string[]) {
+    if (
+      // "include" or "select" should be added to omit union when they match the regex pattern
+      this._setWriteSelectAndIncludeArgs() &&
+      // "select" should be added to omit union when field is of type "outputObjectType"
+      this._setWriteSelectField() &&
+      // "select" should be added to omit union when it is set to be omitted via generator config
+      !this.generatorConfig.addSelectType
+    ) {
+      omitUnionArray.push('"select"');
+    }
+  }
+
+  private _getOmitFieldsUnion(omitUnionArray: string[]) {
+    return omitUnionArray.join(' | ');
+  }
+
+  private _addOmittedFieldsToOmitUnionArray(omitUnionArray: string[]) {
+    this.args.forEach((arg) => {
+      if (OMIT_FIELDS_UNION_REGEX.test(arg.name))
+        omitUnionArray.push(`"${arg.name}"`);
+    });
   }
 
   /**
-   * If the field contains `create`, `upsert`, `update` or `delete` in its name,
-   * it returns the string union of the fields that should be omitted.
-   * @returns union of fields that should be omitted in custom type
+   * By default, the type for `[Model]ArgTypeSchema` is just the prisma client type.
+   * If the model contains fields that should be omitted or the `include` and `select`
+   * types should not be created in the arg type schema, the type information
+   * passed to the zod schema needs to be updated.
    */
-  private _getOmitUnionForCustomArgType() {
-    return this.args
-      .filter((arg) => /create|update|upsert|delete|data/.test(arg.name))
-      .map((arg) => `"${arg.name}"`)
-      .join(' | ');
+
+  private _setCustomArgType() {
+    const omitUnionArray: string[] = [];
+
+    this._addSelectToOmitUnionArray(omitUnionArray);
+    this._addIncludeToOmitUnionArray(omitUnionArray);
+
+    if (this._shouldAddOmittedFieldsToOmitUnionArray()) {
+      this._addOmittedFieldsToOmitUnionArray(omitUnionArray);
+
+      return `z.ZodType<Omit<Prisma.${this.argName}, ${this._getOmitFieldsUnion(
+        omitUnionArray,
+      )}> & { ${this._getTypeForCustomArgsType()} }>`;
+    }
+
+    if (this._shouldAddIncludeOrSelectToOmitUnion()) {
+      return `z.ZodType<Omit<Prisma.${this.argName}, ${this._getOmitFieldsUnion(
+        omitUnionArray,
+      )}>>`;
+    }
+
+    return `z.ZodType<Prisma.${this.argName}>`;
   }
 
   /**
