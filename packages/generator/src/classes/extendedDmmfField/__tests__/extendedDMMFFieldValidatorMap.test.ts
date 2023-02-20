@@ -19,10 +19,10 @@ describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
 
   it(`should load an instance`, async () => {
     expect(field).toBeDefined();
-    expect(field?.['validatorMatch']).toBeUndefined();
-    expect(field?.['validatorType']).toBeUndefined();
-    expect(field?.['validatorCustomError']).toBeUndefined();
-    expect(field?.['validatorPattern']).toBeUndefined();
+    expect(field?.['_validatorMatch']).toBeUndefined();
+    expect(field?.['_validatorType']).toBeUndefined();
+    expect(field?.['_validatorCustomError']).toBeUndefined();
+    expect(field?.['_validatorPattern']).toBeUndefined();
     expect(field?.zodCustomErrors).toBeUndefined();
   });
 
@@ -193,6 +193,19 @@ describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
       }),
     ).toThrowError(
       "[@zod generator error]: Could not match validator 'array' with validatorPattern '.length(2)'. Please check for typos! [Error Location]: Model: 'ModelName', Field: 'test'.",
+    );
+  });
+
+  it(`should pass ivalid key to to validator map`, async () => {
+    const map = field?.['_validatorMap']['string'];
+
+    expect(() =>
+      map({
+        key: 'wrong',
+        pattern: '.length(2)',
+      }),
+    ).toThrowError(
+      "[@zod generator error]: Validator 'wrong' is not valid for type 'String' or for specified '@zod.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
     );
   });
 
@@ -376,6 +389,19 @@ describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
     );
   });
 
+  it(`should pass ivalid key to to validator map`, async () => {
+    const map = field?.['_validatorMap']['number'];
+
+    expect(() =>
+      map({
+        key: 'wrong',
+        pattern: '.length(2)',
+      }),
+    ).toThrowError(
+      "[@zod generator error]: Validator 'wrong' is not valid for type 'String' or for specified '@zod.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
+    );
+  });
+
   // DATE
   // ----------------------------------------------
 
@@ -436,6 +462,19 @@ describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
     );
   });
 
+  it(`should pass ivalid key to to validator map`, async () => {
+    const map = field?.['_validatorMap']['date'];
+
+    expect(() =>
+      map({
+        key: 'wrong',
+        pattern: '.length(2)',
+      }),
+    ).toThrowError(
+      "[@zod generator error]: Validator 'wrong' is not valid for type 'String' or for specified '@zod.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
+    );
+  });
+
   // BIGINT
   // ----------------------------------------------
 
@@ -459,6 +498,19 @@ describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
       }),
     ).toThrowError(
       "[@zod generator error]: Could not match validator 'array' with validatorPattern '.length(2)'. Please check for typos! [Error Location]: Model: 'ModelName', Field: 'test'.",
+    );
+  });
+
+  it(`should pass ivalid key to to validator map`, async () => {
+    const map = field?.['_validatorMap']['bigint'];
+
+    expect(() =>
+      map({
+        key: 'wrong',
+        pattern: '.length(2)',
+      }),
+    ).toThrowError(
+      "[@zod generator error]: Validator 'wrong' is not valid for type 'String' or for specified '@zod.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
     );
   });
 
@@ -498,6 +550,19 @@ describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
       }),
     ).toThrowError(
       "[@zod generator error]: Could not match validator 'array' with validatorPattern '.length(2)'. Please check for typos! [Error Location]: Model: 'ModelName', Field: 'test'.",
+    );
+  });
+
+  it(`should pass ivalid key to to validator map`, async () => {
+    const map = field?.['_validatorMap']['custom'];
+
+    expect(() =>
+      map({
+        key: 'wrong',
+        pattern: '.length(2)',
+      }),
+    ).toThrowError(
+      "[@zod generator error]: Validator 'wrong' is not valid for type 'String' or for specified '@zod.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
     );
   });
 });

@@ -25,11 +25,11 @@ export class ExtendedDMMFFieldValidatorCustomString extends ExtendedDMMFFieldVal
 
   // only validates keys that are of type 'custom'
   private _getZodCustomValidatorCustomString() {
-    if (!this.validatorType || this.validatorType !== 'custom')
+    if (!this._validatorType || this._validatorType !== 'custom')
       return this.zodValidatorString;
 
-    return this._validatorIsValid(this.validatorType)
-      ? this.validatorPattern
+    return this._validatorIsValid(this._validatorType)
+      ? this._validatorPattern
       : this.zodValidatorString;
   }
 }

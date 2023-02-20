@@ -11,10 +11,10 @@ it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorString class witho
   );
 
   expect(field).toBeDefined();
-  expect(field?.['validatorMatch']).toBeUndefined();
-  expect(field?.['validatorType']).toBeUndefined();
-  expect(field?.['validatorCustomError']).toBeUndefined();
-  expect(field?.['validatorPattern']).toBeUndefined();
+  expect(field?.['_validatorMatch']).toBeUndefined();
+  expect(field?.['_validatorType']).toBeUndefined();
+  expect(field?.['_validatorCustomError']).toBeUndefined();
+  expect(field?.['_validatorPattern']).toBeUndefined();
   expect(field?.zodCustomErrors).toBeUndefined();
 });
 
@@ -30,10 +30,12 @@ it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorString class with 
   );
 
   expect(field).toBeDefined();
-  expect(field?.['validatorMatch']).toBeDefined();
-  expect(field?.['validatorType']).toBe('string');
-  expect(field?.['validatorCustomError']).toBe('({ required_error: "error" })');
-  expect(field?.['validatorPattern']).toBe('.min(2).max(4)');
+  expect(field?.['_validatorMatch']).toBeDefined();
+  expect(field?.['_validatorType']).toBe('string');
+  expect(field?.['_validatorCustomError']).toBe(
+    '({ required_error: "error" })',
+  );
+  expect(field?.['_validatorPattern']).toBe('.min(2).max(4)');
   expect(field?.zodCustomErrors).toBe('{ required_error: "error" }');
   expect(field?.clearedDocumentation).toBe('some text in docs');
   expect(field.documentation).toBe(
@@ -47,22 +49,24 @@ it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorString class with 
       ...FIELD_BASE,
       type: 'Int',
       documentation:
-        'some text in docs @zod.number({ required_error: "error" }).lt(2).gt(4)',
+        'some text in docs @zod.number({ required_error: "error" }).lt(2).gt(4).array(.length(2))',
     },
     DEFAULT_GENERATOR_CONFIG,
     'ModelName',
   );
 
   expect(field).toBeDefined();
-  expect(field?.['validatorMatch']).toBeDefined();
-  expect(field?.['validatorType']).toBe('number');
-  expect(field?.['validatorCustomError']).toBe('({ required_error: "error" })');
-  expect(field?.['validatorPattern']).toBe('.lt(2).gt(4)');
+  expect(field?.['_validatorMatch']).toBeDefined();
+  expect(field?.['_validatorType']).toBe('number');
+  expect(field?.['_validatorCustomError']).toBe(
+    '({ required_error: "error" })',
+  );
+  expect(field?.['_validatorPattern']).toBe('.lt(2).gt(4).array(.length(2))');
   expect(field?.zodCustomErrors).toBe('{ required_error: "error" }');
   expect(field?.zodValidatorString).toBe('.lt(2).gt(4)');
   expect(field?.clearedDocumentation).toBe('some text in docs');
   expect(field.documentation).toBe(
-    'some text in docs @zod.number({ required_error: "error" }).lt(2).gt(4)',
+    'some text in docs @zod.number({ required_error: "error" }).lt(2).gt(4).array(.length(2))',
   );
 });
 
@@ -78,49 +82,15 @@ it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorString class with 
   );
 
   expect(field).toBeDefined();
-  expect(field?.['validatorMatch']).toBeUndefined();
-  expect(field?.['validatorType']).toBeUndefined();
-  expect(field?.['validatorCustomError']).toBeUndefined();
-  expect(field?.['validatorPattern']).toBeUndefined();
+  expect(field?.['_validatorMatch']).toBeUndefined();
+  expect(field?.['_validatorType']).toBeUndefined();
+  expect(field?.['_validatorCustomError']).toBeUndefined();
+  expect(field?.['_validatorPattern']).toBeUndefined();
   expect(field?.zodCustomErrors).toBeUndefined();
   expect(field?.zodValidatorString).toBe('.int()');
   expect(field?.clearedDocumentation).toBe('some text in docs');
   expect(field.documentation).toBe('some text in docs');
 });
-
-// it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorString class with docs and invalid validator for type`, async () => {
-//   expect(
-//     () =>
-//       new ExtendedDMMFFieldValidatorString(
-//         {
-//           ...FIELD_BASE,
-//           documentation:
-//             '@zod.string.lt(2).gt(4).invalid({ required_error: "error" })',
-//         },
-//         DEFAULT_GENERATOR_CONFIG,
-//         'ModelName',
-//       ),
-//   ).toThrowError(
-//     "[@zod generator error]: Validator 'lt' is not valid for type 'String' or for specified '@zod.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
-//   );
-// });
-
-// it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorString class with docs and invalid validator for type`, async () => {
-//   expect(
-//     () =>
-//       new ExtendedDMMFFieldValidatorString(
-//         {
-//           ...FIELD_BASE,
-//           documentation:
-//             '@zod.string.lt(2).gt(4).invalid({ required_error: "error" })',
-//         },
-//         DEFAULT_GENERATOR_CONFIG,
-//         'ModelName',
-//       ),
-//   ).toThrowError(
-//     "[@zod generator error]: Validator 'lt' is not valid for type 'String' or for specified '@zod.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
-//   );
-// });
 
 /////////////////////////////////////////////
 // CUSTOM VALIDATOR STRING
@@ -132,21 +102,63 @@ describe('ExtendedDMMFFieldValidatorString custom validator string', () => {
       {
         ...FIELD_BASE,
         documentation:
-          'some text in docs @zod.custom.use("z.string().min(2).max(4)")',
+          'some text in docs @zod.custom.use(z.string().min(2).max(4)).array(.length(2))',
       },
       DEFAULT_GENERATOR_CONFIG,
       'ModelName',
     );
 
-    // expect(field).toBeDefined();
-    // expect(field?.['validatorMatch']).toBeDefined();
-    // expect(field?.['validatorType']).toBe('custom');
-    // expect(field?.['validatorCustomError']).toBeUndefined();
-    // expect(field?.['validatorPattern']).toBe('.use(z.string().min(2).max(4))');
-    // expect(field?.zodCustomErrors).toBeUndefined();
-    // expect(field?.clearedDocumentation).toBe('some text in docs');
-    // expect(field.documentation).toBe(
-    //   'some text in docs @zod.custom.use(z.string().min(2).max(4))',
-    // );
+    expect(field).toBeDefined();
+    expect(field?.['_validatorMatch']).toBeDefined();
+    expect(field?.['_validatorType']).toBe('custom');
+    expect(field?.['_validatorCustomError']).toBeUndefined();
+    expect(field?.['_validatorPattern']).toBe(
+      '.use(z.string().min(2).max(4)).array(.length(2))',
+    );
+    expect(field?.zodCustomErrors).toBeUndefined();
+    expect(field?.clearedDocumentation).toBe('some text in docs');
+    expect(field.documentation).toBe(
+      'some text in docs @zod.custom.use(z.string().min(2).max(4)).array(.length(2))',
+    );
+    expect(field.zodCustomValidatorString).toBe('z.string().min(2).max(4)');
+    expect(field.zodArrayValidatorString).toBe('.length(2)');
+  });
+
+  it(`should load field with docs and custom omit validator`, async () => {
+    const field = new ExtendedDMMFFieldValidatorString(
+      {
+        ...FIELD_BASE,
+        documentation: 'some text in docs @zod.custom.omit()',
+      },
+      DEFAULT_GENERATOR_CONFIG,
+      'ModelName',
+    );
+
+    expect(field).toBeDefined();
+    expect(field?.['_validatorMatch']).toBeDefined();
+    expect(field?.['_validatorType']).toBe('custom');
+    expect(field?.['_validatorCustomError']).toBeUndefined();
+    expect(field?.['_validatorPattern']).toBe('.omit()');
+    expect(field?.zodCustomErrors).toBeUndefined();
+    expect(field?.clearedDocumentation).toBe('some text in docs');
+    expect(field.documentation).toBe('some text in docs @zod.custom.omit()');
+    expect(field.zodCustomValidatorString).toBeUndefined();
+  });
+
+  it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorString class with docs and invalid validator for type`, async () => {
+    expect(
+      () =>
+        new ExtendedDMMFFieldValidatorString(
+          {
+            ...FIELD_BASE,
+            documentation:
+              'some text in docs @zod.custom.use(z.string().min(2).max(4)).array(length(2)).wrong()',
+          },
+          DEFAULT_GENERATOR_CONFIG,
+          'ModelName',
+        ),
+    ).toThrowError(
+      "[@zod generator error]: Validator 'wrong' is not valid for type 'String' or for specified '@zod.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
+    );
   });
 });

@@ -1,8 +1,18 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { ExtendedDMMFFieldValidatorMap } from './extendedDMMFFieldValidatorMap';
+import {
+  ARRAY_VALIDATOR_MESSAGE_REGEX,
+  CUSTOM_VALIDATOR_MESSAGE_REGEX,
+  ExtendedDMMFFieldValidatorMap,
+} from './extendedDMMFFieldValidatorMap';
 import { ZodValidatorType } from './extendedDMMFFieldValidatorType';
 import { GeneratorConfig } from '../../schemas';
+
+/////////////////////////////////////////////////
+// TYPES
+/////////////////////////////////////////////////
+
+export type OmitFieldMode = 'model' | 'input' | 'all' | 'none';
 
 /////////////////////////////////////////////////
 // REGEX
@@ -16,6 +26,8 @@ export const VALIDATOR_KEY_REGEX = /(\.(?<validatorKey>[\w]+))/;
 
 export class ExtendedDMMFFieldValidatorString extends ExtendedDMMFFieldValidatorMap {
   readonly zodCustomValidatorString?: string;
+  readonly zodArrayValidatorString?: string;
+  readonly zodOmitField: OmitFieldMode = 'none';
 
   constructor(
     field: DMMF.Field,
@@ -25,57 +37,74 @@ export class ExtendedDMMFFieldValidatorString extends ExtendedDMMFFieldValidator
     super(field, generatorConfig, modelName);
 
     this.zodValidatorString = this._getZodValidatorString();
-    this.zodCustomValidatorString = this._getZodCustomValidatorCustomString();
-
-    console.log('validatorList', this.validatorList);
+    this.zodCustomValidatorString = this._getZodCustomValidatorString();
+    this.zodArrayValidatorString = this._getZodArrayValidatorString();
   }
 
   // GET VALIDATOR STRING
   // ----------------------------------------------
 
-  // only validates types that are not of type 'custom'
   private _getZodValidatorString() {
-    if (!this.validatorType || this.validatorType === 'custom')
+    if (!this._validatorType || this._validatorType === 'custom')
       return this.zodValidatorString;
 
-    return this._validatorIsValid(this.validatorType)
-      ? this.validatorPattern
+    return this._validatorIsValid(this._validatorType)
+      ? this._getZodValidatorStringWithoutArray()
       : this.zodValidatorString;
   }
 
   // GET CUSTOM VALIDATOR STRING
   // ----------------------------------------------
 
-  // only validates keys that are of type 'custom'
-  private _getZodCustomValidatorCustomString() {
-    if (
-      !this.validatorType ||
-      this.validatorType !== 'custom' ||
-      !this.validatorPattern
-    )
+  private _getZodCustomValidatorString() {
+    if (!this._validatorType || this._validatorType !== 'custom')
       return this.zodCustomValidatorString;
 
-    console.log('this.validatorPattern', this.validatorPattern);
-
-    const validatorKey = this._getValidatorKeyFromPattern(
-      this.validatorPattern,
-    );
-
-    console.log('validatorKey', validatorKey);
-    console.log('validatorList', this.validatorList);
-
-    return undefined;
-    // return this._validatorIsValid(this.validatorType)
-    //   ? this.validatorPattern
-    //   : this.zodCustomValidatorString;
+    return this._validatorIsValid(this._validatorType)
+      ? this._extractUsePattern()
+      : this.zodCustomValidatorString;
   }
 
-  // HELPER METHODS
+  private _extractUsePattern() {
+    return this._getZodValidatorListWithoutArray()
+      ?.find((pattern) => pattern.includes('.use'))
+      ?.match(CUSTOM_VALIDATOR_MESSAGE_REGEX)?.groups?.['pattern'];
+  }
+
+  // GET ARRAY VALIDATOR STRING
   // ----------------------------------------------
+
+  private _getZodArrayValidatorString() {
+    if (!this._validatorType) return this.zodArrayValidatorString;
+
+    return this._validatorIsValid(this._validatorType)
+      ? this._extractArrayPattern()
+      : this.zodArrayValidatorString;
+  }
+
+  private _extractArrayPattern() {
+    return this._getZodValidatorListArray()
+      ?.find((pattern) => pattern.includes('.array'))
+      ?.match(ARRAY_VALIDATOR_MESSAGE_REGEX)?.groups?.['pattern'];
+  }
+
+  // HELPER
+  // ----------------------------------------------
+
+  private _getZodValidatorListWithoutArray() {
+    return this._validatorList?.filter((elem) => !elem.includes('.array'));
+  }
+  private _getZodValidatorListArray() {
+    return this._validatorList?.filter((elem) => elem.includes('.array'));
+  }
+
+  private _getZodValidatorStringWithoutArray() {
+    return this._getZodValidatorListWithoutArray()?.join('');
+  }
 
   protected _validatorIsValid(type: ZodValidatorType) {
     return Boolean(
-      this.validatorList?.every((pattern) => {
+      this._validatorList?.every((pattern) => {
         const key = this._getValidatorKeyFromPattern(pattern);
         const isValid = this._validatorMap[type]({ pattern, key });
 

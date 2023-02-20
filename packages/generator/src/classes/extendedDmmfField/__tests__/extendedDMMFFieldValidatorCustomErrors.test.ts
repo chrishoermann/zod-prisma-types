@@ -11,9 +11,9 @@ it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorCustomErrors class
   );
 
   expect(field).toBeDefined();
-  expect(field?.['validatorMatch']).toBeUndefined();
-  expect(field?.['validatorType']).toBeUndefined();
-  expect(field?.['validatorCustomError']).toBeUndefined();
+  expect(field?.['_validatorMatch']).toBeUndefined();
+  expect(field?.['_validatorType']).toBeUndefined();
+  expect(field?.['_validatorCustomError']).toBeUndefined();
   expect(field?.zodCustomErrors).toBeUndefined();
 });
 
@@ -29,9 +29,9 @@ it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorCustomErrors class
   );
 
   expect(field).toBeDefined();
-  expect(field?.['validatorMatch']).toBeDefined();
-  expect(field?.['validatorType']).toBe('string');
-  expect(field?.['validatorCustomError']).toBe(
+  expect(field?.['_validatorMatch']).toBeDefined();
+  expect(field?.['_validatorType']).toBe('string');
+  expect(field?.['_validatorCustomError']).toBe(
     '({ required_error: "error", invalid_type_error: "error" , description: "error"})',
   );
   expect(field?.zodCustomErrors).toBe(

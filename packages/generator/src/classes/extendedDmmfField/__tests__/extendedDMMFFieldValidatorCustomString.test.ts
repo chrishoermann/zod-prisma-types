@@ -11,10 +11,10 @@ it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorCustomString class
   );
 
   expect(field).toBeDefined();
-  expect(field?.['validatorMatch']).toBeUndefined();
-  expect(field?.['validatorType']).toBeUndefined();
-  expect(field?.['validatorCustomError']).toBeUndefined();
-  expect(field?.['validatorPattern']).toBeUndefined();
+  expect(field?.['_validatorMatch']).toBeUndefined();
+  expect(field?.['_validatorType']).toBeUndefined();
+  expect(field?.['_validatorCustomError']).toBeUndefined();
+  expect(field?.['_validatorPattern']).toBeUndefined();
   expect(field?.zodCustomValidatorString).toBeUndefined();
   expect(field?.zodCustomErrors).toBeUndefined();
 });
@@ -31,7 +31,7 @@ it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorCustomString class
 //   );
 
 //   expect(field).toBeDefined();
-//   expect(field?.['validatorMatch']).toBeDefined();
+//   expect(field?.['_']).toBeDefined();
 //   expect(field?.['validatorType']).toBe('string');
 //   expect(field?.['validatorCustomError']).toBe('({ required_error: "error" })');
 //   expect(field?.['validatorPattern']).toBe('.min(2).max(4)');
@@ -55,7 +55,7 @@ it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorCustomString class
 //   );
 
 //   expect(field).toBeDefined();
-//   expect(field?.['validatorMatch']).toBeDefined();
+//   expect(field?.['_']).toBeDefined();
 //   expect(field?.['validatorType']).toBe('number');
 //   expect(field?.['validatorCustomError']).toBe('({ required_error: "error" })');
 //   expect(field?.['validatorPattern']).toBe('.lt(2).gt(4)');
@@ -79,7 +79,7 @@ it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorCustomString class
 //   );
 
 //   expect(field).toBeDefined();
-//   expect(field?.['validatorMatch']).toBeUndefined();
+//   expect(field?.['_']).toBeUndefined();
 //   expect(field?.['validatorType']).toBeUndefined();
 //   expect(field?.['validatorCustomError']).toBeUndefined();
 //   expect(field?.['validatorPattern']).toBeUndefined();

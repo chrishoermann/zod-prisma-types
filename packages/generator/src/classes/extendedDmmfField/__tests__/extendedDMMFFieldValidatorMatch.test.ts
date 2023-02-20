@@ -11,7 +11,7 @@ it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorMatch class withou
   );
 
   expect(field).toBeDefined();
-  expect(field?.['validatorMatch']).toBe(undefined);
+  expect(field?.['_validatorMatch']).toBe(undefined);
   expect(field?.clearedDocumentation).toBe(undefined);
 });
 
@@ -23,7 +23,7 @@ it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorMatch class with d
   );
 
   expect(field).toBeDefined();
-  expect(field?.['validatorMatch']).toBeUndefined();
+  expect(field?.['_validatorMatch']).toBeUndefined();
   expect(field?.clearedDocumentation).toBe('some text in docs');
   expect(field.documentation).toBe('some text in docs');
 });
@@ -36,7 +36,7 @@ it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorMatch class with d
   );
 
   expect(field).toBeDefined();
-  expect(field?.['validatorMatch']).toBeDefined();
+  expect(field?.['_validatorMatch']).toBeDefined();
   expect(field?.clearedDocumentation).toBe('some text in docs');
   expect(field.documentation).toBe('some text in docs @zod.string.max(4)');
 });

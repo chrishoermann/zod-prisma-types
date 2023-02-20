@@ -98,7 +98,7 @@ export const BIGINT_VALIDATOR_MESSAGE_REGEX =
 // ----------------------------------------
 
 export const CUSTOM_VALIDATOR_MESSAGE_REGEX =
-  /(?<validator>use|array)(\()(?<custom>[\w (),.'":+\-*#!§$%&/{}[\]=?~><°^]+)\)/;
+  /(?<validator>use|array)(\()(?<pattern>[\w (),.'":+\-*#!§$%&/{}[\]=?~><°^]+)\)/;
 
 export const CUSTOM_OMIT_VALIDATOR_MESSAGE_REGEX = /(?<validator>omit)([()])/;
 
@@ -106,7 +106,7 @@ export const CUSTOM_OMIT_VALIDATOR_MESSAGE_REGEX = /(?<validator>omit)([()])/;
 // ----------------------------------------
 
 export const ARRAY_VALIDATOR_MESSAGE_REGEX =
-  /(?<validator>array)(\((?<message>[.\w()]+)\))/;
+  /(?<validator>array)(\((?<pattern>[.\w()]+)\))/;
 
 /////////////////////////////////////////////
 // REGEX MAPS
@@ -219,7 +219,15 @@ export class ExtendedDMMFFieldValidatorMap extends ExtendedDMMFFieldValidatorCus
     validationMap: ValidatorMap<TKeys>,
     { pattern, key }: ScalarValidatorFnOpts,
   ) => {
-    if (validationMap[key as keyof ValidatorMap<TKeys>].test(pattern)) {
+    const validate = validationMap[key as keyof ValidatorMap<TKeys>];
+
+    if (!validate) {
+      throw new Error(
+        `[@zod generator error]: Validator '${key}' is not valid for type '${this.type}' or for specified '@zod.[key]'. ${this.errorLocation}`,
+      );
+    }
+
+    if (validate.test(pattern)) {
       return true;
     }
 

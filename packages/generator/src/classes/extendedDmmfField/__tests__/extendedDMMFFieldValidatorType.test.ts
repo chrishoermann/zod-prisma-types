@@ -11,8 +11,8 @@ it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorType class without
   );
 
   expect(field).toBeDefined();
-  expect(field?.['validatorMatch']).toBeUndefined();
-  expect(field?.['validatorType']).toBeUndefined();
+  expect(field?.['_validatorMatch']).toBeUndefined();
+  expect(field?.['_validatorType']).toBeUndefined();
   expect(field?.clearedDocumentation).toBeUndefined();
 });
 
@@ -24,8 +24,8 @@ it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorType class with do
   );
 
   expect(field).toBeDefined();
-  expect(field?.['validatorMatch']).toBeUndefined();
-  expect(field?.['validatorType']).toBeUndefined();
+  expect(field?.['_validatorMatch']).toBeUndefined();
+  expect(field?.['_validatorType']).toBeUndefined();
   expect(field?.clearedDocumentation).toBe('some text in docs');
 });
 
@@ -37,8 +37,8 @@ it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorType class with do
   );
 
   expect(field).toBeDefined();
-  expect(field?.['validatorMatch']).toBeDefined();
-  expect(field?.['validatorType']).toBe('string');
+  expect(field?.['_validatorMatch']).toBeDefined();
+  expect(field?.['_validatorType']).toBe('string');
   expect(field?.clearedDocumentation).toBe('some text in docs');
 });
 
@@ -56,8 +56,8 @@ it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorType class with do
   );
 
   expect(field).toBeDefined();
-  expect(field?.['validatorMatch']).toBeDefined();
-  expect(field?.['validatorType']).toBe('custom');
+  expect(field?.['_validatorMatch']).toBeDefined();
+  expect(field?.['_validatorType']).toBe('custom');
   expect(field?.clearedDocumentation).toBe('some text in docs');
   expect(field.documentation).toBe(
     'some text in docs @zod.custom.array(".length(2)")',

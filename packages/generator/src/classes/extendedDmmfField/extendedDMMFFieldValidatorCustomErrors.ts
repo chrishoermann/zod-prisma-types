@@ -39,7 +39,7 @@ export const ZOD_VALID_ERROR_KEYS: ZodCustomErrorKey[] = [
 /////////////////////////////////////////////////
 
 export class ExtendedDMMFFieldValidatorCustomErrors extends ExtendedDMMFFieldDefaultValidators {
-  protected validatorCustomError?: string;
+  protected _validatorCustomError?: string;
   readonly zodCustomErrors?: string;
 
   constructor(
@@ -49,19 +49,21 @@ export class ExtendedDMMFFieldValidatorCustomErrors extends ExtendedDMMFFieldDef
   ) {
     super(field, generatorConfig, modelName);
 
-    this.validatorCustomError = this._setValidatorCustomError();
+    this._validatorCustomError = this._setValidatorCustomError();
     this.zodCustomErrors = this._setZodCustomErrors();
   }
 
   private _setValidatorCustomError() {
-    if (!this.validatorMatch) return;
-    return this.validatorMatch?.groups?.['customErrors'];
+    if (!this._validatorMatch) return;
+    return this._validatorMatch?.groups?.['customErrors'];
   }
 
   private _setZodCustomErrors() {
-    if (!this.validatorCustomError) return;
+    if (!this._validatorCustomError) return;
 
-    const match = this.validatorCustomError.match(VALIDATOR_CUSTOM_ERROR_REGEX);
+    const match = this._validatorCustomError.match(
+      VALIDATOR_CUSTOM_ERROR_REGEX,
+    );
     if (!match?.groups?.['messages']) return;
 
     return this._customErrorMessagesValid(match.groups['messages'])

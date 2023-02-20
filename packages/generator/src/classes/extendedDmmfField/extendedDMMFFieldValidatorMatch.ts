@@ -15,7 +15,7 @@ export const VALIDATOR_TYPE_REGEX =
 /////////////////////////////////////////////////
 
 export class ExtendedDMMFFieldValidatorMatch extends ExtendedDMMFFieldBase {
-  protected validatorMatch?: RegExpMatchArray;
+  protected _validatorMatch?: RegExpMatchArray;
   readonly clearedDocumentation?: string;
 
   constructor(
@@ -25,7 +25,7 @@ export class ExtendedDMMFFieldValidatorMatch extends ExtendedDMMFFieldBase {
   ) {
     super(field, generatorConfig, modelName);
 
-    this.validatorMatch = this._getValidatorMatchArray();
+    this._validatorMatch = this._getValidatorMatchArray();
     this.clearedDocumentation = this._getClearedDocumentation();
   }
 

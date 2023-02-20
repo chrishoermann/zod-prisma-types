@@ -4,21 +4,12 @@ import { ExtendedDMMFFieldValidatorType } from './extendedDMMFFieldValidatorType
 import { GeneratorConfig } from '../../schemas';
 
 /////////////////////////////////////////////////
-// REGEX
-/////////////////////////////////////////////////
-
-// const VALIDATOR_SPLIT_REGEX = /.[\w]+\((?!")/;
-// const VALIDATOR_SPLIT_REGEX =
-//   /(?<!\()\.(use|array)\((?:[^()]|\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*\))*\)/g;
-const VALIDATOR_SPLIT_REGEX = /(?=\.[\w]+)/;
-
-/////////////////////////////////////////////////
 // CLASS
 /////////////////////////////////////////////////
 
 export class ExtendedDMMFFieldValidatorPattern extends ExtendedDMMFFieldValidatorType {
-  protected validatorPattern?: string;
-  protected validatorList?: string[];
+  protected _validatorPattern?: string;
+  protected _validatorList?: string[];
 
   constructor(
     field: DMMF.Field,
@@ -27,46 +18,64 @@ export class ExtendedDMMFFieldValidatorPattern extends ExtendedDMMFFieldValidato
   ) {
     super(field, generatorConfig, modelName);
 
-    this.validatorPattern = this._getValidatorPattern();
-    this.validatorList = this._getValidatorList();
+    this._validatorPattern = this._getValidatorPattern();
+    this._validatorList = this._getValidatorList();
   }
+
+  // GET VALIDATOR PATTERN
+  // ----------------------------------------------
 
   private _getValidatorPattern() {
-    if (!this.validatorMatch) return;
-    return this.validatorMatch?.groups?.['validatorPattern'];
+    if (!this._validatorMatch) return;
+    return this._validatorMatch?.groups?.['validatorPattern'];
   }
 
-  // If pattern consists of multiple validators (e.g. .min(1).max(10))
-  // the pattern is split into an array for further processing.
-  private _getValidatorList() {
-    if (!this.validatorPattern) return;
+  // GET VALIDATOR LIST
+  // ----------------------------------------------
 
+  private _getValidatorList() {
+    if (!this._validatorPattern) return;
+
+    const splitIndices = this._getSplitIndices(this._validatorPattern);
+
+    return this._getPatternArrayFromSplitIndices(
+      this._validatorPattern,
+      splitIndices,
+    );
+  }
+
+  // HELPER
+  // ----------------------------------------------
+
+  private _isWordChar(char: string) {
+    return /\w/.test(char);
+  }
+
+  private _getSplitIndices(string: string) {
     const splitIndices = [0];
     let depth = 0;
 
-    [...this.validatorPattern].forEach((char, idx) => {
-      if (!depth && !char.match(/\w/)) {
-        const position = this.validatorPattern
-          ?.substring(0, idx - 1)
-          .match(/\.\w+$/)?.index;
-        if (position) {
-          splitIndices.push(position);
-        }
+    [...string].forEach((char, idx) => {
+      if (!depth && !this._isWordChar(char)) {
+        const splitPosition = string.substring(0, idx).match(/\.\w+$/)?.index;
+        if (splitPosition) splitIndices.push(splitPosition);
       }
 
-      if (char === '(') {
-        depth++;
-      }
-
-      if (char === ')') {
-        depth--;
-      }
+      if (char === '(') depth++;
+      if (char === ')') depth--;
     });
 
-    const pattern = splitIndices
-      .map((e, i, a) => this.validatorPattern?.substring(e, a[i + 1]))
-      .filter((str): str is string => !!str);
+    return splitIndices;
+  }
 
-    return pattern;
+  private _getPatternArrayFromSplitIndices(
+    string: string,
+    splitIndices: number[],
+  ) {
+    return splitIndices
+      .map((splitIndex, idx) =>
+        string.substring(splitIndex, splitIndices[idx + 1]),
+      )
+      .filter((str): str is string => !!str);
   }
 }

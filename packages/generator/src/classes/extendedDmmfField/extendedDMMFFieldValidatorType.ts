@@ -57,7 +57,7 @@ export const PRISMA_TO_VALIDATOR_TYPE_MAP: Record<
 /////////////////////////////////////////////////
 
 export class ExtendedDMMFFieldValidatorType extends ExtendedDMMFFieldValidatorMatch {
-  protected validatorType?: ZodValidatorType;
+  protected _validatorType?: ZodValidatorType;
 
   constructor(
     field: DMMF.Field,
@@ -66,12 +66,12 @@ export class ExtendedDMMFFieldValidatorType extends ExtendedDMMFFieldValidatorMa
   ) {
     super(field, generatorConfig, modelName);
 
-    this.validatorType = this._setValidatorType();
+    this._validatorType = this._setValidatorType();
   }
 
   private _setValidatorType() {
-    if (!this.validatorMatch?.groups?.['type']) return;
-    return this._checkValidatorType(this.validatorMatch.groups['type']);
+    if (!this._validatorMatch?.groups?.['type']) return;
+    return this._checkValidatorType(this._validatorMatch.groups['type']);
   }
 
   // Check if the validator type is valid for the field's type.
