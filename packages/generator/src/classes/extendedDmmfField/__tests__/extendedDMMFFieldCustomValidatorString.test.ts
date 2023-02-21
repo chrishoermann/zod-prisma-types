@@ -22,7 +22,7 @@ describe(`ExtendedDMMFFieldCustomValidatorString`, () => {
 
   it(`should load class with docs and custom omit validator`, async () => {
     const field = getField({
-      documentation: 'some text in docs @zod.custom.omit()',
+      documentation: 'some text in docs @zod.custom.omit(["model", "input"])',
     });
     expect(field.zodCustomValidatorString).toBeUndefined();
   });

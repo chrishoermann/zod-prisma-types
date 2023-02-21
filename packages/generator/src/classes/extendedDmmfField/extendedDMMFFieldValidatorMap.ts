@@ -98,9 +98,10 @@ export const BIGINT_VALIDATOR_MESSAGE_REGEX =
 // ----------------------------------------
 
 export const CUSTOM_VALIDATOR_MESSAGE_REGEX =
-  /(?<validator>use|array)(\()(?<pattern>[\w (),.'":+\-*#!§$%&/{}[\]=?~><°^]+)\)/;
+  /(?<validator>use|array|omit)(\()(?<pattern>[\w (),.'":+\-*#!§$%&/{}[\]=?~><°^]+)\)/;
 
-export const CUSTOM_OMIT_VALIDATOR_MESSAGE_REGEX = /(?<validator>omit)([()])/;
+export const CUSTOM_OMIT_VALIDATOR_MESSAGE_REGEX =
+  /(?<validator>omit)(\()(?<pattern>[\w ,'"[\]]+)\)/;
 
 // ARRAY
 // ----------------------------------------

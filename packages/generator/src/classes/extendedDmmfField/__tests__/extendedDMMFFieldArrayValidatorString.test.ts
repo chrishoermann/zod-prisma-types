@@ -74,4 +74,13 @@ describe(`ExtendedDMMFFieldArrayValidatorString`, () => {
       "[@zod generator error]: '.array' validator is only allowed on lists. [Error Location]: Model: 'ModelName', Field: 'test'",
     );
   });
+
+  it(`should NOT load field with docs and array validator on a single string if no pattern is present`, async () => {
+    const field = getField({
+      isList: false,
+      documentation: 'some text in docs @zod.string.min(3)',
+    });
+
+    expect(field.zodArrayValidatorString).toBeUndefined();
+  });
 });

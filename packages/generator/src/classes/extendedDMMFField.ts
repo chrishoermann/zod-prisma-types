@@ -388,6 +388,8 @@ export class ExtendedDMMFField extends FormattedNames implements DMMF.Field {
 
     const validatedString = this._validatorMap[type]({ pattern, key });
 
+    console.log({ validatedString, pattern, key });
+
     if (!validatedString)
       throw new Error(
         `[@zod generator error]: Please use the '.omit(["model", "input"])' key. ${this.errorLocation}`,

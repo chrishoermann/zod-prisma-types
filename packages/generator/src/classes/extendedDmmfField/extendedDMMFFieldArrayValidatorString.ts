@@ -27,11 +27,6 @@ export class ExtendedDMMFFieldArrayValidatorString extends ExtendedDMMFFieldCust
   private _getZodArrayValidatorString() {
     if (!this._validatorType) return this.zodArrayValidatorString;
 
-    if (!this.isList)
-      throw new Error(
-        `[@zod generator error]: '.array' validator is only allowed on lists. ${this.errorLocation}`,
-      );
-
     return this._validatorIsValid()
       ? this._extractArrayPattern()
       : this.zodArrayValidatorString;
@@ -41,8 +36,15 @@ export class ExtendedDMMFFieldArrayValidatorString extends ExtendedDMMFFieldCust
   // ----------------------------------------------
 
   private _extractArrayPattern() {
-    return this._getZodValidatorListArray()
-      ?.find((pattern) => pattern.includes('.array'))
-      ?.match(ARRAY_VALIDATOR_MESSAGE_REGEX)?.groups?.['pattern'];
+    const pattern = this._getZodValidatorListArray()?.find((pattern) =>
+      pattern.includes('.array'),
+    );
+
+    if (pattern && !this.isList)
+      throw new Error(
+        `[@zod generator error]: '.array' validator is only allowed on lists. ${this.errorLocation}`,
+      );
+
+    return pattern?.match(ARRAY_VALIDATOR_MESSAGE_REGEX)?.groups?.['pattern'];
   }
 }

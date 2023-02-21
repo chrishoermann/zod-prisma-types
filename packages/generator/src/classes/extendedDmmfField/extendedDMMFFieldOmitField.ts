@@ -11,6 +11,12 @@ import { GeneratorConfig } from '../../schemas';
 export type OmitFieldMode = 'model' | 'input' | 'all' | 'none';
 
 /////////////////////////////////////////////////
+// REGEX
+/////////////////////////////////////////////////
+
+export const CUSTOM_VALIDATOR_VALID_MODE_REGEX = /model|input/;
+
+/////////////////////////////////////////////////
 // CLASS
 /////////////////////////////////////////////////
 
@@ -34,33 +40,39 @@ export class ExtendedDMMFFieldOmitField extends ExtendedDMMFFieldArrayValidatorS
     if (!this._validatorType || this._validatorType !== 'custom')
       return this.zodOmitField;
 
-    const isValid = this._validatorIsValid();
-
-    console.log('isValid', isValid, this._validatorList);
-
-    const omitFieldPattern = this._extractOmitFieldPattern();
-
-    console.log({ isValid, omitFieldPattern });
-
-    // return this._validatorIsValid()
-    //   ? this._extractOmitFieldPattern()
-    //   : this.zodOmitField;
-
-    return 'none';
+    return this._validatorIsValid()
+      ? this._extractOmitFieldMode()
+      : this.zodOmitField;
   }
 
   // HELPER
   // ----------------------------------------------
 
-  private _extractOmitFieldPattern() {
-    const list = this._getZodValidatorListWithoutArray();
-    const pattern = list?.find((pattern) => pattern.includes('.omit'));
-    const match = pattern?.match(CUSTOM_OMIT_VALIDATOR_MESSAGE_REGEX);
+  private _extractOmitFieldMode() {
+    const omitFieldModes = this._getOmitFieldModes();
 
-    console.log({ list, pattern, match });
+    omitFieldModes?.forEach((field) => {
+      if (!CUSTOM_VALIDATOR_VALID_MODE_REGEX.test(field))
+        throw new Error(
+          `[@zod generator error]: unknown key '${field}' in '.omit()'. only 'model' and 'input' are allowed. ${this.errorLocation}`,
+        );
+    });
 
+    if (!omitFieldModes) {
+      return 'none';
+    }
+
+    if (omitFieldModes.length === 2) {
+      return 'all';
+    }
+
+    return omitFieldModes[0].trim() as OmitFieldMode;
+  }
+
+  private _getOmitFieldModes() {
     return this._getZodValidatorListWithoutArray()
       ?.find((pattern) => pattern.includes('.omit'))
-      ?.match(CUSTOM_OMIT_VALIDATOR_MESSAGE_REGEX)?.groups?.['validator'];
+      ?.match(CUSTOM_OMIT_VALIDATOR_MESSAGE_REGEX)
+      ?.groups?.['pattern']?.match(/[\w]+/g);
   }
 }

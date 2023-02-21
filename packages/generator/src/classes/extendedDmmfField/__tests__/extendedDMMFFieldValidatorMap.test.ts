@@ -533,7 +533,7 @@ describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
     expect(
       map({
         key: 'omit',
-        pattern: '.omit()',
+        pattern: '.omit(["model", "field"])',
       }),
     ).toBe(true);
     expect(

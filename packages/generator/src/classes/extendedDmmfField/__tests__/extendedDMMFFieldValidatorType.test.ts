@@ -42,7 +42,7 @@ describe(`ExtendedDMMFFieldValidatorType`, () => {
     expect(field?.['_validatorType']).toBe('enum');
   });
 
-  it.only(`should load a class with docs and valid object validator string`, async () => {
+  it(`should load a class with docs and valid object validator string`, async () => {
     const field = getField({
       type: 'MyType',
       kind: 'object',
