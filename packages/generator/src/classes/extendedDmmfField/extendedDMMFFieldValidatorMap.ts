@@ -194,6 +194,15 @@ export const CUSTOM_VALIDATOR_REGEX_MAP: ValidatorMap<ZodCustomValidatorKeys> =
     array: ARRAY_VALIDATOR_MESSAGE_REGEX,
   };
 
+export const ENUM_VALIDATOR_REGEX_MAP: ValidatorMap<ZodBigIntValidatorKeys> = {
+  array: ARRAY_VALIDATOR_MESSAGE_REGEX,
+};
+
+export const OBJECT_VALIDATOR_REGEX_MAP: ValidatorMap<ZodBigIntValidatorKeys> =
+  {
+    array: ARRAY_VALIDATOR_MESSAGE_REGEX,
+  };
+
 /////////////////////////////////////////////////
 // CLASS
 /////////////////////////////////////////////////
@@ -210,6 +219,10 @@ export class ExtendedDMMFFieldValidatorMap extends ExtendedDMMFFieldValidatorCus
       this._validateRegexInMap(BIGINT_VALIDATOR_REGEX_MAP, options),
     custom: (options) =>
       this._validateRegexInMap(CUSTOM_VALIDATOR_REGEX_MAP, options),
+    enum: (options) =>
+      this._validateRegexInMap(ENUM_VALIDATOR_REGEX_MAP, options),
+    object: (options) =>
+      this._validateRegexInMap(OBJECT_VALIDATOR_REGEX_MAP, options),
   };
 
   //  VALIDATE REGEX IN MAP
@@ -235,4 +248,46 @@ export class ExtendedDMMFFieldValidatorMap extends ExtendedDMMFFieldValidatorCus
       `[@zod generator error]: Could not match validator '${key}' with validatorPattern '${pattern}'. Please check for typos! ${this.errorLocation}`,
     );
   };
+
+  //  VALIDATE PATTERN IN MAP
+  // ----------------------------------------------
+
+  protected _validatePatternInMap(opts: ScalarValidatorFnOpts) {
+    if (this._validatorType) {
+      return this._validatorMap[this._validatorType](opts);
+    }
+
+    throw new Error(
+      `[@zod generator error]: Validator '${opts.key}' is not valid for type '${this.type}'. ${this.errorLocation}`,
+    );
+  }
+
+  //  GET VALIDATOR KEY FROM PATTERN
+  // ----------------------------------------------
+
+  protected _getValidatorKeyFromPattern(pattern: string) {
+    const key = pattern.match(VALIDATOR_KEY_REGEX)?.groups?.['validatorKey'];
+
+    if (key) {
+      return key;
+    }
+
+    throw new Error(
+      `[@zod generator error]: no matching validator key found in '${pattern}'. ${this.errorLocation}`,
+    );
+  }
+
+  //  VALIDATOR IS VALID
+  // ----------------------------------------------
+
+  protected _validatorIsValid() {
+    return Boolean(
+      this._validatorList?.every((pattern) =>
+        this._validatePatternInMap({
+          pattern,
+          key: this._getValidatorKeyFromPattern(pattern),
+        }),
+      ),
+    );
+  }
 }

@@ -13,7 +13,9 @@
  * - ExtendedDMMFFieldValidatorCustomErrors
  * - ExtendedDMMFFieldValidatorMap
  * - ExtendedDMMFFieldValidatorString
- *
+ * - ExtendedDMMFFieldCustomValidatorString
+ * - ExtendedDMMFFieldArrayValidatorString
+ * - ExtendedDMMFFieldOmitField
  */
 
 export class ExtendedDMMFField {}

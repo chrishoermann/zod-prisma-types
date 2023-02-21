@@ -1,57 +1,44 @@
-import { it, expect } from 'vitest';
+import { DMMF } from '@prisma/generator-helper';
+import { it, expect, describe } from 'vitest';
 
 import { DEFAULT_GENERATOR_CONFIG, FIELD_BASE } from './setup';
 import { ExtendedDMMFFieldValidatorCustomErrors } from '../extendedDMMFFieldValidatorCustomErrors';
 
-it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorCustomErrors class without docs`, async () => {
-  const field = new ExtendedDMMFFieldValidatorCustomErrors(
-    { ...FIELD_BASE },
+const getField = (field?: Partial<DMMF.Field>) =>
+  new ExtendedDMMFFieldValidatorCustomErrors(
+    { ...FIELD_BASE, ...field },
     DEFAULT_GENERATOR_CONFIG,
     'ModelName',
   );
 
-  expect(field).toBeDefined();
-  expect(field?.['_validatorMatch']).toBeUndefined();
-  expect(field?.['_validatorType']).toBeUndefined();
-  expect(field?.['_validatorCustomError']).toBeUndefined();
-  expect(field?.zodCustomErrors).toBeUndefined();
-});
+describe(`ExtendedDMMFFieldValidatorCustomErrors`, () => {
+  it(`should load a class without docs`, async () => {
+    const field = getField();
+    expect(field?.['_validatorCustomError']).toBeUndefined();
+    expect(field?.zodCustomErrors).toBeUndefined();
+  });
 
-it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorCustomErrors class with valid custom error messages`, async () => {
-  const field = new ExtendedDMMFFieldValidatorCustomErrors(
-    {
-      ...FIELD_BASE,
+  it(`should load a class with valid custom error messages`, async () => {
+    const field = getField({
       documentation:
         '@zod.string({ required_error: "error", invalid_type_error: "error" , description: "error"})',
-    },
-    DEFAULT_GENERATOR_CONFIG,
-    'ModelName',
-  );
+    });
+    expect(field?.['_validatorCustomError']).toBe(
+      '({ required_error: "error", invalid_type_error: "error" , description: "error"})',
+    );
+    expect(field?.zodCustomErrors).toBe(
+      '{ required_error: "error", invalid_type_error: "error" , description: "error"}',
+    );
+  });
 
-  expect(field).toBeDefined();
-  expect(field?.['_validatorMatch']).toBeDefined();
-  expect(field?.['_validatorType']).toBe('string');
-  expect(field?.['_validatorCustomError']).toBe(
-    '({ required_error: "error", invalid_type_error: "error" , description: "error"})',
-  );
-  expect(field?.zodCustomErrors).toBe(
-    '{ required_error: "error", invalid_type_error: "error" , description: "error"}',
-  );
-});
-
-it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorCustomErrors class with docs and invalid validator string`, async () => {
-  expect(
-    () =>
-      new ExtendedDMMFFieldValidatorCustomErrors(
-        {
-          ...FIELD_BASE,
-          documentation:
-            '@zod.string({ required_error: "error", invalid_type_errrror: "error"})',
-        },
-        DEFAULT_GENERATOR_CONFIG,
-        'ModelName',
-      ),
-  ).toThrowError(
-    "[@zod generator error]: Custom error key 'invalid_type_errrror' is not valid. Please check for typos! [Error Location]: Model: 'ModelName', Field: 'test'.",
-  );
+  it(`should load a class with docs and invalid validator string`, async () => {
+    expect(() =>
+      getField({
+        documentation:
+          '@zod.string({ required_error: "error", invalid_type_errrror: "error"})',
+      }),
+    ).toThrowError(
+      "[@zod generator error]: Custom error key 'invalid_type_errrror' is not valid. Please check for typos! [Error Location]: Model: 'ModelName', Field: 'test'.",
+    );
+  });
 });

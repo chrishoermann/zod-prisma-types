@@ -38,17 +38,10 @@ export class ExtendedDMMFFieldValidatorPattern extends ExtendedDMMFFieldValidato
 
     const splitIndices = this._getSplitIndices(this._validatorPattern);
 
-    return this._getPatternArrayFromSplitIndices(
+    return this._getPatternListFromSplitIndices(
       this._validatorPattern,
       splitIndices,
     );
-  }
-
-  // HELPER
-  // ----------------------------------------------
-
-  private _isWordChar(char: string) {
-    return /\w/.test(char);
   }
 
   private _getSplitIndices(string: string) {
@@ -68,7 +61,11 @@ export class ExtendedDMMFFieldValidatorPattern extends ExtendedDMMFFieldValidato
     return splitIndices;
   }
 
-  private _getPatternArrayFromSplitIndices(
+  private _isWordChar(char: string) {
+    return /\w/.test(char);
+  }
+
+  private _getPatternListFromSplitIndices(
     string: string,
     splitIndices: number[],
   ) {
@@ -77,5 +74,16 @@ export class ExtendedDMMFFieldValidatorPattern extends ExtendedDMMFFieldValidato
         string.substring(splitIndex, splitIndices[idx + 1]),
       )
       .filter((str): str is string => !!str);
+  }
+
+  // HELPER
+  // ----------------------------------------------
+
+  protected _getZodValidatorListWithoutArray() {
+    return this._validatorList?.filter((elem) => !elem.includes('.array'));
+  }
+
+  protected _getZodValidatorListArray() {
+    return this._validatorList?.filter((elem) => elem.includes('.array'));
   }
 }

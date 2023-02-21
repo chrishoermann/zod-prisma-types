@@ -78,7 +78,6 @@ export class ExtendedDMMFFieldValidatorCustomErrors extends ExtendedDMMFFieldDef
       .replace(VALIDATOR_CUSTOM_ERROR_MESSAGE_REGEX, '')
       .match(VALIDATOR_CUSTOM_ERROR_SPLIT_KEYS_REGEX);
 
-    // check if keys are valid or throw an error
     const isValid = customErrorKeysArray?.every((key) => {
       if (ZOD_VALID_ERROR_KEYS?.includes(key as ZodCustomErrorKey)) return true;
 

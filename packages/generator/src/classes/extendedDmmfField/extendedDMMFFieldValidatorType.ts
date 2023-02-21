@@ -13,7 +13,9 @@ export type ZodValidatorType =
   | 'number'
   | 'bigint'
   | 'date'
-  | 'custom';
+  | 'custom'
+  | 'enum'
+  | 'object';
 
 /////////////////////////////////////////////////
 // VALIDATOR TYPE MAP
@@ -31,7 +33,7 @@ export type ZodValidatorType =
  * @example myPrismaField: Boolean ///@zod.custom(..some custom implementation) -> valid
  * @example myPrismaField: Int ///@zod.string.max(10) -> invalid throws error during generation
  */
-export const PRISMA_TO_VALIDATOR_TYPE_MAP: Record<
+export const PRISMA_SCALAR_TO_VALIDATOR_TYPE_MAP: Record<
   ZodValidatorType,
   PrismaScalarType[]
 > = {
@@ -50,6 +52,12 @@ export const PRISMA_TO_VALIDATOR_TYPE_MAP: Record<
     'Json',
     'Bytes',
   ],
+  // Enums need to be handled separately, since enums can have a
+  // custom name they can't be mapped to a prisma scalar type
+  enum: [],
+  // Objects need to be handled separately, since objects can have a
+  // custom name they can't be mapped to a prisma scalar type
+  object: [],
 };
 
 /////////////////////////////////////////////////
@@ -81,12 +89,19 @@ export class ExtendedDMMFFieldValidatorType extends ExtendedDMMFFieldValidatorMa
 
   private _checkValidatorType(validatorType: string) {
     // typecast the validator type to a ZodValidatorType - throws error if it's not valid
+    // makes working with the validator type easier in all the subclasses
     const zodValidatorType = this._getZodValidatorType(validatorType);
 
-    // Check if "custom" validator is used on enum type
+    // Needs to be separate from the check below,
+    // since the prisma scalar type map doesn't cover the "enum" validator type
     if (this._isEnumValidatorType(zodValidatorType)) return zodValidatorType;
 
-    // Check if validator type is valid for the field's type
+    // Needs to be separate from the check below,
+    // since the prisma scalar type map doesn't cover the "object" validator type
+    if (this._isObjectValidatorType(zodValidatorType)) return zodValidatorType;
+
+    // Check if validator type is valid for the field's type is handled
+    // by the prisma scalar type map for easy of use
     if (this._isPrismaValidatorType(zodValidatorType)) return zodValidatorType;
 
     throw new Error(
@@ -103,15 +118,19 @@ export class ExtendedDMMFFieldValidatorType extends ExtendedDMMFFieldValidatorMa
   }
 
   private _isZodValidatorType(type?: string): type is ZodValidatorType {
-    return /string|number|bigint|date|custom/.test(type as string);
+    return /string|number|bigint|date|custom|enum|object/.test(type as string);
   }
 
   private _isEnumValidatorType = (validatorType: ZodValidatorType) => {
-    return validatorType === 'custom' && this.kind === 'enum';
+    return validatorType === 'enum' && this.kind === 'enum';
+  };
+
+  private _isObjectValidatorType = (validatorType: ZodValidatorType) => {
+    return validatorType === 'object' && this.kind === 'object';
   };
 
   private _isPrismaValidatorType(validatorType: ZodValidatorType) {
-    return PRISMA_TO_VALIDATOR_TYPE_MAP[validatorType]?.includes(
+    return PRISMA_SCALAR_TO_VALIDATOR_TYPE_MAP[validatorType]?.includes(
       this.type as PrismaScalarType,
     );
   }

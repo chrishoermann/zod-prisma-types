@@ -1,78 +1,64 @@
-import { it, expect } from 'vitest';
+import { DMMF } from '@prisma/generator-helper';
+import { it, expect, describe } from 'vitest';
 
 import { DEFAULT_GENERATOR_CONFIG, FIELD_BASE } from './setup';
 import { ExtendedDMMFFieldValidatorType } from '../extendedDMMFFieldValidatorType';
 
-it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorType class without docs`, async () => {
-  const field = new ExtendedDMMFFieldValidatorType(
-    { ...FIELD_BASE },
+const getField = (field?: Partial<DMMF.Field>) =>
+  new ExtendedDMMFFieldValidatorType(
+    { ...FIELD_BASE, ...field },
     DEFAULT_GENERATOR_CONFIG,
     'ModelName',
   );
 
-  expect(field).toBeDefined();
-  expect(field?.['_validatorMatch']).toBeUndefined();
-  expect(field?.['_validatorType']).toBeUndefined();
-  expect(field?.clearedDocumentation).toBeUndefined();
-});
+describe(`ExtendedDMMFFieldValidatorType`, () => {
+  it(`should load a class without docs`, async () => {
+    const field = getField();
+    expect(field?.['_validatorMatch']).toBeUndefined();
+    expect(field?.['_validatorType']).toBeUndefined();
+  });
 
-it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorType class with docs`, async () => {
-  const field = new ExtendedDMMFFieldValidatorType(
-    { ...FIELD_BASE, documentation: 'some text in docs' },
-    DEFAULT_GENERATOR_CONFIG,
-    'ModelName',
-  );
+  it(`should load a class with docs`, async () => {
+    const field = getField({ documentation: 'some text in docs' });
+    expect(field?.['_validatorMatch']).toBeUndefined();
+    expect(field?.['_validatorType']).toBeUndefined();
+  });
 
-  expect(field).toBeDefined();
-  expect(field?.['_validatorMatch']).toBeUndefined();
-  expect(field?.['_validatorType']).toBeUndefined();
-  expect(field?.clearedDocumentation).toBe('some text in docs');
-});
+  it(`should load a class with docs and valid validator string`, async () => {
+    const field = getField({
+      documentation: 'some text in docs @zod.string.max(4)',
+    });
+    expect(field?.['_validatorMatch']).toBeDefined();
+    expect(field?.['_validatorType']).toBe('string');
+  });
 
-it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorType class with docs and valid validator string`, async () => {
-  const field = new ExtendedDMMFFieldValidatorType(
-    { ...FIELD_BASE, documentation: 'some text in docs @zod.string.max(4)' },
-    DEFAULT_GENERATOR_CONFIG,
-    'ModelName',
-  );
-
-  expect(field).toBeDefined();
-  expect(field?.['_validatorMatch']).toBeDefined();
-  expect(field?.['_validatorType']).toBe('string');
-  expect(field?.clearedDocumentation).toBe('some text in docs');
-});
-
-it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorType class with docs and valid enum validator string`, async () => {
-  const field = new ExtendedDMMFFieldValidatorType(
-    {
-      ...FIELD_BASE,
+  it(`should load a class with docs and valid enum validator string`, async () => {
+    const field = getField({
       type: 'MyEnum',
       kind: 'enum',
-      isList: true,
-      documentation: 'some text in docs @zod.custom.array(".length(2)")',
-    },
-    DEFAULT_GENERATOR_CONFIG,
-    'ModelName',
-  );
+      documentation: 'some text in docs @zod.enum.array(.length(2))',
+    });
+    expect(field?.['_validatorMatch']).toBeDefined();
+    expect(field?.['_validatorType']).toBe('enum');
+  });
 
-  expect(field).toBeDefined();
-  expect(field?.['_validatorMatch']).toBeDefined();
-  expect(field?.['_validatorType']).toBe('custom');
-  expect(field?.clearedDocumentation).toBe('some text in docs');
-  expect(field.documentation).toBe(
-    'some text in docs @zod.custom.array(".length(2)")',
-  );
-});
+  it.only(`should load a class with docs and valid object validator string`, async () => {
+    const field = getField({
+      type: 'MyType',
+      kind: 'object',
+      documentation: 'some text in docs @zod.object.array(.length(2))',
+    });
+    expect(field?.['_validatorMatch']).toBeDefined();
+    expect(field?.['_validatorType']).toBe('object');
+  });
 
-it(`should load a scalar DMMF.field ExtendedDMMFFieldValidatorType class with docs and invalid validator string`, async () => {
-  expect(
-    () =>
-      new ExtendedDMMFFieldValidatorType(
-        { ...FIELD_BASE, documentation: 'some text in docs @zod.numer.max(4)' },
-        DEFAULT_GENERATOR_CONFIG,
-        'ModelName',
-      ),
-  ).toThrowError(
-    "[@zod generator error]: 'numer' is not a valid validator type. [Error Location]: Model: 'ModelName', Field: 'test'.",
-  );
+  it(`should load a class with docs and invalid validator string`, async () => {
+    expect(() =>
+      getField({
+        documentation: 'some text in docs @zod.numer.max(4)',
+      }),
+    ).toThrowError(
+      "[@zod generator error]: 'numer' is not a valid validator type. [Error Location]: Model: 'ModelName', Field: 'test'.",
+    );
+  });
 });

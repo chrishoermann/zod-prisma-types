@@ -1,18 +1,22 @@
+import { DMMF } from '@prisma/generator-helper';
 import { it, expect, describe } from 'vitest';
 
 import { DEFAULT_GENERATOR_CONFIG, FIELD_BASE } from './setup';
 import { ExtendedDMMFFieldValidatorMap } from '../extendedDMMFFieldValidatorMap';
+
+const getField = (field?: Partial<DMMF.Field>) =>
+  new ExtendedDMMFFieldValidatorMap(
+    { ...FIELD_BASE, ...field },
+    DEFAULT_GENERATOR_CONFIG,
+    'ModelName',
+  );
 
 /////////////////////////////////////////////
 // TEST VALIDATOR MAP
 /////////////////////////////////////////////
 
 describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
-  const field = new ExtendedDMMFFieldValidatorMap(
-    { ...FIELD_BASE },
-    DEFAULT_GENERATOR_CONFIG,
-    'ModelName',
-  );
+  const field = getField();
 
   // LOAD INSTANCE
   // ----------------------------------------------
@@ -563,6 +567,168 @@ describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
       }),
     ).toThrowError(
       "[@zod generator error]: Validator 'wrong' is not valid for type 'String' or for specified '@zod.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
+    );
+  });
+
+  // ENUM
+  // ----------------------------------------------
+
+  it(`should pass valid custom data to validator map`, async () => {
+    const map = field?.['_validatorMap']['enum'];
+
+    expect(
+      map({
+        key: 'array',
+        pattern: '.array(.length(2))',
+      }),
+    ).toBe(true);
+  });
+
+  it(`should pass ivalid data to to validator map`, async () => {
+    const map = field?.['_validatorMap']['enum'];
+
+    expect(() =>
+      map({
+        key: 'array',
+        pattern: '.length(2)',
+      }),
+    ).toThrowError(
+      "[@zod generator error]: Could not match validator 'array' with validatorPattern '.length(2)'. Please check for typos! [Error Location]: Model: 'ModelName', Field: 'test'.",
+    );
+  });
+
+  it(`should pass ivalid key to to validator map`, async () => {
+    const map = field?.['_validatorMap']['enum'];
+
+    expect(() =>
+      map({
+        key: 'wrong',
+        pattern: '.length(2)',
+      }),
+    ).toThrowError(
+      "[@zod generator error]: Validator 'wrong' is not valid for type 'String' or for specified '@zod.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
+    );
+  });
+
+  // OBJECT
+  // ----------------------------------------------
+
+  it(`should pass valid custom data to validator map`, async () => {
+    const map = field?.['_validatorMap']['object'];
+
+    expect(
+      map({
+        key: 'array',
+        pattern: '.array(.length(2))',
+      }),
+    ).toBe(true);
+  });
+
+  it(`should pass ivalid data to to validator map`, async () => {
+    const map = field?.['_validatorMap']['object'];
+
+    expect(() =>
+      map({
+        key: 'array',
+        pattern: '.length(2)',
+      }),
+    ).toThrowError(
+      "[@zod generator error]: Could not match validator 'array' with validatorPattern '.length(2)'. Please check for typos! [Error Location]: Model: 'ModelName', Field: 'test'.",
+    );
+  });
+
+  it(`should pass ivalid key to to validator map`, async () => {
+    const map = field?.['_validatorMap']['object'];
+
+    expect(() =>
+      map({
+        key: 'wrong',
+        pattern: '.length(2)',
+      }),
+    ).toThrowError(
+      "[@zod generator error]: Validator 'wrong' is not valid for type 'String' or for specified '@zod.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
+    );
+  });
+});
+
+/////////////////////////////////////////////////
+// TEST VALIDATE PATTERN IN MAP
+/////////////////////////////////////////////////
+
+describe(`tests ExtendedDMMFFieldValidatorMap method _validatePatternInMap`, () => {
+  it(`should pass valid data for string`, async () => {
+    const field = getField({
+      type: 'String',
+      documentation: '@zod.string.array(.length(2))',
+    });
+
+    expect(
+      field?.['_validatePatternInMap']({
+        key: 'array',
+        pattern: '.array(.length(2))',
+      }),
+    ).toBe(true);
+  });
+
+  it(`should pass invalid data for string`, async () => {
+    const field = getField({
+      type: 'String',
+      documentation: '@zod.string.array(.length(2))',
+    });
+
+    expect(() =>
+      field?.['_validatePatternInMap']({
+        key: 'use',
+        pattern: '.use(.length(2))',
+      }),
+    ).toThrowError(
+      "[@zod generator error]: Validator 'use' is not valid for type 'String' or for specified '@zod.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
+    );
+  });
+});
+
+/////////////////////////////////////////////////
+// TEST GET VALIDATOR KEY FROM PATTERN
+/////////////////////////////////////////////////
+
+describe(`tests ExtendedDMMFFieldValidatorMap method _getValidatorKeyFromPattern`, () => {
+  it(`should pass valid data for string`, async () => {
+    const field = getField();
+    expect(field?.['_getValidatorKeyFromPattern']('.array(.length(2))')).toBe(
+      'array',
+    );
+  });
+
+  it(`should pass invalid data for string`, async () => {
+    const field = getField();
+
+    expect(() =>
+      field?.['_getValidatorKeyFromPattern']('wrong(length(2))'),
+    ).toThrowError(
+      "[@zod generator error]: no matching validator key found in 'wrong(length(2))'. [Error Location]: Model: 'ModelName', Field: 'test'.",
+    );
+  });
+});
+
+/////////////////////////////////////////////////
+// TEST VALIDATOR IS VALID
+/////////////////////////////////////////////////
+
+describe(`tests ExtendedDMMFFieldValidatorMap method _validatorIsValid`, () => {
+  it(`should pass valid data for string`, async () => {
+    const field = getField({
+      documentation: '@zod.string.min(2).max(4)',
+    });
+    expect(field?.['_validatorIsValid']()).toBe(true);
+  });
+
+  it(`should pass invalid data for string`, async () => {
+    const field = getField({
+      documentation: '@zod.string.min(2).max(4).lt(3)',
+    });
+
+    expect(() => field?.['_validatorIsValid']()).toThrowError(
+      "[@zod generator error]: Validator 'lt' is not valid for type 'String' or for specified '@zod.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
     );
   });
 });
