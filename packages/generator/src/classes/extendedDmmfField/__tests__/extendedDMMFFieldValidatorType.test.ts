@@ -36,6 +36,7 @@ describe(`ExtendedDMMFFieldValidatorType`, () => {
     const field = getField({
       type: 'MyEnum',
       kind: 'enum',
+      isList: true,
       documentation: 'some text in docs @zod.enum.array(.length(2))',
     });
     expect(field?.['_validatorMatch']).toBeDefined();
@@ -46,6 +47,7 @@ describe(`ExtendedDMMFFieldValidatorType`, () => {
     const field = getField({
       type: 'MyType',
       kind: 'object',
+      isList: true,
       documentation: 'some text in docs @zod.object.array(.length(2))',
     });
     expect(field?.['_validatorMatch']).toBeDefined();

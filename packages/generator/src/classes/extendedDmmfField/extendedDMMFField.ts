@@ -1,3 +1,5 @@
+import { ExtendedDMMFFieldZodType } from './extendedDMMFFieldZodType';
+
 /**
  * This class is used to extend the DMMF Field class with additional properties
  * and methods.
@@ -16,6 +18,7 @@
  * - ExtendedDMMFFieldCustomValidatorString
  * - ExtendedDMMFFieldArrayValidatorString
  * - ExtendedDMMFFieldOmitField
+ * - ExtendedDMMFFieldZodType
  */
 
-export class ExtendedDMMFField {}
+export class ExtendedDMMFField extends ExtendedDMMFFieldZodType {}
