@@ -27,7 +27,7 @@ export const writeModelOrType = (
     if (createRelationValuesTypes && model.hasRelationFields) {
       if (model.hasOptionalJsonFields) {
         writeImport(
-          `{ NullableJsonInput }`,
+          `{ type NullableJsonInput }`,
           `../${inputTypePath}/transformJsonNull`,
         );
       }
