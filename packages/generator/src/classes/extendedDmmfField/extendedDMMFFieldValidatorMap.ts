@@ -40,7 +40,7 @@ export type ZodDateValidatorKeys = 'min' | 'max' | 'array';
 
 export type ZodBigIntValidatorKeys = 'array';
 
-export type ZodCustomValidatorKeys = 'use' | 'omit' | 'import' | 'array';
+export type ZodCustomValidatorKeys = 'use' | 'omit' | 'array';
 
 export interface ScalarValidatorFnOpts {
   key: string;
@@ -191,7 +191,6 @@ export const CUSTOM_VALIDATOR_REGEX_MAP: ValidatorMap<ZodCustomValidatorKeys> =
   {
     use: CUSTOM_VALIDATOR_MESSAGE_REGEX,
     omit: CUSTOM_OMIT_VALIDATOR_MESSAGE_REGEX,
-    import: CUSTOM_VALIDATOR_MESSAGE_REGEX,
     array: ARRAY_VALIDATOR_MESSAGE_REGEX,
   };
 

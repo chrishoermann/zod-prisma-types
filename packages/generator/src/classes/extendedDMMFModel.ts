@@ -1,6 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { ExtendedDMMFField } from './extendedDMMFField';
+import { ExtendedDMMFField } from './extendedDMMFField/extendedDMMFField';
 import { FormattedNames } from './formattedNames';
 import {
   IMPORT_STATEMENT_REGEX,
@@ -87,7 +87,7 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
 
   private _getExtendedFields(model: DMMF.Model) {
     return model.fields.map(
-      (field) => new ExtendedDMMFField(this.generatorConfig, field, this.name),
+      (field) => new ExtendedDMMFField(field, this.generatorConfig, this.name),
     );
   }
 

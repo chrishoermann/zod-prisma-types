@@ -103,4 +103,11 @@ export class ExtendedDMMFFieldBase
   private _setErrorLocation() {
     return `[Error Location]: Model: '${this.modelName}', Field: '${this.name}'.`;
   }
+
+  // PUBLIC METHODS
+  //--------------------------------------------------
+
+  isOptionalDefaultField() {
+    return this.hasDefaultValue || this.isUpdatedAt;
+  }
 }

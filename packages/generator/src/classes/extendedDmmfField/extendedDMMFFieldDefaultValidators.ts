@@ -14,6 +14,7 @@ export class ExtendedDMMFFieldDefaultValidators extends ExtendedDMMFFieldValidat
     super(field, generatorConfig, modelName);
 
     this.zodValidatorString = this._setZodDefaultValidator();
+    this._validatorList = this._updateValidatorList();
   }
 
   // GET DEFAULT VALIDATOR
@@ -54,5 +55,23 @@ export class ExtendedDMMFFieldDefaultValidators extends ExtendedDMMFFieldValidat
       | DMMF.FieldDefaultScalar[],
   ): value is DMMF.FieldDefault {
     return (value as DMMF.FieldDefault)?.name !== undefined;
+  }
+
+  // The validator list needs to be updated after the default validator
+  // has been added to the list. This is because ".noDefault()" would
+  // otherwise be added to the "zodValidatorString" later on.
+
+  private _updateValidatorList() {
+    if (!this._validatorList) return;
+
+    const filterdList = this._validatorList.filter(
+      (validator) => !validator.includes('.noDefault()'),
+    );
+
+    if (filterdList.length < 1) {
+      return undefined;
+    }
+
+    return filterdList;
   }
 }

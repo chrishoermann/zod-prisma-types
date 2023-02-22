@@ -2,6 +2,7 @@ import { DMMF } from '@prisma/generator-helper';
 
 import { ExtendedDMMFFieldArrayValidatorString } from './extendedDMMFFieldArrayValidatorString';
 import { CUSTOM_OMIT_VALIDATOR_MESSAGE_REGEX } from './extendedDMMFFieldValidatorMap';
+import { PRISMA_FUNCTION_TYPES_WITH_VALIDATORS } from '../../constants';
 import { GeneratorConfig } from '../../schemas';
 
 /////////////////////////////////////////////////
@@ -74,5 +75,27 @@ export class ExtendedDMMFFieldOmitField extends ExtendedDMMFFieldArrayValidatorS
       ?.find((pattern) => pattern.includes('.omit'))
       ?.match(CUSTOM_OMIT_VALIDATOR_MESSAGE_REGEX)
       ?.groups?.['pattern']?.match(/[\w]+/g);
+  }
+
+  // PUBLIC
+  // ----------------------------------------------
+
+  omitInModel() {
+    return this.zodOmitField === 'model' || this.zodOmitField === 'all';
+  }
+
+  omitInInputTypes(inputTypeName: string) {
+    const isInputType = inputTypeName.match(
+      PRISMA_FUNCTION_TYPES_WITH_VALIDATORS,
+    );
+
+    return (
+      isInputType &&
+      (this.zodOmitField === 'input' || this.zodOmitField === 'all')
+    );
+  }
+
+  isOmitField() {
+    return this.zodOmitField !== 'none';
   }
 }

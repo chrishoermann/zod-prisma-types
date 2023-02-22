@@ -12,6 +12,7 @@ import { ExtendedDMMFFieldZodType } from './extendedDMMFFieldZodType';
  * - ExtendedDMMFFieldValidatorMatch
  * - ExtendedDMMFFieldValidatorType
  * - ExtendedDMMFFieldValidatorPattern
+ * - ExtendedDMMFFieldDefaultValidators
  * - ExtendedDMMFFieldValidatorCustomErrors
  * - ExtendedDMMFFieldValidatorMap
  * - ExtendedDMMFFieldValidatorString

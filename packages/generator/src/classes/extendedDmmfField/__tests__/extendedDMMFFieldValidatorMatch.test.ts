@@ -61,7 +61,7 @@ describe(`ExtendedDMMFFieldValidatorMatch`, () => {
 
   it(`should load a class with docs and date validator`, async () => {
     const field = getField({
-      type: 'Date',
+      type: 'DateTime',
       documentation: 'some text in docs  @zod.date.min(new Date("2020-01-01"))',
     });
     const match = field?.['_validatorMatch'];
