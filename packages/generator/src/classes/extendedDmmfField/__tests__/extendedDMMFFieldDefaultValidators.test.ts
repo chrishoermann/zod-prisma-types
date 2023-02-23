@@ -14,22 +14,22 @@ const getField = (field?: Partial<DMMF.Field>) =>
 describe(`ExtendedDMMFFieldDefaultValidators`, () => {
   it(`should load a class without a default validator`, async () => {
     const field = getField();
-    expect(field.zodValidatorString).toBe(undefined);
+    expect(field?.['_defaultValidatorString']).toBe(undefined);
   });
 
   it(`should load a class with cuid default validator`, async () => {
     const field = getField({ default: { name: 'cuid', args: [] } });
-    expect(field.zodValidatorString).toBe('.cuid()');
+    expect(field?.['_defaultValidatorString']).toBe('.cuid()');
   });
 
   it(`should load a class with uuid default validator`, async () => {
     const field = getField({ default: { name: 'uuid', args: [] } });
-    expect(field.zodValidatorString).toBe('.uuid()');
+    expect(field?.['_defaultValidatorString']).toBe('.uuid()');
   });
 
   it(`should load a class with Int default validator`, async () => {
     const field = getField({ type: 'Int' });
-    expect(field.zodValidatorString).toBe('.int()');
+    expect(field?.['_defaultValidatorString']).toBe('.int()');
   });
 
   it(`should load a class with Int default validator and "noDefault()" annotation`, async () => {
@@ -37,6 +37,6 @@ describe(`ExtendedDMMFFieldDefaultValidators`, () => {
       type: 'Int',
       documentation: '@zod.number.noDefault()',
     });
-    expect(field.zodValidatorString).toBeUndefined();
+    expect(field?.['_defaultValidatorString']).toBeUndefined();
   });
 });

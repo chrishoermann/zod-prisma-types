@@ -8,12 +8,15 @@ import { GeneratorConfig } from '../../schemas';
 /////////////////////////////////////////////////
 
 export class ExtendedDMMFFieldValidatorString extends ExtendedDMMFFieldValidatorMap {
+  readonly zodValidatorString?: string;
+
   constructor(
     field: DMMF.Field,
     generatorConfig: GeneratorConfig,
     modelName: string,
   ) {
     super(field, generatorConfig, modelName);
+
     this.zodValidatorString = this._getZodValidatorString();
   }
 
@@ -22,7 +25,7 @@ export class ExtendedDMMFFieldValidatorString extends ExtendedDMMFFieldValidator
 
   private _getZodValidatorString() {
     if (!this._validatorType || this._validatorType === 'custom')
-      return this.zodValidatorString;
+      return this._defaultValidatorString;
 
     return this._validatorIsValid()
       ? this._getZodValidatorStringWithoutArray()

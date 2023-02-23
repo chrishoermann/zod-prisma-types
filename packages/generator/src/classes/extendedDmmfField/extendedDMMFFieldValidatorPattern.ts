@@ -44,6 +44,10 @@ export class ExtendedDMMFFieldValidatorPattern extends ExtendedDMMFFieldValidato
     );
   }
 
+  // Programmatic approach to split the validator pattern
+  // is used, because handling nested parentheses is
+  // quite tricky with regex.
+
   private _getSplitIndices(string: string) {
     const splitIndices = [0];
     let depth = 0;

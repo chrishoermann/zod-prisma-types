@@ -140,7 +140,7 @@ export const writeModelOrType = (
       .write(`${model.name}Schema.merge(z.object(`)
       .inlineBlock(() => {
         [...model.enumFields, ...model.scalarFields].forEach((field) => {
-          if (!field.isOptionalDefaultField()) return;
+          if (!field.isOptionalDefaultField) return;
 
           const writeOptions = {
             writer,

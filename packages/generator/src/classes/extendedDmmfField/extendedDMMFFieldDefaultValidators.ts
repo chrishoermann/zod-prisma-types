@@ -4,7 +4,7 @@ import { ExtendedDMMFFieldValidatorPattern } from './extendedDMMFFieldValidatorP
 import { GeneratorConfig } from '../../schemas';
 
 export class ExtendedDMMFFieldDefaultValidators extends ExtendedDMMFFieldValidatorPattern {
-  zodValidatorString?: string;
+  protected _defaultValidatorString?: string;
 
   constructor(
     field: DMMF.Field,
@@ -13,7 +13,7 @@ export class ExtendedDMMFFieldDefaultValidators extends ExtendedDMMFFieldValidat
   ) {
     super(field, generatorConfig, modelName);
 
-    this.zodValidatorString = this._setZodDefaultValidator();
+    this._defaultValidatorString = this._setZodDefaultValidator();
     this._validatorList = this._updateValidatorList();
   }
 

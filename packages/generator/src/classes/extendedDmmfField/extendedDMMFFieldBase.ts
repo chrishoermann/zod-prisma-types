@@ -11,8 +11,10 @@ export class ExtendedDMMFFieldBase
   extends FormattedNames
   implements DMMF.Field
 {
+  protected modelName: string;
+  protected errorLocation: string;
+
   readonly generatorConfig: GeneratorConfig;
-  readonly modelName: string;
 
   readonly kind: DMMF.Field['kind'];
   readonly name: DMMF.Field['name'];
@@ -37,8 +39,7 @@ export class ExtendedDMMFFieldBase
   readonly isBytesType: boolean;
   readonly isDecimalType: boolean;
   readonly isOptionalOnDefaultValue: boolean;
-
-  readonly errorLocation: string;
+  readonly isOptionalDefaultField: boolean;
 
   constructor(
     field: DMMF.Field,
@@ -73,6 +74,7 @@ export class ExtendedDMMFFieldBase
     this.isBytesType = this._setIsBytesType();
     this.isDecimalType = this._setIsDecimalType();
     this.isOptionalOnDefaultValue = this._setDefaultValueOptional();
+    this.isOptionalDefaultField = this._setIsOptionalDefaultField();
 
     this.errorLocation = this._setErrorLocation();
   }
@@ -107,7 +109,7 @@ export class ExtendedDMMFFieldBase
   // PUBLIC METHODS
   //--------------------------------------------------
 
-  isOptionalDefaultField() {
-    return this.hasDefaultValue || this.isUpdatedAt;
+  private _setIsOptionalDefaultField() {
+    return Boolean(this.hasDefaultValue || this.isUpdatedAt);
   }
 }

@@ -85,9 +85,8 @@ export class ExtendedDMMFFieldOmitField extends ExtendedDMMFFieldArrayValidatorS
   }
 
   omitInInputTypes(inputTypeName: string) {
-    const isInputType = inputTypeName.match(
-      PRISMA_FUNCTION_TYPES_WITH_VALIDATORS,
-    );
+    const isInputType =
+      PRISMA_FUNCTION_TYPES_WITH_VALIDATORS.test(inputTypeName);
 
     return (
       isInputType &&

@@ -1,6 +1,9 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { ExtendedDMMFField } from './extendedDMMFField/extendedDMMFField';
+import {
+  ExtendedDMMFField,
+  ExtendedDMMFFieldClass,
+} from './extendedDMMFField/extendedDMMFField';
 import { FormattedNames } from './formattedNames';
 import {
   IMPORT_STATEMENT_REGEX,
@@ -87,7 +90,8 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
 
   private _getExtendedFields(model: DMMF.Model) {
     return model.fields.map(
-      (field) => new ExtendedDMMFField(field, this.generatorConfig, this.name),
+      (field) =>
+        new ExtendedDMMFFieldClass(field, this.generatorConfig, this.name),
     );
   }
 
@@ -145,7 +149,7 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
   }
 
   private _setHasOptionalDefaultFields() {
-    return this.fields.some((field) => field.isOptionalDefaultField());
+    return this.fields.some((field) => field.isOptionalDefaultField);
   }
 
   private _setHasDecimalFields() {
