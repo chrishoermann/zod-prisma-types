@@ -5,7 +5,6 @@ import {
   CreateFileOptions,
   ExtendedDMMF,
   ExtendedDMMFField,
-  ExtendedDMMFFieldClass,
   ExtendedDMMFModel,
   ExtendedDMMFSchemaArgInputType,
   ZodValidatorOptions,
