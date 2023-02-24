@@ -48,6 +48,7 @@ Be aware that some generator options have been removed, a few new have been adde
   - [BigInt validators](#bigint-validators)
   - [Date validators](#date-validators)
   - [Custom validators](#custom-validators)
+  - [Array validators](#array-validators)
   - [Omit fields](#omit-fields)
   - [Validation errors](#validation-errors)
 - [Naming of zod schemas](#naming-of-zod-schemas)
@@ -906,6 +907,51 @@ export const MyModel = z.object({
     .refine((val) => validator.isBIC(val))
     .transform((val) => val.toUpperCase())
     .nullable(),
+});
+```
+
+## Array validators
+
+To add custom validators to list fields you can use the `z.[key].array(.length(2).min(1).max(2).nonempty())` validator. You can use this validator on `@zod.string`, `@zod.number`, `@zod.bigint`, `@zod.date` and `@zod.custom`. Furthermore you can use it on enums with the `@zod.enum.array(...)` key and on relations with the `@zod.object.array(...)` key. You can also add a custom error message to each validator as stated in the docs.
+
+```prisma
+model MyModel {
+  id     Int     @id @default(autoincrement())
+  string String[] /// @zod.string.array(.length(2, { message: "my message" }).min(1, { message: "my message" }).max(2, { message: "my message" }).nonempty({ message: "my message" }))
+  number Int[] /// @zod.number.array(.length(2).min(1).max(2).nonempty())
+  bigint BigInt[] /// @zod.bigint.array(.length(2).min(1).max(2).nonempty())
+  date   DateTime[] /// @zod.date.array(.length(2).min(1).max(2).nonempty())
+  custom String[] /// @zod.custom.use(z.string().refine(val => validator.isBIC(val)).transform(val => val.toUpperCase())).array(.length(2).min(1).max(2).nonempty())
+  enum   MyEnum[] /// @zod.enum.array(.length(2).min(1).max(2).nonempty())
+  object MyObject[] /// @zod.object.array(.length(2).min(1).max(2).nonempty())
+}
+```
+
+The above model schema would generate the following zod schema:
+
+```ts
+export const MyModel = z.object({
+  id: z.number(),
+  string: z
+    .string()
+    .array()
+    .length(2, { message: 'my message' })
+    .min(1, { message: 'my message' })
+    .max(2, { message: 'my message' })
+    .nonempty({ message: 'my message' }),
+  number: z.number().array().length(2).min(1).max(2).nonempty(),
+  bigint: z.bigint().array().length(2).min(1).max(2).nonempty(),
+  date: z.date().array().length(2).min(1).max(2).nonempty(),
+  custom: z
+    .string()
+    .refine((val) => validator.isBIC(val))
+    .transform((val) => val.toUpperCase())
+    .array()
+    .length(2)
+    .min(1)
+    .max(2)
+    .nonempty(),
+  enum: MyEnumSchema.array().length(2).min(1).max(2).nonempty(),
 });
 ```
 

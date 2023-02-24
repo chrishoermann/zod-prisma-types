@@ -16,7 +16,7 @@ describe(`ExtendedDMMFFieldBase`, () => {
     const field = getField();
 
     expect(field.generatorConfig).toEqual(DEFAULT_GENERATOR_CONFIG);
-    expect(field.modelName).toEqual('ModelName');
+    expect(field?.['_modelName']).toEqual('ModelName');
     expect(field).toBeDefined();
     expect(field.isNullable).toBe(false);
     expect(field.isJsonType).toBe(false);

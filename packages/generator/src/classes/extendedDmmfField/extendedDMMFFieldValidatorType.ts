@@ -105,7 +105,7 @@ export class ExtendedDMMFFieldValidatorType extends ExtendedDMMFFieldValidatorMa
     if (this._isPrismaValidatorType(zodValidatorType)) return zodValidatorType;
 
     throw new Error(
-      `[@zod generator error]: Validator '${validatorType}' is not valid for type '${this.type}'. ${this.errorLocation}`,
+      `[@zod generator error]: Validator '${validatorType}' is not valid for type '${this.type}'. ${this._errorLocation}`,
     );
   }
 
@@ -113,7 +113,7 @@ export class ExtendedDMMFFieldValidatorType extends ExtendedDMMFFieldValidatorMa
     if (this._isZodValidatorType(validatorType)) return validatorType;
 
     throw new Error(
-      `[@zod generator error]: '${validatorType}' is not a valid validator type. ${this.errorLocation}`,
+      `[@zod generator error]: '${validatorType}' is not a valid validator type. ${this._errorLocation}`,
     );
   }
 

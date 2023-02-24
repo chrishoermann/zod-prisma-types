@@ -34,7 +34,7 @@ describe(`ExtendedDMMFFieldCustomValidatorString`, () => {
           'some text in docs @zod.custom.use(z.string().min(2).max(4)).array(.length(2)).wrong()',
       }),
     ).toThrowError(
-      "[@zod generator error]: Validator 'wrong' is not valid for type 'String' or for specified '@zod.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
+      "[@zod generator error]: Validator 'wrong' is not valid for type 'String', for specified '@zod.[key] or for 'z.array.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
     );
   });
 });

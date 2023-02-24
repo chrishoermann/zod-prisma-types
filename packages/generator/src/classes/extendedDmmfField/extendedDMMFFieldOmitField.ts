@@ -55,7 +55,7 @@ export class ExtendedDMMFFieldOmitField extends ExtendedDMMFFieldArrayValidatorS
     omitFieldModes?.forEach((field) => {
       if (!CUSTOM_VALIDATOR_VALID_MODE_REGEX.test(field))
         throw new Error(
-          `[@zod generator error]: unknown key '${field}' in '.omit()'. only 'model' and 'input' are allowed. ${this.errorLocation}`,
+          `[@zod generator error]: unknown key '${field}' in '.omit()'. only 'model' and 'input' are allowed. ${this._errorLocation}`,
         );
     });
 

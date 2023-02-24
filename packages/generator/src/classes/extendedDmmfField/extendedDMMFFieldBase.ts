@@ -11,8 +11,8 @@ export class ExtendedDMMFFieldBase
   extends FormattedNames
   implements DMMF.Field
 {
-  protected modelName: string;
-  protected errorLocation: string;
+  protected _modelName: string;
+  protected _errorLocation: string;
 
   readonly generatorConfig: GeneratorConfig;
 
@@ -49,7 +49,7 @@ export class ExtendedDMMFFieldBase
     super(field.name);
 
     this.generatorConfig = generatorConfig;
-    this.modelName = modelName;
+    this._modelName = modelName;
 
     this.kind = field.kind;
     this.name = field.name;
@@ -76,7 +76,7 @@ export class ExtendedDMMFFieldBase
     this.isOptionalOnDefaultValue = this._setDefaultValueOptional();
     this.isOptionalDefaultField = this._setIsOptionalDefaultField();
 
-    this.errorLocation = this._setErrorLocation();
+    this._errorLocation = this._setErrorLocation();
   }
 
   private _setIsJsonType() {
@@ -103,7 +103,7 @@ export class ExtendedDMMFFieldBase
   }
 
   private _setErrorLocation() {
-    return `[Error Location]: Model: '${this.modelName}', Field: '${this.name}'.`;
+    return `[Error Location]: Model: '${this._modelName}', Field: '${this.name}'.`;
   }
 
   // PUBLIC METHODS

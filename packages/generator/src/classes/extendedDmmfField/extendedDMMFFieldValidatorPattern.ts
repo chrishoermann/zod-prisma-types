@@ -48,7 +48,7 @@ export class ExtendedDMMFFieldValidatorPattern extends ExtendedDMMFFieldValidato
   // is used, because handling nested parentheses is
   // quite tricky with regex.
 
-  private _getSplitIndices(string: string) {
+  protected _getSplitIndices(string: string) {
     const splitIndices = [0];
     let depth = 0;
 
@@ -65,17 +65,17 @@ export class ExtendedDMMFFieldValidatorPattern extends ExtendedDMMFFieldValidato
     return splitIndices;
   }
 
-  private _isWordChar(char: string) {
+  protected _isWordChar(char: string) {
     return /\w/.test(char);
   }
 
-  private _getPatternListFromSplitIndices(
-    string: string,
+  protected _getPatternListFromSplitIndices(
+    patternString: string,
     splitIndices: number[],
   ) {
     return splitIndices
       .map((splitIndex, idx) =>
-        string.substring(splitIndex, splitIndices[idx + 1]),
+        patternString.substring(splitIndex, splitIndices[idx + 1]),
       )
       .filter((str): str is string => !!str);
   }

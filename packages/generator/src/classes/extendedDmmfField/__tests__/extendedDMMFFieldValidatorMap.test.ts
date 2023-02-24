@@ -209,7 +209,7 @@ describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
         pattern: '.length(2)',
       }),
     ).toThrowError(
-      "[@zod generator error]: Validator 'wrong' is not valid for type 'String' or for specified '@zod.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
+      "[@zod generator error]: Validator 'wrong' is not valid for type 'String', for specified '@zod.[key] or for 'z.array.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
     );
   });
 
@@ -402,7 +402,7 @@ describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
         pattern: '.length(2)',
       }),
     ).toThrowError(
-      "[@zod generator error]: Validator 'wrong' is not valid for type 'String' or for specified '@zod.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
+      "[@zod generator error]: Validator 'wrong' is not valid for type 'String', for specified '@zod.[key] or for 'z.array.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
     );
   });
 
@@ -475,7 +475,7 @@ describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
         pattern: '.length(2)',
       }),
     ).toThrowError(
-      "[@zod generator error]: Validator 'wrong' is not valid for type 'String' or for specified '@zod.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
+      "[@zod generator error]: Validator 'wrong' is not valid for type 'String', for specified '@zod.[key] or for 'z.array.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
     );
   });
 
@@ -514,7 +514,7 @@ describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
         pattern: '.length(2)',
       }),
     ).toThrowError(
-      "[@zod generator error]: Validator 'wrong' is not valid for type 'String' or for specified '@zod.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
+      "[@zod generator error]: Validator 'wrong' is not valid for type 'String', for specified '@zod.[key] or for 'z.array.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
     );
   });
 
@@ -566,7 +566,7 @@ describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
         pattern: '.length(2)',
       }),
     ).toThrowError(
-      "[@zod generator error]: Validator 'wrong' is not valid for type 'String' or for specified '@zod.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
+      "[@zod generator error]: Validator 'wrong' is not valid for type 'String', for specified '@zod.[key] or for 'z.array.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
     );
   });
 
@@ -606,7 +606,7 @@ describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
         pattern: '.length(2)',
       }),
     ).toThrowError(
-      "[@zod generator error]: Validator 'wrong' is not valid for type 'String' or for specified '@zod.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
+      "[@zod generator error]: Validator 'wrong' is not valid for type 'String', for specified '@zod.[key] or for 'z.array.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
     );
   });
 
@@ -646,7 +646,7 @@ describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
         pattern: '.length(2)',
       }),
     ).toThrowError(
-      "[@zod generator error]: Validator 'wrong' is not valid for type 'String' or for specified '@zod.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
+      "[@zod generator error]: Validator 'wrong' is not valid for type 'String', for specified '@zod.[key] or for 'z.array.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
     );
   });
 });
@@ -682,7 +682,7 @@ describe(`tests ExtendedDMMFFieldValidatorMap method _validatePatternInMap`, () 
         pattern: '.use(.length(2))',
       }),
     ).toThrowError(
-      "[@zod generator error]: Validator 'use' is not valid for type 'String' or for specified '@zod.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
+      "[@zod generator error]: Validator 'use' is not valid for type 'String', for specified '@zod.[key] or for 'z.array.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
     );
   });
 });
@@ -728,7 +728,7 @@ describe(`tests ExtendedDMMFFieldValidatorMap method _validatorIsValid`, () => {
     });
 
     expect(() => field?.['_validatorIsValid']()).toThrowError(
-      "[@zod generator error]: Validator 'lt' is not valid for type 'String' or for specified '@zod.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
+      "[@zod generator error]: Validator 'lt' is not valid for type 'String', for specified '@zod.[key] or for 'z.array.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
     );
   });
 });

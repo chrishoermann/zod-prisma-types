@@ -83,4 +83,50 @@ describe(`ExtendedDMMFFieldArrayValidatorString`, () => {
 
     expect(field.zodArrayValidatorString).toBeUndefined();
   });
+
+  it(`should load field with docs and array validator list on string`, async () => {
+    const field = getField({
+      documentation:
+        'some text in docs @zod.string.min(4).array(.length(2).min(3).max(4).nonempty())',
+      isList: true,
+    });
+    expect(field.zodArrayValidatorString).toBe(
+      '.length(2).min(3).max(4).nonempty()',
+    );
+  });
+
+  it(`should load field with docs and array validator list on string with message`, async () => {
+    const field = getField({
+      documentation:
+        'some text in docs @zod.string.min(4).array(.length(2, { message: "my message" }).min(3, { message: "my message" }).max(4, { message: "my message" }).nonempty({ message: "my message" }))',
+      isList: true,
+    });
+    expect(field.zodArrayValidatorString).toBe(
+      '.length(2, { message: "my message" }).min(3, { message: "my message" }).max(4, { message: "my message" }).nonempty({ message: "my message" })',
+    );
+  });
+
+  it(`should NOT load field with docs and array validator on a single string with wrong error message key`, async () => {
+    expect(() =>
+      getField({
+        documentation:
+          'some text in docs @zod.string.min(4).array(.length(2, { mussage: "my message" })',
+        isList: true,
+      }),
+    ).toThrowError(
+      "[@zod generator error]: Could not match validator 'length' with validatorPattern '.length(2, { mussage: \"my message\" }'. Please check for typos! [Error Location]: Model: 'ModelName', Field: 'test'",
+    );
+  });
+
+  it(`should NOT load field with docs and array validator on a single string wiht wrong validator`, async () => {
+    expect(() =>
+      getField({
+        documentation:
+          'some text in docs @zod.string.min(4).array(.lt(2, { mussage: "my message" })',
+        isList: true,
+      }),
+    ).toThrowError(
+      "[@zod generator error]: Validator 'lt' is not valid for type 'String', for specified '@zod.[key] or for 'z.array.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'",
+    );
+  });
 });

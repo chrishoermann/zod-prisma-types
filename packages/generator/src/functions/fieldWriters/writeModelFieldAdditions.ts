@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { WriteFieldOptions } from '../../types';
 
 /**
@@ -12,6 +13,10 @@ export const writeFieldAdditions = ({
 
   writer
     .conditionalWrite(field.isList, `.array()`)
+    .conditionalWrite(
+      !!field.zodArrayValidatorString,
+      field.zodArrayValidatorString!,
+    )
     .conditionalWrite(
       field.isNullable &&
         !field.isOptionalOnDefaultValue &&

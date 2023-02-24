@@ -159,6 +159,7 @@ model User {
   /// some other comment 
   /// @zod.string.min(1).max(100) some message after
   name       String?
+  /// @zod.object.array(.length(2, { message: "error" }).min(1).max(2).nonempty({ message: "error" }))
   posts      Post[]
   profile    Profile?
   role       Role[]      @default([USER, ADMIN])
@@ -180,7 +181,7 @@ model Post {
   authorId       String
   jsonOpt        Json?
   anotherJsonOpt Json?
-  anotherEnum    AnotherEnum[]
+  anotherEnum    AnotherEnum[] /// @zod.enum.array(.length(2, { message: "error" }).min(1).max(2).nonempty({ message: "error" }))
 }
 
 model Profile {

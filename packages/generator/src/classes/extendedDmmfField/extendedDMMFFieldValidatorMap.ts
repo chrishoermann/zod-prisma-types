@@ -107,7 +107,7 @@ export const CUSTOM_OMIT_VALIDATOR_MESSAGE_REGEX =
 // ----------------------------------------
 
 export const ARRAY_VALIDATOR_MESSAGE_REGEX =
-  /(?<validator>array)(\((?<pattern>[.\w()]+)\))/;
+  /(?<validator>array)(\((?<pattern>[\w (),.'":+\-*#!§$%&/{}[\]=?~><°^]+)\))/;
 
 /////////////////////////////////////////////
 // REGEX MAPS
@@ -236,7 +236,7 @@ export class ExtendedDMMFFieldValidatorMap extends ExtendedDMMFFieldValidatorCus
 
     if (!validate) {
       throw new Error(
-        `[@zod generator error]: Validator '${key}' is not valid for type '${this.type}' or for specified '@zod.[key]'. ${this.errorLocation}`,
+        `[@zod generator error]: Validator '${key}' is not valid for type '${this.type}', for specified '@zod.[key] or for 'z.array.[key]'. ${this._errorLocation}`,
       );
     }
 
@@ -245,7 +245,7 @@ export class ExtendedDMMFFieldValidatorMap extends ExtendedDMMFFieldValidatorCus
     }
 
     throw new Error(
-      `[@zod generator error]: Could not match validator '${key}' with validatorPattern '${pattern}'. Please check for typos! ${this.errorLocation}`,
+      `[@zod generator error]: Could not match validator '${key}' with validatorPattern '${pattern}'. Please check for typos! ${this._errorLocation}`,
     );
   };
 
@@ -258,7 +258,7 @@ export class ExtendedDMMFFieldValidatorMap extends ExtendedDMMFFieldValidatorCus
     }
 
     throw new Error(
-      `[@zod generator error]: Validator '${opts.key}' is not valid for type '${this.type}'. ${this.errorLocation}`,
+      `[@zod generator error]: Validator '${opts.key}' is not valid for type '${this.type}'. ${this._errorLocation}`,
     );
   }
 
@@ -273,7 +273,7 @@ export class ExtendedDMMFFieldValidatorMap extends ExtendedDMMFFieldValidatorCus
     }
 
     throw new Error(
-      `[@zod generator error]: no matching validator key found in '${pattern}'. ${this.errorLocation}`,
+      `[@zod generator error]: no matching validator key found in '${pattern}'. ${this._errorLocation}`,
     );
   }
 

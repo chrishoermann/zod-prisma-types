@@ -104,20 +104,23 @@ export const writeModelOrType = (
 
     writer
       .blankLine()
-      .write(`export const ${model.name}PartialSchema = z.object(`)
-      .inlineBlock(() => {
-        [...model.enumFields, ...model.scalarFields].forEach((field) => {
-          writer.conditionalWrite(field.omitInModel(), '// omitted: ');
+      .write(
+        `export const ${model.name}PartialSchema = ${model.name}Schema.partial()`,
+      );
+    // .write(`export const ${model.name}PartialSchema = z.object(`)
+    // .inlineBlock(() => {
+    //   [...model.enumFields, ...model.scalarFields].forEach((field) => {
+    //     writer.conditionalWrite(field.omitInModel(), '// omitted: ');
 
-          writeModelFields({
-            writer,
-            field,
-            model,
-            dmmf,
-          });
-        });
-      })
-      .write(`).partial()`);
+    //     writeModelFields({
+    //       writer,
+    //       field,
+    //       model,
+    //       dmmf,
+    //     });
+    //   });
+    // })
+    // .write(`).partial()`);
 
     writer
       .blankLine()

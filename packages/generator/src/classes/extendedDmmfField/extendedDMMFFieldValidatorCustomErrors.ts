@@ -82,7 +82,7 @@ export class ExtendedDMMFFieldValidatorCustomErrors extends ExtendedDMMFFieldDef
       if (ZOD_VALID_ERROR_KEYS?.includes(key as ZodCustomErrorKey)) return true;
 
       throw new Error(
-        `[@zod generator error]: Custom error key '${key}' is not valid. Please check for typos! ${this.errorLocation}`,
+        `[@zod generator error]: Custom error key '${key}' is not valid. Please check for typos! ${this._errorLocation}`,
       );
     });
 
