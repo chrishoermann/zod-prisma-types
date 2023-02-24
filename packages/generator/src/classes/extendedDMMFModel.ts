@@ -1,9 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import {
-  ExtendedDMMFField,
-  ExtendedDMMFFieldClass,
-} from './extendedDMMFField/extendedDMMFField';
+import { ExtendedDMMFField, ExtendedDMMFFieldClass } from './extendedDMMFField';
 import { FormattedNames } from './formattedNames';
 import {
   IMPORT_STATEMENT_REGEX,
