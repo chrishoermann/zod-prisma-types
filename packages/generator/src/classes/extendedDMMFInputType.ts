@@ -1,6 +1,7 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { ExtendedDMMFDatamodel, ExtendedDMMFField } from '.';
+import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
+import { ExtendedDMMFField } from './extendedDMMFField/extendedDMMFField';
 import { ExtendedDMMFModel } from './extendedDMMFModel';
 import {
   ExtendedDMMFSchemaArg,
