@@ -20,6 +20,9 @@ export type ZodArrayValidatorKeys = 'min' | 'max' | 'length' | 'nonempty';
 export const ARRAY_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
   /.(?<validator>min|max|length|nonempty)(?<number>\([\d]+([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\))/;
 
+export const ARRAY_VALIDATOR_NUMBER_OR_STRING_AND_MESSAGE_REGEX =
+  /.(?<validator>min|max|length|nonempty)(?<number>\([\w.]+([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\))/;
+
 export const ARRAY_VALIDATOR_WITH_MESSAGE_REGEX =
   /(?<validator>nonempty)(\((?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\))/;
 
@@ -28,9 +31,9 @@ export const ARRAY_VALIDATOR_WITH_MESSAGE_REGEX =
 /////////////////////////////////////////////////
 
 export const ARRAY_VALIDATOR_REGEX_MAP: ValidatorMap<ZodArrayValidatorKeys> = {
-  min: ARRAY_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-  max: ARRAY_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-  length: ARRAY_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
+  min: ARRAY_VALIDATOR_NUMBER_OR_STRING_AND_MESSAGE_REGEX,
+  max: ARRAY_VALIDATOR_NUMBER_OR_STRING_AND_MESSAGE_REGEX,
+  length: ARRAY_VALIDATOR_NUMBER_OR_STRING_AND_MESSAGE_REGEX,
   nonempty: ARRAY_VALIDATOR_WITH_MESSAGE_REGEX,
 };
 

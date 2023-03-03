@@ -16,8 +16,8 @@ datasource db {
 // -----------------------------------------------
 
 generator zod {
-  // provider                         = "ts-node-dev ../generator/src/bin.ts"
-  provider                         = "zod-prisma-types"
+  provider                         = "ts-node-dev ../generator/src/bin.ts"
+  // provider                         = "zod-prisma-types"
   output                           = "./generated/zod" // default is ./generated/zod
   useMultipleFiles                 = true // default is false 
   // createInputTypes                 = false // default is true
@@ -172,6 +172,7 @@ model User {
   location Location? @relation(fields: [lat, lng], references: [lat, lng])
 }
 
+/// @zod.import(["import { myFunction } from "../../../../utils/myFunction";"])
 model Post {
   id             Int           @id @default(autoincrement())
   title          String
@@ -181,7 +182,7 @@ model Post {
   authorId       String
   jsonOpt        Json?
   anotherJsonOpt Json?
-  anotherEnum    AnotherEnum[] /// @zod.enum.array(.length(2, { message: "error" }).min(1).max(2).nonempty({ message: "error" }))
+  anotherEnum    AnotherEnum[] /// @zod.enum.array(.length(2, { message: "error" }).min(1).max(myFunction.some).nonempty({ message: "error" }))
 }
 
 model Profile {

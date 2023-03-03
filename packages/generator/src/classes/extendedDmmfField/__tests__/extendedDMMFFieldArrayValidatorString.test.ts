@@ -129,4 +129,28 @@ describe(`ExtendedDMMFFieldArrayValidatorString`, () => {
       "[@zod generator error]: Validator 'lt' is not valid for type 'String', for specified '@zod.[key] or for 'z.array.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'",
     );
   });
+
+  it(`should load field with docs and array validator containing a string`, async () => {
+    const field = getField({
+      documentation:
+        'some text in docs @zod.string.min(4).array(.length(2).min(myfunction.some).max(myfunction.some).nonempty())',
+      isList: true,
+    });
+    expect(field.zodArrayValidatorString).toBe(
+      '.length(2).min(myfunction.some).max(myfunction.some).nonempty()',
+    );
+  });
+
+  it(`should load field with docs and array validator containing a string on an enum`, async () => {
+    const field = getField({
+      type: 'MyEnum',
+      kind: 'enum',
+      documentation:
+        'some text in docs @zod.enum.array(.length(myfunction.some, { message: "error" }).min(1).max(myfunction.some).nonempty({ message: "error" }))',
+      isList: true,
+    });
+    expect(field.zodArrayValidatorString).toBe(
+      '.length(myfunction.some, { message: "error" }).min(1).max(myfunction.some).nonempty({ message: "error" })',
+    );
+  });
 });
