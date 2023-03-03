@@ -7,13 +7,11 @@ export const writeOutputObjectType = (
   { fileWriter, dmmf, getSingleFileContent = false }: ContentWriterOptions,
   field: ExtendedDMMFSchemaField,
 ) => {
-  const { writer, writeImport, writeImportSet, writeHeading } = fileWriter;
+  const { writer, writeImportSet, writeHeading } = fileWriter;
 
-  const { useMultipleFiles, prismaClientPath } = dmmf.generatorConfig;
+  const { useMultipleFiles } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImport('{ z }', 'zod');
-    writeImport('{ type Prisma }', prismaClientPath);
     writeImportSet(field.argTypeImports);
 
     // determine if the outputType should include the "select" or "include" field

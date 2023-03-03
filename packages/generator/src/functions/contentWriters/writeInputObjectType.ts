@@ -4,18 +4,15 @@ import { type ContentWriterOptions } from '../../types';
 
 export const writeInputObjectType = (
   {
-    fileWriter: { writer, writeImport, writeImportSet },
+    fileWriter: { writer, writeImportSet },
     dmmf,
     getSingleFileContent = false,
   }: ContentWriterOptions,
   inputType: ExtendedDMMFInputType,
 ) => {
-  const { useMultipleFiles, prismaClientPath, addInputTypeValidation } =
-    dmmf.generatorConfig;
+  const { useMultipleFiles, addInputTypeValidation } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImport('{ z }', 'zod');
-    writeImport('{ type Prisma }', prismaClientPath);
     writeImportSet(inputType.imports);
   }
 

@@ -11,6 +11,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "turbo": "^1.7.4"
+    "turbo": "^1.8.3"
   }
 }

@@ -129,51 +129,58 @@ export class ExtendedDMMFSchemaArg
   }
 
   getImports(fieldName: string) {
-    const imports = this.inputTypes
-      .map((type) => {
-        const importType = type.getZodNonScalarType();
-        const stringImportType = importType?.toString();
+    const { prismaClientPath } = this.generatorConfig;
+    const prismaImport = `import type { Prisma } from '${prismaClientPath}';`;
 
-        // exclude the import for the current model if it references itself
-        if (stringImportType === fieldName) {
-          return;
-        }
+    const imports = [
+      "import { z } from 'zod';",
+      prismaImport,
+      ...this.inputTypes
+        .map((type) => {
+          const importType = type.getZodNonScalarType();
+          const stringImportType = importType?.toString();
 
-        if (type.isJsonType) {
-          return `import { InputJsonValue } from './InputJsonValue';`;
-        }
-
-        if (type.isDecimalType) {
-          const decimalImports = [
-            `import { isValidDecimalInput } from './isValidDecimalInput';`,
-          ];
-
-          if (type.isList) {
-            decimalImports.push(
-              `import { DecimalJSLikeListSchema } from './DecimalJsLikeListSchema';`,
-            );
+          // exclude the import for the current model if it references itself
+          if (stringImportType === fieldName) {
+            return;
           }
 
-          if (!type.isList) {
-            decimalImports.push(
-              `import { DecimalJSLikeSchema } from './DecimalJsLikeSchema';`,
-            );
+          if (type.isJsonType) {
+            return `import { InputJsonValue } from './InputJsonValue';`;
           }
 
-          return decimalImports;
-        }
+          if (type.isDecimalType) {
+            const decimalImports = [
+              `import { isValidDecimalInput } from './isValidDecimalInput';`,
+            ];
 
-        // get imports for all non scalar types (e.g. enums, models)
-        if (importType) {
-          return `import { ${importType}Schema } from './${importType}Schema';`;
-        }
+            if (type.isList) {
+              decimalImports.push(
+                `import { DecimalJSLikeListSchema } from './DecimalJsLikeListSchema';`,
+              );
+            }
 
-        return undefined;
-      })
-      .flat()
-      .filter(
-        (importString): importString is string => importString !== undefined,
-      );
+            if (!type.isList) {
+              decimalImports.push(
+                `import { DecimalJSLikeSchema } from './DecimalJsLikeSchema';`,
+              );
+            }
+
+            return decimalImports;
+          }
+
+          // get imports for all non scalar types (e.g. enums, models)
+          if (importType) {
+            return `import { ${importType}Schema } from './${importType}Schema';`;
+          }
+
+          return undefined;
+        })
+        .flat()
+        .filter(
+          (importString): importString is string => importString !== undefined,
+        ),
+    ];
 
     return imports;
   }

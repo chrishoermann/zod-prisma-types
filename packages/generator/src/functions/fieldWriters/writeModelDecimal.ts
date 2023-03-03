@@ -24,6 +24,7 @@ export const writeDecimal = ({
     )
     .write(`path: ['Models', '${model.formattedNames.original}']`)
     .write(` })`);
+  // .write(`.transform((v) => new Prism.Decimal(v))`);
 
   writeFieldAdditions({ writer, field, writeOptionalDefaults });
 };

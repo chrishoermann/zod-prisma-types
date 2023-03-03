@@ -18,12 +18,14 @@ export const decimalJsLikeOne: DecimalJsLike = {
   d: [1230000], // array of digits
   e: -1, // exponent
   s: 1, // sign
+  toFixed: () => '1230000',
 };
 
 export const decimalJsLikeTwo: DecimalJsLike = {
   d: [1234], // array of digits
   e: -1, // exponent
   s: 1, // sign
+  toFixed: () => '1234',
 };
 
 ///////////////////////////////////////
