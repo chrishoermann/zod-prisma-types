@@ -310,7 +310,7 @@ export const UserSchema = z.object({
   enum: AnotherEnumSchema,
   id: z.string().cuid(),
   email: z.string(),
-  name: z.string(),
+  name: z.string().optional(),
   scalarList: z.string().array(),
   lat: z.number(),
   lng: z.number(),
