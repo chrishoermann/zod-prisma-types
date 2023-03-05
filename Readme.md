@@ -277,7 +277,7 @@ export const ModelWithDefaultValuesOptionalDefaultsSchema =
 
 > default: `false`
 
-If you need a separate model type that includes all the relation fields you can pass the following option. Due do the type annotation, that is needed to have recursive types, this model has some limitations since `z.ZodType<myType>` does not allow some object methods like `.merge()`, `.omit()`, etc.
+If you need a separate model type that includes all the relation fields you can pass the following option. Due to the type annotation, that is needed to have recursive types, this model has some limitations since `z.ZodType<myType>` does not allow some object methods like `.merge()`, `.omit()`, etc.
 
 ```prisma
 generator zod {
