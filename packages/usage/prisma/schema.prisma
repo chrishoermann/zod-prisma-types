@@ -16,8 +16,8 @@ datasource db {
 // -----------------------------------------------
 
 generator zod {
-  // provider                         = "ts-node-dev ../generator/src/bin.ts"
-  provider                         = "zod-prisma-types"
+  provider                         = "ts-node-dev ../generator/src/bin.ts"
+  // provider                         = "zod-prisma-types"
   output                           = "./generated/zod" // default is ./generated/zod
   useMultipleFiles                 = true // default is false 
   // createInputTypes                 = false // default is true
@@ -238,6 +238,27 @@ model StringRegexModel {
   stringThree String /// @zod.string.regex(/^d+s*d+$/) 
 }
 
+// WRONG MODEL LINKED TO INPUT TYPES
+// -----------------------------------------------
+
+// This model covers the following case:
+// input type: "UserUncheckedCreateWithoutPractice" should match model "User"
+// but matches model "Practice" because practice comes first in the models array.
+
+model Practice {
+  id           Int       @id @unique() @default(autoincrement())
+  profilePhoto Int?
+  user         UserTwo[]
+}
+
+model UserTwo {
+  id           Int       @id @unique() @default(autoincrement())
+  name         String?
+  profilePhoto String?   @db.Text
+  practiceId   Int?
+  practice     Practice? @relation(fields: [practiceId], references: [id])
+}
+
 // model Post {
 //   id    String   @id @default(auto()) @map("_id") @db.ObjectId
 //   title String   @default("")
@@ -290,3 +311,5 @@ model StringRegexModel {
 //   date                  DateTime    @unique @db.Date
 //   count                 Int
 // }
+
+// 
