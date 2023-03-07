@@ -5,23 +5,33 @@ import { ZodValidatorType } from './extendedDMMFFieldValidatorType';
 // TYPES
 /////////////////////////////////////////////////
 
+export type ZodArrayValidatorKeys = 'array';
+
 export type ZodStringValidatorKeys =
-  | 'min'
+  | ZodArrayValidatorKeys
   | 'max'
+  | 'min'
   | 'length'
   | 'email'
   | 'url'
+  | 'emoji'
   | 'uuid'
   | 'cuid'
+  | 'cuid2'
+  | 'ulid'
   | 'regex'
+  | 'includes'
   | 'startsWith'
   | 'endsWith'
-  | 'trim'
   | 'datetime'
-  | 'noDefault'
-  | 'array';
+  | 'ip'
+  | 'trim'
+  | 'toLowerCase'
+  | 'toUpperCase'
+  | 'noDefault';
 
 export type ZodNumberValidatorKeys =
+  | ZodArrayValidatorKeys
   | 'gt'
   | 'gte'
   | 'lt'
@@ -33,14 +43,23 @@ export type ZodNumberValidatorKeys =
   | 'nonnegative'
   | 'multipleOf'
   | 'finite'
-  | 'noDefault'
-  | 'array';
+  | 'noDefault';
 
-export type ZodDateValidatorKeys = 'min' | 'max' | 'array';
+export type ZodDateValidatorKeys = ZodArrayValidatorKeys | 'min' | 'max';
 
-export type ZodBigIntValidatorKeys = 'array';
+export type ZodBigIntValidatorKeys =
+  | ZodArrayValidatorKeys
+  | 'gt'
+  | 'gte'
+  | 'lt'
+  | 'lte'
+  | 'positive'
+  | 'nonpositive'
+  | 'negative'
+  | 'nonnegative'
+  | 'multipleOf';
 
-export type ZodCustomValidatorKeys = 'use' | 'omit' | 'array';
+export type ZodCustomValidatorKeys = ZodArrayValidatorKeys | 'use' | 'omit';
 
 export interface ScalarValidatorFnOpts {
   key: string;
@@ -66,12 +85,12 @@ export const STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
   /.(?<validator>min|max|length)(?<number>\([\d]+([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\))/;
 
 export const STRING_VALIDATOR_MESSAGE_REGEX =
-  /(?<validator>email|url|uuid|cuid|trim|datetime|noDefault)(\((?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\))/;
+  /(?<validator>email|url|emoji|uuid|cuid|cuid2|ulid|ip|toLowerCase|toUpperCase|trim|datetime|noDefault)(\((?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\))/;
 
 export const STRING_VALIDATOR_REGEX = /.(regex)(\((?<message>.*)\))/;
 
 export const STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX =
-  /.(?<validator>startsWith|endsWith)\((?<string>['"][\w\W]+['"])([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\)/;
+  /.(?<validator>startsWith|endsWith|includes)\((?<string>['"][\w\W]+['"])([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\)/;
 
 // NUMBER
 // ----------------------------------------
@@ -91,8 +110,11 @@ export const DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
 // BIGINT
 // ----------------------------------------
 
+export const BIGINT_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
+  /.(?<validator>gt|gte|lt|lte|multipleOf)(?<number>\([\w]+([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\))/;
+
 export const BIGINT_VALIDATOR_MESSAGE_REGEX =
-  /(?<validator>array)(\((?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\))/;
+  /(?<validator>positive|nonnegative|negative|nonpositive|array)(\((?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\))/;
 
 // CUSTOM
 // ----------------------------------------
@@ -122,18 +144,25 @@ export const ARRAY_VALIDATOR_MESSAGE_REGEX =
  */
 export const STRING_VALIDATOR_REGEX_MAP: ValidatorMap<ZodStringValidatorKeys> =
   {
-    min: STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
     max: STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
+    min: STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
     length: STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
     email: STRING_VALIDATOR_MESSAGE_REGEX,
     url: STRING_VALIDATOR_MESSAGE_REGEX,
+    emoji: STRING_VALIDATOR_MESSAGE_REGEX,
     uuid: STRING_VALIDATOR_MESSAGE_REGEX,
     cuid: STRING_VALIDATOR_MESSAGE_REGEX,
+    cuid2: STRING_VALIDATOR_MESSAGE_REGEX,
+    ulid: STRING_VALIDATOR_MESSAGE_REGEX,
     regex: STRING_VALIDATOR_REGEX,
+    includes: STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX,
     startsWith: STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX,
     endsWith: STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX,
-    trim: STRING_VALIDATOR_MESSAGE_REGEX,
     datetime: STRING_VALIDATOR_MESSAGE_REGEX,
+    ip: STRING_VALIDATOR_MESSAGE_REGEX,
+    trim: STRING_VALIDATOR_MESSAGE_REGEX,
+    toLowerCase: STRING_VALIDATOR_MESSAGE_REGEX,
+    toUpperCase: STRING_VALIDATOR_MESSAGE_REGEX,
     noDefault: STRING_VALIDATOR_MESSAGE_REGEX,
     array: ARRAY_VALIDATOR_MESSAGE_REGEX,
   };
@@ -184,6 +213,15 @@ export const DATE_VALIDATOR_REGEX_MAP: ValidatorMap<ZodDateValidatorKeys> = {
 
 export const BIGINT_VALIDATOR_REGEX_MAP: ValidatorMap<ZodBigIntValidatorKeys> =
   {
+    gt: BIGINT_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
+    gte: BIGINT_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
+    lt: BIGINT_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
+    lte: BIGINT_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
+    positive: BIGINT_VALIDATOR_MESSAGE_REGEX,
+    nonpositive: BIGINT_VALIDATOR_MESSAGE_REGEX,
+    negative: BIGINT_VALIDATOR_MESSAGE_REGEX,
+    nonnegative: BIGINT_VALIDATOR_MESSAGE_REGEX,
+    multipleOf: BIGINT_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
     array: ARRAY_VALIDATOR_MESSAGE_REGEX,
   };
 
@@ -194,14 +232,13 @@ export const CUSTOM_VALIDATOR_REGEX_MAP: ValidatorMap<ZodCustomValidatorKeys> =
     array: ARRAY_VALIDATOR_MESSAGE_REGEX,
   };
 
-export const ENUM_VALIDATOR_REGEX_MAP: ValidatorMap<ZodBigIntValidatorKeys> = {
+export const ENUM_VALIDATOR_REGEX_MAP: ValidatorMap<ZodArrayValidatorKeys> = {
   array: ARRAY_VALIDATOR_MESSAGE_REGEX,
 };
 
-export const OBJECT_VALIDATOR_REGEX_MAP: ValidatorMap<ZodBigIntValidatorKeys> =
-  {
-    array: ARRAY_VALIDATOR_MESSAGE_REGEX,
-  };
+export const OBJECT_VALIDATOR_REGEX_MAP: ValidatorMap<ZodArrayValidatorKeys> = {
+  array: ARRAY_VALIDATOR_MESSAGE_REGEX,
+};
 
 /////////////////////////////////////////////////
 // CLASS

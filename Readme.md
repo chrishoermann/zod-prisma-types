@@ -868,11 +868,11 @@ model MyModel {
 
 ## BigInt validators
 
-To add custom validators to the prisma `BigInt` field you can use the `@zod.bigint` key. Due to the fact that there are no custom validators provided by `zod` on `z.bigint()` you can only add customized type errors to the field.
+To add custom validators to the prisma `BigInt` field you can use the `@zod.bigint` key. On this key you can use all string-specific validators that are mentioned in the [`zod-docs`](https://github.com/colinhacks/zod#bigints). You can also add a custom error message to each validator as stated in the docs.
 
 ```prisma
 model MyModel {
-  myField BigInt /// @zod.bigint({ invalid_type_error: "error", ... })
+  myField BigInt /// @zod.bigintlt(5n, { message: "lt error" }).gt(6n, { message: "gt error" })({ invalid_type_error: "error", ... }).[...chain more validators]
 }
 ```
 

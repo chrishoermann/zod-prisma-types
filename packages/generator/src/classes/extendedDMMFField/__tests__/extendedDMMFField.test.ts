@@ -388,6 +388,12 @@ describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
     ).toBe(true);
     expect(
       map({
+        key: 'emoji',
+        pattern: '.emoji()',
+      }),
+    ).toBe(true);
+    expect(
+      map({
         key: 'uuid',
         pattern: '.uuid()',
       }),
@@ -400,6 +406,30 @@ describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
     ).toBe(true);
     expect(
       map({
+        key: 'cuid2',
+        pattern: '.cuid2()',
+      }),
+    ).toBe(true);
+    expect(
+      map({
+        key: 'ulid',
+        pattern: '.ulid()',
+      }),
+    ).toBe(true);
+    expect(
+      map({
+        key: 'regex',
+        pattern: '.regex(/^\\d+\\s*\\d+$/)',
+      }),
+    ).toBe(true);
+    expect(
+      map({
+        key: 'includes',
+        pattern: '.includes("some")',
+      }),
+    ).toBe(true);
+    expect(
+      map({
         key: 'startsWith',
         pattern: '.startsWith("some")',
       }),
@@ -408,6 +438,18 @@ describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
       map({
         key: 'startsWith',
         pattern: '.startsWith("some")',
+      }),
+    ).toBe(true);
+    expect(
+      map({
+        key: 'datetime',
+        pattern: '.datetime()',
+      }),
+    ).toBe(true);
+    expect(
+      map({
+        key: 'ip',
+        pattern: '.ip()',
       }),
     ).toBe(true);
     expect(
@@ -418,8 +460,14 @@ describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
     ).toBe(true);
     expect(
       map({
-        key: 'datetime',
-        pattern: '.datetime()',
+        key: 'toLowerCase',
+        pattern: '.toLowerCase()',
+      }),
+    ).toBe(true);
+    expect(
+      map({
+        key: 'toUpperCase',
+        pattern: '.toUpperCase()',
       }),
     ).toBe(true);
     expect(
@@ -470,6 +518,12 @@ describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
     ).toBe(true);
     expect(
       map({
+        key: 'emoji',
+        pattern: '.emoji({ message: "someMessage" })',
+      }),
+    ).toBe(true);
+    expect(
+      map({
         key: 'uuid',
         pattern: '.uuid({ message: "someMessage" })',
       }),
@@ -482,6 +536,30 @@ describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
     ).toBe(true);
     expect(
       map({
+        key: 'cuid2',
+        pattern: '.cuid2({ message: "someMessage" })',
+      }),
+    ).toBe(true);
+    expect(
+      map({
+        key: 'ulid',
+        pattern: '.ulid({ message: "someMessage" })',
+      }),
+    ).toBe(true);
+    // expect(
+    //   map({
+    //     key: 'regex',
+    //     pattern: '.regex(/^\\d+\\s*\\d+$/)',
+    //   }),
+    // ).toBe(true);
+    expect(
+      map({
+        key: 'includes',
+        pattern: '.includes("some", { message: "someMessage" })',
+      }),
+    ).toBe(true);
+    expect(
+      map({
         key: 'startsWith',
         pattern: '.startsWith("some", { message: "someMessage" })',
       }),
@@ -490,6 +568,12 @@ describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
       map({
         key: 'startsWith',
         pattern: '.startsWith("some", { message: "someMessage" })',
+      }),
+    ).toBe(true);
+    expect(
+      map({
+        key: 'datetime',
+        pattern: '.datetime({ message: "someMessage" })',
       }),
     ).toBe(true);
     expect(
@@ -500,8 +584,14 @@ describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
     ).toBe(true);
     expect(
       map({
-        key: 'datetime',
-        pattern: '.datetime({ message: "someMessage" })',
+        key: 'toLowerCase',
+        pattern: '.toLowerCase({ message: "someMessage" })',
+      }),
+    ).toBe(true);
+    expect(
+      map({
+        key: 'toUpperCase',
+        pattern: '.toUpperCase({ message: "someMessage" })',
       }),
     ).toBe(true);
     expect(map({ key: 'noDefault', pattern: '.noDefault()' })).toBe(true);
@@ -807,6 +897,60 @@ describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
     const map = field?.['_validatorMap']['bigint'];
     expect(
       map({
+        key: 'gt',
+        pattern: '.gt(2n)',
+      }),
+    ).toBe(true);
+    expect(
+      map({
+        key: 'gte',
+        pattern: '.gte(2n)',
+      }),
+    ).toBe(true);
+    expect(
+      map({
+        key: 'lt',
+        pattern: '.lt(2n)',
+      }),
+    ).toBe(true);
+    expect(
+      map({
+        key: 'lte',
+        pattern: '.lte(2n)',
+      }),
+    ).toBe(true);
+    expect(
+      map({
+        key: 'multipleOf',
+        pattern: '.multipleOf(2n)',
+      }),
+    ).toBe(true);
+    expect(
+      map({
+        key: 'positive',
+        pattern: '.positive()',
+      }),
+    ).toBe(true);
+    expect(
+      map({
+        key: 'nonpositive',
+        pattern: '.nonpositive()',
+      }),
+    ).toBe(true);
+    expect(
+      map({
+        key: 'negative',
+        pattern: '.negative()',
+      }),
+    ).toBe(true);
+    expect(
+      map({
+        key: 'nonnegative',
+        pattern: '.nonnegative()',
+      }),
+    ).toBe(true);
+    expect(
+      map({
         key: 'array',
         pattern: '.array(.length(2))',
       }),
@@ -815,7 +959,60 @@ describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
 
   it(`should pass ivalid data to to validator map`, async () => {
     const map = field?.['_validatorMap']['bigint'];
-
+    expect(
+      map({
+        key: 'gt',
+        pattern: '.gt(2n, { message: "someMessage" })',
+      }),
+    ).toBe(true);
+    expect(
+      map({
+        key: 'gte',
+        pattern: '.gte(2n, { message: "someMessage" })',
+      }),
+    ).toBe(true);
+    expect(
+      map({
+        key: 'lt',
+        pattern: '.lt(2n, { message: "someMessage" })',
+      }),
+    ).toBe(true);
+    expect(
+      map({
+        key: 'lte',
+        pattern: '.lte(2n, { message: "someMessage" })',
+      }),
+    ).toBe(true);
+    expect(
+      map({
+        key: 'multipleOf',
+        pattern: '.multipleOf(2n, { message: "someMessage" })',
+      }),
+    ).toBe(true);
+    expect(
+      map({
+        key: 'positive',
+        pattern: '.positive({ message: "someMessage" })',
+      }),
+    ).toBe(true);
+    expect(
+      map({
+        key: 'nonpositive',
+        pattern: '.nonpositive({ message: "someMessage" })',
+      }),
+    ).toBe(true);
+    expect(
+      map({
+        key: 'negative',
+        pattern: '.negative({ message: "someMessage" })',
+      }),
+    ).toBe(true);
+    expect(
+      map({
+        key: 'nonnegative',
+        pattern: '.nonnegative({ message: "someMessage" })',
+      }),
+    ).toBe(true);
     expect(() =>
       map({
         key: 'array',
