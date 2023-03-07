@@ -13,7 +13,7 @@ export const writeInclude = (
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
-    writeImport('{ type Prisma }', prismaClientPath);
+    writeImport('type { Prisma }', prismaClientPath);
     writeImportSet(model.includeImports);
   }
 

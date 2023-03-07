@@ -8,7 +8,7 @@ export const writeIsValidDecimalInput = ({
   const { useMultipleFiles } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImport('{ type DecimalJSLike }', `./DecimalJsLikeSchema`);
+    writeImport('type { DecimalJSLike }', `./DecimalJsLikeSchema`);
   }
 
   writer

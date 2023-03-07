@@ -13,7 +13,7 @@ export const writeCountArgs = (
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
-    writeImport('{ type Prisma }', prismaClientPath);
+    writeImport('type { Prisma }', prismaClientPath);
     writeImport(
       `{ ${model.name}CountOutputTypeSelectSchema }`,
       `./${model.name}CountOutputTypeSelectSchema`,
