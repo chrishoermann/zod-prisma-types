@@ -3,12 +3,12 @@ import {
   DecimalListSchema,
   DecimalSchema,
   DECIMAL_STRING_REGEX,
-  isValidDecimalInput,
 } from './implementations/decimalSchema';
 import { client } from './trpc/client';
 import { getServer } from './trpc/server';
 import Decimal from 'decimal.js';
 import { DecimalJsLike } from '@prisma/client/runtime';
+import { isValidDecimalInput } from '../prisma/generated/zod';
 
 ///////////////////////////////////////
 // CONSTANTS
@@ -33,7 +33,7 @@ export const decimalJsLikeTwo: DecimalJsLike = {
 ///////////////////////////////////////
 
 const isDecimalJsLike = (v: any): v is DecimalJsLike => {
-  return !!v && 'd' in v && 'e' in v && 's' in v;
+  return !!v && 'd' in v && 'e' in v && 's' in v && 'toFixed' in v;
 };
 
 ///////////////////////////////////////
@@ -122,7 +122,7 @@ it('should be a valid input when a decimalJSLike is provided to "isValidDecimalI
 
 it('should be able to use prisma decimal as input in DecimalSchema', () => {
   const parsedDecimal = DecimalSchema.parse(new Prisma.Decimal(1.1));
-  expect(Prisma.Decimal.isDecimal(parsedDecimal)).toBe(true);
+  expect(isDecimalJsLike(parsedDecimal)).toBe(true);
 });
 
 it('should be able to use string as input in DecimalSchema', () => {
@@ -161,8 +161,8 @@ it('should be able to use prisma decimal as input in DecimalListSchema', () => {
     new Prisma.Decimal(1.123),
   ]);
 
-  expect(Prisma.Decimal.isDecimal(parsedDecimals[0])).toBe(true);
-  expect(Prisma.Decimal.isDecimal(parsedDecimals[1])).toBe(true);
+  expect(isDecimalJsLike(parsedDecimals[0])).toBe(true);
+  expect(isDecimalJsLike(parsedDecimals[1])).toBe(true);
 });
 
 it('should be able to use decimalJS as input in DecimalListSchema', () => {

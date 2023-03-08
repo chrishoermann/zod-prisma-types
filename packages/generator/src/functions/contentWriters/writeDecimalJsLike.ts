@@ -5,16 +5,17 @@ export const writeDecimalJsLike = ({
   dmmf,
   getSingleFileContent = false,
 }: ContentWriterOptions) => {
-  const { useMultipleFiles } = dmmf.generatorConfig;
+  const { useMultipleFiles, prismaClientPath } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
+    writeImport('type { DecimalJsLike }', `${prismaClientPath}/runtime`);
   }
 
   writer
     .blankLine()
     .writeLine(
-      `export const DecimalJSLikeSchema = z.object({ d: z.array(z.number()), e: z.number(), s: z.number() });`,
+      `export const DecimalJSLikeSchema: z.ZodType<DecimalJsLike> = z.object({ d: z.array(z.number()), e: z.number(), s: z.number(), toFixed: z.function().args().returns(z.string()), });`,
     )
     .newLine()
     .writeLine(

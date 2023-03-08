@@ -20,7 +20,9 @@ export const writeIsValidDecimalInput = ({
     .writeLine(`export const isValidDecimalInput =`)
     .withIndentationLevel(1, () => {
       writer
-        .write(`(v?: null | string | number | DecimalJSLike) => `)
+        .write(
+          `(v?: null | string | number | DecimalJSLike): v is string | number | DecimalJSLike => `,
+        )
         .inlineBlock(() => {
           writer
             .writeLine(`if (!v) return false;`)
@@ -28,7 +30,7 @@ export const writeIsValidDecimalInput = ({
             .withIndentationLevel(3, () => {
               writer
                 .writeLine(
-                  `(typeof v === 'object' && 'd' in v && 'e' in v && 's' in v) ||`,
+                  `(typeof v === 'object' && 'd' in v && 'e' in v && 's' in v && 'toFixed' in v) ||`,
                 )
                 .writeLine(
                   `(typeof v === 'string' && DECIMAL_STRING_REGEX.test(v)) ||`,
