@@ -125,7 +125,7 @@ export class ExtendedDMMFSchemaArg
    * @returns `true` if the arg.name matches one of `create|update|upsert|delete|data`
    */
   rewriteArgWithNewType() {
-    return !!this.name.match(/create|update|upsert|delete|data/);
+    return /create|update|upsert|delete|data/.test(this.name);
   }
 
   getImports(fieldName: string) {

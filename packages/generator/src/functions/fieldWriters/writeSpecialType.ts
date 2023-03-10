@@ -41,46 +41,38 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
 
   if (inputType.isDecimalType) {
     if (inputType.isList) {
-      return (
-        writer
-          .write(`z.union([`)
-          .write(`z.number().array(),`)
-          .write(`z.string().array(),`)
-          .write(`DecimalJSLikeListSchema,`)
-          .write(`]`)
-          .conditionalWrite(!!zodCustomErrors, `, ${zodCustomErrors!}`)
-          .write(`)`)
-
-          .write(`.refine((v) => `)
-          .write(
-            `Array.isArray(v) && (v as any[]).every((v) => isValidDecimalInput(v)),`,
-          )
-          .write(` { message: 'Must be a Decimal' })`)
-          // .write(
-          //   `.transform(Array.isArray(v) && (v as any[]).every((v) => new Prisma.Decimal(v)))`,
-          // )
-          .conditionalWrite(isOptional, `.optional()`)
-          .conditionalWrite(isNullable, `.nullable()`)
-          .conditionalWrite(writeComma, `,`)
-      );
-    }
-
-    return (
-      writer
+      return writer
         .write(`z.union([`)
-        .write(`z.number(),`)
-        .write(`z.string(),`)
-        .write(`DecimalJSLikeSchema,`)
+        .write(`z.number().array(),`)
+        .write(`z.string().array(),`)
+        .write(`DecimalJSLikeListSchema,`)
         .write(`]`)
         .conditionalWrite(!!zodCustomErrors, `, ${zodCustomErrors!}`)
         .write(`)`)
-        .write(`.refine((v) => isValidDecimalInput(v),`)
+
+        .write(`.refine((v) => `)
+        .write(
+          `Array.isArray(v) && (v as any[]).every((v) => isValidDecimalInput(v)),`,
+        )
         .write(` { message: 'Must be a Decimal' })`)
-        // .write(`.transform((v) => new Prisma.Decimal(v))`)
         .conditionalWrite(isOptional, `.optional()`)
         .conditionalWrite(isNullable, `.nullable()`)
-        .conditionalWrite(writeComma, `,`)
-    );
+        .conditionalWrite(writeComma, `,`);
+    }
+
+    return writer
+      .write(`z.union([`)
+      .write(`z.number(),`)
+      .write(`z.string(),`)
+      .write(`DecimalJSLikeSchema,`)
+      .write(`]`)
+      .conditionalWrite(!!zodCustomErrors, `, ${zodCustomErrors!}`)
+      .write(`)`)
+      .write(`.refine((v) => isValidDecimalInput(v),`)
+      .write(` { message: 'Must be a Decimal' })`)
+      .conditionalWrite(isOptional, `.optional()`)
+      .conditionalWrite(isNullable, `.nullable()`)
+      .conditionalWrite(writeComma, `,`);
   }
 
   if (inputType.isJsonType) {

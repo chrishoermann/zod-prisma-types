@@ -57,9 +57,9 @@ export class ExtendedDMMFInputType
     this.omitFields = this._setOmitFields();
     this.imports = this._setImports();
 
-    if (this.name === 'ProfileWhereUniqueInput') {
-      console.log(type);
-    }
+    // if (this.name === 'ProfileWhereUniqueInput') {
+    //   console.log(type);
+    // }
   }
 
   /**
@@ -80,11 +80,11 @@ export class ExtendedDMMFInputType
         (modelField) => modelField.name === field.name,
       );
 
-      const hasConstraints = this.constraints.fields?.includes(field.name);
+      // const hasConstraints = this.constraints.fields?.includes(field.name);
 
-      if (this.name === 'ProfileWhereUniqueInput') {
-        console.log({ fieldname: field.name, hasConstraints });
-      }
+      // if (this.name === 'ProfileWhereUniqueInput') {
+      //   console.log({ fieldname: field.name, hasConstraints });
+      // }
 
       // validators and omitField should only be written for create and update types.
       // this prevents validation in e.g. search queries in "where inputs",

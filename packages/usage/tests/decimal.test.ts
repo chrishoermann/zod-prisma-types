@@ -97,6 +97,10 @@ it('should not match a string number with characters to a decimal', () => {
 // isValidDecimalInput
 // ------------------------------------
 
+it('should be a valid input when a 0 as number is provided to "isValidDecimalInput"', () => {
+  expect(isValidDecimalInput(0)).toBe(true);
+});
+
 it('should be a valid input when a number is provided to "isValidDecimalInput"', () => {
   expect(isValidDecimalInput(0.123)).toBe(true);
 });

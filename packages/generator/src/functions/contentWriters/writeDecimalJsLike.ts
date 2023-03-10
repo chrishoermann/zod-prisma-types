@@ -9,17 +9,13 @@ export const writeDecimalJsLike = ({
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
-    writeImport('type { DecimalJsLike }', `${prismaClientPath}/runtime`);
+    writeImport('type { Prisma }', `${prismaClientPath}`);
   }
 
   writer
     .blankLine()
     .writeLine(
-      `export const DecimalJSLikeSchema: z.ZodType<DecimalJsLike> = z.object({ d: z.array(z.number()), e: z.number(), s: z.number(), toFixed: z.function().args().returns(z.string()), });`,
-    )
-    .newLine()
-    .writeLine(
-      `export type DecimalJSLike = z.infer<typeof DecimalJSLikeSchema>;`,
+      `export const DecimalJSLikeSchema: z.ZodType<Prisma.DecimalJsLike> = z.object({ d: z.array(z.number()), e: z.number(), s: z.number(), toFixed: z.function().args().returns(z.string()), });`,
     );
 
   if (useMultipleFiles && !getSingleFileContent) {

@@ -18,7 +18,7 @@ export const writeSingleFileImportStatements: WriteStatements = (
   if (dmmf.schema.hasJsonTypes) {
     writeImport(`{ Prisma }`, `${prismaClientPath}`);
   } else {
-    writeImport(`{ type Prisma }`, `${prismaClientPath}`);
+    writeImport(`type { Prisma }`, `${prismaClientPath}`);
   }
 
   if (dmmf.customImports) {

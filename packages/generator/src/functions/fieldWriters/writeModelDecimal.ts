@@ -20,11 +20,9 @@ export const writeDecimal = ({
     .write(`)`)
     .write(`.refine((v) => isValidDecimalInput(v),`)
     .write(
-      ` { message: 'Field "${field.formattedNames.original}" must be a Decimal', `,
+      ` { message: "Field '${field.formattedNames.original}' must be a Decimal. Location: ['Models', '${model.formattedNames.original}']", `,
     )
-    .write(`path: ['Models', '${model.formattedNames.original}']`)
     .write(` })`);
-  // .write(`.transform((v) => new Prism.Decimal(v))`);
 
   writeFieldAdditions({ writer, field, writeOptionalDefaults });
 };

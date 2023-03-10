@@ -1,15 +1,15 @@
 import { DMMF } from '@prisma/generator-helper';
 
+import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
+import { ExtendedDMMFModel } from './extendedDMMFModel';
+import { ExtendedDMMFSchemaArg } from './extendedDMMFSchemaArg';
+import { FormattedNames } from './formattedNames';
 import {
   FilterdPrismaAction,
   PRISMA_ACTION_ARG_MAP,
   PRISMA_ACTION_ARRAY,
 } from '../constants/objectMaps';
 import { GeneratorConfig } from '../schemas';
-import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
-import { ExtendedDMMFModel } from './extendedDMMFModel';
-import { ExtendedDMMFSchemaArg } from './extendedDMMFSchemaArg';
-import { FormattedNames } from './formattedNames';
 
 /////////////////////////////////////////////////
 // REGEX
@@ -23,6 +23,9 @@ const WRITE_INCLUDE_SELECT_FIELDS_REGEX =
   /findUnique|findUniqueOrThrow|findFirst|findFirstOrThrow|findMany|create|update|upsert|delete/;
 
 const WRITE_NO_INCLUDE_SELECT_FIELDS_REGEX = /createMany|updateMany|deleteMany/;
+
+// const MUTEX_FIELDS_REGEX = /create|update|upsert/;
+// const MUTEX_FIELDS_MANY_REGEX = /createMany|updateMany/;
 
 /////////////////////////////////////////////////
 // CLASS
@@ -294,8 +297,8 @@ export class ExtendedDMMFSchemaField
     );
   }
 
-  private _addIncludeToOmitUnionArray(omitUnionArray: string[]) {
-    if (
+  private _shouldAddIncludeToOmitUnionArray() {
+    return (
       // "include" or "select" should be added to omit union when they match the regex pattern
       this._setWriteSelectAndIncludeArgs() &&
       // "include" should be added to omit union when field is of type "outputObjectType"
@@ -304,23 +307,33 @@ export class ExtendedDMMFSchemaField
       !this.generatorConfig.addIncludeType &&
       // "include" should be added to omit union when it has relation fields
       this.linkedModel?.hasRelationFields
-    ) {
-      omitUnionArray.push('"include"');
-    }
+    );
   }
 
-  private _addSelectToOmitUnionArray(omitUnionArray: string[]) {
-    if (
+  private _shouldAddSelectToOmitUnionArray() {
+    return (
       // "include" or "select" should be added to omit union when they match the regex pattern
       this._setWriteSelectAndIncludeArgs() &&
       // "select" should be added to omit union when field is of type "outputObjectType"
       this._setWriteSelectField() &&
       // "select" should be added to omit union when it is set to be omitted via generator config
       !this.generatorConfig.addSelectType
-    ) {
-      omitUnionArray.push('"select"');
-    }
+    );
   }
+
+  /**
+   * Used to determine if the field contains a union that
+   * should be mutually exclusive as in prismas `Without<..>` type
+   * used in `create`, `update` and `upsert` args.
+   */
+  // private _shouldAddDataToOmitUnionArray() {
+  //   return (
+  //     // check if the field contains `create`, `upsert`o `update` in its name
+  //     MUTEX_FIELDS_REGEX.test(this.name) &&
+  //     // check if the field does not contains `createMany` or `updateMany` in its name
+  //     !MUTEX_FIELDS_MANY_REGEX.test(this.name)
+  //   );
+  // }
 
   private _getOmitFieldsUnion(omitUnionArray: string[]) {
     return omitUnionArray.join(' | ');
@@ -343,8 +356,17 @@ export class ExtendedDMMFSchemaField
   private _setCustomArgType() {
     const omitUnionArray: string[] = [];
 
-    this._addSelectToOmitUnionArray(omitUnionArray);
-    this._addIncludeToOmitUnionArray(omitUnionArray);
+    // if (this._shouldAddDataToOmitUnionArray()) {
+    //   omitUnionArray.push('"data"');
+    // }
+
+    if (this._shouldAddSelectToOmitUnionArray()) {
+      omitUnionArray.push('"select"');
+    }
+
+    if (this._shouldAddIncludeToOmitUnionArray()) {
+      omitUnionArray.push('"include"');
+    }
 
     if (this._shouldAddOmittedFieldsToOmitUnionArray()) {
       this._addOmittedFieldsToOmitUnionArray(omitUnionArray);
@@ -389,6 +411,15 @@ export class ExtendedDMMFSchemaField
   }
 
   /**
+   * Returns the union of types or a single type.
+   */
+  private _getCustomArgsType(arg: ExtendedDMMFSchemaArg) {
+    return arg.hasMultipleTypes
+      ? this._getCustomArgsMultipleTypes(arg)
+      : this._getCustomArgsSingleType(arg);
+  }
+
+  /**
    * If the arg has multiple types, the type is a union of the types.
    */
   private _getCustomArgsMultipleTypes(arg: ExtendedDMMFSchemaArg) {
@@ -407,15 +438,6 @@ export class ExtendedDMMFSchemaField
       return `z.infer<typeof ${arg.inputTypes[0].type}Schema>[]`;
     }
     return `z.infer<typeof ${arg.inputTypes[0].type}Schema>`;
-  }
-
-  /**
-   * Returns the union of types or a single type.
-   */
-  private _getCustomArgsType(arg: ExtendedDMMFSchemaArg) {
-    return arg.hasMultipleTypes
-      ? this._getCustomArgsMultipleTypes(arg)
-      : this._getCustomArgsSingleType(arg);
   }
 
   // HELPER METHODS
