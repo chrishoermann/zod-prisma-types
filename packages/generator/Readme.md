@@ -16,6 +16,10 @@ Since I'm maintaining the generator in my spare time consider buying me a coffee
 
 Be aware that some generator options have been removed, a few new have been added, the behaviour of custom imports has changed and ts-morph is no longer needed to generate files in v2.0.0.
 
+## Known issues
+
+> Since `zod version 3.21.2` some schemas throw a typescript error. Please use `zod version 3.21.1` until this issue is resolved.
+
 ## Table of contents
 
 - [About this project](#about-this-project)
@@ -591,27 +595,38 @@ The above model would generate the following schema:
 // DECIMAL HELPERS
 //------------------------------------------------------
 
-export const DecimalJSLikeSchema = z.object({
+export const DecimalJSLikeSchema: z.ZodType<Prisma.DecimalJsLike> = z.object({
   d: z.array(z.number()),
   e: z.number(),
   s: z.number(),
+  toFixed: z.function().args().returns(z.string()),
 });
 
-export type DecimalJSLike = z.infer<typeof DecimalJSLikeSchema>;
+export const DecimalJSLikeListSchema: z.ZodType<Prisma.DecimalJsLike[]> = z
+  .object({
+    d: z.array(z.number()),
+    e: z.number(),
+    s: z.number(),
+    toFixed: z.function().args().returns(z.string()),
+  })
+  .array();
 
 export const DECIMAL_STRING_REGEX = /^[0-9.,e+-bxffo_cp]+$|Infinity|NaN/;
 
 export const isValidDecimalInput = (
-  v?: null | string | number | DecimalJsLike,
-) => {
-  if (!v) return false;
+  v?: null | string | number | Prisma.DecimalJsLike,
+): v is string | number | Prisma.DecimalJsLike => {
+  if (v === undefined || v === null) return false;
   return (
-    (typeof v === 'object' && 'd' in v && 'e' in v && 's' in v) ||
+    (typeof v === 'object' &&
+      'd' in v &&
+      'e' in v &&
+      's' in v &&
+      'toFixed' in v) ||
     (typeof v === 'string' && DECIMAL_STRING_REGEX.test(v)) ||
     typeof v === 'number'
   );
 };
-
 // SCHEMA
 //------------------------------------------------------
 
@@ -620,8 +635,8 @@ export const MyModelSchema = z.object({
   decimal: z
     .union([z.number(), z.string(), DecimalJSLikeSchema])
     .refine((v) => isValidDecimalInput(v), {
-      message: 'Field "decimal" must be a Decimal',
-      path: ['Models', 'DecimalModel'],
+      message:
+        "Field 'decimal' must be a Decimal. Location: ['Models', 'DecimalModel']",
     }),
 });
 ```

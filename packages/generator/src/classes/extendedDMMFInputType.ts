@@ -36,7 +36,9 @@ export class ExtendedDMMFInputType
   readonly isDecimalField: boolean;
   readonly omitFields: string[] = [];
   readonly imports: Set<string>;
+  /** @deprecated */
   readonly isWhereUniqueInput?: boolean;
+  readonly extendedWhereUniqueFields?: ExtendedDMMFSchemaArg[][];
 
   constructor(
     readonly generatorConfig: GeneratorConfig,
@@ -56,10 +58,9 @@ export class ExtendedDMMFInputType
     this.isDecimalField = this._setIsDecimalField();
     this.omitFields = this._setOmitFields();
     this.imports = this._setImports();
-
-    // if (this.name === 'ProfileWhereUniqueInput') {
-    //   console.log(type);
-    // }
+    this.extendedWhereUniqueFields = this._setExtendedWhereUniqueFields(
+      type.fields,
+    );
   }
 
   /**
@@ -79,12 +80,6 @@ export class ExtendedDMMFInputType
       const linkedField = this.linkedModel?.fields.find(
         (modelField) => modelField.name === field.name,
       );
-
-      // const hasConstraints = this.constraints.fields?.includes(field.name);
-
-      // if (this.name === 'ProfileWhereUniqueInput') {
-      //   console.log({ fieldname: field.name, hasConstraints });
-      // }
 
       // validators and omitField should only be written for create and update types.
       // this prevents validation in e.g. search queries in "where inputs",
@@ -177,6 +172,69 @@ export class ExtendedDMMFInputType
     }
 
     return new Set(fieldImports);
+  }
+
+  private _getExtendedWhereUniqueFieldCombinations(
+    arr: DMMF.SchemaArg[],
+  ): DMMF.SchemaArg[][] {
+    const result: DMMF.SchemaArg[][] = [];
+
+    function combine(start: number, soFar: DMMF.SchemaArg[]) {
+      if (soFar.length === arr.length) {
+        result.push(soFar.slice());
+        return;
+      }
+
+      // include current element
+      combine(start + 1, [...soFar, { ...arr[start], isRequired: true }]);
+
+      // exclude current element
+      combine(start + 1, [...soFar, { ...arr[start], isRequired: false }]);
+    }
+
+    combine(0, []);
+    return result;
+  }
+
+  private _setExtendedWhereUniqueFields(fields: DMMF.SchemaArg[]) {
+    if (!this.constraints.fields || !this.name.includes('WhereUniqueInput')) {
+      return undefined;
+    }
+
+    // get the DMMF.SchemaArg for all fields that are part of the constraints
+    // that are marked for the extended where unique input
+    const extendedWhereUniqueFields = this.constraints.fields
+      .map((fieldName) => {
+        return fields.find((field) => field.name === fieldName);
+      })
+      .filter((field): field is DMMF.SchemaArg => field !== undefined);
+
+    // get all combinations of bool values on isRequired fields
+    // for the provided set of fields
+    const combinations = this._getExtendedWhereUniqueFieldCombinations(
+      extendedWhereUniqueFields,
+    );
+
+    // filter out combinations where isRequired is False because
+    // these cominations are included in the all optional type that is
+    // later cominened with the generated union type.
+    const filteredCombinations = combinations.filter(
+      (combination) => !combination.every((field) => !field.isRequired),
+    );
+
+    // filter out all fields that are not required
+    // since they are added via the all optional type
+    const extendedFilterdCombinations = filteredCombinations.map(
+      (combination) => {
+        return combination.filter((field) => field.isRequired);
+      },
+    );
+
+    // create an ExtendedDMMFSchemaArg for each combination field
+    // so the writer functions can be used as is
+    return extendedFilterdCombinations.map((combination) => {
+      return this._setFields(combination);
+    });
   }
 
   hasOmitFields() {

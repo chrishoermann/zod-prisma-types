@@ -21,12 +21,34 @@ interface B {
   c: string;
 }
 
-type C = Without<A, B>;
+type C = Without<A, B> & B;
+
+type CB = C & B;
+
+const c: C = {
+  a: 'a',
+  c: 'c',
+  b: undefined,
+};
+
+type D = Without<B, A>;
+
+type XOR<T, U> = T extends object
+  ? U extends object
+    ? (Without<T, U> & U) | (Without<U, T> & T)
+    : U
+  : T;
+
+type CXor = XOR<A, B>;
 
 type UserCreateWithout = Without<
   Prisma.UserCreateInput,
   Prisma.UserUncheckedCreateInput
 >;
+
+const mergedSchema = UserCreateInputSchema.and(UserUncheckedCreateInputSchema);
+
+type user = z.infer<typeof mergedSchema>;
 
 export const UserCreateArgsSchema: z.ZodType<Prisma.UserCreateArgs> = z
   .object({

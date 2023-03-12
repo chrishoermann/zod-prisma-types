@@ -1,8 +1,6 @@
 import { GeneratorOptions } from '@prisma/generator-helper';
 import path from 'path';
 
-// currently a bit hacky but does the job
-
 export const getPrismaClientOutputPath = (options: GeneratorOptions) => {
   // find the prisma client config
   const prismaClientOptions = options.otherGenerators.find(
@@ -22,27 +20,6 @@ export const getPrismaClientOutputPath = (options: GeneratorOptions) => {
   if (options.generator.config?.['prismaClientPath']) {
     return { prismaClientPath: options.generator.config?.['prismaClientPath'] };
   }
-  // if (options.generator.config?.['prismaClientPath']) {
-  //   const clientPath: string[] = [process.cwd()];
-
-  //   // if the prisma schema is located in the prisma folder
-  //   // the path needs to be adjusted
-  //   if (prismaClientOptions.output.value.includes('prisma')) {
-  //     clientPath.push('prisma');
-  //   }
-
-  //   clientPath.push(options.generator.config?.['prismaClientPath']);
-
-  //   const customPrismaClientPath = path
-  //     .relative(options.generator.output.value, path.join(...clientPath))
-  //     .replace(/\\/g, '/');
-
-  //   if (options.generator.config?.['useMultipleFiles']) {
-  //     return { prismaClientPath: `../${customPrismaClientPath}` };
-  //   }
-
-  //   return { prismaClientPath: customPrismaClientPath };
-  // }
 
   // get the relative path to the prisma schema
   const prismaClientPath = path

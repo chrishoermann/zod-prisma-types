@@ -425,7 +425,9 @@ export class ExtendedDMMFSchemaField
   private _getCustomArgsMultipleTypes(arg: ExtendedDMMFSchemaArg) {
     return arg.inputTypes
       .map((inputType) => {
-        return `z.infer<typeof ${inputType.type}Schema>`;
+        return `z.infer<typeof ${inputType.type}Schema>${
+          inputType.isList ? '[]' : ''
+        }`;
       })
       .join(' | ');
   }

@@ -4,8 +4,8 @@
 generator client {
   provider        = "prisma-client-js"
   // output   = "./generated/client"
-  // previewFeatures = ["views", "extendedWhereUnique"]
-  previewFeatures = ["views"]
+  previewFeatures = ["views", "extendedWhereUnique"]
+  // previewFeatures = ["views"]
 }
 
 datasource db {
@@ -20,7 +20,7 @@ generator zod {
   provider                         = "ts-node-dev ../generator/src/bin.ts"
   // provider                         = "zod-prisma-types"
   output                           = "./generated/zod" // default is ./generated/zod
-  // useMultipleFiles                 = true // default is false 
+  useMultipleFiles                 = true // default is false 
   // createInputTypes                 = false // default is true
   // createModelTypes                 = false // default is true
   // addInputTypeValidation           = false // default is true
@@ -34,11 +34,6 @@ generator zod {
   // coerceDate                       = true // default is true
   // writeNullishInModelTypes         = false // default is false
   // prismaClientPath                 = "./generated/client" // optional
-}
-
-generator zodPrismaGen {
-  provider = "prisma-zod-generator"
-  output   = "./generated/zodPrisma"
 }
 
 // MIXED CASE ENUMS AND MODELS
@@ -237,7 +232,7 @@ model DateModel {
 
 // Used for testing if the string regex validator is correctly transformed
 
-/// @zod.import(["import * as s from '$lib/schemas'"])
+// @zod.import(["import * as s from '$lib/schemas'"])
 model StringRegexModel {
   id          Int    @id @default(autoincrement())
   string      String /// @zod.string.regex(/^[a-z0-9]+$/i, { message: "error" })
@@ -264,6 +259,34 @@ model UserTwo {
   profilePhoto String?   @db.Text
   practiceId   Int?
   practice     Practice? @relation(fields: [practiceId], references: [id])
+}
+
+// EXTENDED WHERE UNIQUE INPUT
+// -----------------------------------------------
+
+// The following models are used to test if the extended
+// where unique input gets created correctly even with
+// multiple unique fields.
+
+model ExtendedWUOne {
+  id       Int    @id @default(autoincrement())
+  email    String
+  username String
+  name     String
+}
+
+model ExtendedWUTwo {
+  id       Int     @id @default(autoincrement())
+  title    String  @unique
+  content  String?
+  authorId Int
+}
+
+model ExtendedWUThree {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  username String @unique
+  name     String
 }
 
 // model Post {
@@ -296,22 +319,6 @@ model UserTwo {
 // view StatisticActiveUsers {
 //   date  DateTime @unique @db.Date
 //   count Int
-// }
-
-// model User {
-//   id    Int    @id @default(autoincrement())
-//   email String @unique
-//   name  String
-
-//   posts Post[]
-// }
-
-// model Post {
-//   id      Int     @id @default(autoincrement())
-//   title   String
-//   content String?
-//   author  User    @relation(fields: [authorId], references: [id])
-//   authorId Int
 // }
 
 // view AbcUser {
