@@ -82,9 +82,6 @@ importers:
       prisma: 4.11.0
       typescript: 4.9.5
 
-  packages/usage/prisma/generated/client:
-    specifiers: {}
-
 packages:
 
   /@babel/code-frame/7.18.6:

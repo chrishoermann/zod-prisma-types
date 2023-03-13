@@ -34,7 +34,7 @@ export const writeModelOrType = (
 
       writeImportSet(
         new Set(
-          model.relationFields
+          model.filterdRelationFields
             .map((field) => {
               return !dmmf.generatorConfig.isMongoDb
                 ? [
@@ -51,7 +51,7 @@ export const writeModelOrType = (
       if (model.writePartialTypes) {
         writeImportSet(
           new Set(
-            model.relationFields
+            model.filterdRelationFields
               .map((field) => {
                 return !dmmf.generatorConfig.isMongoDb
                   ? [
