@@ -12,8 +12,6 @@ Since I'm maintaining the generator in my spare time consider buying me a coffee
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/chrishoermann)
 
-<iframe src="https://github.com/sponsors/chrishoermann/button" title="Sponsor chrishoermann" height="32" width="114" style="border: 0; border-radius: 6px;"></iframe>
-
 ## Breaking changes in v2.x.x
 
 Be aware that some generator options have been removed, a few new have been added, the behaviour of custom imports has changed and ts-morph is no longer needed to generate files in v2.0.0.
