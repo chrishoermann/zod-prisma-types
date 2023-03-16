@@ -8,9 +8,11 @@
 
 `zod-prisma-types` is a generator for [prisma](www.prisma.io) that generates [zod](https://github.com/colinhacks/zod) schemas from your prisma models. This includes schemas of models, enums, inputTypes, argTypes, filters and so on. It also provides options to write advanced zod validators directly in the prisma schema comments.
 
-Since I'm maintaining the generator in my spare time consider buying me a coffee if you like the project. Thanks!
+Since I'm maintaining the generator in my spare time consider buying me a coffee or sponsor me if you like the project. Thanks!
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/chrishoermann)
+
+<iframe src="https://github.com/sponsors/chrishoermann/button" title="Sponsor chrishoermann" height="32" width="114" style="border: 0; border-radius: 6px;"></iframe>
 
 ## Breaking changes in v2.x.x
 
