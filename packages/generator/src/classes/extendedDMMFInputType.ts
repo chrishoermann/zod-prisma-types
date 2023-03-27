@@ -163,9 +163,15 @@ export class ExtendedDMMFInputType
   }
 
   private _setImports() {
-    const fieldImports = this.fields
-      .map((field) => field.getImports(this.name))
-      .flat();
+    const { prismaClientPath } = this.generatorConfig;
+    const prismaImport = `import type { Prisma } from '${prismaClientPath}';`;
+    const zodImport = "import { z } from 'zod';";
+
+    const fieldImports = [
+      prismaImport,
+      zodImport,
+      ...this.fields.map((field) => field.getImports(this.name)).flat(),
+    ];
 
     if (this._fieldIsPrismaFunctionType() && this.linkedModel?.customImports) {
       fieldImports.push(...this.linkedModel.customImports);

@@ -8,7 +8,7 @@
 
 `zod-prisma-types` is a generator for [prisma](www.prisma.io) that generates [zod](https://github.com/colinhacks/zod) schemas from your prisma models. This includes schemas of models, enums, inputTypes, argTypes, filters and so on. It also provides options to write advanced zod validators directly in the prisma schema comments.
 
-Since I'm maintaining the generator in my spare time consider buying me a coffee if you like the project. Thanks!
+Since I'm maintaining the generator in my spare time consider buying me a coffee or sponsor me if you like the project. Thanks!
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/chrishoermann)
 
@@ -887,7 +887,7 @@ To add custom validators to the prisma `BigInt` field you can use the `@zod.bigi
 
 ```prisma
 model MyModel {
-  myField BigInt /// @zod.bigintlt(5n, { message: "lt error" }).gt(6n, { message: "gt error" })({ invalid_type_error: "error", ... }).[...chain more validators]
+  myField BigInt /// @zod.bigint.lt(5n, { message: "lt error" }).gt(6n, { message: "gt error" })({ invalid_type_error: "error", ... }).[...chain more validators]
 }
 ```
 
