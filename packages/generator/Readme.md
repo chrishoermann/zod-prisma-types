@@ -98,6 +98,20 @@ generator zod {
 }
 ```
 
+Then import the schema's into your file:
+
+```ts
+import { mySchema } from '/prisma/generated/zod'; // All schemas are here by default, use the 'output' option to change it
+```
+
+> If you encounter errors like the following `/bin/sh: zod-prisma-types: command not found` please try to use the `npx` command with the `zod-prisma-types` command.
+
+```prisma
+generator zod {
+  provider       = "npx zod-prisma-types"
+}
+```
+
 If you want to customize the behaviour of the generator you can use the following options:
 
 ```prisma
