@@ -101,7 +101,7 @@ generator zod {
 Then import the schema's into your file:
 
 ```
-import { mySchema } from "/prisma/generated/zod/index"; // All schema's are here by default, use the output option to change this 
+import { mySchema } from "/prisma/generated/zod"; // All schemas are here by default, use the 'output' option to change it
 ```
 
 
