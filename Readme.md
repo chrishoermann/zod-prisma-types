@@ -887,7 +887,7 @@ To add custom validators to the prisma `BigInt` field you can use the `@zod.bigi
 
 ```prisma
 model MyModel {
-  myField BigInt /// @zod.bigintlt(5n, { message: "lt error" }).gt(6n, { message: "gt error" })({ invalid_type_error: "error", ... }).[...chain more validators]
+  myField BigInt /// @zod.bigint.lt(5n, { message: "lt error" }).gt(6n, { message: "gt error" })({ invalid_type_error: "error", ... }).[...chain more validators]
 }
 ```
 
