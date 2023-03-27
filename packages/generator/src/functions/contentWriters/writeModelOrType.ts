@@ -107,20 +107,6 @@ export const writeModelOrType = (
       .write(
         `export const ${model.name}PartialSchema = ${model.name}Schema.partial()`,
       );
-    // .write(`export const ${model.name}PartialSchema = z.object(`)
-    // .inlineBlock(() => {
-    //   [...model.enumFields, ...model.scalarFields].forEach((field) => {
-    //     writer.conditionalWrite(field.omitInModel(), '// omitted: ');
-
-    //     writeModelFields({
-    //       writer,
-    //       field,
-    //       model,
-    //       dmmf,
-    //     });
-    //   });
-    // })
-    // .write(`).partial()`);
 
     writer
       .blankLine()
@@ -128,6 +114,9 @@ export const writeModelOrType = (
         `export type ${model.name}Partial = z.infer<typeof ${model.name}PartialSchema>`,
       );
   }
+
+  // WRITE OPTIONAL DEFAULTS VALUE TYPES
+  // -------------------------------------------
 
   if (model.writeOptionalDefaultValuesTypes) {
     writer.blankLine();

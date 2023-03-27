@@ -175,6 +175,8 @@ it('should be able to use decimalJS as input in DecimalListSchema', () => {
     new Decimal(1.123),
   ]);
 
+  console.log(parsedDecimals);
+
   expect(isDecimalJsLike(parsedDecimals[0])).toBe(true);
   expect(isDecimalJsLike(parsedDecimals[1])).toBe(true);
 });
