@@ -94,9 +94,16 @@ Just add the following code to your `prisma.schema` file to create a single `ind
 
 ```prisma
 generator zod {
-  provider       = "zod-prisma-types"
+  provider       = "npx zod-prisma-types"
 }
 ```
+
+Then import the schema's into your file:
+
+```
+import { mySchema } from "/prisma/generated/zod"; // All schemas are here by default, use the 'output' option to change it
+```
+
 
 If you want to customize the behaviour of the generator you can use the following options:
 
