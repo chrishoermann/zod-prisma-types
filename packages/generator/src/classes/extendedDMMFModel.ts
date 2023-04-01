@@ -27,6 +27,7 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
   readonly scalarFields: ExtendedDMMFField[];
   readonly relationFields: ExtendedDMMFField[];
   readonly filterdRelationFields: ExtendedDMMFField[];
+  readonly filterdRelationFieldsWithDefaults: ExtendedDMMFField[];
   readonly enumFields: ExtendedDMMFField[];
   readonly hasRelationFields: boolean;
   readonly hasRequiredJsonFields: boolean;
@@ -59,6 +60,7 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
     this.scalarFields = this._setScalarFields();
     this.relationFields = this._setRelationFields();
     this.filterdRelationFields = this._setFilteredRelationFields();
+    this.filterdRelationFieldsWithDefaults = this._setFilteredRelationFieldsWithDefaults();
     this.enumFields = this._setEnumfields();
     this.hasRelationFields = this._setHasRelationFields();
     this.hasRequiredJsonFields = this._setHasRequiredJsonFields();
@@ -112,6 +114,15 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
       (field) => !field.type.includes(this.name),
     );
   }
+
+  private _setFilteredRelationFieldsWithDefaults() {
+    //TODO: Check if this relation has any Optional Defaults in it
+    // Again it is not accessible in this context
+    return this._setFilteredRelationFields().filter(
+      (field) => !field.type.includes(this.name),
+    );
+  }
+
 
   private _setHasRequiredJsonFields() {
     return this.fields.some((field) => field.isJsonType && field.isRequired);

@@ -36,13 +36,22 @@ export const writeModelOrType = (
         new Set(
           model.filterdRelationFields
             .map((field) => {
-              return !dmmf.generatorConfig.isMongoDb
-                ? [
-                    `import { type ${field.type}WithRelations, ${field.type}WithRelationsSchema } from './${field.type}Schema'`,
+              if (!dmmf.generatorConfig.isMongoDb) {
+                 let importString = ` type ${field.type}WithRelations, ${field.type}WithRelationsSchema`
+                if (dmmf.generatorConfig.createOptionalDefaultValuesTypes ){
+                  // TODO: fix the above line 
+                  // We need information about the Location model, but the location model is not in this context
+                  // We only have access to what is in the filteredRelationFields 🤔
+                  importString += `, ${field.type}OptionalDefaultsWithRelationsSchema`
+                }
+                 return [
+                    `import {${importString} } from './${field.type}Schema'`,
                   ]
-                : [
+              } else {
+                 return [
                     `import { type ${field.type}, ${field.type}Schema } from './${field.type}Schema'`,
                   ];
+              }
             })
             .flat(),
         ),
@@ -265,7 +274,7 @@ export const writeModelOrType = (
       )
       .inlineBlock(() => {
         model.relationFields.forEach((field) => {
-          writeRelation({ writer, field });
+          writeRelation({ writer, field, writeOptionalDefaults:true });
         });
       })
       .write(`))`);

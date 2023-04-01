@@ -14,11 +14,16 @@ export const writeRelation = ({
     .conditionalWrite(field.omitInModel(), '// omitted: ')
     .write(`${field.name}: `)
     .conditionalWrite(
-      !isMongoDb && !isPartial,
+      // NOTE: This condition below needs to be checked, or at least the logic can be above this function and we can leave this "dumb"
+      !isMongoDb && !isPartial && writeOptionalDefaults,
+      `z.lazy(() => ${field.type}OptionalDefaultsWithRelationsSchema)`,
+    )
+    .conditionalWrite(
+      !isMongoDb && !isPartial && !writeOptionalDefaults,
       `z.lazy(() => ${field.type}WithRelationsSchema)`,
     )
 
-    // if `isPartial` i `true`  we need to use `[ModelName]PartialWithRelationsSchema`
+    // if `isPartial` is `true`  we need to use `[ModelName]PartialWithRelationsSchema`
     // instead of`[ModelName]WithRelationsSchema` since this model is a model where all
     // fields are optional.
 
