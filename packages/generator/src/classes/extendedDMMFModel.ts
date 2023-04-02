@@ -135,7 +135,9 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
 
   private _setWriteOptionalDefaultValuesTypes() {
     return (
-      this.hasOptionalDefaultFields &&
+      // Do NOT check for "this.hasOptionalDefaultFields"
+      // A [model type]OptionalDefaultValues schema  needs to be created for each model
+      // so the schema can be imported even when no optional default values are present
       this.generatorConfig.createOptionalDefaultValuesTypes
     );
   }

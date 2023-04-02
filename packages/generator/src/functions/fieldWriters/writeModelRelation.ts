@@ -7,14 +7,18 @@ export const writeRelation = ({
   field,
   writeOptionalDefaults = false,
   isPartial = false,
-}: WriteFieldOptions & { isPartial?: boolean }) => {
+  isOptionalDefaults = false,
+}: WriteFieldOptions & {
+  isPartial?: boolean;
+  isOptionalDefaults?: boolean;
+}) => {
   const isMongoDb = field.generatorConfig.provider === 'mongodb';
 
   writer
     .conditionalWrite(field.omitInModel(), '// omitted: ')
     .write(`${field.name}: `)
     .conditionalWrite(
-      !isMongoDb && !isPartial,
+      !isMongoDb && !isPartial && !isOptionalDefaults,
       `z.lazy(() => ${field.type}WithRelationsSchema)`,
     )
 
@@ -25,6 +29,10 @@ export const writeRelation = ({
     .conditionalWrite(
       !isMongoDb && isPartial,
       `z.lazy(() => ${field.type}PartialWithRelationsSchema)`,
+    )
+    .conditionalWrite(
+      !isMongoDb && isOptionalDefaults,
+      `z.lazy(() => ${field.type}OptionalDefaultsWithRelationsSchema)`,
     )
     .conditionalWrite(isMongoDb, `z.lazy(() => ${field.type}Schema)`);
 

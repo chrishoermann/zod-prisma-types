@@ -25,44 +25,65 @@ export const writeModelOrType = (
     writeImportSet(model.imports);
 
     if (createRelationValuesTypes && model.hasRelationFields) {
+      // import the necessary types to handle json nulls
       if (model.hasOptionalJsonFields) {
         writeImport(
-          `{ type NullableJsonInput }`,
+          `type { NullableJsonInput }`,
           `../${inputTypePath}/transformJsonNull`,
         );
       }
 
-      writeImportSet(
-        new Set(
-          model.filterdRelationFields
-            .map((field) => {
-              return !dmmf.generatorConfig.isMongoDb
-                ? [
-                    `import { type ${field.type}WithRelations, ${field.type}WithRelationsSchema } from './${field.type}Schema'`,
-                  ]
-                : [
-                    `import { type ${field.type}, ${field.type}Schema } from './${field.type}Schema'`,
-                  ];
-            })
-            .flat(),
-        ),
-      );
+      const imports = new Set<string>();
+      const typeImports: string[][] = [];
+      const schemaImports: string[][] = [];
 
-      if (model.writePartialTypes) {
-        writeImportSet(
-          new Set(
-            model.filterdRelationFields
-              .map((field) => {
-                return !dmmf.generatorConfig.isMongoDb
-                  ? [
-                      `import { type ${field.type}PartialWithRelations, ${field.type}PartialWithRelationsSchema } from './${field.type}Schema'`,
-                    ]
-                  : [];
-              })
-              .flat(),
-          ),
-        );
-      }
+      model.filterdRelationFields.forEach((field) => {
+        if (!dmmf.generatorConfig.isMongoDb) {
+          typeImports.push([
+            `${field.type}WithRelations`,
+            `${field.type}Schema`,
+          ]);
+          schemaImports.push([
+            `${field.type}WithRelationsSchema`,
+            `${field.type}Schema`,
+          ]);
+
+          if (model.writePartialTypes) {
+            typeImports.push([
+              `${field.type}PartialWithRelations`,
+              `${field.type}Schema`,
+            ]);
+            schemaImports.push([
+              `${field.type}PartialWithRelationsSchema`,
+              `${field.type}Schema`,
+            ]);
+          }
+
+          if (model.writeOptionalDefaultValuesTypes) {
+            typeImports.push([
+              `${field.type}OptionalDefaultsRelations`,
+              `${field.type}Schema`,
+            ]);
+            schemaImports.push([
+              `${field.type}OptionalDefaultsWithRelationsSchema`,
+              `${field.type}Schema`,
+            ]);
+          }
+        } else {
+          typeImports.push([`${field.type}`, `${field.type}Schema`]);
+          schemaImports.push([`${field.type}Schema`, `${field.type}Schema`]);
+        }
+      });
+
+      typeImports.forEach((type) => {
+        imports.add(`import type { ${type[0]} } from './${type[1]}'`);
+      });
+
+      schemaImports.forEach((schema) => {
+        imports.add(`import { ${schema[0]} } from './${schema[1]}'`);
+      });
+
+      writeImportSet(imports);
     }
   }
 
@@ -99,7 +120,7 @@ export const writeModelOrType = (
 
     writeHeading(
       `${model.formattedNames.upperCaseSpace} PARTIAL SCHEMA`,
-      'SLIM',
+      'FAT',
     );
 
     writer
@@ -123,7 +144,7 @@ export const writeModelOrType = (
 
     writeHeading(
       `${model.formattedNames.upperCaseSpace} OPTIONAL DEFAULTS SCHEMA`,
-      'SLIM',
+      useMultipleFiles ? 'FAT' : 'SLIM',
     );
 
     writer
@@ -166,7 +187,7 @@ export const writeModelOrType = (
 
     writeHeading(
       `${model.formattedNames.upperCaseSpace} RELATION SCHEMA`,
-      'SLIM',
+      useMultipleFiles ? 'FAT' : 'SLIM',
     );
 
     writer
@@ -234,10 +255,32 @@ export const writeModelOrType = (
 
     writeHeading(
       `${model.formattedNames.upperCaseSpace} OPTIONAL DEFAULTS RELATION SCHEMA`,
-      'SLIM',
+      useMultipleFiles ? 'FAT' : 'SLIM',
     );
 
-    writer.blankLine();
+    writer
+      .blankLine()
+      .write(`export type ${model.name}OptionalDefaultsRelations = `)
+      .inlineBlock(() => {
+        model.relationFields.forEach((field) => {
+          writer
+            .conditionalWrite(field.omitInModel(), '// omitted: ')
+            .write(field.name)
+            .conditionalWrite(!field.isRequired, '?')
+            .write(': ')
+            .conditionalWrite(
+              !dmmf.generatorConfig.isMongoDb,
+              `${field.type}OptionalDefaultsRelations`,
+            )
+            .conditionalWrite(dmmf.generatorConfig.isMongoDb, `${field.type}`)
+            .conditionalWrite(field.isList, '[]')
+            .conditionalWrite(!field.isRequired, ' | null')
+            .write(';')
+            .newLine();
+        });
+      })
+      .write(`;`)
+      .blankLine();
 
     if (model.hasOptionalJsonFields) {
       writer
@@ -256,7 +299,7 @@ export const writeModelOrType = (
       );
     }
 
-    writer.write(`${model.name}Relations`);
+    writer.write(`${model.name}OptionalDefaultsRelations`);
 
     writer
       .blankLine()
@@ -265,7 +308,12 @@ export const writeModelOrType = (
       )
       .inlineBlock(() => {
         model.relationFields.forEach((field) => {
-          writeRelation({ writer, field });
+          // update so it writes [ModleName]OptionalDefaultsWithRelationsSchema
+          writeRelation({
+            writer,
+            field,
+            isOptionalDefaults: true,
+          });
         });
       })
       .write(`))`);
@@ -280,7 +328,7 @@ export const writeModelOrType = (
 
     writeHeading(
       `${model.formattedNames.upperCaseSpace} PARTIAL RELATION SCHEMA`,
-      'SLIM',
+      useMultipleFiles ? 'FAT' : 'SLIM',
     );
 
     writer
