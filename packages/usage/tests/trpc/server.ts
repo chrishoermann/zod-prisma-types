@@ -27,6 +27,8 @@ const router = t.router;
 // -----------------------------------
 
 const decimal = publicProcedure.input(DecimalModelSchema).query(({ input }) => {
+  console.log(input.decimal);
+
   const isDecimal = isValidDecimalInput(input.decimal);
   const isDecimalOpt = isValidDecimalInput(input.decimalOpt);
   return { isDecimal, isDecimalOpt };
