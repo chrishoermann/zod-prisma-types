@@ -27,6 +27,7 @@ import {
 /////////////////////////////////////////////////
 
 /**
+ * @deprecated
  * Map all `validators` that can be used in the documentation of the prisma.schema
  * to the prisma scalar types on which this `validator` is allowed.
  *
@@ -82,6 +83,9 @@ export const PRISMA_TO_ZOD_TYPE_MAP: Record<
 // ZOD VALID ERROR KEYS
 /////////////////////////////////////////////////
 
+/**
+ * @deprecated
+ */
 export const ZOD_VALID_ERROR_KEYS: ZodCustomErrorKey[] = [
   'invalid_type_error',
   'required_error',
@@ -92,16 +96,23 @@ export const ZOD_VALID_ERROR_KEYS: ZodCustomErrorKey[] = [
 // REGEX MAPS
 /////////////////////////////////////////////
 
+/**
+ * @deprecated
+ */
 export type ValidatorMapValue =
   | RegExp
   | ((pattern: string) => string | undefined);
 
+/**
+ * @deprecated
+ */
 export type ValidatorMap<TKeys extends string> = Record<
   TKeys,
   ValidatorMapValue
 >;
 
 /**
+ * @deprecated
  * Maps the right regex to the right validator key.
  *
  * Used to determine if a validator key is valid for a `string` type.
@@ -126,6 +137,7 @@ export const STRING_VALIDATOR_REGEX_MAP: ValidatorMap<ZodStringValidatorKeys> =
   };
 
 /**
+ * @deprecated
  * Maps the right regex to the right validator key.
  *
  * Used to determine if a validator key is valid for a `number` type.
@@ -149,6 +161,7 @@ export const NUMBER_VALIDATOR_REGEX_MAP: ValidatorMap<ZodNumberValidatorKeys> =
   };
 
 /**
+ * @deprecated
  * Maps the right regex to the right validator key.
  *
  * Used to determine if a validator key is valid for a `date` type.
@@ -160,6 +173,9 @@ export const DATE_VALIDATOR_REGEX_MAP: ValidatorMap<ZodDateValidatorKeys> = {
   max: DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
 };
 
+/**
+ * @deprecated
+ */
 export const CUSTOM_VALIDATOR_REGEX_MAP: ValidatorMap<ZodCustomValidatorKeys> =
   {
     use: (pattern) => {

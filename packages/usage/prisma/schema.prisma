@@ -90,7 +90,7 @@ model ModelWithComments {
 // It should not matter if the comments are above or next to the field
 
 /// comment line one
-/// @zod.import(["import { myFunction } from "../../../../utils/myFunction";", "import validator from 'validator';"])
+/// @zod.import(["import { myFunction } from "../../../../utils/myFunction";", "import validator from 'validator';", "import some from "my-package";"])
 /// comment line two
 model MyPrismaScalarsType {
   /// @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid()
