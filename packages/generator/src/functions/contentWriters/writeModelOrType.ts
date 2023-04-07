@@ -61,7 +61,7 @@ export const writeModelOrType = (
 
           if (model.writeOptionalDefaultValuesTypes) {
             typeImports.push([
-              `${field.type}OptionalDefaultsRelations`,
+              `${field.type}OptionalDefaultsWithRelations`,
               `${field.type}Schema`,
             ]);
             schemaImports.push([
@@ -270,7 +270,7 @@ export const writeModelOrType = (
             .write(': ')
             .conditionalWrite(
               !dmmf.generatorConfig.isMongoDb,
-              `${field.type}OptionalDefaultsRelations`,
+              `${field.type}OptionalDefaultsWithRelations`,
             )
             .conditionalWrite(dmmf.generatorConfig.isMongoDb, `${field.type}`)
             .conditionalWrite(field.isList, '[]')
