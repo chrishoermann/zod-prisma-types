@@ -270,7 +270,7 @@ export const writeModelOrType = (
             .write(': ')
             .conditionalWrite(
               !dmmf.generatorConfig.isMongoDb,
-              `${field.type}OptionalDefaultsRelations`,
+              `${field.type}OptionalDefaultsWithRelations`,
             )
             .conditionalWrite(dmmf.generatorConfig.isMongoDb, `${field.type}`)
             .conditionalWrite(field.isList, '[]')
