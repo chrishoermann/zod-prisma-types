@@ -30,7 +30,7 @@ export const writeFieldAdditions = ({
       `.nullish()`,
     )
     .conditionalWrite(
-      writeOptionalDefaults && field.isOptionalOnDefaultValue,
+      (writeOptionalDefaults && field.isOptionalOnDefaultValue) || field.isList,
       `.optional()`,
     )
     .write(`,`)
