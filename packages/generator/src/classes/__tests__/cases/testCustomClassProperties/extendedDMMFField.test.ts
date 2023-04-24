@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 
 import { GeneratorConfig } from '../../../../schemas';
 import { getStringVariants } from '../../../../utils/getStringVariants';
-import { ExtendedDMMF } from '../../../ExtendedDMMF';
+import { ExtendedDMMF } from '../../../extendedDMMF';
 import { loadDMMF } from '../../utils/loadDMMF';
 
 export const DEFAULT_GENERATOR_CONFIG: GeneratorConfig = {

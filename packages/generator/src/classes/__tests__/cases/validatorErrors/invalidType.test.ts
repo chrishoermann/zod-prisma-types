@@ -1,6 +1,6 @@
 import { it, expect } from 'vitest';
 
-import { ExtendedDMMF } from '../../../ExtendedDMMF';
+import { ExtendedDMMF } from '../../../extendedDMMF';
 import { loadDMMF } from '../../utils/loadDMMF';
 
 it('should throw if an invalid key is used', async () => {

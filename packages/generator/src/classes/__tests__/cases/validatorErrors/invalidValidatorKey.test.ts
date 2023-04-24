@@ -1,6 +1,6 @@
 import { it, expect } from 'vitest';
 
-import { ExtendedDMMF } from '../../../ExtendedDMMF';
+import { ExtendedDMMF } from '../../../extendedDMMF';
 import { loadDMMF } from '../../utils/loadDMMF';
 
 it("should throw if the wrong validator key is used for a type that doesn't support it", async () => {

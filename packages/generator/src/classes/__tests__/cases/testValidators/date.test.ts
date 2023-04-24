@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { ExtendedDMMF } from '../../../ExtendedDMMF';
+import { ExtendedDMMF } from '../../../extendedDMMF';
 import { loadDMMF } from '../../utils/loadDMMF';
 describe('test date validators', async () => {
   const dmmf = await loadDMMF(`${__dirname}/date.prisma`);
