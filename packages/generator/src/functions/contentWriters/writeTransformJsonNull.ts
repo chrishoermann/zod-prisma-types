@@ -28,7 +28,7 @@ export const writeTransformJsonNull = ({
     .write(`export const transformJsonNull = (v?: NullableJsonInput) => `)
     .inlineBlock(() => {
       writer
-        .writeLine(`if (!v || v === 'DbNull') return Prisma.DbNull;`)
+        .writeLine(`if (v === 'DbNull') return Prisma.DbNull;`)
         .writeLine(`if (v === 'JsonNull') return Prisma.JsonNull;`)
         .writeLine(`return v;`);
     })

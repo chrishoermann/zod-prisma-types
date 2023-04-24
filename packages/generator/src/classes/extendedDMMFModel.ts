@@ -266,7 +266,7 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
 
     if (this.hasRequiredJsonFields) {
       statements.push(
-        `import { InputJsonValue } from "../${inputTypePath}/InputJsonValue"`,
+        `import { JsonValue } from "../${inputTypePath}/JsonValue"`,
       );
     }
 
