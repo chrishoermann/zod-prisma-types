@@ -198,8 +198,8 @@ model Profile {
 }
 
 model Location {
-  lat  Float
-  lng  Float
+  lat  Float /// @zod.number.min(14.345)
+  lng  Float /// @zod.number.max(14.12314).step(5)
   User User[]
 
   @@id([lat, lng])

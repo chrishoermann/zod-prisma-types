@@ -32,6 +32,8 @@ export type ZodStringValidatorKeys =
 
 export type ZodNumberValidatorKeys =
   | ZodArrayValidatorKeys
+  | 'min'
+  | 'max'
   | 'gt'
   | 'gte'
   | 'lt'
@@ -42,6 +44,7 @@ export type ZodNumberValidatorKeys =
   | 'negative'
   | 'nonnegative'
   | 'multipleOf'
+  | 'step'
   | 'finite'
   | 'noDefault';
 
@@ -95,8 +98,9 @@ export const STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX =
 // NUMBER
 // ----------------------------------------
 
+// "min", "max" and "step" are aliases for "gt", "lt" and "multipleOf" respectively
 export const NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
-  /.(?<validator>gt|gte|lt|lte|multipleOf)(?<number>\([\d.]+([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\))/;
+  /.(?<validator>min|max|gt|gte|lt|lte|multipleOf|step)(?<number>\([\d.]+([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\))/;
 
 export const NUMBER_VALIDATOR_MESSAGE_REGEX =
   /.(?<validator>int|positive|nonnegative|negative|nonpositive|finite|noDefault)(\((?<message>[{][ ]?message:[ ]?['"][\w\W]+['"][ ]?[}])?\))/;
@@ -177,10 +181,13 @@ export const STRING_VALIDATOR_REGEX_MAP: ValidatorMap<ZodStringValidatorKeys> =
 export const NUMBER_VALIDATOR_REGEX_MAP: ValidatorMap<ZodNumberValidatorKeys> =
   {
     gt: NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
+    min: NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
     gte: NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
+    max: NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
     lt: NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
     lte: NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
     multipleOf: NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
+    step: NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
     int: NUMBER_VALIDATOR_MESSAGE_REGEX,
     positive: NUMBER_VALIDATOR_MESSAGE_REGEX,
     nonpositive: NUMBER_VALIDATOR_MESSAGE_REGEX,
