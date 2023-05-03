@@ -30,6 +30,6 @@
     "validator": "^13.9.0",
     "vitest": "^0.25.8",
     "zod": "^3.21.1",
-    "zod-prisma-types": "workspace:2.5.4"
+    "zod-prisma-types": "workspace:2.5.6"
   }
 }
