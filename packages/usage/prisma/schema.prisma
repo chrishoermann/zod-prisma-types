@@ -176,8 +176,8 @@ model User {
 
 /// @zod.import(["import { myFunction } from "../../../../utils/myFunction";"])
 model Post {
-  id             Int           @id @default(autoincrement())
-  title          String
+  id             Int           @id @default(autoincrement()) /// @zod.number.int()
+  title          String /// @zod.string.min(1)
   content        String?
   published      Boolean       @default(false)
   author         User          @relation(fields: [authorId], references: [id])
@@ -189,6 +189,7 @@ model Post {
 
 model Profile {
   id     Int        @id @default(autoincrement())
+  /// @zod.string.min(1).max(400)
   bio    String
   user   User       @relation(fields: [userId], references: [id])
   userId String     @unique

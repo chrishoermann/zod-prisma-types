@@ -63,8 +63,8 @@ importers:
   packages/usage:
     dependencies:
       '@prisma/client':
-        specifier: ^4.12.0
-        version: 4.12.0(prisma@4.12.0)
+        specifier: ^4.13.0
+        version: 4.13.0(prisma@4.13.0)
       '@trpc/client':
         specifier: ^10.15.0
         version: 10.15.0(@trpc/server@10.15.0)
@@ -82,7 +82,7 @@ importers:
         version: 10.4.3
       prisma-zod-generator:
         specifier: ^0.8.11
-        version: 0.8.11(prisma@4.12.0)
+        version: 0.8.11(prisma@4.13.0)
       ts-node:
         specifier: ^10.9.1
         version: 10.9.1(@types/node@18.15.0)(typescript@4.9.5)
@@ -99,15 +99,15 @@ importers:
         specifier: ^3.21.1
         version: 3.21.1
       zod-prisma-types:
-        specifier: workspace:2.5.6
+        specifier: workspace:2.5.7
         version: link:../generator
     devDependencies:
       '@types/node':
         specifier: ^18.15.0
         version: 18.15.0
       prisma:
-        specifier: ^4.12.0
-        version: 4.12.0
+        specifier: ^4.13.0
+        version: 4.13.0
       typescript:
         specifier: ^4.9.5
         version: 4.9.5
@@ -469,8 +469,8 @@ packages:
     resolution: {integrity: sha512-oPQdbFDmZvjXk5ZDoBGXG8B4tSB/qW5vQunJWQMFUBp7Xe8O1ByPANueJ+Jzg58esEBegyyxZ7LRmfJr7kFcFg==}
     engines: {node: '>=14'}
 
-  /@prisma/client@4.12.0(prisma@4.12.0):
-    resolution: {integrity: sha512-j9/ighfWwux97J2dS15nqhl60tYoH8V0IuSsgZDb6bCFcQD3fXbXmxjYC8GHhIgOk3lB7Pq+8CwElz2MiDpsSg==}
+  /@prisma/client@4.13.0(prisma@4.13.0):
+    resolution: {integrity: sha512-YaiiICcRB2hatxsbnfB66uWXjcRw3jsZdlAVxmx0cFcTc/Ad/sKdHCcWSnqyDX47vAewkjRFwiLwrOUjswVvmA==}
     engines: {node: '>=14.17'}
     requiresBuild: true
     peerDependencies:
@@ -479,8 +479,8 @@ packages:
       prisma:
         optional: true
     dependencies:
-      '@prisma/engines-version': 4.12.0-67.659ef412370fa3b41cd7bf6e94587c1dfb7f67e7
-      prisma: 4.12.0
+      '@prisma/engines-version': 4.13.0-50.1e7af066ee9cb95cf3a403c78d9aab3e6b04f37a
+      prisma: 4.13.0
     dev: false
 
   /@prisma/debug@4.13.0:
@@ -513,13 +513,9 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /@prisma/engines-version@4.12.0-67.659ef412370fa3b41cd7bf6e94587c1dfb7f67e7:
-    resolution: {integrity: sha512-JIHNj5jlXb9mcaJwakM0vpgRYJIAurxTUqM0iX0tfEQA5XLZ9ONkIckkhuAKdAzocZ+80GYg7QSsfpjg7OxbOA==}
+  /@prisma/engines-version@4.13.0-50.1e7af066ee9cb95cf3a403c78d9aab3e6b04f37a:
+    resolution: {integrity: sha512-fsQlbkhPJf08JOzKoyoD9atdUijuGBekwoOPZC3YOygXEml1MTtgXVpnUNchQlRSY82OQ6pSGQ9PxUe4arcSLQ==}
     dev: false
-
-  /@prisma/engines@4.12.0:
-    resolution: {integrity: sha512-0alKtnxhNB5hYU+ymESBlGI4b9XrGGSdv7Ud+8TE/fBNOEhIud0XQsAR+TrvUZgS4na5czubiMsODw0TUrgkIA==}
-    requiresBuild: true
 
   /@prisma/engines@4.13.0:
     resolution: {integrity: sha512-HrniowHRZXHuGT9XRgoXEaP2gJLXM5RMoItaY2PkjvuZ+iHc0Zjbm/302MB8YsPdWozAPHHn+jpFEcEn71OgPw==}
@@ -3031,11 +3027,11 @@ packages:
     engines: {node: '>=10.13.0'}
     hasBin: true
 
-  /prisma-zod-generator@0.8.11(prisma@4.12.0):
+  /prisma-zod-generator@0.8.11(prisma@4.13.0):
     resolution: {integrity: sha512-wp0+pxSJLMQhlOkfH+Y4FhFiZrrn7QEVL4aPJAoMyiW4Il0wJmipBMAfjJydKyu9tmGQp4QcAcD6vHNf9tI6ZA==}
     hasBin: true
     dependencies:
-      '@prisma/client': 4.12.0(prisma@4.12.0)
+      '@prisma/client': 4.13.0(prisma@4.13.0)
       '@prisma/generator-helper': 4.13.0
       '@prisma/internals': 4.13.0
       prettier: 2.8.4
@@ -3047,13 +3043,13 @@ packages:
       - supports-color
     dev: false
 
-  /prisma@4.12.0:
-    resolution: {integrity: sha512-xqVper4mbwl32BWzLpdznHAYvYDWQQWK2tBfXjdUD397XaveRyAP7SkBZ6kFlIg8kKayF4hvuaVtYwXd9BodAg==}
+  /prisma@4.13.0:
+    resolution: {integrity: sha512-L9mqjnSmvWIRCYJ9mQkwCtj4+JDYYTdhoyo8hlsHNDXaZLh/b4hR0IoKIBbTKxZuyHQzLopb/+0Rvb69uGV7uA==}
     engines: {node: '>=14.17'}
     hasBin: true
     requiresBuild: true
     dependencies:
-      '@prisma/engines': 4.12.0
+      '@prisma/engines': 4.13.0
 
   /process-nextick-args@2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}

@@ -103,10 +103,10 @@ export const CUSTOM_VALIDATOR_MESSAGE_REGEX =
 // ----------------------------------------
 
 export const PRISMA_FUNCTION_TYPES_WITH_VALIDATORS =
-  /CreateInput|CreateMany|UpdateInput|UpdateMany/;
+  /CreateInput|CreateWithout|CreateMany|UpdateInput|UpdateWithout|UpdateMany/;
 
 export const PRISMA_FUNCTION_TYPES_WITH_VALIDATORS_WHERE_UNIQUE =
-  /CreateInput|CreateMany|UpdateInput|UpdateMany|WhereUnique/;
+  /CreateInput|CreateWithout|CreateMany|UpdateInput|UpdateWithout|UpdateMany|WhereUnique/;
 
 // IMPORT STATEMENT
 // ----------------------------------------
