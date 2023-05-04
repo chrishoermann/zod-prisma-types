@@ -1,4 +1,6 @@
+import { JsonModel as JsonModelPrisma } from '@prisma/client';
 import {
+  JsonModel,
   JsonModelCreateInputSchema,
   JsonModelSchema,
 } from '../prisma/generated/zod';
@@ -136,4 +138,28 @@ it('should throw when passing an invalid string array to decimal via trpc', asyn
       notIn: ['asdgatse', 'oasdgo'],
     }),
   ).rejects.toThrow();
+});
+
+it('should throw when compared types are wrong', async () => {
+  const a: JsonModelPrisma = { id: 1, json: {}, jsonOpt: null };
+  const b: JsonModel = a;
+  const c: JsonModelPrisma = b;
+
+  const aParsed = JsonModelSchema.parse(a);
+
+  console.log(aParsed);
+
+  expect(c).toBe(a);
+});
+
+it('should throw when compared types are wrong', async () => {
+  const a: JsonModelPrisma = { id: 1, json: null, jsonOpt: null };
+  const b: JsonModel = a;
+  const c: JsonModelPrisma = b;
+
+  const aParsed = JsonModelSchema.parse(a);
+
+  console.log(aParsed);
+
+  expect(c).toBe(a);
 });

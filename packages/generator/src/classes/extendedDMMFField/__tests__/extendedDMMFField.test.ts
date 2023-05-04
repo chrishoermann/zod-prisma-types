@@ -3,6 +3,23 @@ import { it, expect, describe } from 'vitest';
 
 import { DEFAULT_GENERATOR_CONFIG, FIELD_BASE } from './setup';
 import { ExtendedDMMFFieldClass } from '../extendedDMMFField';
+import {
+  ARRAY_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
+  ARRAY_VALIDATOR_NUMBER_OR_STRING_AND_MESSAGE_REGEX,
+  ARRAY_VALIDATOR_WITH_MESSAGE_REGEX,
+} from '../extendedDMMFFieldArrayValidatorString';
+import {
+  STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
+  STRING_VALIDATOR_MESSAGE_REGEX,
+  STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX,
+  NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
+  NUMBER_VALIDATOR_MESSAGE_REGEX,
+  DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
+  BIGINT_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
+  BIGINT_VALIDATOR_MESSAGE_REGEX,
+  CUSTOM_VALIDATOR_MESSAGE_REGEX,
+} from '../extendedDMMFFieldValidatorMap';
+import { VALIDATOR_TYPE_REGEX } from '../extendedDMMFFieldValidatorMatch';
 
 const getField = (field?: Partial<DMMF.Field>) =>
   new ExtendedDMMFFieldClass(
@@ -183,6 +200,18 @@ describe(`ExtendedDMMFFieldValidatorType`, () => {
       "[@zod generator error]: 'numer' is not a valid validator type. [Error Location]: Model: 'ModelName', Field: 'test'.",
     );
   });
+  it(`should match japanese characters in the regex`, async () => {
+    const match = VALIDATOR_TYPE_REGEX.exec(
+      `@zod.string({ invalid_type_error: "カタカナ漢字ひらがな" }).min(5, { message: "カタカナ漢字ひらがな" })`,
+    );
+
+    expect(match?.groups?.['customErrors']).toBe(
+      '({ invalid_type_error: "カタカナ漢字ひらがな" })',
+    );
+    expect(match?.groups?.['validatorPattern']).toBe(
+      '.min(5, { message: "カタカナ漢字ひらがな" })',
+    );
+  });
 });
 
 // VALIDATOR PATTERN TESTS
@@ -335,6 +364,101 @@ describe(`ExtendedDMMFFieldValidatorCustomErrors`, () => {
 /////////////////////////////////////////////
 // TEST VALIDATOR MAP
 /////////////////////////////////////////////
+
+/////////////////////////////////////////////
+// REGEX TESTS
+/////////////////////////////////////////////
+
+it(`string validator number should return match for regex with japanese chars`, async () => {
+  const result = STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX.exec(
+    ".min(5, {message: 'カタカナ漢字ひらがな'})",
+  );
+  expect(result?.groups?.validator).toBe('min');
+  expect(result?.groups?.number).toBe('5');
+  expect(result?.groups?.message).toBe("{message: 'カタカナ漢字ひらがな'}");
+});
+
+it(`string validator message should return match for regex with japanese chars`, async () => {
+  const result = STRING_VALIDATOR_MESSAGE_REGEX.exec(
+    ".email({message: 'カタカナ漢字ひらがな'})",
+  );
+  expect(result?.groups?.validator).toBe('email');
+  expect(result?.groups?.message).toBe("{message: 'カタカナ漢字ひらがな'}");
+});
+
+it(`string validator string should return match for regex with japanese chars`, async () => {
+  const result = STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX.exec(
+    ".startsWith('カタカナ漢字ひらがな', {message: 'カタカナ漢字ひらがな'})",
+  );
+  expect(result?.groups?.validator).toBe('startsWith');
+  expect(result?.groups?.string).toBe("'カタカナ漢字ひらがな'");
+  expect(result?.groups?.message).toBe("{message: 'カタカナ漢字ひらがな'}");
+});
+
+it(`number validator number should return match for regex with japanese chars`, async () => {
+  const result = NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX.exec(
+    ".min(2, {message: 'カタカナ漢字ひらがな'})",
+  );
+  expect(result?.groups?.validator).toBe('min');
+  expect(result?.groups?.number).toBe('2');
+  expect(result?.groups?.message).toBe("{message: 'カタカナ漢字ひらがな'}");
+});
+
+it(`number validator message should return match for regex with japanese chars`, async () => {
+  const result = NUMBER_VALIDATOR_MESSAGE_REGEX.exec(
+    ".int({message: 'カタカナ漢字ひらがな'})",
+  );
+  expect(result?.groups?.validator).toBe('int');
+  expect(result?.groups?.message).toBe("{message: 'カタカナ漢字ひらがな'}");
+});
+
+it(`date validator number should return match for regex with japanese chars`, async () => {
+  const result = DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX.exec(
+    ".min(new Date(01-01-2022), { message: 'カタカナ漢字ひらがな' })",
+  );
+  expect(result?.groups?.validator).toBe('min');
+  expect(result?.groups?.date).toBe('new Date(01-01-2022)');
+  expect(result?.groups?.message).toBe("{ message: 'カタカナ漢字ひらがな' }");
+});
+
+it(`bigint validator number should return match for regex with japanese chars`, async () => {
+  const result = BIGINT_VALIDATOR_NUMBER_AND_MESSAGE_REGEX.exec(
+    ".gt(2n, { message: 'カタカナ漢字ひらがな' })",
+  );
+  expect(result?.groups?.validator).toBe('gt');
+  expect(result?.groups?.number).toBe('2n');
+  expect(result?.groups?.message).toBe("{ message: 'カタカナ漢字ひらがな' }");
+});
+
+it(`bigint validator message should return match for regex with japanese chars`, async () => {
+  const result = BIGINT_VALIDATOR_MESSAGE_REGEX.exec(
+    ".positive({message: 'カタカナ漢字ひらがな'})",
+  );
+  expect(result?.groups?.validator).toBe('positive');
+  expect(result?.groups?.message).toBe("{message: 'カタカナ漢字ひらがな'}");
+});
+
+it(`custom validator message should return match for regex with japanese chars`, async () => {
+  const result = CUSTOM_VALIDATOR_MESSAGE_REGEX.exec(
+    "use(z.string.min(2, { message: 'カタカナ漢字ひらがな' }))",
+  );
+
+  expect(result?.groups?.validator).toBe('use');
+  expect(result?.groups?.pattern).toBe(
+    "z.string.min(2, { message: 'カタカナ漢字ひらがな' })",
+  );
+});
+
+it(`array validator message should return match for regex with japanese chars`, async () => {
+  const result = CUSTOM_VALIDATOR_MESSAGE_REGEX.exec(
+    "array(min(2, { message: 'カタカナ漢字ひらがな' }))",
+  );
+
+  expect(result?.groups?.validator).toBe('array');
+  expect(result?.groups?.pattern).toBe(
+    "min(2, { message: 'カタカナ漢字ひらがな' })",
+  );
+});
 
 describe(`ExtendedDMMFFieldValidatorMap test _validatorMap`, () => {
   const field = getField();
@@ -1314,6 +1438,45 @@ describe(`ExtendedDMMFFieldCustomValidatorString`, () => {
 
 // ARRAY VALIDATOR STRING
 // ----------------------------------------------
+
+describe("ExtendedDMMFFieldValidatorMap's regex", () => {
+  it(`array validator number should return match for regex with japanese chars`, async () => {
+    const result = ARRAY_VALIDATOR_NUMBER_AND_MESSAGE_REGEX.exec(
+      ".min(5, {message: 'カタカナ漢字ひらがな'})",
+    );
+    expect(result?.groups?.validator).toBe('min');
+    expect(result?.groups?.number).toBe('5');
+    expect(result?.groups?.message).toBe("{message: 'カタカナ漢字ひらがな'}");
+  });
+
+  it(`array validator number or string should return match for regex with japanese chars`, async () => {
+    const resultOne = ARRAY_VALIDATOR_NUMBER_OR_STRING_AND_MESSAGE_REGEX.exec(
+      ".min(5, {message: 'カタカナ漢字ひらがな'})",
+    );
+    expect(resultOne?.groups?.validator).toBe('min');
+    expect(resultOne?.groups?.number).toBe('5');
+    expect(resultOne?.groups?.message).toBe(
+      "{message: 'カタカナ漢字ひらがな'}",
+    );
+
+    const resultTwo = ARRAY_VALIDATOR_NUMBER_OR_STRING_AND_MESSAGE_REGEX.exec(
+      ".min(string, {message: 'カタカナ漢字ひらがな'})",
+    );
+    expect(resultTwo?.groups?.validator).toBe('min');
+    expect(resultTwo?.groups?.number).toBe('string');
+    expect(resultTwo?.groups?.message).toBe(
+      "{message: 'カタカナ漢字ひらがな'}",
+    );
+  });
+
+  it(`array validator message should return match for regex with japanese chars`, async () => {
+    const result = ARRAY_VALIDATOR_WITH_MESSAGE_REGEX.exec(
+      ".nonempty({message: 'カタカナ漢字ひらがな'})",
+    );
+    expect(result?.groups?.validator).toBe('nonempty');
+    expect(result?.groups?.message).toBe("{message: 'カタカナ漢字ひらがな'}");
+  });
+});
 
 describe(`ExtendedDMMFFieldArrayValidatorString`, () => {
   it(`should load field with docs and array validator on string list`, async () => {

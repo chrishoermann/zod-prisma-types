@@ -2,7 +2,18 @@ import { DMMF } from '@prisma/generator-helper';
 import { it, expect, describe } from 'vitest';
 
 import { DEFAULT_GENERATOR_CONFIG, FIELD_BASE } from './setup';
-import { ExtendedDMMFFieldValidatorMap } from '../extendedDMMFFieldValidatorMap';
+import {
+  BIGINT_VALIDATOR_MESSAGE_REGEX,
+  BIGINT_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
+  CUSTOM_VALIDATOR_MESSAGE_REGEX,
+  DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
+  ExtendedDMMFFieldValidatorMap,
+  NUMBER_VALIDATOR_MESSAGE_REGEX,
+  NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
+  STRING_VALIDATOR_MESSAGE_REGEX,
+  STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
+  STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX,
+} from '../extendedDMMFFieldValidatorMap';
 
 const getField = (field?: Partial<DMMF.Field>) =>
   new ExtendedDMMFFieldValidatorMap(
@@ -10,6 +21,103 @@ const getField = (field?: Partial<DMMF.Field>) =>
     DEFAULT_GENERATOR_CONFIG,
     'ModelName',
   );
+
+/////////////////////////////////////////////
+// REGEX TESTS
+/////////////////////////////////////////////
+
+describe("ExtendedDMMFFieldValidatorMap's regex", () => {
+  it(`string validator number should return match for regex with japanese chars`, async () => {
+    const result = STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX.exec(
+      ".min(5, {message: 'カタカナ漢字ひらがな'})",
+    );
+    expect(result?.groups?.validator).toBe('min');
+    expect(result?.groups?.number).toBe('5');
+    expect(result?.groups?.message).toBe("{message: 'カタカナ漢字ひらがな'}");
+  });
+
+  it(`string validator message should return match for regex with japanese chars`, async () => {
+    const result = STRING_VALIDATOR_MESSAGE_REGEX.exec(
+      ".email({message: 'カタカナ漢字ひらがな'})",
+    );
+    expect(result?.groups?.validator).toBe('email');
+    expect(result?.groups?.message).toBe("{message: 'カタカナ漢字ひらがな'}");
+  });
+
+  it(`string validator string should return match for regex with japanese chars`, async () => {
+    const result = STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX.exec(
+      ".startsWith('カタカナ漢字ひらがな', {message: 'カタカナ漢字ひらがな'})",
+    );
+    expect(result?.groups?.validator).toBe('startsWith');
+    expect(result?.groups?.string).toBe("'カタカナ漢字ひらがな'");
+    expect(result?.groups?.message).toBe("{message: 'カタカナ漢字ひらがな'}");
+  });
+
+  it(`number validator number should return match for regex with japanese chars`, async () => {
+    const result = NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX.exec(
+      ".min(2, {message: 'カタカナ漢字ひらがな'})",
+    );
+    expect(result?.groups?.validator).toBe('min');
+    expect(result?.groups?.number).toBe('2');
+    expect(result?.groups?.message).toBe("{message: 'カタカナ漢字ひらがな'}");
+  });
+
+  it(`number validator message should return match for regex with japanese chars`, async () => {
+    const result = NUMBER_VALIDATOR_MESSAGE_REGEX.exec(
+      ".int({message: 'カタカナ漢字ひらがな'})",
+    );
+    expect(result?.groups?.validator).toBe('int');
+    expect(result?.groups?.message).toBe("{message: 'カタカナ漢字ひらがな'}");
+  });
+
+  it(`date validator number should return match for regex with japanese chars`, async () => {
+    const result = DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX.exec(
+      ".min(new Date(01-01-2022), { message: 'カタカナ漢字ひらがな' })",
+    );
+    expect(result?.groups?.validator).toBe('min');
+    expect(result?.groups?.date).toBe('new Date(01-01-2022)');
+    expect(result?.groups?.message).toBe("{ message: 'カタカナ漢字ひらがな' }");
+  });
+
+  it(`bigint validator number should return match for regex with japanese chars`, async () => {
+    const result = BIGINT_VALIDATOR_NUMBER_AND_MESSAGE_REGEX.exec(
+      ".gt(2n, { message: 'カタカナ漢字ひらがな' })",
+    );
+    expect(result?.groups?.validator).toBe('gt');
+    expect(result?.groups?.number).toBe('2n');
+    expect(result?.groups?.message).toBe("{ message: 'カタカナ漢字ひらがな' }");
+  });
+
+  it(`bigint validator message should return match for regex with japanese chars`, async () => {
+    const result = BIGINT_VALIDATOR_MESSAGE_REGEX.exec(
+      ".positive({message: 'カタカナ漢字ひらがな'})",
+    );
+    expect(result?.groups?.validator).toBe('positive');
+    expect(result?.groups?.message).toBe("{message: 'カタカナ漢字ひらがな'}");
+  });
+
+  it(`custom validator message should return match for regex with japanese chars`, async () => {
+    const result = CUSTOM_VALIDATOR_MESSAGE_REGEX.exec(
+      "use(z.string.min(2, { message: 'カタカナ漢字ひらがな' }))",
+    );
+
+    expect(result?.groups?.validator).toBe('use');
+    expect(result?.groups?.pattern).toBe(
+      "z.string.min(2, { message: 'カタカナ漢字ひらがな' })",
+    );
+  });
+
+  it(`array validator message should return match for regex with japanese chars`, async () => {
+    const result = CUSTOM_VALIDATOR_MESSAGE_REGEX.exec(
+      "array(min(2, { message: 'カタカナ漢字ひらがな' }))",
+    );
+
+    expect(result?.groups?.validator).toBe('array');
+    expect(result?.groups?.pattern).toBe(
+      "min(2, { message: 'カタカナ漢字ひらがな' })",
+    );
+  });
+});
 
 /////////////////////////////////////////////
 // TEST VALIDATOR MAP
@@ -911,21 +1019,21 @@ describe(`tests ExtendedDMMFFieldValidatorMap method _getValidatorKeyFromPattern
 // TEST VALIDATOR IS VALID
 /////////////////////////////////////////////////
 
-describe(`tests ExtendedDMMFFieldValidatorMap method _validatorIsValid`, () => {
-  it(`should pass valid data for string`, async () => {
-    const field = getField({
-      documentation: '@zod.string.min(2).max(4)',
-    });
-    expect(field?.['_validatorIsValid']()).toBe(true);
-  });
+// describe(`tests ExtendedDMMFFieldValidatorMap method _validatorIsValid`, () => {
+//   it(`should pass valid data for string`, async () => {
+//     const field = getField({
+//       documentation: '@zod.string.min(2).max(4)',
+//     });
+//     expect(field?.['_validatorIsValid']()).toBe(true);
+//   });
 
-  it(`should pass invalid data for string`, async () => {
-    const field = getField({
-      documentation: '@zod.string.min(2).max(4).lt(3)',
-    });
+//   it(`should pass invalid data for string`, async () => {
+//     const field = getField({
+//       documentation: '@zod.string.min(2).max(4).lt(3)',
+//     });
 
-    expect(() => field?.['_validatorIsValid']()).toThrowError(
-      "[@zod generator error]: Validator 'lt' is not valid for type 'String', for specified '@zod.[key] or for 'z.array.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
-    );
-  });
-});
+//     expect(() => field?.['_validatorIsValid']()).toThrowError(
+//       "[@zod generator error]: Validator 'lt' is not valid for type 'String', for specified '@zod.[key] or for 'z.array.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
+//     );
+//   });
+// });

@@ -2,7 +2,12 @@ import { DMMF } from '@prisma/generator-helper';
 import { it, expect, describe } from 'vitest';
 
 import { DEFAULT_GENERATOR_CONFIG, FIELD_BASE } from './setup';
-import { ExtendedDMMFFieldArrayValidatorString } from '../extendedDMMFFieldArrayValidatorString';
+import {
+  ARRAY_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
+  ARRAY_VALIDATOR_NUMBER_OR_STRING_AND_MESSAGE_REGEX,
+  ARRAY_VALIDATOR_WITH_MESSAGE_REGEX,
+  ExtendedDMMFFieldArrayValidatorString,
+} from '../extendedDMMFFieldArrayValidatorString';
 
 const getField = (field?: Partial<DMMF.Field>) =>
   new ExtendedDMMFFieldArrayValidatorString(
@@ -10,6 +15,46 @@ const getField = (field?: Partial<DMMF.Field>) =>
     DEFAULT_GENERATOR_CONFIG,
     'ModelName',
   );
+
+describe("ExtendedDMMFFieldValidatorMap's regex", () => {
+  it(`array validator number should return match for regex with japanese chars`, async () => {
+    const result = ARRAY_VALIDATOR_NUMBER_AND_MESSAGE_REGEX.exec(
+      ".min(5, {message: 'カタカナ漢字ひらがな'})",
+    );
+    expect(result?.groups?.validator).toBe('min');
+    expect(result?.groups?.number).toBe('5');
+    expect(result?.groups?.message).toBe("{message: 'カタカナ漢字ひらがな'}");
+  });
+
+  it(`array validator number or string should return match for regex with japanese chars`, async () => {
+    const resultOne = ARRAY_VALIDATOR_NUMBER_OR_STRING_AND_MESSAGE_REGEX.exec(
+      ".min(5, {message: 'カタカナ漢字ひらがな'})",
+    );
+    expect(resultOne?.groups?.validator).toBe('min');
+    expect(resultOne?.groups?.number).toBe('5');
+    expect(resultOne?.groups?.message).toBe(
+      "{message: 'カタカナ漢字ひらがな'}",
+    );
+
+    const resultTwo = ARRAY_VALIDATOR_NUMBER_OR_STRING_AND_MESSAGE_REGEX.exec(
+      ".min(string, {message: 'カタカナ漢字ひらがな'})",
+    );
+    expect(resultTwo?.groups?.validator).toBe('min');
+    expect(resultTwo?.groups?.number).toBe('string');
+    expect(resultTwo?.groups?.message).toBe(
+      "{message: 'カタカナ漢字ひらがな'}",
+    );
+  });
+
+  it(`array validator message should return match for regex with japanese chars`, async () => {
+    const result = ARRAY_VALIDATOR_WITH_MESSAGE_REGEX.exec(
+      ".nonempty({message: 'カタカナ漢字ひらがな'})",
+    );
+    expect(result?.groups?.validator).toBe('nonempty');
+    expect(result?.groups?.message).toBe("{message: 'カタカナ漢字ひらがな'}");
+  });
+});
+
 describe(`ExtendedDMMFFieldArrayValidatorString`, () => {
   it(`should load field with docs and array validator on string list`, async () => {
     const field = getField({

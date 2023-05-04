@@ -66,7 +66,7 @@ export class ExtendedDMMFFieldValidatorPattern extends ExtendedDMMFFieldValidato
   }
 
   protected _isWordChar(char: string) {
-    return /\w/.test(char);
+    return /[\w]/.test(char);
   }
 
   protected _getPatternListFromSplitIndices(

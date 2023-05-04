@@ -7,8 +7,16 @@ import { GeneratorConfig } from '../../schemas';
 // REGEX
 /////////////////////////////////////////////////
 
+// Match the literal string "@zod."
+// Named capture group "type": Match one or more word characters (letters, digits, or underscores) exactly once
+// Named capture group "customErrors" (optional): Match an opening parenthesis "(", followed by one or more characters from the character class, then a closing parenthesis ")"
+// The character class in "customErrors" includes word characters, Japanese Hiragana, Katakana, and Kanji characters, and various punctuation marks and symbols
+// Named capture group "validatorPattern" (optional): Match one or more characters from the character class
+// The character class in "validatorPattern" includes word characters, Japanese Hiragana, Katakana, and Kanji characters, and various punctuation marks and symbols
+// "u" flag for Unicode support
+
 export const VALIDATOR_TYPE_REGEX =
-  /@zod\.(?<type>[\w]+){1}(?<customErrors>\({[\w (),'":+\-*#!§$%&/{}[\]=?~><°^]+}\))?(?<validatorPattern>[\w (),.'"\\:+\-*#!§$%&/{}[\]=?~><°^]+[)])?/;
+  /@zod\.(?<type>[\w]+){1}(?<customErrors>\([{][\w\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han} (),'":+*#!§$%&/{}[\]=?~><°^\\-]+[}]\))?(?<validatorPattern>[\w\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han} (),.'"\\:+*#!§$%&/{}[\]=?~><°^\\-]*[)])?/u;
 
 /////////////////////////////////////////////////
 // CLASS

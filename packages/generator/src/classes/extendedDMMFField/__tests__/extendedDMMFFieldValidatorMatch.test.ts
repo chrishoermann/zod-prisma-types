@@ -2,7 +2,10 @@ import { DMMF } from '@prisma/generator-helper';
 import { it, expect, describe } from 'vitest';
 
 import { DEFAULT_GENERATOR_CONFIG, FIELD_BASE } from './setup';
-import { ExtendedDMMFFieldValidatorMatch } from '../extendedDMMFFieldValidatorMatch';
+import {
+  ExtendedDMMFFieldValidatorMatch,
+  VALIDATOR_TYPE_REGEX,
+} from '../extendedDMMFFieldValidatorMatch';
 
 const getField = (field?: Partial<DMMF.Field>) =>
   new ExtendedDMMFFieldValidatorMatch(
@@ -83,6 +86,19 @@ describe(`ExtendedDMMFFieldValidatorMatch`, () => {
     expect(field?.clearedDocumentation).toBe('some text in docs');
     expect(field.documentation).toBe(
       'some text in docs  @zod.custom.use(z.string().min(4))',
+    );
+  });
+
+  it(`should match japanese characters in the regex`, async () => {
+    const match = VALIDATOR_TYPE_REGEX.exec(
+      `@zod.string({ invalid_type_error: "カタカナ漢字ひらがな" }).min(5, { message: "カタカナ漢字ひらがな" })`,
+    );
+
+    expect(match?.groups?.['customErrors']).toBe(
+      '({ invalid_type_error: "カタカナ漢字ひらがな" })',
+    );
+    expect(match?.groups?.['validatorPattern']).toBe(
+      '.min(5, { message: "カタカナ漢字ひらがな" })',
     );
   });
 });
