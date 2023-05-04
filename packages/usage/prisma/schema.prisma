@@ -315,7 +315,8 @@ model SelfReference {
 
 model JapaneseChars {
   id     Int    @id @default(autoincrement())
-  string String /// @zod.string.min(5, { message: "カタカナ漢字ひらがな" })
+  ///@zod.string({ invalid_type_error: "カタカナ漢字ひらがな", required_error: "カタカナ漢字ひらがな", description: "カタカナ漢字ひらがな" }).min(5, { message: "カタカナ漢字ひらがな" })
+  string String
 }
 
 // model Post {

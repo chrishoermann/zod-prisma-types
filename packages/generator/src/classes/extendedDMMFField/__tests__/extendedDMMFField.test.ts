@@ -9,6 +9,11 @@ import {
   ARRAY_VALIDATOR_WITH_MESSAGE_REGEX,
 } from '../extendedDMMFFieldArrayValidatorString';
 import {
+  VALIDATOR_CUSTOM_ERROR_MESSAGE_REGEX,
+  VALIDATOR_CUSTOM_ERROR_REGEX,
+  VALIDATOR_CUSTOM_ERROR_SPLIT_KEYS_REGEX,
+} from '../extendedDMMFFieldValidatorCustomErrors';
+import {
   STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
   STRING_VALIDATOR_MESSAGE_REGEX,
   STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX,
@@ -328,6 +333,32 @@ describe(`ExtendedDMMFFieldDefaultValidators`, () => {
 
 // VALIDATOR CUSTOM ERRORS TESTS
 // ----------------------------------------------
+
+describe(`ExtendedDMMFFieldValidatorCustomErrors`, () => {
+  it(`array validator number should return match for regex with japanese chars`, async () => {
+    const result = VALIDATOR_CUSTOM_ERROR_REGEX.exec(
+      "({ invalid_type_error: 'カタカナ漢字ひらがな', required_error: 'カタカナ漢字ひらがな', description: 'カタカナ漢字ひらがな' })",
+    );
+    expect(result?.groups?.object).toBe(
+      "{ invalid_type_error: 'カタカナ漢字ひらがな', required_error: 'カタカナ漢字ひらがな', description: 'カタカナ漢字ひらがな' }",
+    );
+    expect(result?.groups?.messages).toBe(
+      " invalid_type_error: 'カタカナ漢字ひらがな', required_error: 'カタカナ漢字ひらがな', description: 'カタカナ漢字ひらがな' ",
+    );
+  });
+  it(`array validator number should return match for regex with japanese chars`, async () => {
+    const messageArray =
+      " invalid_type_error: 'カタカナ漢字ひらがな', required_error: 'カタカナ漢字ひらがな', description: 'カタカナ漢字ひらがな' "
+        .replace(VALIDATOR_CUSTOM_ERROR_MESSAGE_REGEX, '')
+        .match(VALIDATOR_CUSTOM_ERROR_SPLIT_KEYS_REGEX);
+
+    expect(messageArray).toEqual([
+      'invalid_type_error',
+      'required_error',
+      'description',
+    ]);
+  });
+});
 
 describe(`ExtendedDMMFFieldValidatorCustomErrors`, () => {
   it(`should load a class without docs`, async () => {
