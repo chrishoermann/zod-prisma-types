@@ -1,7 +1,7 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { OmitFieldMode } from './extendedDMMFFieldOmitField';
-import { ExtendedDMMFFieldZodType } from './extendedDMMFFieldZodType';
+import { OmitFieldMode } from './11_extendedDMMFFieldOmitField';
+import { ExtendedDMMFFieldZodType } from './12_extendedDMMFFieldZodType';
 import { GeneratorConfig } from '../../schemas';
 import { FormattedNames } from '../formattedNames';
 

@@ -5,7 +5,7 @@ import { DEFAULT_GENERATOR_CONFIG, FIELD_BASE } from './setup';
 import {
   ExtendedDMMFFieldValidatorMatch,
   VALIDATOR_TYPE_REGEX,
-} from '../extendedDMMFFieldValidatorMatch';
+} from '../02_extendedDMMFFieldValidatorMatch';
 
 const getField = (field?: Partial<DMMF.Field>) =>
   new ExtendedDMMFFieldValidatorMatch(

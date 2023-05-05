@@ -1,13 +1,14 @@
 import { describe, it, expect } from 'vitest';
 
+import { DEFAULT_GENERATOR_CONFIG } from './extendedDMMFField.test';
+import { configSchema } from '../../../../schemas';
 import { getStringVariants } from '../../../../utils/getStringVariants';
 import { ExtendedDMMF } from '../../../ExtendedDMMF';
 import { loadDMMF } from '../../utils/loadDMMF';
-import { DEFAULT_GENERATOR_CONFIG } from './extendedDMMFField.test';
 
 describe('testSimpleModelNoValidators', async () => {
   const dmmf = await loadDMMF(`${__dirname}/extendedDMMFModel.prisma`);
-  const extendedDMMF = new ExtendedDMMF(dmmf, {});
+  const extendedDMMF = new ExtendedDMMF(dmmf, configSchema.parse({}));
   const model = extendedDMMF.datamodel.models[0];
 
   it('should set expected values in model', () => {

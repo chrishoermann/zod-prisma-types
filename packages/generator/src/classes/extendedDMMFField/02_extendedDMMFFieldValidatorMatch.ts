@@ -1,6 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { ExtendedDMMFFieldBase } from './extendedDMMFFieldBase';
+import { ExtendedDMMFFieldBase } from './01_extendedDMMFFieldBase';
 import { GeneratorConfig } from '../../schemas';
 
 /////////////////////////////////////////////////

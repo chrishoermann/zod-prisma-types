@@ -7,7 +7,7 @@ import {
   VALIDATOR_CUSTOM_ERROR_MESSAGE_REGEX,
   VALIDATOR_CUSTOM_ERROR_REGEX,
   VALIDATOR_CUSTOM_ERROR_SPLIT_KEYS_REGEX,
-} from '../extendedDMMFFieldValidatorCustomErrors';
+} from '../06_extendedDMMFFieldValidatorCustomErrors';
 
 const getField = (field?: Partial<DMMF.Field>) =>
   new ExtendedDMMFFieldValidatorCustomErrors(

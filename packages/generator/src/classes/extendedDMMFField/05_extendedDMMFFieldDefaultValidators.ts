@@ -1,6 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { ExtendedDMMFFieldValidatorPattern } from './extendedDMMFFieldValidatorPattern';
+import { ExtendedDMMFFieldValidatorPattern } from './04_extendedDMMFFieldValidatorPattern';
 import { GeneratorConfig } from '../../schemas';
 
 export class ExtendedDMMFFieldDefaultValidators extends ExtendedDMMFFieldValidatorPattern {

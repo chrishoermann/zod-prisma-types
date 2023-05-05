@@ -1,27 +1,34 @@
 import { z } from 'zod';
 
 /////////////////////////////////////////////////
-// SCHMEAS
+// SCHEMAS
 /////////////////////////////////////////////////
 
-const skipGeneratorSchema = z
-  .string()
-  .default('false')
-  .transform((val) => val === 'true')
-  .optional();
+export const processSchema = z.object({
+  env: z.object({
+    SKIP_ZOD_PRISMA: z
+      .string()
+      .optional()
+      .transform((val) => val === 'true'),
+  }),
+});
 
 /////////////////////////////////////////////////
 // FUNCTIONS
 /////////////////////////////////////////////////
 
-export const skipGenerator = async (): Promise<boolean> => {
-  try {
-    const importedConfig = await import(`${process.cwd()}/zodGenConfig.js`);
+export const skipGenerator = (): boolean => {
+  const skipGenerator = processSchema.parse(process).env.SKIP_ZOD_PRISMA;
 
-    return Boolean(
-      skipGeneratorSchema.parse(importedConfig.default.skipGenerator),
+  if (skipGenerator) {
+    console.log(
+      '\x1b[33m',
+      '!!!! Generation of zod schemas skipped! Generator is disabled via "SKIP_ZOD_PRISMA" environment variable !!!!',
+      '\x1b[37m',
     );
-  } catch {
-    return false;
+
+    return true;
   }
+
+  return false;
 };

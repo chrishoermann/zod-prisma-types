@@ -13,7 +13,7 @@ import {
   STRING_VALIDATOR_MESSAGE_REGEX,
   STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
   STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX,
-} from '../extendedDMMFFieldValidatorMap';
+} from '../07_extendedDMMFFieldValidatorMap';
 
 const getField = (field?: Partial<DMMF.Field>) =>
   new ExtendedDMMFFieldValidatorMap(

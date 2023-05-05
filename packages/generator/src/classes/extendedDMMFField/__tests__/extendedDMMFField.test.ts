@@ -2,17 +2,12 @@ import { DMMF } from '@prisma/generator-helper';
 import { it, expect, describe } from 'vitest';
 
 import { DEFAULT_GENERATOR_CONFIG, FIELD_BASE } from './setup';
-import { ExtendedDMMFFieldClass } from '../extendedDMMFField';
-import {
-  ARRAY_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-  ARRAY_VALIDATOR_NUMBER_OR_STRING_AND_MESSAGE_REGEX,
-  ARRAY_VALIDATOR_WITH_MESSAGE_REGEX,
-} from '../extendedDMMFFieldArrayValidatorString';
+import { VALIDATOR_TYPE_REGEX } from '../02_extendedDMMFFieldValidatorMatch';
 import {
   VALIDATOR_CUSTOM_ERROR_MESSAGE_REGEX,
   VALIDATOR_CUSTOM_ERROR_REGEX,
   VALIDATOR_CUSTOM_ERROR_SPLIT_KEYS_REGEX,
-} from '../extendedDMMFFieldValidatorCustomErrors';
+} from '../06_extendedDMMFFieldValidatorCustomErrors';
 import {
   STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
   STRING_VALIDATOR_MESSAGE_REGEX,
@@ -23,8 +18,13 @@ import {
   BIGINT_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
   BIGINT_VALIDATOR_MESSAGE_REGEX,
   CUSTOM_VALIDATOR_MESSAGE_REGEX,
-} from '../extendedDMMFFieldValidatorMap';
-import { VALIDATOR_TYPE_REGEX } from '../extendedDMMFFieldValidatorMatch';
+} from '../07_extendedDMMFFieldValidatorMap';
+import {
+  ARRAY_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
+  ARRAY_VALIDATOR_NUMBER_OR_STRING_AND_MESSAGE_REGEX,
+  ARRAY_VALIDATOR_WITH_MESSAGE_REGEX,
+} from '../10_extendedDMMFFieldArrayValidatorString';
+import { ExtendedDMMFFieldClass } from '../extendedDMMFField';
 
 const getField = (field?: Partial<DMMF.Field>) =>
   new ExtendedDMMFFieldClass(

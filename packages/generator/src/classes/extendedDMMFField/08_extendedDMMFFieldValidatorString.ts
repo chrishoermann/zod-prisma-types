@@ -1,6 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { ExtendedDMMFFieldValidatorMap } from './extendedDMMFFieldValidatorMap';
+import { ExtendedDMMFFieldValidatorMap } from './07_extendedDMMFFieldValidatorMap';
 import { GeneratorConfig } from '../../schemas';
 
 /////////////////////////////////////////////////

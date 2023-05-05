@@ -533,40 +533,11 @@ generator zod {
 
 ## Skip schema generation
 
-You can skip schema generation based on e.g. the environment you are currently working in. For example you can only generate the schemas when you're in `development` but not when you run generation in `production` (because in `production` the schemas would already hav been created and pushed to the server via your git repo).
-
-Since Prisma only lets us define `strings` in the generator config we cannot use the `env(MY_ENV_VARIABLE)` method that is used when e.g. the `url` under `datasource db` is loaded:
-
-```prisma
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-```
-
-To still be able to load environment variables into the generator, just create a `zodGenConfig.js` in your root directory (where the `node_modules` folder is located) and add the following code:
-
-```ts
-module.exports = {
-  skipGenerator: process.env['SKIP_ZOD_PRISMA'],
-};
-```
-
-Then add
+You can skip schema generation based on e.g. the environment you are currently working in. For example you can only generate the schemas when you're in `development` but not when you run generation in `production` (because in `production` the schemas would already hav been created and pushed to the server via your git repo). To skip generation in an environment just add the following `environment variable` to your respective `.env` files:
 
 ```js
 SKIP_ZOD_PRISMA = 'true';
 ```
-
-or
-
-```js
-SKIP_ZOD_PRISMA = 'false';
-```
-
-to your respective `.env` file. This will load the `SKIP_ZOD_PRISMA` environment variable on the `skipGenerator` prop that will then be consumed by the generator.
-
-> You can choose to name your environment variable whatever you want - just make shure to load the right variable in `zodGenConfig.js`.
 
 ## Custom Enums
 

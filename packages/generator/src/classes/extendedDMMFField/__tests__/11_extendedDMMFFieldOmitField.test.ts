@@ -2,7 +2,7 @@ import { DMMF } from '@prisma/generator-helper';
 import { it, expect, describe } from 'vitest';
 
 import { DEFAULT_GENERATOR_CONFIG, FIELD_BASE } from './setup';
-import { ExtendedDMMFFieldOmitField } from '../extendedDMMFFieldOmitField';
+import { ExtendedDMMFFieldOmitField } from '../11_extendedDMMFFieldOmitField';
 
 const getField = (field?: Partial<DMMF.Field>) =>
   new ExtendedDMMFFieldOmitField(

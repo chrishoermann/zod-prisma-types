@@ -1,10 +1,10 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { ExtendedDMMFFieldCustomValidatorString } from './extendedDMMFFieldCustomValidatorString';
+import { ExtendedDMMFFieldCustomValidatorString } from './09_extendedDMMFFieldCustomValidatorString';
 import {
   ARRAY_VALIDATOR_MESSAGE_REGEX,
   ValidatorMap,
-} from './extendedDMMFFieldValidatorMap';
+} from './07_extendedDMMFFieldValidatorMap';
 import { GeneratorConfig } from '../../schemas';
 
 /////////////////////////////////////////////////

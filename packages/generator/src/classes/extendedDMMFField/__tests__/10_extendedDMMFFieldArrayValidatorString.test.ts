@@ -7,7 +7,7 @@ import {
   ARRAY_VALIDATOR_NUMBER_OR_STRING_AND_MESSAGE_REGEX,
   ARRAY_VALIDATOR_WITH_MESSAGE_REGEX,
   ExtendedDMMFFieldArrayValidatorString,
-} from '../extendedDMMFFieldArrayValidatorString';
+} from '../10_extendedDMMFFieldArrayValidatorString';
 
 const getField = (field?: Partial<DMMF.Field>) =>
   new ExtendedDMMFFieldArrayValidatorString(

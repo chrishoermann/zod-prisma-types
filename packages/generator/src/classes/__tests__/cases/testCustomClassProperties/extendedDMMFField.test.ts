@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { GeneratorConfig } from '../../../../schemas';
+import { configSchema, GeneratorConfig } from '../../../../schemas';
 import { getStringVariants } from '../../../../utils/getStringVariants';
 import { ExtendedDMMF } from '../../../ExtendedDMMF';
 import { loadDMMF } from '../../utils/loadDMMF';
@@ -27,7 +27,7 @@ export const DEFAULT_GENERATOR_CONFIG: GeneratorConfig = {
 
 describe('testSimpleModelNoValidators', async () => {
   const dmmf = await loadDMMF(`${__dirname}/extendedDMMFField.prisma`);
-  const extendedDMMF = new ExtendedDMMF(dmmf, {});
+  const extendedDMMF = new ExtendedDMMF(dmmf, configSchema.parse({}));
 
   const fields = extendedDMMF.datamodel.models[0].fields;
 

@@ -1,6 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { ExtendedDMMFFieldValidatorMatch } from './extendedDMMFFieldValidatorMatch';
+import { ExtendedDMMFFieldValidatorMatch } from './02_extendedDMMFFieldValidatorMatch';
 import { GeneratorConfig } from '../../schemas';
 import { PrismaScalarType } from '../../types';
 

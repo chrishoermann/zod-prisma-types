@@ -1,6 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 
-import { ExtendedDMMFFieldOmitField } from './extendedDMMFFieldOmitField';
+import { ExtendedDMMFFieldOmitField } from './11_extendedDMMFFieldOmitField';
 import { GeneratorConfig } from '../../schemas';
 
 /////////////////////////////////////////////////

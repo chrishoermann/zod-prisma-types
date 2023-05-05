@@ -1,5 +1,5 @@
-import { ExtendedDMMFFieldValidatorCustomErrors } from './extendedDMMFFieldValidatorCustomErrors';
-import { ZodValidatorType } from './extendedDMMFFieldValidatorType';
+import { ExtendedDMMFFieldValidatorCustomErrors } from './06_extendedDMMFFieldValidatorCustomErrors';
+import { ZodValidatorType } from './03_extendedDMMFFieldValidatorType';
 
 /////////////////////////////////////////////////
 // TYPES

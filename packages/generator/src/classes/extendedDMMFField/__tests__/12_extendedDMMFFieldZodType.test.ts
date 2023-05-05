@@ -2,7 +2,7 @@ import { DMMF } from '@prisma/generator-helper';
 import { it, expect, describe } from 'vitest';
 
 import { DEFAULT_GENERATOR_CONFIG, FIELD_BASE } from './setup';
-import { ExtendedDMMFFieldZodType } from '../extendedDMMFFieldZodType';
+import { ExtendedDMMFFieldZodType } from '../12_extendedDMMFFieldZodType';
 
 const getField = (field?: Partial<DMMF.Field>) =>
   new ExtendedDMMFFieldZodType(

@@ -2,7 +2,7 @@ import { DMMF } from '@prisma/generator-helper';
 import { it, expect, describe } from 'vitest';
 
 import { DEFAULT_GENERATOR_CONFIG, FIELD_BASE } from './setup';
-import { ExtendedDMMFFieldDefaultValidators } from '../extendedDMMFFieldDefaultValidators';
+import { ExtendedDMMFFieldDefaultValidators } from '../05_extendedDMMFFieldDefaultValidators';
 
 const getField = (field?: Partial<DMMF.Field>) =>
   new ExtendedDMMFFieldDefaultValidators(
