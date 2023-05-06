@@ -3,6 +3,9 @@ import { ExtendedDMMFModel } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
 import { writeRelation } from '../fieldWriters';
 
+//// NEEDS REFACTORING ////
+// This function is a mess and needs to be refactored into smaller, more manageable pieces.
+
 export const writeModelOrType = (
   {
     fileWriter: {
@@ -365,14 +368,17 @@ export const writeModelOrType = (
             writer.write(`${field.name}?: NullableJsonInput;`).newLine();
           });
         })
-        .write(` & `);
+        .write(` & `)
+        .write(`${model.name}PartialRelations`);
     } else {
-      writer.write(
-        `export type ${model.name}PartialWithRelations = z.infer<typeof ${model.name}PartialSchema> & `,
-      );
+      writer
+        .write(
+          `export type ${model.name}PartialWithRelations = z.infer<typeof ${model.name}PartialSchema> & `,
+        )
+        .write(`${model.name}PartialRelations`);
     }
 
-    writer.write(`${model.name}PartialRelations`);
+    // writer.write(`${model.name}PartialRelations`);
 
     writer
       .blankLine()
@@ -385,6 +391,92 @@ export const writeModelOrType = (
         });
       })
       .write(`)).partial()`);
+
+    // WRITE OPTIONAL DEFAULTS PARTIAL RELATION VALUE TYPES
+    // -------------------------------------------
+
+    if (model.writeOptionalDefaultsRelationValueTypes) {
+      writer.blankLine();
+
+      if (model.hasOptionalJsonFields) {
+        writer
+          .write(
+            `export type ${model.name}OptionalDefaultsWithPartialRelations = Omit<z.infer<typeof ${model.name}OptionalDefaultsSchema>, ${model.optionalJsonFieldUnion}> & `,
+          )
+          .inlineBlock(() => {
+            model.optionalJsonFields.forEach((field) => {
+              writer.write(`${field.name}?: NullableJsonInput;`).newLine();
+            });
+          })
+          .write(` & `);
+      } else {
+        writer.write(
+          `export type ${model.name}OptionalDefaultsWithPartialRelations = z.infer<typeof ${model.name}OptionalDefaultsSchema> & `,
+        );
+      }
+
+      writer.write(`${model.name}PartialRelations`);
+
+      writer
+        .blankLine()
+        .write(
+          `export const ${model.name}OptionalDefaultsWithPartialRelationsSchema: z.ZodType<${model.name}OptionalDefaultsWithPartialRelations> = ${model.name}OptionalDefaultsSchema.merge(z.object(`,
+        )
+        .inlineBlock(() => {
+          model.relationFields.forEach((field) => {
+            // update so it writes [ModleName]OptionalDefaultsWithRelationsSchema
+            writeRelation({
+              writer,
+              field,
+              isPartial: true,
+            });
+          });
+        })
+        .write(`).partial())`);
+    }
+
+    // WRITE PARTIAL RELATION VALUE TYPES
+    // -------------------------------------------
+
+    if (model.writeRelationValueTypes) {
+      writer.blankLine();
+
+      if (model.hasOptionalJsonFields) {
+        writer
+          .write(
+            `export type ${model.name}WithPartialRelations = Omit<z.infer<typeof ${model.name}Schema>, ${model.optionalJsonFieldUnion}> & `,
+          )
+          .inlineBlock(() => {
+            model.optionalJsonFields.forEach((field) => {
+              writer.write(`${field.name}?: NullableJsonInput;`).newLine();
+            });
+          })
+          .write(` & `);
+      } else {
+        writer.write(
+          `export type ${model.name}WithPartialRelations = z.infer<typeof ${model.name}Schema> & `,
+        );
+      }
+
+      writer.write(`${model.name}PartialRelations`);
+
+      writer
+        .blankLine()
+        .write(
+          `export const ${model.name}WithPartialRelationsSchema: z.ZodType<${model.name}WithPartialRelations> = ${model.name}Schema.merge(z.object(`,
+        )
+        .inlineBlock(() => {
+          model.relationFields.forEach((field) => {
+            // update so it writes [ModleName]OptionalDefaultsWithRelationsSchema
+            writeRelation({
+              writer,
+              field,
+              isPartial: true,
+            });
+          });
+        })
+        .write(`).partial())`);
+    }
   }
 
   if (useMultipleFiles && !getSingleFileContent) {
