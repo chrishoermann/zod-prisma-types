@@ -22,7 +22,7 @@ export const writeRelation = ({
       `z.lazy(() => ${field.type}WithRelationsSchema)`,
     )
 
-    // if `isPartial` i `true`  we need to use `[ModelName]PartialWithRelationsSchema`
+    // if `isPartial` is `true`  we need to use `[ModelName]PartialWithRelationsSchema`
     // instead of`[ModelName]WithRelationsSchema` since this model is a model where all
     // fields are optional.
 
