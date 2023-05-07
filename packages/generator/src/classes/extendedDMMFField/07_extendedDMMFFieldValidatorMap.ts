@@ -124,7 +124,7 @@ export const BIGINT_VALIDATOR_MESSAGE_REGEX =
 // ----------------------------------------
 
 export const CUSTOM_VALIDATOR_MESSAGE_REGEX =
-  /(?<validator>use|array|omit)(\()(?<pattern>[\w\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han} (),.'":+\-*#!§$%&/{}[\]=?~><°^]+)\)/u;
+  /(?<validator>use|array|omit)(\()(?<pattern>[\w\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han} (),.'"。、:+\-*#!§$%&/{}[\]=?~><°^]+)\)/u;
 
 export const CUSTOM_OMIT_VALIDATOR_MESSAGE_REGEX =
   /(?<validator>omit)(\()(?<pattern>[\w ,'"[\]]+)\)/;
@@ -133,7 +133,7 @@ export const CUSTOM_OMIT_VALIDATOR_MESSAGE_REGEX =
 // ----------------------------------------
 
 export const ARRAY_VALIDATOR_MESSAGE_REGEX =
-  /(?<validator>array)(\((?<pattern>[\w\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han} (),.'":+\-*#!§$%&/{}[\]=?~><°^]+)\))/u;
+  /(?<validator>array)(\((?<pattern>[\w\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han} (),.'"。、:+\-*#!§$%&/{}[\]=?~><°^]+)\))/u;
 
 /////////////////////////////////////////////
 // REGEX MAPS
