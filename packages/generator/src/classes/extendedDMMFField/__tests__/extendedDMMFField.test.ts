@@ -207,14 +207,14 @@ describe(`ExtendedDMMFFieldValidatorType`, () => {
   });
   it(`should match japanese characters in the regex`, async () => {
     const match = VALIDATOR_TYPE_REGEX.exec(
-      `@zod.string({ invalid_type_error: "カタカナ漢字ひらがな" }).min(5, { message: "カタカナ漢字ひらがな" })`,
+      `@zod.string({ invalid_type_error: "ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。" }).min(5, { message: "ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。" })`,
     );
 
     expect(match?.groups?.['customErrors']).toBe(
-      '({ invalid_type_error: "カタカナ漢字ひらがな" })',
+      '({ invalid_type_error: "ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。" })',
     );
     expect(match?.groups?.['validatorPattern']).toBe(
-      '.min(5, { message: "カタカナ漢字ひらがな" })',
+      '.min(5, { message: "ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。" })',
     );
   });
 });
@@ -337,18 +337,18 @@ describe(`ExtendedDMMFFieldDefaultValidators`, () => {
 describe(`ExtendedDMMFFieldValidatorCustomErrors`, () => {
   it(`array validator number should return match for regex with japanese chars`, async () => {
     const result = VALIDATOR_CUSTOM_ERROR_REGEX.exec(
-      "({ invalid_type_error: 'カタカナ漢字ひらがな', required_error: 'カタカナ漢字ひらがな', description: 'カタカナ漢字ひらがな' })",
+      "({ invalid_type_error: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。', required_error: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。', description: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' })",
     );
     expect(result?.groups?.object).toBe(
-      "{ invalid_type_error: 'カタカナ漢字ひらがな', required_error: 'カタカナ漢字ひらがな', description: 'カタカナ漢字ひらがな' }",
+      "{ invalid_type_error: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。', required_error: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。', description: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' }",
     );
     expect(result?.groups?.messages).toBe(
-      " invalid_type_error: 'カタカナ漢字ひらがな', required_error: 'カタカナ漢字ひらがな', description: 'カタカナ漢字ひらがな' ",
+      " invalid_type_error: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。', required_error: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。', description: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' ",
     );
   });
   it(`array validator number should return match for regex with japanese chars`, async () => {
     const messageArray =
-      " invalid_type_error: 'カタカナ漢字ひらがな', required_error: 'カタカナ漢字ひらがな', description: 'カタカナ漢字ひらがな' "
+      " invalid_type_error: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。', required_error: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。', description: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' "
         .replace(VALIDATOR_CUSTOM_ERROR_MESSAGE_REGEX, '')
         .match(VALIDATOR_CUSTOM_ERROR_SPLIT_KEYS_REGEX);
 
@@ -402,92 +402,92 @@ describe(`ExtendedDMMFFieldValidatorCustomErrors`, () => {
 
 it(`string validator number should return match for regex with japanese chars`, async () => {
   const result = STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX.exec(
-    ".min(5, {message: 'カタカナ漢字ひらがな'})",
+    ".min(5, {message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'})",
   );
   expect(result?.groups?.validator).toBe('min');
   expect(result?.groups?.number).toBe('5');
-  expect(result?.groups?.message).toBe("{message: 'カタカナ漢字ひらがな'}");
+  expect(result?.groups?.message).toBe("{message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'}");
 });
 
 it(`string validator message should return match for regex with japanese chars`, async () => {
   const result = STRING_VALIDATOR_MESSAGE_REGEX.exec(
-    ".email({message: 'カタカナ漢字ひらがな'})",
+    ".email({message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'})",
   );
   expect(result?.groups?.validator).toBe('email');
-  expect(result?.groups?.message).toBe("{message: 'カタカナ漢字ひらがな'}");
+  expect(result?.groups?.message).toBe("{message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'}");
 });
 
 it(`string validator string should return match for regex with japanese chars`, async () => {
   const result = STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX.exec(
-    ".startsWith('カタカナ漢字ひらがな', {message: 'カタカナ漢字ひらがな'})",
+    ".startsWith('ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。', {message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'})",
   );
   expect(result?.groups?.validator).toBe('startsWith');
-  expect(result?.groups?.string).toBe("'カタカナ漢字ひらがな'");
-  expect(result?.groups?.message).toBe("{message: 'カタカナ漢字ひらがな'}");
+  expect(result?.groups?.string).toBe("'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'");
+  expect(result?.groups?.message).toBe("{message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'}");
 });
 
 it(`number validator number should return match for regex with japanese chars`, async () => {
   const result = NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX.exec(
-    ".min(2, {message: 'カタカナ漢字ひらがな'})",
+    ".min(2, {message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'})",
   );
   expect(result?.groups?.validator).toBe('min');
   expect(result?.groups?.number).toBe('2');
-  expect(result?.groups?.message).toBe("{message: 'カタカナ漢字ひらがな'}");
+  expect(result?.groups?.message).toBe("{message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'}");
 });
 
 it(`number validator message should return match for regex with japanese chars`, async () => {
   const result = NUMBER_VALIDATOR_MESSAGE_REGEX.exec(
-    ".int({message: 'カタカナ漢字ひらがな'})",
+    ".int({message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'})",
   );
   expect(result?.groups?.validator).toBe('int');
-  expect(result?.groups?.message).toBe("{message: 'カタカナ漢字ひらがな'}");
+  expect(result?.groups?.message).toBe("{message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'}");
 });
 
 it(`date validator number should return match for regex with japanese chars`, async () => {
   const result = DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX.exec(
-    ".min(new Date(01-01-2022), { message: 'カタカナ漢字ひらがな' })",
+    ".min(new Date(01-01-2022), { message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' })",
   );
   expect(result?.groups?.validator).toBe('min');
   expect(result?.groups?.date).toBe('new Date(01-01-2022)');
-  expect(result?.groups?.message).toBe("{ message: 'カタカナ漢字ひらがな' }");
+  expect(result?.groups?.message).toBe("{ message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' }");
 });
 
 it(`bigint validator number should return match for regex with japanese chars`, async () => {
   const result = BIGINT_VALIDATOR_NUMBER_AND_MESSAGE_REGEX.exec(
-    ".gt(2n, { message: 'カタカナ漢字ひらがな' })",
+    ".gt(2n, { message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' })",
   );
   expect(result?.groups?.validator).toBe('gt');
   expect(result?.groups?.number).toBe('2n');
-  expect(result?.groups?.message).toBe("{ message: 'カタカナ漢字ひらがな' }");
+  expect(result?.groups?.message).toBe("{ message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' }");
 });
 
 it(`bigint validator message should return match for regex with japanese chars`, async () => {
   const result = BIGINT_VALIDATOR_MESSAGE_REGEX.exec(
-    ".positive({message: 'カタカナ漢字ひらがな'})",
+    ".positive({message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'})",
   );
   expect(result?.groups?.validator).toBe('positive');
-  expect(result?.groups?.message).toBe("{message: 'カタカナ漢字ひらがな'}");
+  expect(result?.groups?.message).toBe("{message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'}");
 });
 
 it(`custom validator message should return match for regex with japanese chars`, async () => {
   const result = CUSTOM_VALIDATOR_MESSAGE_REGEX.exec(
-    "use(z.string.min(2, { message: 'カタカナ漢字ひらがな' }))",
+    "use(z.string.min(2, { message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' }))",
   );
 
   expect(result?.groups?.validator).toBe('use');
   expect(result?.groups?.pattern).toBe(
-    "z.string.min(2, { message: 'カタカナ漢字ひらがな' })",
+    "z.string.min(2, { message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' })",
   );
 });
 
 it(`array validator message should return match for regex with japanese chars`, async () => {
   const result = CUSTOM_VALIDATOR_MESSAGE_REGEX.exec(
-    "array(min(2, { message: 'カタカナ漢字ひらがな' }))",
+    "array(min(2, { message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' }))",
   );
 
   expect(result?.groups?.validator).toBe('array');
   expect(result?.groups?.pattern).toBe(
-    "min(2, { message: 'カタカナ漢字ひらがな' })",
+    "min(2, { message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' })",
   );
 });
 
@@ -1473,39 +1473,39 @@ describe(`ExtendedDMMFFieldCustomValidatorString`, () => {
 describe("ExtendedDMMFFieldValidatorMap's regex", () => {
   it(`array validator number should return match for regex with japanese chars`, async () => {
     const result = ARRAY_VALIDATOR_NUMBER_AND_MESSAGE_REGEX.exec(
-      ".min(5, {message: 'カタカナ漢字ひらがな'})",
+      ".min(5, {message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'})",
     );
     expect(result?.groups?.validator).toBe('min');
     expect(result?.groups?.number).toBe('5');
-    expect(result?.groups?.message).toBe("{message: 'カタカナ漢字ひらがな'}");
+    expect(result?.groups?.message).toBe("{message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'}");
   });
 
   it(`array validator number or string should return match for regex with japanese chars`, async () => {
     const resultOne = ARRAY_VALIDATOR_NUMBER_OR_STRING_AND_MESSAGE_REGEX.exec(
-      ".min(5, {message: 'カタカナ漢字ひらがな'})",
+      ".min(5, {message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'})",
     );
     expect(resultOne?.groups?.validator).toBe('min');
     expect(resultOne?.groups?.number).toBe('5');
     expect(resultOne?.groups?.message).toBe(
-      "{message: 'カタカナ漢字ひらがな'}",
+      "{message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'}",
     );
 
     const resultTwo = ARRAY_VALIDATOR_NUMBER_OR_STRING_AND_MESSAGE_REGEX.exec(
-      ".min(string, {message: 'カタカナ漢字ひらがな'})",
+      ".min(string, {message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'})",
     );
     expect(resultTwo?.groups?.validator).toBe('min');
     expect(resultTwo?.groups?.number).toBe('string');
     expect(resultTwo?.groups?.message).toBe(
-      "{message: 'カタカナ漢字ひらがな'}",
+      "{message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'}",
     );
   });
 
   it(`array validator message should return match for regex with japanese chars`, async () => {
     const result = ARRAY_VALIDATOR_WITH_MESSAGE_REGEX.exec(
-      ".nonempty({message: 'カタカナ漢字ひらがな'})",
+      ".nonempty({message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'})",
     );
     expect(result?.groups?.validator).toBe('nonempty');
-    expect(result?.groups?.message).toBe("{message: 'カタカナ漢字ひらがな'}");
+    expect(result?.groups?.message).toBe("{message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'}");
   });
 });
 
