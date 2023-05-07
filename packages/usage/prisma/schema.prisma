@@ -102,7 +102,7 @@ model MyPrismaScalarsType {
   /// @zod.number.lt(10.3, { message: "lt error" }).gt(5.5, { message: "gt error" })
   float      Float
   floatOpt   Float?
-  /// @zod.number.int({ message: "error" }).gt(5, { message: "カタカナ漢字ひらがな" })
+  /// @zod.number.int({ message: "error" }).gt(5, { message: "ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。" })
   int        Int
   intOpt     Int?
   decimal    Decimal
@@ -315,7 +315,7 @@ model SelfReference {
 
 model JapaneseChars {
   id     Int    @id @default(autoincrement())
-  ///@zod.string({ invalid_type_error: "カタカナ漢字ひらがな", required_error: "カタカナ漢字ひらがな", description: "カタカナ漢字ひらがな" }).min(5, { message: "カタカナ漢字ひらがな" })
+  ///@zod.string({ invalid_type_error: "ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。", required_error: "ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。", description: "ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。" }).min(5, { message: "ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。" })
   string String
 }
 

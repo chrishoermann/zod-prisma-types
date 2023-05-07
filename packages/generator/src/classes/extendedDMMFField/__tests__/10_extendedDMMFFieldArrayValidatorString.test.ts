@@ -19,39 +19,39 @@ const getField = (field?: Partial<DMMF.Field>) =>
 describe("ExtendedDMMFFieldValidatorMap's regex", () => {
   it(`array validator number should return match for regex with japanese chars`, async () => {
     const result = ARRAY_VALIDATOR_NUMBER_AND_MESSAGE_REGEX.exec(
-      ".min(5, {message: 'カタカナ漢字ひらがな'})",
+      ".min(5, {message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'})",
     );
     expect(result?.groups?.validator).toBe('min');
     expect(result?.groups?.number).toBe('5');
-    expect(result?.groups?.message).toBe("{message: 'カタカナ漢字ひらがな'}");
+    expect(result?.groups?.message).toBe("{message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'}");
   });
 
   it(`array validator number or string should return match for regex with japanese chars`, async () => {
     const resultOne = ARRAY_VALIDATOR_NUMBER_OR_STRING_AND_MESSAGE_REGEX.exec(
-      ".min(5, {message: 'カタカナ漢字ひらがな'})",
+      ".min(5, {message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'})",
     );
     expect(resultOne?.groups?.validator).toBe('min');
     expect(resultOne?.groups?.number).toBe('5');
     expect(resultOne?.groups?.message).toBe(
-      "{message: 'カタカナ漢字ひらがな'}",
+      "{message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'}",
     );
 
     const resultTwo = ARRAY_VALIDATOR_NUMBER_OR_STRING_AND_MESSAGE_REGEX.exec(
-      ".min(string, {message: 'カタカナ漢字ひらがな'})",
+      ".min(string, {message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'})",
     );
     expect(resultTwo?.groups?.validator).toBe('min');
     expect(resultTwo?.groups?.number).toBe('string');
     expect(resultTwo?.groups?.message).toBe(
-      "{message: 'カタカナ漢字ひらがな'}",
+      "{message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'}",
     );
   });
 
   it(`array validator message should return match for regex with japanese chars`, async () => {
     const result = ARRAY_VALIDATOR_WITH_MESSAGE_REGEX.exec(
-      ".nonempty({message: 'カタカナ漢字ひらがな'})",
+      ".nonempty({message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'})",
     );
     expect(result?.groups?.validator).toBe('nonempty');
-    expect(result?.groups?.message).toBe("{message: 'カタカナ漢字ひらがな'}");
+    expect(result?.groups?.message).toBe("{message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'}");
   });
 });
 

@@ -91,14 +91,14 @@ describe(`ExtendedDMMFFieldValidatorMatch`, () => {
 
   it(`should match japanese characters in the regex`, async () => {
     const match = VALIDATOR_TYPE_REGEX.exec(
-      `@zod.string({ invalid_type_error: "カタカナ漢字ひらがな" }).min(5, { message: "カタカナ漢字ひらがな" })`,
+      `@zod.string({ invalid_type_error: "ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。" }).min(5, { message: "ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。" })`,
     );
 
     expect(match?.groups?.['customErrors']).toBe(
-      '({ invalid_type_error: "カタカナ漢字ひらがな" })',
+      '({ invalid_type_error: "ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。" })',
     );
     expect(match?.groups?.['validatorPattern']).toBe(
-      '.min(5, { message: "カタカナ漢字ひらがな" })',
+      '.min(5, { message: "ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。" })',
     );
   });
 });

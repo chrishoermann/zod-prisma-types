@@ -19,18 +19,18 @@ const getField = (field?: Partial<DMMF.Field>) =>
 describe(`ExtendedDMMFFieldValidatorCustomErrors`, () => {
   it(`array validator number should return match for regex with japanese chars`, async () => {
     const result = VALIDATOR_CUSTOM_ERROR_REGEX.exec(
-      "({ invalid_type_error: 'カタカナ漢字ひらがな', required_error: 'カタカナ漢字ひらがな', description: 'カタカナ漢字ひらがな' })",
+      "({ invalid_type_error: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。', required_error: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。', description: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' })",
     );
     expect(result?.groups?.object).toBe(
-      "{ invalid_type_error: 'カタカナ漢字ひらがな', required_error: 'カタカナ漢字ひらがな', description: 'カタカナ漢字ひらがな' }",
+      "{ invalid_type_error: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。', required_error: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。', description: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' }",
     );
     expect(result?.groups?.messages).toBe(
-      " invalid_type_error: 'カタカナ漢字ひらがな', required_error: 'カタカナ漢字ひらがな', description: 'カタカナ漢字ひらがな' ",
+      " invalid_type_error: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。', required_error: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。', description: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' ",
     );
   });
   it(`array validator number should return match for regex with japanese chars`, async () => {
     const messageArray =
-      " invalid_type_error: 'カタカナ漢字ひらがな', required_error: 'カタカナ漢字ひらがな', description: 'カタカナ漢字ひらがな' "
+      " invalid_type_error: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。', required_error: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。', description: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' "
         .replace(VALIDATOR_CUSTOM_ERROR_MESSAGE_REGEX, '')
         .match(VALIDATOR_CUSTOM_ERROR_SPLIT_KEYS_REGEX);
 
