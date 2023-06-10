@@ -27,6 +27,7 @@ Be aware that some generator options have been removed, a few new have been adde
 - [Usage](#usage)
   - [`output`](#output)
   - [`useMultipleFiles`](#usemultiplefiles)
+  - [`writeBarrelFiles`](#writebarrelfiles)
   - [`createInputTypes`](#createinputtypes)
   - [`createModelTypes`](#createmodeltypes)
   - [`addInputTypeValidation`](#addinputtypevalidation)
