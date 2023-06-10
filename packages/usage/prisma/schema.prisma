@@ -188,13 +188,26 @@ model Post {
 }
 
 model Profile {
-  id     Int        @id @default(autoincrement())
+  id             Int             @id @default(autoincrement())
   /// @zod.string.min(1).max(400)
-  bio    String
-  user   User       @relation(fields: [userId], references: [id])
-  userId String     @unique
-  role   Role[]     @default([USER, ADMIN])
-  second SecondEnum @default(ONE)
+  bio            String
+  user           User            @relation(fields: [userId], references: [id])
+  userId         String          @unique
+  role           Role[]          @default([USER, ADMIN])
+  second         SecondEnum      @default(ONE)
+  profilePicture ProfilePicture?
+}
+
+// Model that contains name of another model
+// This is used to test if the generator correctly handles the case
+// when the model name contains the field of another model
+// but it is not a self refrencing model
+
+model ProfilePicture {
+  id        Int     @id @default(autoincrement())
+  url       String
+  profile   Profile @relation(fields: [profileId], references: [id])
+  profileId Int     @unique
 }
 
 model Location {

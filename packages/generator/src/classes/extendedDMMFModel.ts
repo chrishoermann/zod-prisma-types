@@ -108,9 +108,7 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
   // filterd relation fields are relation fields that are not self referencing
   // these are used to create the relation imports in the model
   private _setFilteredRelationFields() {
-    return this.relationFields.filter(
-      (field) => !field.type.includes(this.name),
-    );
+    return this.relationFields.filter((field) => field.type !== this.name);
   }
 
   private _setHasRequiredJsonFields() {
