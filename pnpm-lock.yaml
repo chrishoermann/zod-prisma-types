@@ -1,4 +1,8 @@
-lockfileVersion: '6.0'
+lockfileVersion: '6.1'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
 
 importers:
 
@@ -99,7 +103,7 @@ importers:
         specifier: ^3.21.1
         version: 3.21.1
       zod-prisma-types:
-        specifier: workspace:2.7.1
+        specifier: workspace:2.7.3
         version: link:../generator
     devDependencies:
       '@types/node':

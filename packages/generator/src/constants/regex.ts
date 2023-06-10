@@ -114,4 +114,7 @@ export const PRISMA_FUNCTION_TYPES_WITH_VALIDATORS_WHERE_UNIQUE =
 export const IMPORT_STATEMENT_REGEX_PATTERN =
   /@zod\.(?<type>[\w]+)(\(\[)(?<imports>[\w "'${}/,;.*-]+)(\]\))/;
 
+export const IMPORT_STATEMENT_REGEX_PATTERN_ENHANCED =
+  /@zod(\.(?<type>[\w]+))?(\.import\(\[(?<imports>[\w "'${}/,;.*-]+)\]\))?(\.refine\((?<refine>[\w\W]+)\))?/;
+
 export const IMPORT_STATEMENT_REGEX = /"(?<statement>[\w "'${}/,;.*-]+)"/;

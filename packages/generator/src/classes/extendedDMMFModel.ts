@@ -7,9 +7,21 @@ import {
 import { FormattedNames } from './formattedNames';
 import {
   IMPORT_STATEMENT_REGEX,
-  IMPORT_STATEMENT_REGEX_PATTERN,
+  // IMPORT_STATEMENT_REGEX_PATTERN,
 } from '../constants';
 import { GeneratorConfig } from '../schemas';
+
+// todo: Refactor this class to be able to pass rich comments like the following
+// - @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).refine(v => v.title.length > 0)
+// - @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).object(.refine(v => v.title.length > 0).transform(...some stuff))
+//
+// this can than be used to refine checks like password and password repeat match
+// in a .refine() function and to transform the final object in a .transform() function
+// the implementation could be similar to the extendedDMMFField class
+// with multiple validation layers for each element of the rich comment
+
+export const IMPORT_STATEMENT_REGEX_PATTERN =
+  /@zod\.(?<type>[\w]+)(\(\[)(?<imports>[\w "'${}/,;.*-]+)(\]\))/;
 
 /////////////////////////////////////////////////
 // TYPES  INTERFACE

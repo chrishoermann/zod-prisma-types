@@ -119,6 +119,7 @@ generator zod {
   provider                         = "ts-node-dev ../generator/src/bin.ts"
   output                           = "./generated/zod" // default is ./generated/zod
   useMultipleFiles                 = true // default is false
+  writeBarrelFiles                 = false // default is true
   createInputTypes                 = false // default is true
   createModelTypes                 = false // default is true
   addInputTypeValidation           = false // default is true
@@ -153,6 +154,19 @@ generator zod {
 > default: `./generated/zod`
 
 Provide an alternative output path.
+
+### `writeBarrelFiles`
+
+> default: `true`
+
+If you use `useMultipleFiles` and do want to create a barrel file for each sub folder you can set this option to `false`. This will create an `index.ts` file in each sub folder that exports all the files in the folder. This option may be beneficial for typescript performance on big schemas.
+
+```prisma
+generator zod {
+  // ...rest of config
+  writeBarrelFiles = false
+}
+```
 
 ### `createInputTypes`
 

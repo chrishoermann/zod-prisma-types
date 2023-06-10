@@ -10,6 +10,11 @@ export const configSchema = z.object({
     .optional()
     .default('false')
     .transform((val) => val === 'true'),
+  writeBarrelFiles: z
+    .string()
+    .optional()
+    .default('true')
+    .transform((val) => val === 'true'),
   createInputTypes: z
     .string()
     .optional()
