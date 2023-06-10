@@ -160,7 +160,7 @@ Provide an alternative output path.
 
 > default: `true`
 
-If you use `useMultipleFiles` and do want to create a barrel file for each sub folder you can set this option to `false`. This will create an `index.ts` file in each sub folder that exports all the files in the folder. This option may be beneficial for typescript performance on big schemas.
+If you use `useMultipleFiles` and do not want to create a barrel file for each sub folder you can set this option to `false`. This will create an `index.ts` file in each sub folder that exports all the files in the folder. This option may be beneficial for typescript performance on big schemas.
 
 ```prisma
 generator zod {
