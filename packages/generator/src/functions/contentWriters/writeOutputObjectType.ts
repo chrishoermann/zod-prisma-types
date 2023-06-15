@@ -28,7 +28,13 @@ export const writeOutputObjectType = (
       // the schemas that are used in the type of the field
       //  needs to be imported
 
-      writeImportSet(modelWithSelect.selectImports);
+      // temporary workaround to prevent importing the generated schema when
+      // there is a self reference in the model
+      const filterdImports = [...modelWithSelect.includeImports].filter(
+        (imp) => !!field.argName && !imp.includes(field.argName),
+      );
+
+      writeImportSet(new Set(filterdImports));
 
       // Only write the select type if the outputType has a "select" or "include" field.
       // Some outputTypes like "CreateMany", "UpdateMany", "DeleteMany"

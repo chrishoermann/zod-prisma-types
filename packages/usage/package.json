@@ -6,7 +6,9 @@
   "scripts": {
     "test": "vitest",
     "gen:prisma": "prisma generate",
-    "run:dev": "ts-node-dev app/client.ts"
+    "run:dev": "ts-node-dev app/client.ts",
+    "tsc": "tsc",
+    "clean": "git clean -xdf node_modules"
   },
   "keywords": [],
   "type": "module",
@@ -14,11 +16,11 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^18.15.0",
-    "prisma": "^4.13.0",
+    "prisma": "^4.15.0",
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "@prisma/client": "^4.13.0",
+    "@prisma/client": "^4.15.0",
     "@trpc/client": "^10.15.0",
     "@trpc/server": "^10.15.0",
     "@types/validator": "^13.7.13",

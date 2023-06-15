@@ -31,5 +31,6 @@
     "useDefineForClassFields": true,
     "useUnknownInCatchVariables": true,
     "types": ["vitest/globals"]
-  }
+  },
+  "include": ["prisma/generated/**/*.ts", "src/**/*.ts"]
 }
