@@ -89,7 +89,7 @@ pnpm add zod-prisma-types
 
 ## Usage
 
-> Supports prisma 4.x
+> Supports prisma 4.x - 5.x
 
 Just add the following code to your `prisma.schema` file to create a single `index.ts` file in the `./generated/zod` output folder containing all the zod prisma schemas.
 
