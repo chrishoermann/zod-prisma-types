@@ -17,10 +17,10 @@ export type ZodCustomErrorKey =
 /////////////////////////////////////////////////
 
 export const VALIDATOR_CUSTOM_ERROR_REGEX =
-  /(\()(?<object>\{(?<messages>[\w\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han} (),'"。、:+\-*#!§$%&/{}[\]=?~><°^]+)\})(\))/u;
+  /(\()(?<object>\{(?<messages>[\w\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han} (),'"。、:+\-*#!§$%&/{}[\]=?~><°^|]+)\})(\))/u;
 
 export const VALIDATOR_CUSTOM_ERROR_MESSAGE_REGEX =
-  /[ ]?"[\w\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han} (),.':+\-*#!§$%&/{}[\]=?~><°^]+"[,]?[ ]?/gu;
+  /[ ]?"[\w\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han} (),.':+\-*#!§$%&/{}[\]=?~><°^|]+"[,]?[ ]?/gu;
 
 export const VALIDATOR_CUSTOM_ERROR_SPLIT_KEYS_REGEX = /[\w]+(?=:)/gu;
 

@@ -103,7 +103,7 @@ importers:
         specifier: ^3.21.1
         version: 3.21.1
       zod-prisma-types:
-        specifier: workspace:2.7.4
+        specifier: workspace:2.7.7
         version: link:../generator
     devDependencies:
       '@types/node':

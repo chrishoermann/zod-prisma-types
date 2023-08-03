@@ -94,13 +94,13 @@ model ModelWithComments {
 /// @zod.import(["import { myFunction } from "../../../../utils/myFunction";", "import validator from 'validator';", "import some from "my-package";"])
 /// comment line two
 model MyPrismaScalarsType {
-  /// @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]", required_error: "some other", description: "some description" }).cuid()
+  /// @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]|", required_error: "some other", description: "some description" }).cuid()
   id         String    @id @default(cuid())
   /// Some comment about string @zod.string.min(3, { message: "min error" }).max(10, { message: "max error" })
   string     String?
   /// @zod.custom.use(z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }))
   bic        String?
-  /// @zod.number.lt(10.3, { message: "lt error" }).gt(5.5, { message: "gt error" })
+  /// @zod.number.lt(10.3, { message: "lt error" }).gt(5.5, { message: "gt | error" })
   float      Float
   floatOpt   Float?
   /// @zod.number.int({ message: "error" }).gt(5, { message: "ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。" })
@@ -251,7 +251,7 @@ model DateModel {
 model StringRegexModel {
   id          Int    @id @default(autoincrement())
   string      String /// @zod.string.regex(/^[a-z0-9]+$/i, { message: "error" })
-  stringTwo   String /// @zod.string.regex(/^\\d+\\s*\\d+$/) 
+  stringTwo   String /// @zod.string.regex(/^\\d+\\s*\\d+|$/) 
   stringThree String /// @zod.string.regex(/^d+s*d+$/) 
   stringFour  String /// @zod.string.regex(/^3|4$/)
 }
