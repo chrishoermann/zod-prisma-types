@@ -253,6 +253,7 @@ model StringRegexModel {
   string      String /// @zod.string.regex(/^[a-z0-9]+$/i, { message: "error" })
   stringTwo   String /// @zod.string.regex(/^\\d+\\s*\\d+$/) 
   stringThree String /// @zod.string.regex(/^d+s*d+$/) 
+  stringFour  String /// @zod.string.regex(/^3|4$/)
 }
 
 // WRONG MODEL LINKED TO INPUT TYPES
