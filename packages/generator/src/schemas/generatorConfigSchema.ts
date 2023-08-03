@@ -13,7 +13,7 @@ export const configSchema = z.object({
   writeBarrelFiles: z
     .string()
     .optional()
-    .default('false')
+    .default('true')
     .transform((val) => val === 'true'),
   createInputTypes: z
     .string()

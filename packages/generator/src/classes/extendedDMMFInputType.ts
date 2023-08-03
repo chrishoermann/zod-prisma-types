@@ -76,7 +76,25 @@ export class ExtendedDMMFInputType
   }
 
   private _setFields(fields: DMMF.SchemaArg[]) {
-    return fields.map((field) => {
+    // FILTER FIELD REF TYPES
+    // -----------------------------------------------
+
+    // filter out all fields that are located in fieldRefTypes
+    // since this feature needs access to the prisma client instance
+    // which is not possible in the zod schema.
+
+    const noFieldRefFiels = fields.map((field) => {
+      if (
+        field.inputTypes.some(
+          (inputType) => inputType.location === 'fieldRefTypes',
+        )
+      ) {
+        return { ...field, inputTypes: [field.inputTypes[0]] };
+      }
+      return field;
+    });
+
+    return noFieldRefFiels.map((field) => {
       const linkedField = this.linkedModel?.fields.find(
         (modelField) => modelField.name === field.name,
       );
@@ -209,17 +227,23 @@ export class ExtendedDMMFInputType
 
     // get the DMMF.SchemaArg for all fields that are part of the constraints
     // that are marked for the extended where unique input
-    const extendedWhereUniqueFields = this.constraints.fields
-      .map((fieldName) => {
-        return fields.find((field) => field.name === fieldName);
-      })
-      .filter((field): field is DMMF.SchemaArg => field !== undefined);
+    const extendedWhereUniqueFields = [
+      ...new Set(
+        this.constraints.fields
+          .map((fieldName) => {
+            return fields.find((field) => field.name === fieldName);
+          })
+          .filter((field): field is DMMF.SchemaArg => field !== undefined),
+      ),
+    ];
 
     // get all combinations of bool values on isRequired fields
     // for the provided set of fields
     const combinations = this._getExtendedWhereUniqueFieldCombinations(
       extendedWhereUniqueFields,
     );
+
+    // console.log({ combinations });
 
     // filter out combinations where isRequired is False because
     // these cominations are included in the all optional type that is

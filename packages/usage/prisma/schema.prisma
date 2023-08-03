@@ -1,10 +1,10 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// // This is your Prisma schema file,
+// // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
   provider        = "prisma-client-js"
   // output   = "./generated/client"
-  previewFeatures = ["views", "extendedWhereUnique"]
+  previewFeatures = ["views"]
   // previewFeatures = ["views"]
 }
 
@@ -372,3 +372,75 @@ model JapaneseChars {
 // }
 
 // 
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// generator client {
+//   provider = "prisma-client-js"
+// }
+
+// datasource db {
+//   provider = "mongodb"
+//   url      = env("DATABASE_URL")
+// }
+
+// generator zod {
+//   provider         = "ts-node-dev ../generator/src/bin.ts"
+//   useMultipleFiles = true
+// }
+
+// model User {
+//   // non-user-facing information about a user
+//   id    String @id @default(uuid()) @map("_id")
+//   email String @unique
+
+//   // Linkage
+//   Profile Profile?
+
+//   // Audit
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+
+// model Profile {
+//   // publicly facing information for ANY given user; only generalized attributes are here
+//   id String @id @default(uuid()) @map("_id")
+
+//   // Requested at initial onboarding
+//   role      UserRoles
+//   firstName String
+//   lastName  String
+//   fullName  String // Computed as `firstName lastName`
+
+//   // Users can optionally adjust these at a later point
+//   bio      String  @default("")
+//   imageUrl String? // TODO: Implement actual hosting for these on something like Vercel Blob or S3
+//   school   String? // TODO: Should eventually be a "search first, if you can't find, create your own" system. Or, pull a dataset and have people reach out if their school isn't listed.
+
+//   // Athletes can flag certain coaches that have some edit permissions on their profile
+//   coachIds String[]
+
+//   // Linkage
+//   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   userId String @unique
+
+//   // Audit
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+
+// model School {
+//   id       String @id @default(uuid()) @map("_id")
+//   name     String
+//   location String
+
+//   @@unique([name, location])
+// }
+
+// enum UserRoles {
+//   ATHLETE
+//   COACH
+//   RECRUITER
+//   DOCTOR
+// }

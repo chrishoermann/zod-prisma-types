@@ -22,16 +22,18 @@ export const writeArgs = (
       `{ ${model.name}SelectSchema }`,
       `../${inputTypePath}/${model.name}SelectSchema`,
     );
-    writeImport(
-      `{ ${model.name}IncludeSchema }`,
-      `../${inputTypePath}/${model.name}IncludeSchema`,
-    );
+    if (model.hasRelationField()) {
+      writeImport(
+        `{ ${model.name}IncludeSchema }`,
+        `../${inputTypePath}/${model.name}IncludeSchema`,
+      );
+    }
   }
 
   writer
     .blankLine()
     .write(`export const ${model.name}ArgsSchema: `)
-    .write(`z.ZodType<Prisma.${model.name}Args> = `)
+    .write(`z.ZodType<Prisma.${model.name}DefaultArgs> = `)
     .write(`z.object(`)
     .inlineBlock(() => {
       writer

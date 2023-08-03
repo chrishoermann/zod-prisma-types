@@ -79,6 +79,10 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
     this.hasJsonTypes = this._setHasJsonTypes();
     this.hasBytesTypes = this._setHasBytesTypes();
     this.hasDecimalTypes = this._setHasDecimalTypes();
+
+    // this.fieldRefTypes.prisma?.forEach(({ fields, allowTypes, name }) => {
+    //   console.log({ name, fields, allowTypes });
+    // });
   }
 
   private _setExtendedInputObjectTypes(
