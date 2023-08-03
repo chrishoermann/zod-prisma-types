@@ -30,9 +30,10 @@ export const writeOutputObjectType = (
 
       // temporary workaround to prevent importing the generated schema when
       // there is a self reference in the model
-      const filterdImports = [...modelWithSelect.includeImports].filter(
-        (imp) => !!field.argName && !imp.includes(field.argName),
-      );
+      const filterdImports = [
+        ...modelWithSelect.includeImports,
+        ...modelWithSelect.selectImports,
+      ].filter((imp) => !!field.argName && !imp.includes(field.argName));
 
       writeImportSet(new Set(filterdImports));
 

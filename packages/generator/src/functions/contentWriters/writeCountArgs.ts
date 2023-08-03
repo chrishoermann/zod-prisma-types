@@ -23,7 +23,7 @@ export const writeCountArgs = (
   writer
     .blankLine()
     .write(`export const ${model.name}CountOutputTypeArgsSchema: `)
-    .write(`z.ZodType<Prisma.${model.name}CountOutputTypeArgs> = `)
+    .write(`z.ZodType<Prisma.${model.name}CountOutputTypeDefaultArgs> = `)
     .write('z.object(')
     .inlineBlock(() => {
       writer.writeLine(
