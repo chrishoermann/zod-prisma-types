@@ -237,8 +237,6 @@ export class ExtendedDMMFInputType
       ),
     ];
 
-    console.log({ extendedWhereUniqueFields });
-
     // get all combinations of bool values on isRequired fields
     // for the provided set of fields
     const combinations = this._getExtendedWhereUniqueFieldCombinations(
