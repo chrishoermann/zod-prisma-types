@@ -9,7 +9,8 @@ export const writeCountArgs = (
   }: ContentWriterOptions,
   model: ExtendedDMMFOutputType,
 ) => {
-  const { useMultipleFiles, prismaClientPath } = dmmf.generatorConfig;
+  const { useMultipleFiles, prismaClientPath, prismaVersion } =
+    dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
@@ -23,7 +24,17 @@ export const writeCountArgs = (
   writer
     .blankLine()
     .write(`export const ${model.name}CountOutputTypeArgsSchema: `)
-    .write(`z.ZodType<Prisma.${model.name}CountOutputTypeDefaultArgs> = `)
+    .conditionalWrite(
+      (prismaVersion?.major === 5 && prismaVersion?.minor >= 1) ||
+        // fallback to newest version of client version cannot be determined
+        prismaVersion === undefined,
+      `z.ZodType<Prisma.${model.name}CountOutputTypeDefaultArgs> = `,
+    )
+    .conditionalWrite(
+      (prismaVersion?.major === 5 && prismaVersion?.minor === 0) ||
+        prismaVersion?.major === 4,
+      `z.ZodType<Prisma.${model.name}CountOutputTypeArgs> = `,
+    )
     .write('z.object(')
     .inlineBlock(() => {
       writer.writeLine(
