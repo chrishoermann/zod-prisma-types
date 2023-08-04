@@ -33,8 +33,6 @@ generatorHandler({
     // get all config options from schema.prisma
     const config = parseGeneratorConfig(generatorOptions);
 
-    console.log({ config });
-
     // validate that the output path is present
     const output = outputSchema.parse(generatorOptions.generator.output);
 
