@@ -33,7 +33,7 @@ export const writeOutputObjectType = (
       const filterdImports = [
         ...modelWithSelect.includeImports,
         ...modelWithSelect.selectImports,
-      ].filter((imp) => !!field.argName && !imp.includes(field.argName));
+      ].filter((imp) => !!field.argName && !imp.includes(`/${field.argName}`));
 
       writeImportSet(new Set(filterdImports));
 
