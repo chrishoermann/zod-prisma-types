@@ -16,7 +16,7 @@ import { GeneratorConfig } from '../../schemas';
 // "u" flag for Unicode support
 
 export const VALIDATOR_TYPE_REGEX =
-  /@zod\.(?<type>[\w]+){1}(?<customErrors>\([{][\w\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{Punctuation}\p{M}\p{N} (),'ʼ"。、|\\:+*#!§$%&/{}[\]=?~><°^\\-]+[}]\))?(?<validatorPattern>[\w\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{Punctuation}\p{M}\p{N} (),.'"。、|\\:+*#!§$%&/{}[\]=?~><°^\\-]*[)])?/u;
+  /@zod\.(?<type>[\w]+){1}(?<customErrors>\([{][\w\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M} (),'ʼ"。、|\\:+*#!§$%&/{}[\]=?~><°^\\-]+[}]\))?(?<validatorPattern>[\w\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{Punctuation}\p{M}\p{N} (),.'"。、|\\:+*#!§$%&/{}[\]=?~><°^\\-]*[)])?/u;
 
 /////////////////////////////////////////////////
 // CLASS

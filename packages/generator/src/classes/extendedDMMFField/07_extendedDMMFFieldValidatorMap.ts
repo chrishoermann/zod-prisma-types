@@ -83,57 +83,50 @@ export const VALIDATOR_KEY_REGEX = /(\.(?<validatorKey>[\w]+))/;
 
 // STRING
 // ----------------------------------------
-
 export const STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
-  /.(?<validator>min|max|length)\((?<number>[\d]+)([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]+['"][ ]?[}])?\)/u;
+  /.(?<validator>min|max|length)\((?<number>[\d]+)([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M}ʼ]+['"][ ]?[}])?\)/u;
 
 export const STRING_VALIDATOR_MESSAGE_REGEX =
-  /.(?<validator>email|url|emoji|uuid|cuid|cuid2|ulid|ip|toLowerCase|toUpperCase|trim|datetime|noDefault)(\((?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]+['"][ ]?[}])?\))/u;
+  /.(?<validator>email|url|emoji|uuid|cuid|cuid2|ulid|ip|toLowerCase|toUpperCase|trim|datetime|noDefault)(\((?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M}ʼ]+['"][ ]?[}])?\))/u;
 
 export const STRING_VALIDATOR_REGEX = /.(regex)(\((?<message>.*)\))/;
 
 export const STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX =
-  /.(?<validator>startsWith|endsWith|includes)\((?<string>['"][\w\W\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]+['"])([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]+['"][ ]?[}])?\)/u;
+  /.(?<validator>startsWith|endsWith|includes)\((?<string>['"][\w\W\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M}ʼ]+['"])([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M}ʼ]+['"][ ]?[}])?\)/u;
 
 // NUMBER
 // ----------------------------------------
-
-// "min", "max" and "step" are aliases for "gt", "lt" and "multipleOf" respectively
 export const NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
-  /.(?<validator>min|max|gt|gte|lt|lte|multipleOf|step)\((?<number>[-\d.]+)([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]+['"][ ]?[}])?\)/u;
+  /.(?<validator>min|max|gt|gte|lt|lte|multipleOf|step)\((?<number>[-\d.]+)([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M}ʼ]+['"][ ]?[}])?\)/u;
 
 export const NUMBER_VALIDATOR_MESSAGE_REGEX =
-  /.(?<validator>int|positive|nonnegative|negative|nonpositive|finite|noDefault)(\((?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]+['"][ ]?[}])?\))/u;
+  /.(?<validator>int|positive|nonnegative|negative|nonpositive|finite|noDefault)(\((?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M}ʼ]+['"][ ]?[}])?\))/u;
 
 // DATE
 // ----------------------------------------
-
 export const DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
-  /.(?<validator>min|max)(\()(?<date>(new Date\((['"()\w.-]+)?\)))([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]+['"][ ]?[}])?\)/u;
+  /.(?<validator>min|max)(\()(?<date>(new Date\((['"()\w.-]+)?\)))([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M}ʼ]+['"][ ]?[}])?\)/u;
 
 // BIGINT
 // ----------------------------------------
-
 export const BIGINT_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
-  /.(?<validator>gt|gte|lt|lte|multipleOf)\((?<number>[\w]+)([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]+['"][ ]?[}])?\)/u;
+  /.(?<validator>gt|gte|lt|lte|multipleOf)\((?<number>[\w]+)([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M}ʼ]+['"][ ]?[}])?\)/u;
 
 export const BIGINT_VALIDATOR_MESSAGE_REGEX =
-  /.(?<validator>positive|nonnegative|negative|nonpositive|array)(\((?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]+['"][ ]?[}])?\))/u;
+  /.(?<validator>positive|nonnegative|negative|nonpositive|array)(\((?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M}ʼ]+['"][ ]?[}])?\))/u;
 
 // CUSTOM
 // ----------------------------------------
-
 export const CUSTOM_VALIDATOR_MESSAGE_REGEX =
-  /(?<validator>use|array|omit)(\()(?<pattern>[\w\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han} (),.'"。、:+\-*#!§$%&/{}[\]=?~><°^|]+)\)/u;
+  /(?<validator>use|array|omit)(\()(?<pattern>[\w\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M}ʼ (),.'"。、:+\-*#!§$%&/{}[\]=?~><°^|]+)\)/u;
 
 export const CUSTOM_OMIT_VALIDATOR_MESSAGE_REGEX =
   /(?<validator>omit)(\()(?<pattern>[\w ,'"[\]]+)\)/;
 
 // ARRAY
 // ----------------------------------------
-
 export const ARRAY_VALIDATOR_MESSAGE_REGEX =
-  /(?<validator>array)(\((?<pattern>[\w\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han} (),.'"。、:+\-*#!§$%&/{}[\]=?~><°^]+)\))/u;
+  /(?<validator>array)(\((?<pattern>[\w\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M}ʼ (),.'"。、:+\-*#!§$%&/{}[\]=?~><°^]+)\))/u;
 
 /////////////////////////////////////////////
 // REGEX MAPS

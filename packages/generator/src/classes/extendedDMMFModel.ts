@@ -21,7 +21,7 @@ import { GeneratorConfig } from '../schemas';
 // with multiple validation layers for each element of the rich comment
 
 export const IMPORT_STATEMENT_REGEX_PATTERN =
-  /@zod\.(?<type>[\w]+)(\(\[)(?<imports>[\w "'${}/,;.*-]+)(\]\))/;
+  /@zod\.(?<type>[\w]+)(\(\[)(?<imports>[\w "'${}/,;.*@:-]+)(\]\))/;
 
 /////////////////////////////////////////////////
 // TYPES  INTERFACE
@@ -245,10 +245,11 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
 
     return {
       customImports: importsList
-        .map((statement) =>
-          statement
-            .match(IMPORT_STATEMENT_REGEX)
-            ?.groups?.['statement'].replace(/["']/g, "'"),
+        .map(
+          (statement) =>
+            statement
+              .match(IMPORT_STATEMENT_REGEX)
+              ?.groups?.['statement'].replace(/["']/g, "'"),
         )
         .filter(
           (statement): statement is string => typeof statement === 'string',

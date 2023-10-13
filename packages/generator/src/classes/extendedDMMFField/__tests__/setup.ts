@@ -20,6 +20,7 @@ export const DEFAULT_GENERATOR_CONFIG: GeneratorConfig = {
   validateWhereUniqueInput: false,
   inputTypePath: 'inputTypeSchemas',
   outputTypePath: 'outputTypeSchemas',
+  writeBarrelFiles: true,
 };
 
 export const FIELD_BASE: DMMF.Field = {

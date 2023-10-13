@@ -17,10 +17,13 @@ export type ZodCustomErrorKey =
 /////////////////////////////////////////////////
 
 export const VALIDATOR_CUSTOM_ERROR_REGEX =
-  /(\()(?<object>\{(?<messages>[\w\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{Punctuation}\p{M}\p{N} ()-.,'ʼ:+\-*#!§$%&/{}[\]=?~><°^|]+)\})(\))/u;
+  /(\()(?<object>\{(?<messages>[\w\W\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M} ()-.,'ʼ:+\-*#!§$%&/{}[\]=?~><°^|]+)\})(\))/u;
+
+// !!!! non word characters (/W) must not be included in the regex
+// since it would break the split into an array !!!!
 
 export const VALIDATOR_CUSTOM_ERROR_MESSAGE_REGEX =
-  /[ ]?"[\w\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{Punctuation}\p{M}\p{N} ()-.,'ʼ:+\-*#!§$%&/{}[\]=?~><°^|]+"[,]?[ ]?/gu;
+  /[ ]?"[\w\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M} ()-.,'ʼ:+\-*#!§$%&/{}[\]=?~><°^|]+"[,]?[ ]?/gu;
 
 export const VALIDATOR_CUSTOM_ERROR_SPLIT_KEYS_REGEX = /[\w]+(?=:)/gu;
 
@@ -64,6 +67,7 @@ export class ExtendedDMMFFieldValidatorCustomErrors extends ExtendedDMMFFieldDef
     const match = this._validatorCustomError.match(
       VALIDATOR_CUSTOM_ERROR_REGEX,
     );
+
     if (!match?.groups?.['messages']) return;
 
     return this._customErrorMessagesValid(match.groups['messages'])
