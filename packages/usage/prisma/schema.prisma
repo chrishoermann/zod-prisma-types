@@ -96,7 +96,7 @@ model ModelWithComments {
 model MyPrismaScalarsType {
   /// @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]|", required_error: "some other", description: "some description" }).cuid()
   id         String    @id @default(cuid())
-  /// Some comment about string @zod.string.min(3, { message: "min error" }).max(10, { message: "max error" })
+  /// Some comment about string @zod.string.min(3, { message: "min error " }).max(10, { message: "max error" })
   string     String?
   /// @zod.custom.use(z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }))
   bic        String?
@@ -121,6 +121,8 @@ model MyPrismaScalarsType {
   /// @zod.custom.use(z.string().refine((val) => myFunction(val), { message: 'Is not valid' }))
   custom     String?
   exclude    String? /// @zod.custom.omit(["model", "input"])
+
+  specialEuropeanChars String? /// @zod.string({ invalid_type_error: "ÁÀȦÂÄǞǍĂĀÃÅǺǼǢĆĊĈČĎḌḐḒÉÈĖÊËĚĔĒẼE̊ẸǴĠĜǦĞG̃ĢĤḤáàȧâäǟǎăāãåǻǽǣćċĉčďḍḑḓéèėêëěĕēẽe̊ẹǵġĝǧğg̃ģĥḥÍÌİÎÏǏĬĪĨỊĴĶǨĹĻĽĿḼM̂M̄ʼNŃN̂ṄN̈ŇN̄ÑŅṊÓÒȮȰÔÖȪǑŎŌÕȬŐỌǾƠíìiîïǐĭīĩịĵķǩĺļľŀḽm̂m̄ŉńn̂ṅn̈ňn̄ñņṋóòôȯȱöȫǒŏōõȭőọǿơP̄ŔŘŖŚŜṠŠȘṢŤȚṬṰÚÙÛÜǓŬŪŨŰŮỤẂẀŴẄÝỲŶŸȲỸŹŻŽẒǮp̄ŕřŗśŝṡšşṣťțṭṱúùûüǔŭūũűůụẃẁŵẅýỳŷÿȳỹźżžẓǯßœŒçÇ" })
 
   updatedAt DateTime @updatedAt
 }
