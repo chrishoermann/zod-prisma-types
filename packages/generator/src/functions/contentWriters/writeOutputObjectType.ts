@@ -26,7 +26,7 @@ export const writeOutputObjectType = (
     if (modelWithSelect && field.generatorConfig.addSelectType) {
       // if the outputType has a "select" or "include" field,
       // the schemas that are used in the type of the field
-      //  needs to be imported
+      // need to be imported
 
       // temporary workaround to prevent importing the generated schema when
       // there is a self reference in the model

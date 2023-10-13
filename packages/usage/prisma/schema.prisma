@@ -105,6 +105,7 @@ model MyPrismaScalarsType {
   floatOpt   Float?
   /// @zod.number.int({ message: "error" }).gt(5, { message: "ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。" })
   int        Int
+  /// @zod.number.int({ message: "error" }).gt(-5, { message: "ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。" })
   intOpt     Int?
   decimal    Decimal
   decimalOpt Decimal?

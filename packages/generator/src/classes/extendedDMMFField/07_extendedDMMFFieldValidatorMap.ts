@@ -100,7 +100,7 @@ export const STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX =
 
 // "min", "max" and "step" are aliases for "gt", "lt" and "multipleOf" respectively
 export const NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
-  /.(?<validator>min|max|gt|gte|lt|lte|multipleOf|step)\((?<number>[\d.]+)([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]+['"][ ]?[}])?\)/u;
+  /.(?<validator>min|max|gt|gte|lt|lte|multipleOf|step)\((?<number>[-\d.]+)([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]+['"][ ]?[}])?\)/u;
 
 export const NUMBER_VALIDATOR_MESSAGE_REGEX =
   /.(?<validator>int|positive|nonnegative|negative|nonpositive|finite|noDefault)(\((?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]+['"][ ]?[}])?\))/u;
