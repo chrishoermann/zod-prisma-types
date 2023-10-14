@@ -29,7 +29,7 @@ export class ExtendedDMMFInputType
   readonly constraints: DMMF.InputType['constraints'];
   readonly meta: DMMF.InputType['meta'];
   readonly fields: ExtendedDMMFSchemaArg[];
-  readonly fieldMap: DMMF.InputType['fieldMap'];
+  // readonly fieldMap: DMMF.InputType['fieldMap'];
   readonly linkedModel?: ExtendedDMMFModel;
   readonly isJsonField: boolean;
   readonly isBytesField: boolean;
@@ -52,7 +52,7 @@ export class ExtendedDMMFInputType
     this.constraints = type.constraints;
     this.meta = type.meta;
     this.fields = this._setFields(type.fields);
-    this.fieldMap = type.fieldMap;
+    // this.fieldMap = type.fieldMap;
     this.isJsonField = this._setIsJsonField();
     this.isBytesField = this._setIsBytesField();
     this.isDecimalField = this._setIsDecimalField();

@@ -8,19 +8,23 @@ import { ZodPrismaScalarType } from '../types';
 // CLASS
 /////////////////////////////////////////////////
 
-export class ExtendedDMMFSchemaArgInputType implements DMMF.SchemaArgInputType {
+type SchemaArgInputType = DMMF.TypeRef<
+  'scalar' | 'inputObjectTypes' | 'enumTypes' | 'fieldRefTypes'
+>;
+
+export class ExtendedDMMFSchemaArgInputType implements SchemaArgInputType {
   readonly isJsonType: boolean;
   readonly isBytesType: boolean;
   readonly isDecimalType: boolean;
   readonly isNullType: boolean;
-  readonly isList: DMMF.SchemaArgInputType['isList'];
-  readonly type: DMMF.SchemaArgInputType['type'];
-  readonly location: DMMF.SchemaArgInputType['location'];
-  readonly namespace?: DMMF.SchemaArgInputType['namespace'];
+  readonly isList: SchemaArgInputType['isList'];
+  readonly type: SchemaArgInputType['type'];
+  readonly location: SchemaArgInputType['location'];
+  readonly namespace?: SchemaArgInputType['namespace'];
 
   constructor(
     readonly generatorConfig: GeneratorConfig,
-    arg: DMMF.SchemaArgInputType,
+    arg: SchemaArgInputType,
   ) {
     this.generatorConfig = generatorConfig;
     this.isJsonType = this._setIsJsonType(arg);
@@ -33,19 +37,19 @@ export class ExtendedDMMFSchemaArgInputType implements DMMF.SchemaArgInputType {
     this.namespace = arg.namespace;
   }
 
-  private _setIsJsonType(arg: DMMF.SchemaArgInputType) {
+  private _setIsJsonType(arg: SchemaArgInputType) {
     return arg.type === 'Json';
   }
 
-  private _setIsBytesType(arg: DMMF.SchemaArgInputType) {
+  private _setIsBytesType(arg: SchemaArgInputType) {
     return arg.type === 'Bytes';
   }
 
-  private _setIsDecimalType(arg: DMMF.SchemaArgInputType) {
+  private _setIsDecimalType(arg: SchemaArgInputType) {
     return arg.type === 'Decimal';
   }
 
-  private _setIsNullType(arg: DMMF.SchemaArgInputType) {
+  private _setIsNullType(arg: SchemaArgInputType) {
     return arg.type === 'Null';
   }
 
@@ -55,7 +59,6 @@ export class ExtendedDMMFSchemaArgInputType implements DMMF.SchemaArgInputType {
    * @returns zodScalarType or undefined
    */
   getZodScalarType = () => {
-    if (!this.isStringType()) return;
     const zodType = PRISMA_TO_ZOD_TYPE_MAP[this.type as ZodPrismaScalarType];
     if (!zodType) return;
     return zodType;
@@ -66,7 +69,6 @@ export class ExtendedDMMFSchemaArgInputType implements DMMF.SchemaArgInputType {
    * @returns non scalar type (e.g. `User`, `Post`, `UserWhereInput`, etc.)
    */
   getZodNonScalarType = () => {
-    if (!this.isStringType()) return;
     const zodScalarType =
       PRISMA_TO_ZOD_TYPE_MAP[this.type as ZodPrismaScalarType];
     if (zodScalarType || this.isSpecialType()) return;
@@ -78,36 +80,8 @@ export class ExtendedDMMFSchemaArgInputType implements DMMF.SchemaArgInputType {
    * @returns zodNullType or undefined
    */
   getZodNullType = () => {
-    if (!this.isStringType()) return;
     if (!(this.type === 'Null')) return;
     return 'null';
-  };
-
-  /**
-   * Type guard to check if the type is a string
-   * @param type the type of SchameArgInputType - defaults to this.type
-   * @returns true if the type is a string
-   */
-  isStringType = (type: DMMF.ArgType = this.type): type is string => {
-    return typeof type === 'string';
-  };
-
-  /**
-   * Type guard to check if the type is a DMMF.SchemaEnum
-   * @param type type of SchameArgInputType - defaults to this.type
-   * @returns true if type is DMMF.SchemaEnum
-   */
-  isSchemaEnum = (type: DMMF.ArgType = this.type): type is DMMF.SchemaEnum => {
-    return (type as DMMF.SchemaEnum).values !== undefined;
-  };
-
-  /**
-   * Type guard to check if the type is a DMMF.InputType
-   * @param type type of SchameArgInputType - defaults to this.type
-   * @returns true if type is DMMF.InputType
-   */
-  isInputType = (type: DMMF.ArgType = this.type): type is DMMF.InputType => {
-    return (type as DMMF.InputType).fields !== undefined;
   };
 
   isSpecialType = () => {

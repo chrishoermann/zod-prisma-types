@@ -3,24 +3,10 @@ import {
   PrismaAction,
   PrismaScalarType,
   ZodCustomErrorKey,
-  ZodCustomValidatorKeys,
-  ZodDateValidatorKeys,
-  ZodNumberValidatorKeys,
   ZodPrismaScalarType,
   ZodScalarType,
-  ZodStringValidatorKeys,
   ZodValidatorType,
 } from '../types';
-import {
-  STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-  STRING_VALIDATOR_MESSAGE_REGEX,
-  STRING_VALIDATOR_REGEX,
-  STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX,
-  NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-  NUMBER_VALIDATOR_MESSAGE_REGEX,
-  DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-  CUSTOM_VALIDATOR_MESSAGE_REGEX,
-} from './regex';
 
 /////////////////////////////////////////////////
 // VALIDATOR TYPE MAP
@@ -91,106 +77,6 @@ export const ZOD_VALID_ERROR_KEYS: ZodCustomErrorKey[] = [
   'required_error',
   'description',
 ];
-
-/////////////////////////////////////////////
-// REGEX MAPS
-/////////////////////////////////////////////
-
-/**
- * @deprecated
- */
-export type ValidatorMapValue =
-  | RegExp
-  | ((pattern: string) => string | undefined);
-
-/**
- * @deprecated
- */
-export type ValidatorMap<TKeys extends string> = Record<
-  TKeys,
-  ValidatorMapValue
->;
-
-/**
- * @deprecated
- * Maps the right regex to the right validator key.
- *
- * Used to determine if a validator key is valid for a `string` type.
- * @example myPrismaField: String ///@zod.string.max(10) -> valid
- * @example myPrismaField: String ///@zod.string.positive() -> invalid throws error during generation
- */
-export const STRING_VALIDATOR_REGEX_MAP: ValidatorMap<ZodStringValidatorKeys> =
-  {
-    min: STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-    max: STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-    length: STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-    email: STRING_VALIDATOR_MESSAGE_REGEX,
-    url: STRING_VALIDATOR_MESSAGE_REGEX,
-    uuid: STRING_VALIDATOR_MESSAGE_REGEX,
-    cuid: STRING_VALIDATOR_MESSAGE_REGEX,
-    regex: STRING_VALIDATOR_REGEX,
-    startsWith: STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX,
-    endsWith: STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX,
-    trim: STRING_VALIDATOR_MESSAGE_REGEX,
-    datetime: STRING_VALIDATOR_MESSAGE_REGEX,
-    noDefault: STRING_VALIDATOR_MESSAGE_REGEX,
-  };
-
-/**
- * @deprecated
- * Maps the right regex to the right validator key.
- *
- * Used to determine if a validator key is valid for a `number` type.
- * @example myPrismaField: Int ///@zod.number.gte(10) -> valid
- * @example myPrismaField: Int ///@zod.number.email() -> invalid throws error during generation
- */
-export const NUMBER_VALIDATOR_REGEX_MAP: ValidatorMap<ZodNumberValidatorKeys> =
-  {
-    gt: NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-    gte: NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-    lt: NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-    lte: NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-    multipleOf: NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-    int: NUMBER_VALIDATOR_MESSAGE_REGEX,
-    positive: NUMBER_VALIDATOR_MESSAGE_REGEX,
-    nonpositive: NUMBER_VALIDATOR_MESSAGE_REGEX,
-    negative: NUMBER_VALIDATOR_MESSAGE_REGEX,
-    nonnegative: NUMBER_VALIDATOR_MESSAGE_REGEX,
-    finite: NUMBER_VALIDATOR_MESSAGE_REGEX,
-    noDefault: NUMBER_VALIDATOR_MESSAGE_REGEX,
-  };
-
-/**
- * @deprecated
- * Maps the right regex to the right validator key.
- *
- * Used to determine if a validator key is valid for a `date` type.
- * @example myPrismaField: Date ///@zod.date.min(new Date("1900-01-01") -> valid
- * @example myPrismaField: Date ///@zod.date.email() -> invalid throws error during generation
- */
-export const DATE_VALIDATOR_REGEX_MAP: ValidatorMap<ZodDateValidatorKeys> = {
-  min: DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-  max: DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-};
-
-/**
- * @deprecated
- */
-export const CUSTOM_VALIDATOR_REGEX_MAP: ValidatorMap<ZodCustomValidatorKeys> =
-  {
-    use: (pattern) => {
-      return pattern.match(CUSTOM_VALIDATOR_MESSAGE_REGEX)?.groups?.['custom'];
-    },
-    omit: (pattern) => {
-      return pattern.match(CUSTOM_VALIDATOR_MESSAGE_REGEX)?.groups?.['custom'];
-    },
-    import: (pattern) => {
-      return pattern.match(CUSTOM_VALIDATOR_MESSAGE_REGEX)?.groups?.['custom'];
-    },
-    array: (pattern) => {
-      return pattern.match(CUSTOM_VALIDATOR_MESSAGE_REGEX)?.groups?.['custom'];
-    },
-  };
 
 /////////////////////////////////////////////
 // PRISMA ACTION MAP

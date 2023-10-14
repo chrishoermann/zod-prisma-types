@@ -17,7 +17,6 @@ export class ExtendedDMMFOutputType
 {
   readonly name: DMMF.OutputType['name'];
   readonly fields: ExtendedDMMFSchemaField[];
-  readonly fieldMap?: DMMF.OutputType['fieldMap'];
   readonly prismaActionFields: ExtendedDMMFSchemaField[];
   readonly prismaOtherFields: ExtendedDMMFSchemaField[];
   readonly linkedModel?: ExtendedDMMFModel;
@@ -32,7 +31,6 @@ export class ExtendedDMMFOutputType
     super(type.name);
     this.generatorConfig = generatorConfig;
     this.name = type.name;
-    this.fieldMap = type.fieldMap;
     this.fields = this._setFields(type.fields, datamodel);
     this.prismaActionFields = this._setFields(
       type.fields,

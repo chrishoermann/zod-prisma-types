@@ -5,10 +5,9 @@ import {
   ExtendedDMMFFieldClass,
 } from './extendedDMMFField/extendedDMMFField';
 import { FormattedNames } from './formattedNames';
-import {
-  IMPORT_STATEMENT_REGEX,
-  // IMPORT_STATEMENT_REGEX_PATTERN,
-} from '../constants';
+import // IMPORT_STATEMENT_REGEX,
+// IMPORT_STATEMENT_REGEX_PATTERN,
+'../constants';
 import { GeneratorConfig } from '../schemas';
 
 // todo: Refactor this class to be able to pass rich comments like the following
@@ -21,7 +20,9 @@ import { GeneratorConfig } from '../schemas';
 // with multiple validation layers for each element of the rich comment
 
 export const IMPORT_STATEMENT_REGEX_PATTERN =
-  /@zod\.(?<type>[\w]+)(\(\[)(?<imports>[\w "'${}/,;.*@:-]+)(\]\))/;
+  /@zod\.(?<type>[\w]+)(\(\[)(?<imports>[\w "@'${}/,;:.*-]+)(\]\))/;
+
+export const IMPORT_STATEMENT_REGEX = /"(?<statement>[\w "'${}/,:@;.*-]+)"/;
 
 /////////////////////////////////////////////////
 // TYPES  INTERFACE
@@ -225,7 +226,6 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
     }
 
     const type = importStatements.groups?.['type'];
-
     if (type !== 'import') {
       throw new Error(
         `[@zod generator error]: '${type}' is not a valid validator key. ${this.errorLocation}`,
