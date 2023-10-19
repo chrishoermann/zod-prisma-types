@@ -65,7 +65,7 @@ Be aware that some generator options have been removed, a few new have been adde
 
 ## About this project
 
-For one of my projects I was in need of a generator that offers the possibility of adding `zod valdiators` directly in `prisma schema's` [rich-comments](https://www.prisma.io/docs/concepts/components/prisma-schema#comments) and generates `zod` schemas for all prisma models, enums, inputTypes, argTypes, filters and so on. I also wanted to be able to import these schemas in the frontend e.g. for form validation and make the generator as flexible as possbile so it covers a large range of use cases. Since there where no generators out there that met my requirements or they weren't activly maintained anymore I decided to write `zod-prisma-type`.
+For one of my projects I was in need of a generator that offers the possibility of adding `zod validators` directly in `prisma schema's` [rich-comments](https://www.prisma.io/docs/concepts/components/prisma-schema#comments) and generates `zod` schemas for all prisma models, enums, inputTypes, argTypes, filters and so on. I also wanted to be able to import these schemas in the frontend e.g. for form validation and make the generator as flexible as possible so it covers a large range of use cases. Since there were no generators out there that met my requirements or they weren't actively maintained anymore I decided to write `zod-prisma-type`.
 
 ## Installation
 
@@ -253,7 +253,7 @@ generator zod {
 
 > default: `false`
 
-If you want to have a schema of your model where where fields with default values are marked as `.optional()` you can pass the following config option:
+If you want to have a schema of your model where fields with default values are marked as `.optional()` you can pass the following config option:
 
 ```prisma
 generator zod {
