@@ -2,6 +2,7 @@ import { DMMF } from '@prisma/generator-helper';
 
 import { ExtendedDMMFFieldValidatorType } from './03_extendedDMMFFieldValidatorType';
 import { GeneratorConfig } from '../../schemas';
+import { getNestedValidatorList } from 'src/utils/getNestedValidatorList';
 
 /////////////////////////////////////////////////
 // CLASS
@@ -35,49 +36,7 @@ export class ExtendedDMMFFieldValidatorPattern extends ExtendedDMMFFieldValidato
 
   private _getValidatorList() {
     if (!this._validatorPattern) return;
-
-    const splitIndices = this._getSplitIndices(this._validatorPattern);
-
-    return this._getPatternListFromSplitIndices(
-      this._validatorPattern,
-      splitIndices,
-    );
-  }
-
-  // Programmatic approach to split the validator pattern
-  // is used, because handling nested parentheses is
-  // quite tricky with regex.
-
-  protected _getSplitIndices(string: string) {
-    const splitIndices = [0];
-    let depth = 0;
-
-    [...string].forEach((char, idx) => {
-      if (!depth && !this._isWordChar(char)) {
-        const splitPosition = string.substring(0, idx).match(/\.\w+$/)?.index;
-        if (splitPosition) splitIndices.push(splitPosition);
-      }
-
-      if (char === '(') depth++;
-      if (char === ')') depth--;
-    });
-
-    return splitIndices;
-  }
-
-  protected _isWordChar(char: string) {
-    return /[\w]/.test(char);
-  }
-
-  protected _getPatternListFromSplitIndices(
-    patternString: string,
-    splitIndices: number[],
-  ) {
-    return splitIndices
-      .map((splitIndex, idx) =>
-        patternString.substring(splitIndex, splitIndices[idx + 1]),
-      )
-      .filter((str): str is string => !!str);
+    return getNestedValidatorList(this._validatorPattern);
   }
 
   // HELPER

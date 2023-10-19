@@ -53,10 +53,10 @@ export const PRISMA_SCALAR_TO_VALIDATOR_TYPE_MAP: Record<
     'Bytes',
   ],
   // Enums need to be handled separately, since enums can have a
-  // custom name they can't be mapped to a prisma scalar type
+  // custom name so they can't be mapped to a prisma scalar type
   enum: [],
   // Objects need to be handled separately, since objects can have a
-  // custom name they can't be mapped to a prisma scalar type
+  // custom name so they can't be mapped to a prisma scalar type
   object: [],
 };
 

@@ -10,6 +10,7 @@
   "plugins": ["@typescript-eslint", "prettier"],
   "ignorePatterns": ["node_modules", "dist"],
   "rules": {
-    "prettier/prettier": ["error", { "endOfLine": "auto" }]
+    "prettier/prettier": ["error", { "endOfLine": "auto" }],
+    "import/order": "off"
   }
 }

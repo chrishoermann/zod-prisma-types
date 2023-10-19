@@ -6,6 +6,7 @@ import {
   ValidatorMap,
 } from './07_extendedDMMFFieldValidatorMap';
 import { GeneratorConfig } from '../../schemas';
+import { getNestedValidatorList } from 'src/utils/getNestedValidatorList';
 
 /////////////////////////////////////////////////
 // TYPE
@@ -103,7 +104,6 @@ export class ExtendedDMMFFieldArrayValidatorString extends ExtendedDMMFFieldCust
   }
 
   private _getArrayValidatorList(pattern: string) {
-    const splitIndices = this._getSplitIndices(pattern);
-    return this._getPatternListFromSplitIndices(pattern, splitIndices);
+    return getNestedValidatorList(pattern);
   }
 }

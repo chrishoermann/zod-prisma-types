@@ -32,7 +32,7 @@ export const FIELD_BASE: DMMF.Field = {
   isId: false,
   isReadOnly: false,
   type: 'String',
-  dbNames: ['test'],
+  // dbNames: ['test'],
   isGenerated: false,
   isUpdatedAt: false,
   hasDefaultValue: false,

@@ -45,7 +45,6 @@ describe('testSimpleModelNoValidators', async () => {
     expect(fields[0].isId).toBe(true);
     expect(fields[0].isReadOnly).toBe(false);
     expect(fields[0].type).toBe('String');
-    expect(fields[0].dbNames).toBeUndefined();
     expect(fields[0].isGenerated).toBe(false);
     expect(fields[0].hasDefaultValue).toBe(true);
     expect(fields[0].default).toStrictEqual({ name: 'cuid', args: [] });
@@ -85,7 +84,6 @@ describe('testSimpleModelNoValidators', async () => {
     expect(fields[1].isId).toBe(false);
     expect(fields[1].isReadOnly).toBe(false);
     expect(fields[1].type).toBe('String');
-    expect(fields[1].dbNames).toBeUndefined();
     expect(fields[1].isGenerated).toBe(false);
     expect(fields[1].hasDefaultValue).toBe(false);
     expect(fields[1].default).toBeUndefined();
@@ -125,7 +123,6 @@ describe('testSimpleModelNoValidators', async () => {
     expect(fields[2].isId).toBe(false);
     expect(fields[2].isReadOnly).toBe(false);
     expect(fields[2].type).toBe('String');
-    expect(fields[2].dbNames).toBeUndefined();
     expect(fields[2].isGenerated).toBe(false);
     expect(fields[2].hasDefaultValue).toBe(false);
     expect(fields[2].default).toBeUndefined();
@@ -165,7 +162,6 @@ describe('testSimpleModelNoValidators', async () => {
     expect(fields[3].isId).toBe(false);
     expect(fields[3].isReadOnly).toBe(false);
     expect(fields[3].type).toBe('Float');
-    expect(fields[3].dbNames).toBeUndefined();
     expect(fields[3].isGenerated).toBe(false);
     expect(fields[3].hasDefaultValue).toBe(false);
     expect(fields[3].default).toBeUndefined();
@@ -205,7 +201,6 @@ describe('testSimpleModelNoValidators', async () => {
     expect(fields[4].isId).toBe(false);
     expect(fields[4].isReadOnly).toBe(false);
     expect(fields[4].type).toBe('Decimal');
-    expect(fields[4].dbNames).toBeUndefined();
     expect(fields[4].isGenerated).toBe(false);
     expect(fields[4].hasDefaultValue).toBe(false);
     expect(fields[4].default).toBeUndefined();
@@ -241,7 +236,6 @@ describe('testSimpleModelNoValidators', async () => {
     expect(fields[5].isId).toBe(false);
     expect(fields[5].isReadOnly).toBe(false);
     expect(fields[5].type).toBe('DateTime');
-    expect(fields[5].dbNames).toBeUndefined();
     expect(fields[5].isGenerated).toBe(false);
     expect(fields[5].hasDefaultValue).toBe(false);
     expect(fields[5].default).toBeUndefined();
@@ -281,7 +275,6 @@ describe('testSimpleModelNoValidators', async () => {
     expect(fields[6].isId).toBe(false);
     expect(fields[6].isReadOnly).toBe(false);
     expect(fields[6].type).toBe('BigInt');
-    expect(fields[6].dbNames).toBeUndefined();
     expect(fields[6].isGenerated).toBe(false);
     expect(fields[6].hasDefaultValue).toBe(false);
     expect(fields[6].default).toBeUndefined();
@@ -317,7 +310,6 @@ describe('testSimpleModelNoValidators', async () => {
     expect(fields[7].isId).toBe(false);
     expect(fields[7].isReadOnly).toBe(false);
     expect(fields[7].type).toBe('Json');
-    expect(fields[7].dbNames).toBeUndefined();
     expect(fields[7].isGenerated).toBe(false);
     expect(fields[7].hasDefaultValue).toBe(false);
     expect(fields[7].default).toBeUndefined();
@@ -353,7 +345,6 @@ describe('testSimpleModelNoValidators', async () => {
     expect(fields[8].isId).toBe(false);
     expect(fields[8].isReadOnly).toBe(false);
     expect(fields[8].type).toBe('Bytes');
-    expect(fields[8].dbNames).toBeUndefined();
     expect(fields[8].isGenerated).toBe(false);
     expect(fields[8].hasDefaultValue).toBe(false);
     expect(fields[8].default).toBeUndefined();
@@ -389,7 +380,6 @@ describe('testSimpleModelNoValidators', async () => {
     expect(fields[9].isId).toBe(false);
     expect(fields[9].isReadOnly).toBe(false);
     expect(fields[9].type).toBe('String');
-    expect(fields[9].dbNames).toBeUndefined();
     expect(fields[9].isGenerated).toBe(false);
     expect(fields[9].hasDefaultValue).toBe(false);
     expect(fields[9].default).toBeUndefined();

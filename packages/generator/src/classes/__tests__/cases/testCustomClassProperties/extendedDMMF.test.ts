@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
 import { configSchema } from '../../../../schemas';
-import { ExtendedDMMF } from '../../../ExtendedDMMF';
+import { ExtendedDMMF } from '../../../extendedDMMF';
 import { loadDMMF } from '../../utils/loadDMMF';
 
 describe('testSimpleModelNoValidators', async () => {

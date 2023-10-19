@@ -3,16 +3,17 @@ import { DMMF } from '@prisma/generator-helper';
 import {
   ExtendedDMMFField,
   ExtendedDMMFFieldClass,
-} from './extendedDMMFField/extendedDMMFField';
-import { FormattedNames } from './formattedNames';
+} from '../extendedDMMFField/extendedDMMFField';
+import { FormattedNames } from '../formattedNames';
 import // IMPORT_STATEMENT_REGEX,
 // IMPORT_STATEMENT_REGEX_PATTERN,
-'../constants';
-import { GeneratorConfig } from '../schemas';
+'../../constants';
+import { GeneratorConfig } from '../../schemas';
 
 // todo: Refactor this class to be able to pass rich comments like the following
-// - @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).refine(v => v.title.length > 0)
+// - @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).refine(v => v.title.length > 0).transform(...some stuff).strict()
 // - @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).object(.refine(v => v.title.length > 0).transform(...some stuff))
+// - @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).strict().transform(...some stuff))
 //
 // this can than be used to refine checks like password and password repeat match
 // in a .refine() function and to transform the final object in a .transform() function
@@ -37,27 +38,31 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
   readonly uniqueIndexes: DMMF.Model['uniqueIndexes'];
   readonly documentation?: DMMF.Model['documentation'];
   readonly primaryKey: DMMF.Model['primaryKey'];
+
   readonly scalarFields: ExtendedDMMFField[];
   readonly relationFields: ExtendedDMMFField[];
   readonly filterdRelationFields: ExtendedDMMFField[];
   readonly enumFields: ExtendedDMMFField[];
+  readonly optionalJsonFields: ExtendedDMMFField[];
+
   readonly hasRelationFields: boolean;
   readonly hasRequiredJsonFields: boolean;
   readonly hasOptionalJsonFields: boolean;
   readonly hasOmitFields: boolean;
   readonly hasDecimalFields: boolean;
   readonly hasOptionalDefaultFields: boolean;
-  readonly imports: Set<string>;
-  readonly customImports: Set<string>;
-  readonly errorLocation: string;
-  readonly clearedDocumentation?: string;
-  readonly optionalJsonFields: ExtendedDMMFField[];
-  readonly optionalJsonFieldUnion: string;
   readonly writeOptionalDefaultValuesTypes: boolean;
   readonly writeRelationValueTypes: boolean;
   readonly writeOptionalDefaultsRelationValueTypes: boolean;
   readonly writePartialTypes: boolean;
   readonly writePartialRelationValueTypes: boolean;
+
+  readonly imports: Set<string>;
+  readonly customImports: Set<string>;
+  readonly errorLocation: string;
+  readonly clearedDocumentation?: string;
+
+  readonly optionalJsonFieldUnion: string;
 
   constructor(generatorConfig: GeneratorConfig, model: DMMF.Model) {
     super(model.name);
@@ -73,12 +78,14 @@ export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
     this.relationFields = this._setRelationFields();
     this.filterdRelationFields = this._setFilteredRelationFields();
     this.enumFields = this._setEnumfields();
+
     this.hasRelationFields = this._setHasRelationFields();
     this.hasRequiredJsonFields = this._setHasRequiredJsonFields();
     this.hasOptionalJsonFields = this._setHasOptionalJsonFields();
     this.hasDecimalFields = this._setHasDecimalFields();
     this.hasOptionalDefaultFields = this._setHasOptionalDefaultFields();
     this.hasOmitFields = this._setHasOmitFields();
+
     this.errorLocation = this._setErrorLocation();
 
     const docsContent = this._getDocumentationContent();

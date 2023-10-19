@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest';
 import { DEFAULT_GENERATOR_CONFIG } from './extendedDMMFField.test';
 import { configSchema } from '../../../../schemas';
 import { getStringVariants } from '../../../../utils/getStringVariants';
-import { ExtendedDMMF } from '../../../ExtendedDMMF';
+import { ExtendedDMMF } from '../../../extendedDMMF';
 import { loadDMMF } from '../../utils/loadDMMF';
 
 describe('testSimpleModelNoValidators', async () => {
