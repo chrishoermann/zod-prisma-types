@@ -71,10 +71,6 @@ describe(`ExtendedDMMFFieldValidatorPattern`, () => {
     );
   });
 
-  // it(`should check automatic imports`, async () => {
-
-  // });
-
   it('should not load a class with invalid characters in import pattern', async () => {
     expect(() =>
       getModel({
@@ -85,8 +81,6 @@ describe(`ExtendedDMMFFieldValidatorPattern`, () => {
       `[@zod generator error]: import statement is not valid. Check for unusal characters. [Error Location]: Model: 'User'`,
     );
   });
-
-  // todo: Write tests that check automatic imports and the merge of custom and automatic imports
 
   it(`should load a class with automatic imports`, async () => {
     const model = getModel(MODEL_WITH_AUTO_IMPORT_FILDS);

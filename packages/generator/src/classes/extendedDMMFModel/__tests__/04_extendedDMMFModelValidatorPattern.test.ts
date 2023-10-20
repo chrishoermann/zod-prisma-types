@@ -2,7 +2,10 @@ import { DMMF } from '@prisma/generator-helper';
 import { it, expect, describe } from 'vitest';
 
 import { DEFAULT_GENERATOR_CONFIG, MODEL_BASE } from './setup';
-import { ExtendedDMMFModelValidatorPattern } from '../04_extendedDMMFModelValidatorPattern';
+import {
+  ExtendedDMMFModelValidatorPattern,
+  ALLOWED_TYPES_REGEX_PATTERN,
+} from '../04_extendedDMMFModelValidatorPattern';
 
 const getModel = (model?: Partial<DMMF.Model>) =>
   new ExtendedDMMFModelValidatorPattern(DEFAULT_GENERATOR_CONFIG, {
@@ -14,11 +17,12 @@ describe(`ExtendedDMMFFieldValidatorPattern`, () => {
   it(`should load a class with docs and validator`, async () => {
     const model = getModel({
       documentation:
-        'some text in docs before @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).refine(v => v.title.length > 0).transform(...some stuff).strict() some text after',
+        'some text in docs before @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).error({ type_error_message: "some stuff" }).refine(v => v.title.length > 0).transform(...some stuff).strict() some text after',
     });
 
     expect(model?.['_validatorList']).toEqual([
       '.import(["import { myFunction } from "../../../../utils/myFunction";"])',
+      '.error({ type_error_message: "some stuff" })',
       '.refine(v => v.title.length > 0)',
       '.transform(...some stuff)',
       '.strict()',
@@ -27,7 +31,7 @@ describe(`ExtendedDMMFFieldValidatorPattern`, () => {
       'some text in docs before some text after',
     );
     expect(model.documentation).toBe(
-      'some text in docs before @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).refine(v => v.title.length > 0).transform(...some stuff).strict() some text after',
+      'some text in docs before @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).error({ type_error_message: "some stuff" }).refine(v => v.title.length > 0).transform(...some stuff).strict() some text after',
     );
   });
 
@@ -40,5 +44,62 @@ describe(`ExtendedDMMFFieldValidatorPattern`, () => {
     ).toThrowError(
       `[@zod generator error]: 'improt' is not valid as validator. [Error Location]: Model: 'User'`,
     );
+  });
+
+  // New Test Case
+  it('should match all the valid methods', async () => {
+    const validMethods = [
+      '.parse()',
+      '.parseAsync()',
+      '.safeParse()',
+      '.safeParseAsync()',
+      '.refine()',
+      '.superRefine()',
+      '.transform()',
+      '.default()',
+      '.describe()',
+      '.catch()',
+      '.optional()',
+      '.nullable()',
+      '.nullish()',
+      '.array()',
+      '.promise()',
+      '.or()',
+      '.and()',
+      '.brand()',
+      '.readonly()',
+      '.pipe()',
+      '.shape()',
+      '.keyof()',
+      '.extend()',
+      '.merge()',
+      '.pick()',
+      '.omit()',
+      '.partial()',
+      '.deepPartial()',
+      '.required()',
+      '.passthrough()',
+      '.strict()',
+      '.strip()',
+      '.catchall()',
+    ];
+
+    validMethods.forEach((method) => {
+      expect(ALLOWED_TYPES_REGEX_PATTERN.test(method)).toBeTruthy();
+    });
+  });
+
+  it('should not match any invalid methods', async () => {
+    const invalidMethods = [
+      '.improt()',
+      '.reifne()',
+      '.tranform()',
+      '.strictly()',
+      '.errored()',
+    ];
+
+    invalidMethods.forEach((method) => {
+      expect(ALLOWED_TYPES_REGEX_PATTERN.test(method)).toBeFalsy();
+    });
   });
 });

@@ -13,7 +13,7 @@ export const IMPORT_STATEMENT_REGEX_PATTERN =
 // todo: check if import is in validator list and extract it to a separate property
 
 export const ALLOWED_TYPES_REGEX_PATTERN =
-  /\.(import|refine|transform|strict)\(/;
+  /\.(import|error|parse|parseAsync|safeParse|safeParseAsync|refine|superRefine|transform|default|describe|catch|optional|nullable|nullish|array|promise|or|and|brand|readonly|pipe|shape|keyof|extend|merge|pick|omit|partial|deepPartial|required|passthrough|strict|strip|catchall)\(/;
 
 const extractValidatorKeyword = (str: string) => {
   const match = str.match(/\.(.*?)\(/);
