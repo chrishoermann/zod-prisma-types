@@ -14,6 +14,10 @@ export const writeModelFields = (options: ExtendedWriteFieldOptions) => {
     writeJsDoc(options.writer, options.field.clearedDocumentation);
   }
 
+  if (options.field.omitInModel()) {
+    options.writer.write('// omitted: ');
+  }
+
   if (options.field.zodCustomValidatorString) {
     return writeCustomValidator(options);
   }

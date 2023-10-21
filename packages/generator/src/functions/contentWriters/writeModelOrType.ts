@@ -102,8 +102,6 @@ export const writeModelOrType = (
     .write(`export const ${model.name}Schema = z.object(`)
     .inlineBlock(() => {
       [...model.enumFields, ...model.scalarFields].forEach((field) => {
-        writer.conditionalWrite(field.omitInModel(), '// omitted: ');
-
         writeModelFields({
           writer,
           field,

@@ -134,6 +134,18 @@ export function testExtendedDMMFFieldOmitField<
       expect(fieldThree.zodOmitField).toBe('input');
       expect(fieldThree.omitInInputTypes('UserCreateManyInput')).toBe(true);
     });
+
+    it(`should load field with docs and omit validator`, async () => {
+      const field = getField({
+        documentation:
+          'some text in docs @zod.custom.omit(["model", "input"]) some text after',
+      });
+      expect(field.zodOmitField).toBe('all');
+      expect(field.omitInInputTypes('UserCreateManyInput')).toBe(true);
+      expect(field.clearedDocumentation).toBe(
+        'some text in docs  some text after',
+      );
+    });
   });
 }
 

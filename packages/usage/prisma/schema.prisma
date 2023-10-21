@@ -95,32 +95,34 @@ model ModelWithComments {
 /// comment line two
 model MyPrismaScalarsType {
   /// @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]|", required_error: "some other", description: "some description" }).cuid()
-  id         String    @id @default(cuid())
+  id                 String    @id @default(cuid())
   /// Some comment about string @zod.string.min(3, { message: "min error " }).max(10, { message: "max error" })
-  string     String?
+  string             String?
   /// @zod.custom.use(z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }))
-  bic        String?
+  bic                String?
   /// @zod.number.lt(10.3, { message: "lt error" }).gt(5.5, { message: "gt | error" })
-  float      Float
-  floatOpt   Float?
+  float              Float
+  floatOpt           Float?
   /// @zod.number.int({ message: "error" }).gt(5, { message: "ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。" })
-  int        Int
+  int                Int
   /// @zod.number.int({ message: "error" }).gt(-5, { message: "ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。" })
-  intOpt     Int?
-  decimal    Decimal
-  decimalOpt Decimal?
-  date       DateTime  @default(now())
-  dateOpt    DateTime? /// @zod.date({ invalid_type_error: "wrong date type" })  
-  bigInt     BigInt /// @zod.bigint({ invalid_type_error: "error" }).gt(5n, { message: "gt error" })
-  bigIntOpt  BigInt?
+  intOpt             Int?
+  decimal            Decimal
+  decimalOpt         Decimal?
+  date               DateTime  @default(now())
+  dateOpt            DateTime? /// @zod.date({ invalid_type_error: "wrong date type" })  
+  bigInt             BigInt /// @zod.bigint({ invalid_type_error: "error" }).gt(5n, { message: "gt error" })
+  bigIntOpt          BigInt?
   /// @zod.custom.use(z.lazy(() => InputJsonValue).refine((val) => myFunction(val), { message: 'Is not valid' }))
-  json       Json
-  jsonOpt    Json?
-  bytes      Bytes /// @zod.custom.use(z.instanceof(Buffer).refine((val) => val ? true : false, { message: 'Value is not valid' }))
-  bytesOpt   Bytes?
+  json               Json
+  jsonOpt            Json?
+  bytes              Bytes /// @zod.custom.use(z.instanceof(Buffer).refine((val) => val ? true : false, { message: 'Value is not valid' }))
+  bytesOpt           Bytes?
   /// @zod.custom.use(z.string().refine((val) => myFunction(val), { message: 'Is not valid' }))
-  custom     String?
-  exclude    String? /// @zod.custom.omit(["model", "input"])
+  custom             String?
+  exclude            String? /// @zod.custom.omit(["model", "input"])
+  /// Some Comment before
+  excludeWithComment String? /// @zod.custom.omit(["model", "input"]) And some comment after
 
   specialEuropeanChars String? /// @zod.string({ invalid_type_error: "ÁÀȦÂÄǞǍĂĀÃÅǺǼǢĆĊĈČĎḌḐḒÉÈĖÊËĚĔĒẼE̊ẸǴĠĜǦĞG̃ĢĤḤáàȧâäǟǎăāãåǻǽǣćċĉčďḍḑḓéèėêëěĕēẽe̊ẹǵġĝǧğg̃ģĥḥÍÌİÎÏǏĬĪĨỊĴĶǨĹĻĽĿḼM̂M̄ʼNŃN̂ṄN̈ŇN̄ÑŅṊÓÒȮȰÔÖȪǑŎŌÕȬŐỌǾƠíìiîïǐĭīĩịĵķǩĺļľŀḽm̂m̄ŉńn̂ṅn̈ňn̄ñņṋóòôȯȱöȫǒŏōõȭőọǿơP̄ŔŘŖŚŜṠŠȘṢŤȚṬṰÚÙÛÜǓŬŪŨŰŮỤẂẀŴẄÝỲŶŸȲỸŹŻŽẒǮp̄ŕřŗśŝṡšşṣťțṭṱúùûüǔŭūũűůụẃẁŵẅýỳŷÿȳỹźżžẓǯßœŒçÇ" })
 
@@ -340,7 +342,8 @@ model JapaneseChars {
   string String
 }
 
-// MODEL OPTIONS
+// MODEL VALIDATION
+// -----------------------------------------------
 
 /// @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).error({ required_error: "error", invalid_type_error: "error" , description: "error"}).refine((data) => { return true }, { message: "error" }).strict()
 model ModelWithOptions {
