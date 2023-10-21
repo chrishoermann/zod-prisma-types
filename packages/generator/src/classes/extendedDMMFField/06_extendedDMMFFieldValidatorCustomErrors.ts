@@ -2,7 +2,7 @@ import { DMMF } from '@prisma/generator-helper';
 
 import { ExtendedDMMFFieldDefaultValidators } from './05_extendedDMMFFieldDefaultValidators';
 import { GeneratorConfig } from '../../schemas';
-import { validateCustomError } from 'src/utils/validateCustomError';
+import { validateCustomError } from '../../utils/validateCustomError';
 
 /////////////////////////////////////////////////
 // CLASS

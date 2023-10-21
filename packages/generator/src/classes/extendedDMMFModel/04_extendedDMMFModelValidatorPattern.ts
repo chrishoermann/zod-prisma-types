@@ -1,6 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
-import { GeneratorConfig } from 'src/schemas';
-import { getNestedValidatorList } from 'src/utils/getNestedValidatorList';
+import { GeneratorConfig } from '../../schemas';
+import { getNestedValidatorList } from '../../utils/getNestedValidatorList';
 import { ExtendedDMMFModelValidatorMatch } from './03_extendedDMMFModelValidatorMatch';
 
 /////////////////////////////////////////////////

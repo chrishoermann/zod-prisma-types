@@ -340,6 +340,14 @@ model JapaneseChars {
   string String
 }
 
+// MODEL OPTIONS
+
+/// @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).error({ required_error: "error", invalid_type_error: "error" , description: "error"}).refine((data) => { return true }, { message: "error" }).strict()
+model ModelWithOptions {
+  id     Int    @id @default(autoincrement())
+  string String
+}
+
 // model Post {
 //   id    String   @id @default(auto()) @map("_id") @db.ObjectId
 //   title String   @default("")

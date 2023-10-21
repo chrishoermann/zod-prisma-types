@@ -1,4 +1,4 @@
-import { ExtendedDMMFFieldClass } from '..';
+import { ExtendedDMMFModelClass } from '..';
 import * as TESTS from './subclasses';
 
 // Run all the subclass test suites with the final instance of the class
@@ -7,5 +7,5 @@ import * as TESTS from './subclasses';
 
 Object.keys(TESTS).forEach((key) => {
   const test = TESTS[key];
-  test(ExtendedDMMFFieldClass);
+  test(ExtendedDMMFModelClass);
 });

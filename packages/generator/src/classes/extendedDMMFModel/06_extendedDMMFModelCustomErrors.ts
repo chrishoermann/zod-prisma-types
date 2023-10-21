@@ -1,7 +1,7 @@
 import { DMMF } from '@prisma/generator-helper';
-import { GeneratorConfig } from 'src/schemas';
+import { GeneratorConfig } from '../../schemas';
 import { ExtendedDMMFModelImportStatement } from './05_extendedDMMFModelImportStatement';
-import { validateCustomError } from 'src/utils/validateCustomError';
+import { validateCustomError } from '../../utils/validateCustomError';
 
 /////////////////////////////////////////////////
 // CLASS

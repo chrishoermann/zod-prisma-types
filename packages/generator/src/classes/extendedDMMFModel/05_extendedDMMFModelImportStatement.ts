@@ -1,5 +1,5 @@
 import { DMMF } from '@prisma/generator-helper';
-import { GeneratorConfig } from 'src/schemas';
+import { GeneratorConfig } from '../../schemas';
 import { ExtendedDMMFModelValidatorPattern } from './04_extendedDMMFModelValidatorPattern';
 
 /////////////////////////////////////////////////
@@ -18,7 +18,7 @@ export const IMPORT_STATEMENT_REGEX = /"(?<statement>[\w "'${}/,:@;.*-]+)"/;
 export class ExtendedDMMFModelImportStatement extends ExtendedDMMFModelValidatorPattern {
   protected _importStatements?: string[];
   protected _automaticImports?: string[];
-  readonly customImports?: Set<string>;
+  readonly customImports: Set<string>;
   readonly imports: Set<string>;
 
   constructor(generatorConfig: GeneratorConfig, model: DMMF.Model) {
@@ -89,7 +89,7 @@ export class ExtendedDMMFModelImportStatement extends ExtendedDMMFModelValidator
   }
 
   private _getCustomImports() {
-    if (!this._importStatements) return;
+    if (!this._importStatements) return new Set<string>();
 
     const importList = this._importStatements
       .map((importStatement) => {

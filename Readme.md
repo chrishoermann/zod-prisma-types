@@ -46,7 +46,6 @@ Be aware that some generator options have been removed, a few new have been adde
 - [Json null values](#json-null-values)
 - [Decimal](#decimal)
 - [Field validators](#field-validators)
-  - [Custom imports](#custom-imports)
   - [Custom type error messages](#custom-type-error-messages)
   - [String validators](#string-validators)
   - [Number validators](#number-validators)
@@ -56,6 +55,10 @@ Be aware that some generator options have been removed, a few new have been adde
   - [Array validators](#array-validators)
   - [Omit fields](#omit-fields)
   - [Validation errors](#validation-errors)
+- [Model Validators](#model-validators)
+  - [Custom imports](#custom-imports)
+  - [Custom model error messages](#custom-model-error-messages)
+  - [Custom model Validators](#custom-model-validators)
 - [Naming of zod schemas](#naming-of-zod-schemas)
 - [Adding comments](#adding-comments)
 - [Migration from `zod-prisma`](#migration-from-zod-prisma)
@@ -789,33 +792,6 @@ export const MyPrismaScalarsTypeOptionalDefaultsSchema =
 
 > Additionally all the zod schemas for the prisma input-, enum-, filter-, orderBy-, select-, include and other necessary types are generated ready to be used in e.g. `trpc` inputs.
 
-## Custom imports
-
-To add custom imports to your validator you can add them via `@zod.import([...myCustom imports as strings])` in prismas rich comments on the model definition.
-
-For example:
-
-```prisma
-/// @zod.import(["import { myFunction } from 'mypackage'"])
-model MyModel {
-  myField String /// @zod.string().refine((val) => myFunction(val), { message: 'Is not valid' })
-}
-```
-
-This would result in an output like:
-
-```ts
-import { myFunction } from 'mypackage';
-
-export const MyModelSchema = z.object({
-  myField: z
-    .string()
-    .refine((val) => myFunction(val), { message: 'Is not valid' }),
-});
-```
-
-> Please be aware that you have to add an additional level to relative imports if you use the `useMultipleFiles` option.
-
 ## Custom type error messages
 
 To add custom zod-type error messages to your validator you can add them via `@zod.[key]({ ...customTypeErrorMessages }).[validator key]`. The custom error messages must adhere to the following type:
@@ -1135,6 +1111,167 @@ that the generator would throw the following error:
 [@zod generator error]: Could not match validator 'min' with validatorPattern
 '.min(3, { mussage: 'Must be at least 3 characters' })'. Please check for typos! [Error Location]: Model: 'MyModel', Field: 'string'.
 ```
+
+## Model validators
+
+To add custom validators to the prisma `model` you can use the `@zod.` key on the model. On this key you can use all [`object`](https://zod.dev/?id=objects) and [`schema`](https://zod.dev/?id=schema-methods) validators that are mentioned in the [`zod-docs`](https://zod.dev/?id=schema-methods).
+You can also add custom error messages to the object and add custom imports.
+
+```prisma
+/// @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).error({ required_error: "error", invalid_type_error: "error" , description: "error"}).refine((data) => { return true }, { message: "error" }).strict()
+model ModelWithOptions {
+  id     Int    @id @default(autoincrement())
+  string String
+}
+```
+
+The above model would generate the following zod schema:
+
+```ts
+/////////////////////////////////////////
+// MODEL WITH OPTIONS SCHEMA
+/////////////////////////////////////////
+
+export const ModelWithOptionsSchema = z.object(
+  {
+    id: z.number().int(),
+    string: z.string(),
+  },
+  {
+    required_error: 'error',
+    invalid_type_error: 'error',
+    description: 'error',
+  },
+);
+
+export type ModelWithOptions = z.infer<typeof ModelWithOptionsSchema>;
+
+/////////////////////////////////////////
+// MODEL WITH OPTIONS CUSTOM VALIDATORS SCHEMA
+/////////////////////////////////////////
+
+export const ModelWithOptionsCustomValidatorsSchema =
+  ModelWithOptionsSchema.strict().refine(
+    (data) => {
+      return true;
+    },
+    { message: 'error' },
+  );
+
+export type ModelWithOptionsCustomValidators = z.infer<
+  typeof ModelWithOptionsCustomValidatorsSchema
+>;
+```
+
+### Custom imports
+
+To add custom imports to your validator you can add them via `@zod.import([...myCustom imports as strings])` in prismas rich comments on the model definition.
+
+For example:
+
+```prisma
+/// @zod.import(["import { myFunction } from 'mypackage'"])
+model MyModel {
+  myField String /// @zod.string().refine((val) => myFunction(val), { message: 'Is not valid' })
+}
+```
+
+This would result in an output like:
+
+```ts
+import { myFunction } from 'mypackage';
+
+export const MyModelSchema = z.object({
+  myField: z
+    .string()
+    .refine((val) => myFunction(val), { message: 'Is not valid' }),
+});
+```
+
+> Please be aware that you have to add an additional level to relative imports if you use the `useMultipleFiles` option.
+
+## Custom model error messages
+
+To add custom zod-type error messages to your model schema you can add them via `@zod.error({ ...customTypeErrorMessages })`. The custom error messages must adhere to the following type:
+
+```ts
+type RawCreateParams =
+  | {
+      invalid_type_error?: string;
+      required_error?: string;
+      description?: string;
+    }
+  | undefined;
+```
+
+For example:
+
+```prisma
+/// @zod.error({ required_error: "error", invalid_type_error: "error" , description: "error"})
+model MyModel {
+  myField String
+}
+```
+
+This would result in an output like:
+
+```ts
+export const MyModelSchema = z.object(
+  {
+    myField: z.string(),
+  },
+  {
+    required_error: 'error',
+    invalid_type_error: 'error',
+    description: 'error',
+  },
+);
+```
+
+## Custom model validators
+
+To add custom validators to the prisma `model` you can use the `@zod.` key on the model. On this key you can use all [`object`](https://zod.dev/?id=objects) and [`schema`](https://zod.dev/?id=schema-methods) validators that are mentioned in the [`zod-docs`](https://zod.dev/?id=schema-methods).
+
+```prisma
+/// @zod.refine((data) => { return true }, { message: "error" }).strict()
+model ModelWithOptions {
+  id     Int    @id @default(autoincrement())
+  string String
+}
+```
+
+The above model would generate the following zod schema:
+
+```ts
+/////////////////////////////////////////
+// MODEL WITH OPTIONS SCHEMA
+/////////////////////////////////////////
+
+export const ModelWithOptionsSchema = z.object({
+  id: z.number().int(),
+  string: z.string(),
+});
+
+export type ModelWithOptions = z.infer<typeof ModelWithOptionsSchema>;
+
+/////////////////////////////////////////
+// MODEL WITH OPTIONS CUSTOM VALIDATORS SCHEMA
+/////////////////////////////////////////
+
+export const ModelWithOptionsCustomValidatorsSchema =
+  ModelWithOptionsSchema.strict().refine(
+    (data) => {
+      return true;
+    },
+    { message: 'error' },
+  );
+
+export type ModelWithOptionsCustomValidators = z.infer<
+  typeof ModelWithOptionsCustomValidatorsSchema
+>;
+```
+
+> If strict is passed in it is always added to the model schema at the first position. All other validators are added in the order they appear in the rich comments.
 
 ## Naming of zod schemas
 

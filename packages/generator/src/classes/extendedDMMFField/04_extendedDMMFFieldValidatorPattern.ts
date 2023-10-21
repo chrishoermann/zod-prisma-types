@@ -2,7 +2,7 @@ import { DMMF } from '@prisma/generator-helper';
 
 import { ExtendedDMMFFieldValidatorType } from './03_extendedDMMFFieldValidatorType';
 import { GeneratorConfig } from '../../schemas';
-import { getNestedValidatorList } from 'src/utils/getNestedValidatorList';
+import { getNestedValidatorList } from '../../utils/getNestedValidatorList';
 
 /////////////////////////////////////////////////
 // CLASS

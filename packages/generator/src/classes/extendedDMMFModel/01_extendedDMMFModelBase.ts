@@ -1,5 +1,5 @@
 import { DMMF } from '@prisma/generator-helper';
-import { GeneratorConfig } from 'src/schemas';
+import { GeneratorConfig } from '../../schemas';
 import { FormattedNames } from '../formattedNames';
 import {
   type ExtendedDMMFField,
@@ -24,7 +24,7 @@ export class ExtendedDMMFModelBase
   readonly scalarFields: ExtendedDMMFField[];
   readonly relationFields: ExtendedDMMFField[];
   readonly enumFields: ExtendedDMMFField[];
-  readonly filterdRelationFields: ExtendedDMMFField[];
+  readonly filteredRelationFields: ExtendedDMMFField[];
   readonly optionalJsonFields: ExtendedDMMFField[];
 
   protected _errorLocation: string;
@@ -43,7 +43,7 @@ export class ExtendedDMMFModelBase
     this.fields = this._getExtendedFields(model);
     this.scalarFields = this._setScalarFields();
     this.relationFields = this._setRelationFields();
-    this.filterdRelationFields = this._setFilteredRelationFields();
+    this.filteredRelationFields = this._setFilteredRelationFields();
     this.enumFields = this._setEnumfields();
     this.optionalJsonFields = this._setOptionalJsonFields();
 

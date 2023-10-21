@@ -1,7 +1,7 @@
 import { DMMF } from '@prisma/generator-helper';
 
 import { ExtendedDMMFEnum } from './extendedDMMFEnum';
-import { ExtendedDMMFModel } from './extendedDMMFModel';
+import { ExtendedDMMFModel, ExtendedDMMFModelClass } from './extendedDMMFModel';
 import { GeneratorConfig } from '../schemas';
 
 export interface ExtendedDMMFDatamodelOptions {
@@ -30,7 +30,7 @@ export class ExtendedDMMFDatamodel {
 
   private _getExtendedModels(models: DMMF.Model[]) {
     return models.map(
-      (model) => new ExtendedDMMFModel(this.generatorConfig, model),
+      (model) => new ExtendedDMMFModelClass(this.generatorConfig, model),
     );
   }
 

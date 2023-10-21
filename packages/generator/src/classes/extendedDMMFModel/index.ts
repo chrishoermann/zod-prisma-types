@@ -1,306 +1,157 @@
 import { DMMF } from '@prisma/generator-helper';
-
-import {
-  ExtendedDMMFField,
-  ExtendedDMMFFieldClass,
-} from '../extendedDMMFField/extendedDMMFField';
 import { FormattedNames } from '../formattedNames';
-import // IMPORT_STATEMENT_REGEX,
-// IMPORT_STATEMENT_REGEX_PATTERN,
-'../../constants';
-import { GeneratorConfig } from '../../schemas';
-
-// todo: Refactor this class to be able to pass rich comments like the following
-// - @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).refine(v => v.title.length > 0).transform(...some stuff).strict()
-// - @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).object(.refine(v => v.title.length > 0).transform(...some stuff))
-// - @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).strict().transform(...some stuff))
-//
-// this can than be used to refine checks like password and password repeat match
-// in a .refine() function and to transform the final object in a .transform() function
-// the implementation could be similar to the extendedDMMFField class
-// with multiple validation layers for each element of the rich comment
-
-export const IMPORT_STATEMENT_REGEX_PATTERN =
-  /@zod\.(?<type>[\w]+)(\(\[)(?<imports>[\w "@'${}/,;:.*-]+)(\]\))/;
-
-export const IMPORT_STATEMENT_REGEX = /"(?<statement>[\w "'${}/,:@;.*-]+)"/;
+import { ExtendedDMMFModelFormatingHelpers } from './08_extendedDMMFModelFormatingHelpers';
+import { ExtendedDMMFField } from '../extendedDMMFField';
+import { GeneratorConfig } from '../../schemas/generatorConfigSchema';
 
 /////////////////////////////////////////////////
 // TYPES  INTERFACE
 /////////////////////////////////////////////////
 
-export class ExtendedDMMFModel extends FormattedNames implements DMMF.Model {
+export interface ExtendedDMMFModel extends DMMF.Model, FormattedNames {
+  /**
+   * Config that is passed to the generator from prisma schema.
+   */
   readonly generatorConfig: GeneratorConfig;
-  readonly name: DMMF.Model['name'];
-  readonly dbName: DMMF.Model['dbName'];
-  readonly fields: ExtendedDMMFField[];
-  readonly uniqueFields: DMMF.Model['uniqueFields'];
-  readonly uniqueIndexes: DMMF.Model['uniqueIndexes'];
-  readonly documentation?: DMMF.Model['documentation'];
-  readonly primaryKey: DMMF.Model['primaryKey'];
 
+  /**
+   * Fields of the model that are extended with additional properties and methods.
+   */
+  readonly fields: ExtendedDMMFField[];
+
+  /**
+   * Fields of the model that are scalar fields.
+   */
   readonly scalarFields: ExtendedDMMFField[];
+
+  /**
+   * Fields of the model that are relation fields.
+   */
   readonly relationFields: ExtendedDMMFField[];
-  readonly filterdRelationFields: ExtendedDMMFField[];
+
+  /**
+   * Fields of the model that are relation fields and not self referencing.
+   */
+  readonly filteredRelationFields: ExtendedDMMFField[];
+
+  /**
+   * Fields of the model that are enum fields.
+   */
   readonly enumFields: ExtendedDMMFField[];
+
+  /**
+   * Fields of the model that are json fields and not required.
+   */
   readonly optionalJsonFields: ExtendedDMMFField[];
 
+  /**
+   * Flag to indicate if the model has relation fields.
+   */
   readonly hasRelationFields: boolean;
+
+  /**
+   * Flag to indicate if the model has required json fields.
+   */
   readonly hasRequiredJsonFields: boolean;
+
+  /**
+   * Flag to indicate if the model has optional json fields.
+   */
   readonly hasOptionalJsonFields: boolean;
+
+  /**
+   * Flag to indicate if the model has decimal fields.
+   */
   readonly hasOmitFields: boolean;
+
+  /**
+   * Flag to indicate if the model has decimal fields.
+   */
   readonly hasDecimalFields: boolean;
+
+  /**
+   * Flag to indicate if the model has optional default fields.
+   */
   readonly hasOptionalDefaultFields: boolean;
+
+  /**
+   * Flag to indicate if additional types should be generated for optional default values.
+   */
   readonly writeOptionalDefaultValuesTypes: boolean;
+
+  /**
+   * Flag to indicate if additional types should be generated for relation values.
+   */
   readonly writeRelationValueTypes: boolean;
+
+  /**
+   * Flag to indicate if additional types should be generated for optional default values and relation values.
+   */
   readonly writeOptionalDefaultsRelationValueTypes: boolean;
+
+  /**
+   * Flag to indicate if partial types should be generated.
+   */
   readonly writePartialTypes: boolean;
+
+  /**
+   * Flag to indicate if partial types should be generated for relation values.
+   */
   readonly writePartialRelationValueTypes: boolean;
 
+  /**
+   * Custom error messages that should be used on the generated schema
+   */
+  readonly zodCustomErrors?: string;
+
+  /**
+   * Custom validators that should be used on the generated schema
+   */
+  readonly zodCustomValidators?: string[];
+
+  /**
+   * Set of import statements that are used in the model and need to be added to the generated file.
+   * Contains custom imports and automatic imports like `import { InputJsonValue } from "../inputTypes/InputJsonValue";` for json fields.
+   */
   readonly imports: Set<string>;
+
+  /**
+   * Set of import statements that are used in the model and need to be added to the generated file.
+   * Contains only the custom imports from the model's documentation.
+   */
   readonly customImports: Set<string>;
-  readonly errorLocation: string;
+
+  /**
+   * Documentation string provided via rich comments without the `@zod` directives.
+   */
   readonly clearedDocumentation?: string;
 
+  /**
+   * Union of the names of the model's optional json fields.
+   */
   readonly optionalJsonFieldUnion: string;
-
-  constructor(generatorConfig: GeneratorConfig, model: DMMF.Model) {
-    super(model.name);
-    this.generatorConfig = generatorConfig;
-    this.name = model.name;
-    this.dbName = model.dbName;
-    this.fields = this._getExtendedFields(model);
-    this.uniqueFields = model.uniqueFields;
-    this.uniqueIndexes = model.uniqueIndexes;
-    this.documentation = model.documentation;
-    this.primaryKey = model.primaryKey;
-    this.scalarFields = this._setScalarFields();
-    this.relationFields = this._setRelationFields();
-    this.filterdRelationFields = this._setFilteredRelationFields();
-    this.enumFields = this._setEnumfields();
-
-    this.hasRelationFields = this._setHasRelationFields();
-    this.hasRequiredJsonFields = this._setHasRequiredJsonFields();
-    this.hasOptionalJsonFields = this._setHasOptionalJsonFields();
-    this.hasDecimalFields = this._setHasDecimalFields();
-    this.hasOptionalDefaultFields = this._setHasOptionalDefaultFields();
-    this.hasOmitFields = this._setHasOmitFields();
-
-    this.errorLocation = this._setErrorLocation();
-
-    const docsContent = this._getDocumentationContent();
-
-    this.imports = docsContent.imports;
-    this.customImports = docsContent.customImports;
-    this.clearedDocumentation = docsContent?.documentation;
-
-    this.optionalJsonFields = this._setOptionalJsonFields();
-    this.optionalJsonFieldUnion = this._setOptionalJsonFieldUnion();
-    this.writeOptionalDefaultValuesTypes =
-      this._setWriteOptionalDefaultValuesTypes();
-    this.writeRelationValueTypes = this._setWriteRelationValueTypes();
-    this.writeOptionalDefaultsRelationValueTypes =
-      this._setWriteOptionalDefaultsRelationValueTypes();
-    this.writePartialTypes = this._setWritePartialTypes();
-    this.writePartialRelationValueTypes =
-      this._writePartialRelationValueTypes();
-  }
-
-  private _setErrorLocation() {
-    return `[Error Location]: Model: '${this.name}'.`;
-  }
-
-  private _getExtendedFields(model: DMMF.Model) {
-    return model.fields.map(
-      (field) =>
-        new ExtendedDMMFFieldClass(field, this.generatorConfig, this.name),
-    );
-  }
-
-  private _setScalarFields() {
-    return this.fields.filter((field) => field.kind === 'scalar');
-  }
-
-  private _setRelationFields() {
-    return this.fields.filter((field) => field.kind === 'object');
-  }
-
-  // filterd relation fields are relation fields that are not self referencing
-  // these are used to create the relation imports in the model
-  private _setFilteredRelationFields() {
-    return this.relationFields.filter((field) => field.type !== this.name);
-  }
-
-  private _setHasRequiredJsonFields() {
-    return this.fields.some((field) => field.isJsonType && field.isRequired);
-  }
-
-  private _setHasOptionalJsonFields() {
-    return this.fields.some((field) => field.isJsonType && !field.isRequired);
-  }
-
-  private _setEnumfields() {
-    return this.fields.filter((field) => field.kind === 'enum');
-  }
-
-  private _setHasRelationFields() {
-    return this.relationFields.length > 0;
-  }
-
-  private _setHasOmitFields() {
-    return this.fields.some((field) => field.isOmitField());
-  }
-
-  private _setWriteOptionalDefaultValuesTypes() {
-    return (
-      // Do NOT check for "this.hasOptionalDefaultFields"
-      // A [model type]OptionalDefaultValues schema  needs to be created for each model
-      // so the schema can be imported even when no optional default values are present
-      this.generatorConfig.createOptionalDefaultValuesTypes
-    );
-  }
-
-  private _setWritePartialTypes() {
-    return this.generatorConfig.createPartialTypes;
-  }
-
-  private _setWriteRelationValueTypes() {
-    return (
-      this.hasRelationFields && this.generatorConfig.createRelationValuesTypes
-    );
-  }
-
-  private _setWriteOptionalDefaultsRelationValueTypes() {
-    return this.writeRelationValueTypes && this.writeOptionalDefaultValuesTypes;
-  }
-
-  private _writePartialRelationValueTypes() {
-    return this.writeRelationValueTypes && this.writePartialTypes;
-  }
-
-  private _setHasOptionalDefaultFields() {
-    return this.fields.some((field) => field.isOptionalDefaultField);
-  }
-
-  private _setHasDecimalFields() {
-    return this.fields.some((field) => field.isDecimalType);
-  }
-
-  private _setOptionalJsonFields() {
-    return this.fields.filter((field) => field.isJsonType && !field.isRequired);
-  }
-
-  private _setOptionalJsonFieldUnion() {
-    return this.optionalJsonFields
-      .map((field) => `"${field.name}"`)
-      .join(' | ');
-  }
-
-  private _getDocumentationContent() {
-    const zodDirectives = this._extractZodDirectives();
-    const automaticImports = this._getAutomaticImports();
-
-    if (!zodDirectives)
-      return {
-        imports: new Set(automaticImports),
-        customImports: new Set([]),
-      };
-
-    return {
-      imports: new Set([...zodDirectives.customImports, ...automaticImports]),
-      documentation: zodDirectives.clearedDocumentation,
-      customImports: new Set(zodDirectives.customImports),
-    };
-  }
-
-  /**
-   * extracts import statements  from the model's documentation and removes them from the documentation.
-   * @returns array of import statements from the model's documentation and
-   * a string of the documentation with the import statements removed.
-   */
-  private _extractZodDirectives() {
-    if (!this.documentation) return;
-
-    const importStatements = this.documentation?.match(
-      IMPORT_STATEMENT_REGEX_PATTERN,
-    );
-
-    if (!importStatements) {
-      return {
-        customImports: [],
-        clearedDocumentation: this.documentation,
-      };
-    }
-
-    const type = importStatements.groups?.['type'];
-    if (type !== 'import') {
-      throw new Error(
-        `[@zod generator error]: '${type}' is not a valid validator key. ${this.errorLocation}`,
-      );
-    }
-
-    const importsList = importStatements.groups?.['imports']
-      ?.split(/(?<="),/g) // split at `"` that is followed by a `,`
-      .map((statement) => statement.trim());
-
-    if (!importsList) {
-      return {
-        customImports: [],
-        clearedDocumentation: this.documentation,
-      };
-    }
-
-    return {
-      customImports: importsList
-        .map(
-          (statement) =>
-            statement
-              .match(IMPORT_STATEMENT_REGEX)
-              ?.groups?.['statement'].replace(/["']/g, "'"),
-        )
-        .filter(
-          (statement): statement is string => typeof statement === 'string',
-        ),
-      clearedDocumentation: this.documentation
-        .replace(IMPORT_STATEMENT_REGEX_PATTERN, '')
-        .trim(),
-    };
-  }
-
-  /**
-   * Checks for certain field types and conditions and adds the necessary import statements to the model's imports.
-   * @returns array of import statements that are automatically added to the model's imports.
-   */
-  private _getAutomaticImports() {
-    const statements: string[] = [];
-
-    const { inputTypePath } = this.generatorConfig;
-
-    if (this.hasOptionalJsonFields) {
-      statements.push(
-        `import { NullableJsonValue } from "../${inputTypePath}/NullableJsonValue"`,
-      );
-    }
-
-    if (this.hasRequiredJsonFields) {
-      statements.push(
-        `import { InputJsonValue } from "../${inputTypePath}/InputJsonValue"`,
-      );
-    }
-
-    if (this.hasDecimalFields) {
-      statements.push(
-        `import { DecimalJSLikeSchema } from "../${inputTypePath}/DecimalJsLikeSchema"`,
-        `import { isValidDecimalInput } from "../${inputTypePath}/isValidDecimalInput"`,
-      );
-    }
-
-    this.enumFields.forEach((field) => {
-      statements.push(
-        `import { ${field.type}Schema } from '../${inputTypePath}/${field.type}Schema'`,
-      );
-    });
-
-    return statements;
-  }
 }
+
+/////////////////////////////////////////////////
+// CLASS
+/////////////////////////////////////////////////
+
+/**
+ * This class is used to extend the DMMF Model class with additional properties
+ * and methods.
+ *
+ * The class is structured in multiple sub-classes to keep the code clean,
+ * readable and maintainable.
+ *
+ * The sub-classes are used in the following order and each one extends the previous one:
+ * - ExtendedDMMFModelBase
+ * - ExtendedDMMFModelFlags
+ * - ExtendedDMMFModelValidatorMatch
+ * - ExtendedDMMFModelValidatorPattern
+ * - ExtendedDMMFModelImportStatement
+ * - ExtendedDMMFModelCustomErrors
+ * - ExtendedDMMFModelCustomValidators
+ * - ExtendedDMMFFieldFormatingHelpers
+ */
+
+export class ExtendedDMMFModelClass extends ExtendedDMMFModelFormatingHelpers {}

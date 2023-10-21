@@ -1,8 +1,8 @@
 import { DMMF } from '@prisma/generator-helper';
-import { GeneratorConfig } from 'src/schemas';
-import { ExtendedDMMFModelFlags } from './02_extendedDMMFModelFlags';
+import { GeneratorConfig } from '../../schemas';
+import { ExtendedDMMFModelCustomValidators } from './07_extendedDMMFModelCustomValidators';
 
-export class ExtendedDMMFModelFormatingHelpers extends ExtendedDMMFModelFlags {
+export class ExtendedDMMFModelFormatingHelpers extends ExtendedDMMFModelCustomValidators {
   readonly optionalJsonFieldUnion: string;
 
   constructor(generatorConfig: GeneratorConfig, model: DMMF.Model) {

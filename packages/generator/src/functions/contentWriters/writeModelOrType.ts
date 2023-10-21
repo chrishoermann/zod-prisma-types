@@ -40,7 +40,7 @@ export const writeModelOrType = (
       const typeImports: string[][] = [];
       const schemaImports: string[][] = [];
 
-      model.filterdRelationFields.forEach((field) => {
+      model.filteredRelationFields.forEach((field) => {
         if (!dmmf.generatorConfig.isMongoDb) {
           typeImports.push([
             `${field.type}WithRelations`,
@@ -111,12 +111,45 @@ export const writeModelOrType = (
           dmmf,
         });
       });
-    })
-    .write(`)`);
+    });
+
+  if (model.zodCustomErrors) {
+    writer.write(`, ${model.zodCustomErrors}`);
+  }
+
+  writer.write(`)`);
 
   writer
     .blankLine()
     .write(`export type ${model.name} = z.infer<typeof ${model.name}Schema>`);
+
+  // WRITE CUSTOM VALIDATORS VALUE TYPES
+  // -------------------------------------------
+
+  if (model.zodCustomValidators) {
+    writer.blankLine();
+
+    writeHeading(
+      `${model.formattedNames.upperCaseSpace} CUSTOM VALIDATORS SCHEMA`,
+      'FAT',
+    );
+
+    writer.blankLine();
+
+    writer.write(
+      `export const ${model.name}CustomValidatorsSchema = ${model.name}Schema`,
+    );
+
+    model.zodCustomValidators.forEach((validator) => {
+      writer.write(validator);
+    });
+
+    writer
+      .blankLine()
+      .write(
+        `export type ${model.name}CustomValidators = z.infer<typeof ${model.name}CustomValidatorsSchema>`,
+      );
+  }
 
   if (model.writePartialTypes) {
     writer.blankLine();

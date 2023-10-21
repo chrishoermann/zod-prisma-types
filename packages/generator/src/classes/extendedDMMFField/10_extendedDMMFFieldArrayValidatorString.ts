@@ -6,7 +6,7 @@ import {
   ValidatorMap,
 } from './07_extendedDMMFFieldValidatorMap';
 import { GeneratorConfig } from '../../schemas';
-import { getNestedValidatorList } from 'src/utils/getNestedValidatorList';
+import { getNestedValidatorList } from '../../utils/getNestedValidatorList';
 
 /////////////////////////////////////////////////
 // TYPE
