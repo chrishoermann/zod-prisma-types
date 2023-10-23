@@ -42,6 +42,23 @@ export function testExtendedDMMFFieldCustomValidators<
         'some text in docs before @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).error({ invalid_type_error: "some stuff" }).refine(v => v.title.length > 0).transform(...some stuff).strict() some text after',
       );
     });
+
+    it('should add a description as validator using .describe', async () => {
+      const model = getModel({
+        documentation:
+          'some text in docs before @zod.describe("The dimensions of the product. This is different to the shipping or boxed dimensions and is usually smaller. If you cannot find the product dimensions make this the same as the dimensions_packed.") some text after',
+      });
+
+      expect(model.zodCustomValidators).toEqual([
+        '.describe("The dimensions of the product. This is different to the shipping or boxed dimensions and is usually smaller. If you cannot find the product dimensions make this the same as the dimensions_packed.")',
+      ]);
+      expect(model?.clearedDocumentation).toBe(
+        'some text in docs before some text after',
+      );
+      expect(model.documentation).toBe(
+        'some text in docs before @zod.describe("The dimensions of the product. This is different to the shipping or boxed dimensions and is usually smaller. If you cannot find the product dimensions make this the same as the dimensions_packed.") some text after',
+      );
+    });
   });
 }
 
