@@ -6,15 +6,15 @@
 
 # zod-prisma-types
 
-`zod-prisma-types` is a generator for [prisma](www.prisma.io) that generates [zod](https://github.com/colinhacks/zod) schemas from your prisma models. This includes schemas of models, enums, inputTypes, argTypes, filters and so on. It also provides options to write advanced zod validators directly in the prisma schema comments.
+`zod-prisma-types` is a generator for [prisma](www.prisma.io) that generates [zod](https://github.com/colinhacks/zod) schemas from your prisma models. This includes schemas of models, enums, inputTypes, argTypes, filters and so on. It also provides options to write advanced zod validators directly in the Prisma schema comments.
 
-Since I'm maintaining the generator in my spare time consider buying me a coffee or sponsor me if you like the project. Thanks!
+Since I'm maintaining the generator in my spare time consider buying me a coffee or sponsoring me if you like the project. Thanks!
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/chrishoermann)
 
 ## Breaking changes in v2.x.x
 
-Be aware that some generator options have been removed, a few new have been added, the behaviour of custom imports has changed and ts-morph is no longer needed to generate files in v2.0.0.
+Be aware that some generator options have been removed, a few new ones have been added, the behavior of custom imports has changed and ts-morph is no longer needed to generate files in v2.0.0.
 
 ## Known issues
 
@@ -116,7 +116,7 @@ generator zod {
 }
 ```
 
-If you want to customize the behaviour of the generator you can use the following options:
+If you want to customize the behavior of the generator you can use the following options:
 
 ```prisma
 generator zod {
@@ -202,7 +202,7 @@ generator zod {
 
 > default: `true`
 
-If you want to use your custom zod validatiors that you added via rich-comments only on your generated model schemas but not on your created input type schemas (`UserCreateInput`, `UserUpdateManyInput`, etc.) you can disable this feature.
+If you want to use your custom zod validators that you added via rich-comments only on your generated model schemas but not on your created input type schemas (`UserCreateInput`, `UserUpdateManyInput`, etc.) you can disable this feature.
 
 ```prisma
 generator zod {
@@ -508,7 +508,7 @@ generator zod {
 }
 ```
 
-> More default validators are planned in future releases (by checking the @db. filds in the schema). If you have some ideas for default validators feel free to open an issue.
+> More default validators are planned in future releases (by checking the @db. fields in the schema). If you have some ideas for default validators feel free to open an issue.
 
 ### `coerceDate`
 
@@ -538,9 +538,9 @@ generator zod {
 
 ### `prismaClientPath`
 
-> default: `infereed from prisma schema path`
+> default: `inferred from prisma schema path`
 
-By default the prisma client path is infereed from the `output` path provided in the `prisma.schema` file under `generator client`. If you still need to use a custom path you can pass it to the generator config via this option. A custom path takes precedence over the infereed prisma client output path.
+By default the prisma client path is inferred from the `output` path provided in the `prisma.schema` file under `generator client`. If you still need to use a custom path you can pass it to the generator config via this option. A custom path takes precedence over the inferred prisma client output path.
 
 ```prisma
 generator zod {
@@ -551,7 +551,7 @@ generator zod {
 
 ## Skip schema generation
 
-You can skip schema generation based on e.g. the environment you are currently working in. For example you can only generate the schemas when you're in `development` but not when you run generation in `production` (because in `production` the schemas would already hav been created and pushed to the server via your git repo). To skip generation in an environment just add the following `environment variable` to your respective `.env` files:
+You can skip schema generation based on e.g. the environment you are currently working in. For example you can only generate the schemas when you're in `development` but not when you run generation in `production` (because in `production` the schemas would already have been created and pushed to the server via your git repo). To skip generation in an environment just add the following `environment variable` to your respective `.env` files:
 
 ```js
 SKIP_ZOD_PRISMA = 'true';
@@ -814,7 +814,7 @@ model MyModel {
 }
 ```
 
-This would result in an output like:
+This would result in an output like this:
 
 ```ts
  string: z.string({
@@ -824,7 +824,7 @@ This would result in an output like:
   }),
 ```
 
-If you use a wrong key or have a typo the generator would throw an error:
+If you use the wrong key or have a typo the generator would throw an error:
 
 ```prisma
 model MyModel {
@@ -879,7 +879,7 @@ model MyModel {
 
 ## Custom validators
 
-To add custom validators to any [`Prisma Scalar`](https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#model-field-scalar-types) field you can use the `@zod.custom.use()` key. This key has only the `.use(...your custom code here)` validator. This code overwrites all other standard implementations so you have to exactly specify the `zod type` how it should be written by the generator. Only `.optional()` and `.nullable()` are added automatically based on your prisma schema type definition. This field is inteded to provide validators like zod `.refine` or `.transform` on your fields.
+To add custom validators to any [`Prisma Scalar`](https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#model-field-scalar-types) field you can use the `@zod.custom.use()` key. This key has only the `.use(...your custom code here)` validator. This code overwrites all other standard implementations so you have to specify the `zod type` how it should be written by the generator. Only `.optional()` and `.nullable()` are added automatically based on your prisma schema type definition. This field is intended to provide validators like zod `.refine` or `.transform` on your fields.
 
 ```prisma
 model MyModel {
@@ -903,7 +903,7 @@ export const MyModel = z.object({
 
 ## Array validators
 
-To add custom validators to list fields you can use the `z.[key].array(.length(2).min(1).max(2).nonempty())` validator. You can use this validator on `@zod.string`, `@zod.number`, `@zod.bigint`, `@zod.date` and `@zod.custom`. Furthermore you can use it on enums with the `@zod.enum.array(...)` key and on relations with the `@zod.object.array(...)` key. You can also add a custom error message to each validator as stated in the docs.
+To add custom validators to list fields you can use the `z.[key].array(.length(2).min(1).max(2).nonempty())` validator. You can use this validator on `@zod.string`, `@zod.number`, `@zod.bigint`, `@zod.date` and `@zod.custom`. Furthermore, you can use it on enums with the `@zod.enum.array(...)` key and on relations with the `@zod.object.array(...)` key. You can also add a custom error message to each validator as stated in the docs.
 
 ```prisma
 model MyModel {
@@ -1038,7 +1038,7 @@ export const MyModelCreateArgsSchema: z.ZodType<
   .strict();
 ```
 
-> When a `required` field is omitted the field needs to be added manually in the respective prisma function like `create`, `update`, `createMany` and so on. Otherwise Typescript would complain.
+> When a `required` field is omitted the field needs to be added manually in the respective prisma function like `create`, `update`, `createMany` and so on. Otherwise, Typescript would complain.
 
 ```ts
 const appRouter = t.router({
@@ -1077,7 +1077,7 @@ For the above example the Error message would look like this:
 [@zod generator error]: Validator 'string' is not valid for type 'Int'. [Error Location]: Model: 'MyModel', Field: 'number'
 ```
 
-The generator provides the exact location, what went wrong and where the error happend. In big prisma schemas with hundreds of models and hundreds of custom validation strings this can come in handy.
+The generator provides the exact location, what went wrong and where the error happened. In big prisma schemas with hundreds of models and hundreds of custom validation strings this can come in handy.
 
 ### `Wrong validator`
 
@@ -1165,7 +1165,7 @@ export type ModelWithOptionsCustomValidators = z.infer<
 
 ### Custom imports
 
-To add custom imports to your validator you can add them via `@zod.import([...myCustom imports as strings])` in prismas rich comments on the model definition.
+To add custom imports to your validator you can add them via `@zod.import([...myCustom imports as strings])` in Prismas rich comments on the model definition.
 
 For example:
 
@@ -1317,7 +1317,7 @@ model MyModel {
 }
 ```
 
-The above model would generate the following output where the validator is extracted from the rich-comments and added to the string field:
+The above model would generate the following output where the validator is extracted from the rich comments and added to the string field:
 
 ```ts
 /**
