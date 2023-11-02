@@ -652,7 +652,7 @@ It is possible to add zod validators in the comments of the `prisma.schema` file
 myField [prisma-scalar-type] /// @zod.[zod-type + optional[(zod-error-messages)]].[zod validators for scalar-type]
 ```
 
-This may look a bit cryptc so here is an example:
+This may look a bit cryptic so here is an example:
 
 ```prisma
 generator zod {
@@ -824,7 +824,7 @@ This would result in an output like this:
   }),
 ```
 
-If you use the wrong key or have a typo the generator would throw an error:
+If you use the wrong key or have a typo the generator will throw an error:
 
 ```prisma
 model MyModel {
@@ -879,7 +879,7 @@ model MyModel {
 
 ## Custom validators
 
-To add custom validators to any [`Prisma Scalar`](https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#model-field-scalar-types) field you can use the `@zod.custom.use()` key. This key has only the `.use(...your custom code here)` validator. This code overwrites all other standard implementations so you have to specify the `zod type` how it should be written by the generator. Only `.optional()` and `.nullable()` are added automatically based on your prisma schema type definition. This field is intended to provide validators like zod `.refine` or `.transform` on your fields.
+To add custom validators to any [`Prisma Scalar`](https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#model-field-scalar-types) field you can use the `@zod.custom.use()` key. This key has only the `.use(...your custom code here)` validator. This code overwrites all other standard implementations so you have to specify the `zod type` and how it should be written by the generator. Only `.optional()` and `.nullable()` are added automatically based on your prisma schema type definition. This field is intended to provide validators like zod `.refine` or `.transform` on your fields.
 
 ```prisma
 model MyModel {
@@ -1101,7 +1101,7 @@ If you have typos in your validator strings like
 
 ```prisma
 model MyModel {
-  string String /// @zod.string.min(3, { mussage: 'Must be at least 3 characters' })
+  string String /// @zod.string.min(3, { message: 'Must be at least 3 characters' })
 }
 ```
 
@@ -1176,7 +1176,7 @@ model MyModel {
 }
 ```
 
-This would result in an output like:
+This would result in an output like this:
 
 ```ts
 import { myFunction } from 'mypackage';
@@ -1213,7 +1213,7 @@ model MyModel {
 }
 ```
 
-This would result in an output like:
+This would result in an output like this:
 
 ```ts
 export const MyModelSchema = z.object(
