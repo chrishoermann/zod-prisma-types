@@ -20,8 +20,7 @@ export const writeModelOrType = (
   }: ContentWriterOptions,
   model: ExtendedDMMFModel,
 ) => {
-  const { useMultipleFiles, createRelationValuesTypes, inputTypePath } =
-    dmmf.generatorConfig;
+  const { useMultipleFiles, createRelationValuesTypes } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
@@ -29,10 +28,16 @@ export const writeModelOrType = (
 
     if (createRelationValuesTypes && model.hasRelationFields) {
       // import the necessary types to handle json nulls
+      // if (model.hasOptionalJsonFields) {
+      //   writeImport(
+      //     `type { JsonValueType | null }`,
+      //     `../${inputTypePath}/transformJsonNull`,
+      //   );
+      // }
       if (model.hasOptionalJsonFields) {
         writeImport(
-          `type { NullableJsonInput }`,
-          `../${inputTypePath}/transformJsonNull`,
+          `type { JsonValueType }`,
+          `../inputTypeSchemas/JsonValueSchema`,
         );
       }
 
@@ -255,7 +260,7 @@ export const writeModelOrType = (
         )
         .inlineBlock(() => {
           model.optionalJsonFields.forEach((field) => {
-            writer.write(`${field.name}?: NullableJsonInput;`).newLine();
+            writer.write(`${field.name}?: JsonValueType | null;`).newLine();
           });
         })
         .write(` & `);
@@ -323,7 +328,7 @@ export const writeModelOrType = (
         )
         .inlineBlock(() => {
           model.optionalJsonFields.forEach((field) => {
-            writer.write(`${field.name}?: NullableJsonInput;`).newLine();
+            writer.write(`${field.name}?: JsonValueType | null;`).newLine();
           });
         })
         .write(` & `);
@@ -396,7 +401,7 @@ export const writeModelOrType = (
         )
         .inlineBlock(() => {
           model.optionalJsonFields.forEach((field) => {
-            writer.write(`${field.name}?: NullableJsonInput;`).newLine();
+            writer.write(`${field.name}?: JsonValueType | null;`).newLine();
           });
         })
         .write(` & `)
@@ -436,7 +441,7 @@ export const writeModelOrType = (
           )
           .inlineBlock(() => {
             model.optionalJsonFields.forEach((field) => {
-              writer.write(`${field.name}?: NullableJsonInput;`).newLine();
+              writer.write(`${field.name}?: JsonValueType | null;`).newLine();
             });
           })
           .write(` & `);
@@ -479,7 +484,7 @@ export const writeModelOrType = (
           )
           .inlineBlock(() => {
             model.optionalJsonFields.forEach((field) => {
-              writer.write(`${field.name}?: NullableJsonInput;`).newLine();
+              writer.write(`${field.name}?: JsonValueType | null;`).newLine();
             });
           })
           .write(` & `);

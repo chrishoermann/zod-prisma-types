@@ -86,6 +86,7 @@ export const configSchema = z.object({
   inputTypePath: z.string().optional().default('inputTypeSchemas'), // currently only used internally
   outputTypePath: z.string().optional().default('outputTypeSchemas'), // currently only used internally
   prismaVersion: PrismaVersionSchema.optional(),
+  decimalJSInstalled: z.boolean().default(false),
 });
 
 export type GeneratorConfig = z.infer<typeof configSchema>;

@@ -581,7 +581,25 @@ When using json null values prisma has a unique way of handling Database `NULL` 
 
 To adhere to this concept you can pass `"DbNull"` or `"JsonNull"` as string to a nullable Json field. When the schema gets validated these strings are transformed to `Prisma.DbNull` or `Prisma.JsonNull` to satisfy the `prisma.[myModel].create() | .update() | ...` functions.
 
+> This transformation is only applicable for input schemas like `[myModel]CreateInputSchema, [myModel]UpdateInputSchema, ...`. Since the model schemas represent the return value from the database - they can have `null` values - they are not affected by this transformation.
+
+```ts
+const parsedJsonSchema = myJsonSchema.parse({
+  myJsonField: 'DbNull', // or "JsonNull"
+});
+
+// will be transformed to:
+
+const parsedJsonSchema = {
+  myJsonField: Prisma.DbNull, // or Prisma.JsonNull
+};
+```
+
 ## Decimal
+
+Decimals are a special case since they are not supported by `zod` out of the box. Therefore the generator utilizes the `Prisma.Decimal` class and the `DecimalJsLike` type from the `@prisma/client` package and - if installed - the `decimal.js` package.
+
+> A downside of this approach is that `Prisma` can't be simply imported as a type anymore because it is used to determine if an instance of `Prisma.Decimal` is passed in.
 
 When using Decimal a `refine` method is used to validate if the input adheres to the prisma input union `string | number | Decimal | DecimalJsLike`.
 
@@ -592,7 +610,7 @@ model MyModel {
 }
 ```
 
-The above model would generate the following schema:
+The above model would generate the following helper schemas that are used to validate the input in the `create` and `update` methods:
 
 ```ts
 // DECIMAL HELPERS
@@ -602,17 +620,8 @@ export const DecimalJSLikeSchema: z.ZodType<Prisma.DecimalJsLike> = z.object({
   d: z.array(z.number()),
   e: z.number(),
   s: z.number(),
-  toFixed: z.function().args().returns(z.string()),
+  toFixed: z.function(z.tuple([]), z.string()),
 });
-
-export const DecimalJSLikeListSchema: z.ZodType<Prisma.DecimalJsLike[]> = z
-  .object({
-    d: z.array(z.number()),
-    e: z.number(),
-    s: z.number(),
-    toFixed: z.function().args().returns(z.string()),
-  })
-  .array();
 
 export const DECIMAL_STRING_REGEX = /^[0-9.,e+-bxffo_cp]+$|Infinity|NaN/;
 
@@ -630,18 +639,95 @@ export const isValidDecimalInput = (
     typeof v === 'number'
   );
 };
+```
+
+The input schemas reflect the types that are passed to prismas `create` and `update` methods.
+These schemas further validate the input and throw an error if the input is not valid. A downside of this approach is that Prisma can't be simply imported as a type anymore because it is used to determine if an instance of `Prisma.Decimal` is passed in.
+
+> If `decimal.js` is installed the schema also validates if the input is a valid `decimal.js` instance.
+
+```ts
+// INPUT TYPES
+//------------------------------------------------------
+
+import { Prisma } from '@prisma/client'; // can't be imported as type because of "instance of Prisma.Decimal" check
+import Decimal from 'decimal.js'; // gets added if installed
+import { z } from 'zod';
+import { isValidDecimalInput } from './isValidDecimalInput';
+import { DecimalJSLikeSchema } from './DecimalJsLikeSchema';
+
+export const DecimalModelCreateInputSchema: z.ZodType<Prisma.DecimalModelCreateInput> =
+  z
+    .object({
+      decimal: z
+        .union([
+          z.number(),
+          z.string(),
+          z.instanceof(Decimal),
+          z.instanceof(Prisma.Decimal),
+          DecimalJSLikeSchema,
+        ])
+        .refine((v) => isValidDecimalInput(v), {
+          message: 'Must be a Decimal',
+        }),
+      decimalOpt: z
+        .union([
+          z.number(),
+          z.string(),
+          z.instanceof(Decimal),
+          z.instanceof(Prisma.Decimal),
+          DecimalJSLikeSchema,
+        ])
+        .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
+        .optional()
+        .nullable(),
+    })
+    .strict();
+```
+
+The model schema only reflects the type of the result of a database query. Therefor this type lacks all the further validation that is used in the `create` and `update` methods. So if you want to validate the input in the `create` and `update` methods you should use the input schemas instead of the model schemas or build your own custom schema using the helpers from above.
+
+```ts
 // SCHEMA
 //------------------------------------------------------
 
-export const MyModelSchema = z.object({
-  id: z.number(),
-  decimal: z
-    .union([z.number(), z.string(), DecimalJSLikeSchema])
-    .refine((v) => isValidDecimalInput(v), {
+import { Prisma } from '@prisma/client';
+
+export const DecimalModelSchema = z.object({
+  id: z.number().int(),
+  decimal: z.instanceof(Prisma.Decimal, {
+    message:
+      "Field 'decimal' must be a Decimal. Location: ['Models', 'DecimalModel']",
+  }),
+  decimalOpt: z
+    .instanceof(Prisma.Decimal, {
       message:
-        "Field 'decimal' must be a Decimal. Location: ['Models', 'DecimalModel']",
-    }),
+        "Field 'decimalOpt' must be a Decimal. Location: ['Models', 'DecimalModel']",
+    })
+    .nullable(),
 });
+
+// this schema reflects the following prisma type generated in prisma version 5.4.2:
+
+export type DecimalModel =
+  $Result.DefaultSelection<Prisma.$DecimalModelPayload>;
+
+export type $DecimalModelPayload<
+  ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+> = {
+  name: 'DecimalModel';
+  objects: {};
+  scalars: $Extensions.GetPayloadResult<
+    // this part of the type is reflected in the model schema
+    {
+      id: number;
+      decimal: Prisma.Decimal;
+      decimalOpt: Prisma.Decimal | null;
+    },
+    ExtArgs['result']['decimalModel']
+  >;
+  composites: {};
+};
 ```
 
 ## Field validators
@@ -652,7 +738,7 @@ It is possible to add zod validators in the comments of the `prisma.schema` file
 myField [prisma-scalar-type] /// @zod.[zod-type + optional[(zod-error-messages)]].[zod validators for scalar-type]
 ```
 
-This may look a bit cryptc so here is an example:
+This may look a bit cryptic so here is an example:
 
 ```prisma
 generator zod {
@@ -824,7 +910,7 @@ This would result in an output like this:
   }),
 ```
 
-If you use the wrong key or have a typo the generator would throw an error:
+If you use the wrong key or have a typo the generator will throw an error:
 
 ```prisma
 model MyModel {
@@ -879,7 +965,7 @@ model MyModel {
 
 ## Custom validators
 
-To add custom validators to any [`Prisma Scalar`](https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#model-field-scalar-types) field you can use the `@zod.custom.use()` key. This key has only the `.use(...your custom code here)` validator. This code overwrites all other standard implementations so you have to specify the `zod type` how it should be written by the generator. Only `.optional()` and `.nullable()` are added automatically based on your prisma schema type definition. This field is intended to provide validators like zod `.refine` or `.transform` on your fields.
+To add custom validators to any [`Prisma Scalar`](https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#model-field-scalar-types) field you can use the `@zod.custom.use()` key. This key has only the `.use(...your custom code here)` validator. This code overwrites all other standard implementations so you have to specify the `zod type` and how it should be written by the generator. Only `.optional()` and `.nullable()` are added automatically based on your prisma schema type definition. This field is intended to provide validators like zod `.refine` or `.transform` on your fields.
 
 ```prisma
 model MyModel {
@@ -1101,7 +1187,7 @@ If you have typos in your validator strings like
 
 ```prisma
 model MyModel {
-  string String /// @zod.string.min(3, { mussage: 'Must be at least 3 characters' })
+  string String /// @zod.string.min(3, { message: 'Must be at least 3 characters' })
 }
 ```
 
@@ -1176,7 +1262,7 @@ model MyModel {
 }
 ```
 
-This would result in an output like:
+This would result in an output like this:
 
 ```ts
 import { myFunction } from 'mypackage';
@@ -1213,7 +1299,7 @@ model MyModel {
 }
 ```
 
-This would result in an output like:
+This would result in an output like this:
 
 ```ts
 export const MyModelSchema = z.object(

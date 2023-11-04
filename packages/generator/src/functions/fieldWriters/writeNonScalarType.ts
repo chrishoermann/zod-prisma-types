@@ -20,6 +20,7 @@ export const writeNonScalarType: WriteTypeFunction<WriteTypeOptions> = (
   { inputType, isOptional, isNullable, writeLazy = true, writeComma = true },
 ) => {
   const nonScalarType = inputType.getZodNonScalarType();
+
   if (!nonScalarType) return;
 
   return writer

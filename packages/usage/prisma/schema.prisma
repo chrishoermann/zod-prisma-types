@@ -113,7 +113,6 @@ model MyPrismaScalarsType {
   dateOpt            DateTime? /// @zod.date({ invalid_type_error: "wrong date type" })  
   bigInt             BigInt /// @zod.bigint({ invalid_type_error: "error" }).gt(5n, { message: "gt error" })
   bigIntOpt          BigInt?
-  /// @zod.custom.use(z.lazy(() => InputJsonValue).refine((val) => myFunction(val), { message: 'Is not valid' }))
   json               Json
   jsonOpt            Json?
   bytes              Bytes /// @zod.custom.use(z.instanceof(Buffer).refine((val) => val ? true : false, { message: 'Value is not valid' }))

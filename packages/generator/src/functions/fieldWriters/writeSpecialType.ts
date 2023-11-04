@@ -45,7 +45,9 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
         .write(`z.union([`)
         .write(`z.number().array(),`)
         .write(`z.string().array(),`)
-        .write(`DecimalJSLikeListSchema,`)
+        .write(`z.instanceof(Decimal).array(),`)
+        .write(`z.instanceof(Prisma.Decimal).array(),`)
+        .write(`DecimalJsLikeSchema.array(),`)
         .write(`]`)
         .conditionalWrite(!!zodCustomErrors, `, ${zodCustomErrors!}`)
         .write(`)`)
@@ -64,7 +66,9 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
       .write(`z.union([`)
       .write(`z.number(),`)
       .write(`z.string(),`)
-      .write(`DecimalJSLikeSchema,`)
+      .write(`z.instanceof(Decimal),`)
+      .write(`z.instanceof(Prisma.Decimal),`)
+      .write(`DecimalJsLikeSchema,`)
       .write(`]`)
       .conditionalWrite(!!zodCustomErrors, `, ${zodCustomErrors!}`)
       .write(`)`)
@@ -77,7 +81,7 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
 
   if (inputType.isJsonType) {
     return writer
-      .write(`InputJsonValue`)
+      .write(`InputJsonValueSchema`)
       .conditionalWrite(inputType.isList, `.array()`)
       .conditionalWrite(isOptional, `.optional()`)
       .conditionalWrite(isNullable, `.nullable()`)

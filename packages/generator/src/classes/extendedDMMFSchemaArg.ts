@@ -140,25 +140,26 @@ export class ExtendedDMMFSchemaArg
         }
 
         if (type.isJsonType) {
-          return `import { InputJsonValue } from './InputJsonValue';`;
+          return `import { InputJsonValueSchema } from './InputJsonValueSchema';`;
         }
 
         if (type.isDecimalType) {
           const decimalImports = [
             `import { isValidDecimalInput } from './isValidDecimalInput';`,
+            `import { DecimalJsLikeSchema } from './DecimalJsLikeSchema';`,
           ];
 
-          if (type.isList) {
-            decimalImports.push(
-              `import { DecimalJSLikeListSchema } from './DecimalJsLikeListSchema';`,
-            );
-          }
+          // if (type.isList) {
+          //   decimalImports.push(
+          //     `import { DecimalJSLikeListSchema } from './DecimalJsLikeListSchema';`,
+          //   );
+          // }
 
-          if (!type.isList) {
-            decimalImports.push(
-              `import { DecimalJSLikeSchema } from './DecimalJsLikeSchema';`,
-            );
-          }
+          // if (!type.isList) {
+          //   decimalImports.push(
+          //     `import { DecimalJSLikeSchema } from './DecimalJsLikeSchema';`,
+          //   );
+          // }
 
           return decimalImports;
         }

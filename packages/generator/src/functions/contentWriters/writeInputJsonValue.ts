@@ -9,29 +9,42 @@ export const writeInputJsonValue = ({
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
-    writeImport('type { Prisma }', prismaClientPath);
+    writeImport('{ Prisma }', prismaClientPath);
   }
 
   writer
     .blankLine()
     .writeLine(
-      `export const InputJsonValue: z.ZodType<Prisma.InputJsonValue> = z.union([`,
+      `export const InputJsonValueSchema: z.ZodType<Prisma.InputJsonValue> = z.lazy(() =>`,
     )
     .withIndentationLevel(1, () => {
       writer
-        .writeLine(`z.string(),`)
-        .writeLine(`z.number(),`)
-        .writeLine(`z.boolean(),`)
-        .writeLine(`z.lazy(() => z.array(InputJsonValue.nullable())),`)
-        .writeLine(`z.lazy(() => z.record(InputJsonValue.nullable())),`);
+        .writeLine('z.union([')
+        .withIndentationLevel(2, () => {
+          writer
+            .writeLine(`z.string(),`)
+            .writeLine(`z.number(),`)
+            .writeLine(`z.boolean(),`)
+            .writeLine(
+              `z.object({ toJSON: z.function(z.tuple([]), z.any()) }),`,
+            )
+            .writeLine(
+              `z.record(z.lazy(() => z.union([InputJsonValueSchema, z.literal(null)]))),`,
+            )
+            .writeLine(
+              `z.array(z.lazy(() => z.union([InputJsonValueSchema, z.literal(null)]))),`,
+            );
+        })
+        .writeLine(`])`);
     })
-    .write(`]);`)
+    .writeLine(`);`);
+  writer
     .blankLine()
     .writeLine(
-      `export type InputJsonValueType = z.infer<typeof InputJsonValue>;`,
+      `export type InputJsonValueType = z.infer<typeof InputJsonValueSchema>;`,
     );
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writer.blankLine().writeLine(`export default InputJsonValue;`);
+    writer.blankLine().writeLine(`export default InputJsonValueSchema;`);
   }
 };

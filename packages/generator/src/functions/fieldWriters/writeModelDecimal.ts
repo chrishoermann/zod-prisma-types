@@ -11,18 +11,31 @@ export const writeDecimal = ({
   writer
     .conditionalWrite(field.omitInModel(), '// omitted: ')
     .write(`${field.formattedNames.original}: `)
-    .write(`z.union([`)
-    .write(`z.number(),`)
-    .write(`z.string(),`)
-    .write(`DecimalJSLikeSchema,`)
-    .write(`]`)
-    .conditionalWrite(!!field.zodCustomErrors, field.zodCustomErrors!)
-    .write(`)`)
-    .write(`.refine((v) => isValidDecimalInput(v),`)
     .write(
-      ` { message: "Field '${field.formattedNames.original}' must be a Decimal. Location: ['Models', '${model.formattedNames.original}']", `,
+      `z.instanceof(Prisma.Decimal, { message: "Field '${field.formattedNames.original}' must be a Decimal. Location: ['Models', '${model.formattedNames.original}']"`,
     )
-    .write(` })`);
+    // .conditionalWrite(!!field.zodCustomErrors, field.zodCustomErrors!)
+    // .write(`)`)
+    // .write(`.refine((v) => isValidDecimalInput(v),`)
+    // .write(
+    //   ` { message: "Field '${field.formattedNames.original}' must be a Decimal. Location: ['Models', '${model.formattedNames.original}']", `,
+    // )
+    .write(`})`);
+  // writer
+  //   .conditionalWrite(field.omitInModel(), '// omitted: ')
+  //   .write(`${field.formattedNames.original}: `)
+  //   .write(`z.union([`)
+  //   .write(`z.number(),`)
+  //   .write(`z.string(),`)
+  //   .write(`DecimalJSLikeSchema,`)
+  //   .write(`]`)
+  //   .conditionalWrite(!!field.zodCustomErrors, field.zodCustomErrors!)
+  //   .write(`)`)
+  //   .write(`.refine((v) => isValidDecimalInput(v),`)
+  //   .write(
+  //     ` { message: "Field '${field.formattedNames.original}' must be a Decimal. Location: ['Models', '${model.formattedNames.original}']", `,
+  //   )
+  //   .write(` })`);
 
   writeFieldAdditions({ writer, field, writeOptionalDefaults });
 };

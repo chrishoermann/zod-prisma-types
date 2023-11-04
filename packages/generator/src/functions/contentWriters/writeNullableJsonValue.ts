@@ -10,7 +10,7 @@ export const writeNullableJsonValue = ({
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
     writeImport('transformJsonNull', './transformJsonNull');
-    writeImport('JsonValue', './JsonValue');
+    writeImport('JsonValueSchema', './JsonValueSchema');
   }
 
   writer
@@ -19,7 +19,7 @@ export const writeNullableJsonValue = ({
     .withIndentationLevel(1, () => {
       writer
         .writeLine(
-          `.union([JsonValue, z.literal('DbNull'), z.literal('JsonNull')])`,
+          `.union([JsonValueSchema, z.literal('DbNull'), z.literal('JsonNull')])`,
         )
         .writeLine('.nullable()')
         .writeLine(`.transform((v) => transformJsonNull(v));`);

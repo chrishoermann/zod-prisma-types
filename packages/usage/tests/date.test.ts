@@ -1,6 +1,7 @@
 import { DateModelSchema } from '../prisma/generated/zod';
 import { client } from './trpc/client';
 import { getServer } from './trpc/server';
+import { it, expect, describe, beforeAll, afterAll } from 'vitest';
 
 ///////////////////////////////////////
 // SETUP

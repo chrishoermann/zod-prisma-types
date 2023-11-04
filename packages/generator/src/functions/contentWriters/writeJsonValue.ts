@@ -15,21 +15,28 @@ export const writeJsonValue = ({
   writer
     .blankLine()
     .writeLine(
-      `export const JsonValue: z.ZodType<Prisma.JsonValue> = z.union([`,
+      `export const JsonValueSchema: z.ZodType<Prisma.JsonValue> = z.lazy(() =>`,
     )
     .withIndentationLevel(1, () => {
       writer
-        .writeLine(`z.string(),`)
-        .writeLine(`z.number(),`)
-        .writeLine(`z.boolean(),`)
-        .writeLine(`z.lazy(() => z.array(JsonValue)),`)
-        .writeLine(`z.lazy(() => z.record(JsonValue)),`);
+        .writeLine('z.union([')
+        .withIndentationLevel(2, () => {
+          writer
+            .writeLine(`z.string(),`)
+            .writeLine(`z.number(),`)
+            .writeLine(`z.boolean(),`)
+            .writeLine(`z.literal(null),`)
+            .writeLine(`z.record(z.lazy(() => JsonValueSchema.optional())),`)
+            .writeLine(`z.array(z.lazy(() => JsonValueSchema)),`);
+        })
+        .writeLine(`])`);
     })
-    .writeLine(`]);`)
+    .writeLine(`);`);
+  writer
     .blankLine()
-    .writeLine(`export type JsonValueType = z.infer<typeof JsonValue>;`);
+    .writeLine(`export type JsonValueType = z.infer<typeof JsonValueSchema>;`);
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writer.blankLine().writeLine(`export default JsonValue`);
+    writer.blankLine().writeLine(`export default JsonValueSchema`);
   }
 };

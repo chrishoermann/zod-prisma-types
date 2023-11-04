@@ -99,10 +99,8 @@ export function testExtendedDMMFFieldImportStatement<
       const model = getModel(MODEL_WITH_AUTO_IMPORT_FILDS);
 
       expect(model?.['_automaticImports']).toEqual([
-        `import { NullableJsonValue } from '../${DEFAULT_GENERATOR_CONFIG.inputTypePath}/NullableJsonValue'`,
-        `import { InputJsonValue } from '../${DEFAULT_GENERATOR_CONFIG.inputTypePath}/InputJsonValue'`,
-        `import { DecimalJSLikeSchema } from '../${DEFAULT_GENERATOR_CONFIG.inputTypePath}/DecimalJsLikeSchema'`,
-        `import { isValidDecimalInput } from '../${DEFAULT_GENERATOR_CONFIG.inputTypePath}/isValidDecimalInput'`,
+        `import { JsonValueSchema } from '../${DEFAULT_GENERATOR_CONFIG.inputTypePath}/JsonValueSchema'`,
+        `import { Prisma } from '@prisma/client'`,
         `import { RoleSchema } from '../${DEFAULT_GENERATOR_CONFIG.inputTypePath}/RoleSchema'`,
       ]);
     });
@@ -115,13 +113,11 @@ export function testExtendedDMMFFieldImportStatement<
 
       expect(model.imports).toEqual(
         new Set([
-          `import { NullableJsonValue } from '../${DEFAULT_GENERATOR_CONFIG.inputTypePath}/NullableJsonValue'`,
-          `import { InputJsonValue } from '../${DEFAULT_GENERATOR_CONFIG.inputTypePath}/InputJsonValue'`,
-          `import { DecimalJSLikeSchema } from '../${DEFAULT_GENERATOR_CONFIG.inputTypePath}/DecimalJsLikeSchema'`,
-          `import { isValidDecimalInput } from '../${DEFAULT_GENERATOR_CONFIG.inputTypePath}/isValidDecimalInput'`,
+          "import validator from 'validator';",
+          `import { JsonValueSchema } from '../${DEFAULT_GENERATOR_CONFIG.inputTypePath}/JsonValueSchema'`,
+          `import { Prisma } from '@prisma/client'`,
           `import { RoleSchema } from '../${DEFAULT_GENERATOR_CONFIG.inputTypePath}/RoleSchema'`,
           "import { myFunction } from '../../../../utils/myFunction';",
-          "import validator from 'validator';",
         ]),
       );
     });

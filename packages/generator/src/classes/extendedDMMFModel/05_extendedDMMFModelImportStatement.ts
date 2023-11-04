@@ -58,25 +58,16 @@ export class ExtendedDMMFModelImportStatement extends ExtendedDMMFModelValidator
   private _getAutomaticImports() {
     const statements: string[] = [];
 
-    const { inputTypePath } = this.generatorConfig;
+    const { inputTypePath, prismaClientPath } = this.generatorConfig;
 
-    if (this.hasOptionalJsonFields) {
+    if (this.fields.some((field) => field.isJsonType)) {
       statements.push(
-        `import { NullableJsonValue } from '../${inputTypePath}/NullableJsonValue'`,
-      );
-    }
-
-    if (this.hasRequiredJsonFields) {
-      statements.push(
-        `import { InputJsonValue } from '../${inputTypePath}/InputJsonValue'`,
+        `import { JsonValueSchema } from '../${inputTypePath}/JsonValueSchema'`,
       );
     }
 
     if (this.hasDecimalFields) {
-      statements.push(
-        `import { DecimalJSLikeSchema } from '../${inputTypePath}/DecimalJsLikeSchema'`,
-        `import { isValidDecimalInput } from '../${inputTypePath}/isValidDecimalInput'`,
-      );
+      statements.push(`import { Prisma } from '${prismaClientPath}'`);
     }
 
     this.enumFields.forEach((field) => {

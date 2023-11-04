@@ -15,10 +15,18 @@ export const writeDecimalJsLikeList = ({
   writer
     .blankLine()
     .writeLine(
-      `export const DecimalJSLikeListSchema: z.ZodType<Prisma.DecimalJsLike[]> = z.object({ d: z.array(z.number()), e: z.number(), s: z.number(), toFixed: z.function().args().returns(z.string()), }).array();`,
-    );
+      `export const DecimalJsLikeListSchema: z.ZodType<Prisma.DecimalJsLike[]> = z.object({`,
+    )
+    .withIndentationLevel(1, () => {
+      writer
+        .writeLine(`d: z.array(z.number()),`)
+        .writeLine(`e: z.number(),`)
+        .writeLine(`s: z.number(),`)
+        .writeLine(`toFixed: z.function(z.tuple([]), z.string()),`);
+    })
+    .writeLine(`}).array();`);
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writer.blankLine().writeLine(`export default DecimalJSLikeListSchema;`);
+    writer.blankLine().writeLine(`export default DecimalJsLikeListSchema;`);
   }
 };
