@@ -77,6 +77,17 @@ export function testExtendedDMMFFieldValidatorType<
         "[@zod generator error]: 'numer' is not a valid validator type. [Error Location]: Model: 'ModelName', Field: 'test'.",
       );
     });
+
+    it('should throw an error if lonly import directive is present', async () => {
+      expect(() =>
+        getField({
+          documentation:
+            '@zod.import(["import { myFunction } from "../../../../utils/myFunction";", "import validator from "validator";"])',
+        }),
+      ).toThrowError(
+        `[@zod generator error]: Only found 'import([...])' validator on field. Did you forget to add validators where the import is used?'. [Error Location]: Model: 'ModelName', Field: 'test'`,
+      );
+    });
   });
 }
 

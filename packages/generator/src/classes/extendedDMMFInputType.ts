@@ -198,8 +198,8 @@ export class ExtendedDMMFInputType
       ...this.fields.map((field) => field.getImports(this.name)).flat(),
     ];
 
-    if (this._fieldIsPrismaFunctionType() && this.linkedModel?.customImports) {
-      fieldImports.push(...this.linkedModel.customImports);
+    if (this._fieldIsPrismaFunctionType() && this.linkedModel?.fieldImports) {
+      fieldImports.push(...this.linkedModel.fieldImports);
     }
 
     return new Set(fieldImports);

@@ -1,8 +1,8 @@
 import { DMMF } from '@prisma/generator-helper';
 import { GeneratorConfig } from '../../schemas';
 import { ExtendedDMMFModelValidatorPattern } from './04_extendedDMMFModelValidatorPattern';
-import { transformImportStringToSet } from 'src/utils/transformImportStringToSet';
-import { validateImportStatements } from 'src/utils/validateImportStatements';
+import { transformImportStringToList } from '../../utils/transformImportStringToList';
+import { validateImportStatement } from '../../utils/validateImportStatements';
 
 /////////////////////////////////////////////////
 // CLASS
@@ -11,7 +11,8 @@ import { validateImportStatements } from 'src/utils/validateImportStatements';
 export class ExtendedDMMFModelImportStatement extends ExtendedDMMFModelValidatorPattern {
   protected _importStatements?: string[];
   protected _automaticImports?: string[];
-  readonly customImports: Set<string>;
+  readonly modelImports: Set<string>;
+  readonly fieldImports: Set<string>;
   readonly imports: Set<string>;
 
   constructor(generatorConfig: GeneratorConfig, model: DMMF.Model) {
@@ -19,16 +20,21 @@ export class ExtendedDMMFModelImportStatement extends ExtendedDMMFModelValidator
 
     this._importStatements = this._getImportStatement();
     this._automaticImports = this._getAutomaticImports();
-    this.customImports = this._getCustomImports();
+    this.modelImports = this._getModelImports();
+    this.fieldImports = this._getFieldImports();
     this.imports = this._getImports();
   }
 
+  /**
+   * Validates all the import statements before further processing.
+   * @returns array of import statements that are defined in the model's docs.
+   */
   private _getImportStatement() {
     if (!this._validatorList) return;
     const importStatements = this._validatorList
       .filter((elem) => elem.includes('.import('))
       .map((importStatement) => {
-        return validateImportStatements(importStatement, this._errorLocation);
+        return validateImportStatement(importStatement, this._errorLocation);
       });
 
     return importStatements;
@@ -62,12 +68,12 @@ export class ExtendedDMMFModelImportStatement extends ExtendedDMMFModelValidator
     return statements;
   }
 
-  private _getCustomImports() {
+  private _getModelImports() {
     if (!this._importStatements) return new Set<string>();
 
     const importList = this._importStatements
       .map((importStatement) => {
-        return transformImportStringToSet(importStatement);
+        return transformImportStringToList(importStatement);
       })
       .flat();
 
@@ -81,9 +87,25 @@ export class ExtendedDMMFModelImportStatement extends ExtendedDMMFModelValidator
       this._automaticImports.forEach((statement) => imports.add(statement));
     }
 
-    if (this.customImports) {
-      this.customImports.forEach((statement) => imports.add(statement));
+    if (this.modelImports) {
+      this.modelImports.forEach((statement) => imports.add(statement));
     }
+
+    if (this.fieldImports) {
+      this.fieldImports.forEach((statement) => imports.add(statement));
+    }
+
+    return imports;
+  }
+
+  private _getFieldImports() {
+    const imports = new Set<string>();
+
+    this.fields.forEach((field) => {
+      if (field.imports) {
+        field.imports.forEach((statement) => imports.add(statement));
+      }
+    });
 
     return imports;
   }

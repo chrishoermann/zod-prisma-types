@@ -8,7 +8,7 @@ export const IMPORT_STATEMENT_REGEX = /"(?<statement>[\w\s"'${}/,:@;.*-]+)"/;
 // FUNCTION
 /////////////////////////////////////////////////
 
-export const transformImportStringToSet = (importString: string) => {
+export const transformImportStringToList = (importString: string) => {
   const importList = importString
     .split(/(?<="),/g) // split at `"` that is followed by a `,`
     .map(

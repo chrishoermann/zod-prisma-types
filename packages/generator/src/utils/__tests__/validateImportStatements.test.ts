@@ -1,9 +1,13 @@
 import { it, expect } from 'vitest';
-import { validateImportStatements } from '../validateImportStatements';
+import { validateImportStatement } from '../validateImportStatements';
 
 it('should match import statements', () => {
-  const match = validateImportStatements(
+  const match = validateImportStatement(
     `.import(["import { myFunction } from "../../../../utils/myFunction";", "import { myFunction } from "../../../../utils/myOtherFunction";"])`,
     'some error location',
+  );
+
+  expect(match).toBe(
+    `"import { myFunction } from "../../../../utils/myFunction";", "import { myFunction } from "../../../../utils/myOtherFunction";"`,
   );
 });

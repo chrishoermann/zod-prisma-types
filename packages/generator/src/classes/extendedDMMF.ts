@@ -23,7 +23,7 @@ export class ExtendedDMMF implements DMMF.Document {
     this.schema = this._getExtendedSchema(dmmf);
     this.mappings = this._getExtendedMappings(dmmf);
     this.imports = this._getImports();
-    this.customImports = this._getCustomImports();
+    this.customImports = this._getModelImports();
   }
 
   private _getExtendedDatamodel({ datamodel }: DMMF.Document) {
@@ -44,9 +44,9 @@ export class ExtendedDMMF implements DMMF.Document {
     );
   }
 
-  private _getCustomImports() {
+  private _getModelImports() {
     return new Set(
-      this.datamodel.models.map((model) => [...model.customImports]).flat(),
+      this.datamodel.models.map((model) => [...model.modelImports]).flat(),
     );
   }
 

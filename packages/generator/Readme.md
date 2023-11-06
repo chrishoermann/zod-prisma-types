@@ -1257,14 +1257,14 @@ export type ModelWithOptionsCustomValidators = z.infer<
 
 ### Custom imports
 
-To add custom imports to your validator you can add them via `@zod.import([...myCustom imports as strings])` in Prismas rich comments on the model definition.
+To add custom imports to your validator you can add them via `@zod.import([...myCustom imports as strings])` in Prismas rich comments on the model or the field definition.
 
-For example:
+For example custom imports on the model level would look like this:
 
 ```prisma
-/// @zod.import(["import { myFunction } from 'mypackage'"])
+/// @zod.import(["import { myFunction } from 'mypackage'"]).refine((val) => myFunction(val), { message: 'Is not valid' })
 model MyModel {
-  myField String /// @zod.string().refine((val) => myFunction(val), { message: 'Is not valid' })
+  myField String /// @zod.string()
 }
 ```
 
@@ -1273,12 +1273,55 @@ This would result in an output like this:
 ```ts
 import { myFunction } from 'mypackage';
 
-export const MyModelSchema = z.object({
+export const MyModelSchema = z
+  .object({
+    myField: z.string(),
+  })
+  .refine((val) => myFunction(val), { message: 'Is not valid' });
+```
+
+These custom imports are only used on the generated model schemas and not on the input type schemas.
+If you want to add custom imports to the generated input type schemas too you can add them to the field definition like this:
+
+```prisma
+model ModelWithFieldLevelImport {
+  myField String ///@zod.import(["import { myFunction } from 'mypackage'"]).custom.use(z.string().refine((val) => myFunction(val), { message: 'Is not valid' }))
+}
+```
+
+This would result in an output like this:
+
+```ts
+import { myFunction } from 'mypackage';
+
+// MODEL SCHEMA
+// ---------------------------------------
+
+export const ModelWithFieldLevelImportSchema = z.object({
   myField: z
     .string()
-    .refine((val) => myFunction(val), { message: 'Is not valid' }),
+    .refine((val) => myFunction(val), { message: 'Is not valid' })
+    .optional()
+    .nullable(),
 });
+
+// INPUT SCHEMA
+
+import { myFunction } from '../../../../utils/myFunction';
+
+export const ModelWithFieldLevelImportCreateInputSchema: z.ZodType<Prisma.ModelWithFieldLevelImportCreateInput> =
+  z
+    .object({
+      myField: z
+        .string()
+        .refine((val) => myFunction(val), { message: 'Is not valid' }),
+    })
+    .strict();
 ```
+
+With this approach you can use
+
+The downside of this approach is that
 
 > Please be aware that you have to add an additional level to relative imports if you use the `useMultipleFiles` option.
 

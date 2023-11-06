@@ -1,8 +1,8 @@
 import { it, expect } from 'vitest';
-import { transformImportStringToSet } from '../transformImportStringToSet';
+import { transformImportStringToList } from '../transformImportStringToList';
 
 it('should match import statements', () => {
-  const match = transformImportStringToSet(
+  const match = transformImportStringToList(
     `"import { myFunction } from "../../../../utils/myFunction";", "import { myFunction } from "../../../../utils/myOtherFunction";"`,
   );
 

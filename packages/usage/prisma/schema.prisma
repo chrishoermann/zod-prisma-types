@@ -27,7 +27,7 @@ generator zod {
   // addInputTypeValidation           = false // default is true
   // addIncludeType                   = false // default is true
   // addSelectType                    = false // default is true
-  // validateWhereUniqueInput         = true // default is false
+  validateWhereUniqueInput         = true // default is false
   createOptionalDefaultValuesTypes = true // default is false
   createRelationValuesTypes        = true // default is false
   createPartialTypes               = true // default is false
@@ -93,14 +93,14 @@ model ModelWithComments {
 // commented out for testing only @zod.import(["import { myFunction } from "../../../../utils/myFunction";", "import validator from 'validator';", "import some from "@my-package:withcolon";"])
 
 /// comment line one
-/// @zod.import(["import { myFunction } from "../../../../utils/myFunction";", "import validator from 'validator';"])
+/// @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).refine((v) => myFunction(v))
 /// comment line two
 model MyPrismaScalarsType {
   /// @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]|", required_error: "some other", description: "some description" }).cuid()
   id                 String    @id @default(cuid())
   /// Some comment about string @zod.string.min(3, { message: "min error " }).max(10, { message: "max error" })
   string             String?
-  /// @zod.custom.use(z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }))
+  /// @zod.import(["import validator from 'validator';"]).custom.use(z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }))
   bic                String?
   /// @zod.number.lt(10.3, { message: "lt error" }).gt(5.5, { message: "gt | error" })
   float              Float
@@ -119,7 +119,7 @@ model MyPrismaScalarsType {
   jsonOpt            Json?
   bytes              Bytes /// @zod.custom.use(z.instanceof(Buffer).refine((val) => val ? true : false, { message: 'Value is not valid' }))
   bytesOpt           Bytes?
-  /// @zod.custom.use(z.string().refine((val) => myFunction(val), { message: 'Is not valid' }))
+  /// @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).custom.use(z.string().refine((val) => myFunction(val), { message: 'Is not valid' }))
   custom             String?
   exclude            String? /// @zod.custom.omit(["model", "input"])
   /// Some Comment before
@@ -349,6 +349,11 @@ model JapaneseChars {
 model ModelWithOptions {
   id     Int    @id @default(autoincrement())
   string String
+}
+
+model ModelWithFieldLevelImport {
+  id     Int    @id @default(autoincrement())
+  string String ///@zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).custom.use(z.string().refine((val) => myFunction(val), { message: 'Is not valid' }))
 }
 
 // model Post {

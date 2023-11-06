@@ -21,6 +21,7 @@ export const DEFAULT_GENERATOR_CONFIG: GeneratorConfig = {
   inputTypePath: 'inputTypeSchemas',
   outputTypePath: 'outputTypeSchemas',
   writeBarrelFiles: true,
+  decimalJSInstalled: true,
 };
 
 export const FIELD_BASE: DMMF.Field = {

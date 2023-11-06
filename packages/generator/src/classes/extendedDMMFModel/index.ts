@@ -111,15 +111,21 @@ export interface ExtendedDMMFModel extends DMMF.Model, FormattedNames {
 
   /**
    * Set of import statements that are used in the model and need to be added to the generated file.
-   * Contains custom imports and automatic imports like `import { InputJsonValue } from "../inputTypes/InputJsonValue";` for json fields.
+   * Contains model, field and automatic imports like `import { InputJsonValue } from "../inputTypes/InputJsonValue";` for json fields.
    */
   readonly imports: Set<string>;
 
   /**
    * Set of import statements that are used in the model and need to be added to the generated file.
-   * Contains only the custom imports from the model's documentation.
+   * Contains only the model imports from the model's documentation.
    */
-  readonly customImports: Set<string>;
+  readonly modelImports: Set<string>;
+
+  /**
+   * Set of import statements that are used in the model and need to be added to the generated file.
+   * Contains only the field level imports from the model's documentation.
+   */
+  readonly fieldImports: Set<string>;
 
   /**
    * Documentation string provided via rich comments without the `@zod` directives.

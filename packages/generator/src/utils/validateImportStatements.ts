@@ -2,22 +2,25 @@
 // REGEX
 /////////////////////////////////////////////////
 
-export const IMPORT_STATEMENT_REGEX_PATTERN =
-  /(?<type>[\w]+)(\(\[)(?<imports>[\w\s"@'${}/,;:.~*-]+)(\]\))/;
+const importStatementRegex = `(?<imports>[\\w\\s"@'\${}/,;:.~*-]+)`;
+const importStatementRegexPattern = `(?<import>[\\w]+)(\\(\\[${importStatementRegex}\\]\\))`;
+
+export const IMPORT_STATEMENT_REGEX = new RegExp(importStatementRegex);
+export const IMPORT_STATEMENT_REGEX_PATTERN = new RegExp(
+  importStatementRegexPattern,
+);
 
 /////////////////////////////////////////////////
 // FUNCTION
 /////////////////////////////////////////////////
 
-export const validateImportStatements = (
+export const validateImportStatement = (
   importString: string,
   errorLocation: string,
 ) => {
   const importStatementMatch = importString.match(
     IMPORT_STATEMENT_REGEX_PATTERN,
   )?.groups?.['imports'];
-
-  console.log(importStatementMatch);
 
   if (!importStatementMatch) {
     throw new Error(

@@ -2,7 +2,7 @@ import { DMMF } from '@prisma/generator-helper';
 import { it, expect, describe } from 'vitest';
 
 import { DEFAULT_GENERATOR_CONFIG, FIELD_BASE } from '../setup';
-import { ExtendedDMMFFieldImportMatch } from '../../03_extendedDMMFFieldImportMatch';
+import { ExtendedDMMFFieldImportMatch } from '../../13_extendedDMMFFieldImportMatch';
 import { GeneratorConfig } from '../../../../schemas/generatorConfigSchema';
 import { VALIDATOR_TYPE_REGEX } from '../../02_extendedDMMFFieldValidatorMatch';
 
@@ -31,6 +31,20 @@ export function testExtendedDMMFFieldImportMatch<
       const field = getField({
         documentation: `@zod.import(["import { myFunction } from "../../../../utils/myFunction";", "import { myFunction } from "../../../../utils/myOtherFunction";"]).string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]|", required_error: "some other", description: "some description" }).cuid()`,
       });
+
+      expect(field?.['_validatorMatch']).toBeDefined();
+
+      expect(field?.['_importStatements']).toBe(
+        `"import { myFunction } from "../../../../utils/myFunction";", "import { myFunction } from "../../../../utils/myOtherFunction";"`,
+      );
+      expect(field?.['imports']).toBeDefined();
+      expect(field?.['imports']?.size).toBe(2);
+      expect(field.imports).toEqual(
+        new Set([
+          `import { myFunction } from '../../../../utils/myFunction';`,
+          `import { myFunction } from '../../../../utils/myOtherFunction';`,
+        ]),
+      );
     });
 
     it('should match a string with an import dircetive', async () => {

@@ -1,9 +1,9 @@
 import { DMMF } from '@prisma/generator-helper';
 
 import { OmitFieldMode } from './11_extendedDMMFFieldOmitField';
-import { ExtendedDMMFFieldZodType } from './12_extendedDMMFFieldZodType';
 import { GeneratorConfig } from '../../schemas';
 import { FormattedNames } from '../formattedNames';
+import { ExtendedDMMFFieldImportMatch } from './13_extendedDMMFFieldImportMatch';
 
 export interface ExtendedDMMFField extends DMMF.Field, FormattedNames {
   /**
@@ -107,6 +107,12 @@ export interface ExtendedDMMFField extends DMMF.Field, FormattedNames {
    * Makes the code more readable when it is in a seperate method.
    */
   isOmitField(): boolean;
+
+  /**
+   * Contains the imprt string that should be used for a field's refine function or similar.
+   * @description `import { myFunction } from "../../../../utils/myFunction";`
+   */
+  readonly imports: Set<string>;
 }
 
 /**
@@ -132,5 +138,5 @@ export interface ExtendedDMMFField extends DMMF.Field, FormattedNames {
  */
 
 export class ExtendedDMMFFieldClass
-  extends ExtendedDMMFFieldZodType
+  extends ExtendedDMMFFieldImportMatch
   implements ExtendedDMMFField {}

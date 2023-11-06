@@ -45,7 +45,7 @@ export function testExtendedDMMFFieldImportStatement<
         '"import { myOtherFunction } from "../../../../utils/myOtherFunction";"',
       ]);
 
-      expect(model.customImports).toEqual(
+      expect(model.modelImports).toEqual(
         new Set([
           "import { myFunction } from '../../../../utils/myFunction';",
           "import validator from 'validator';",
@@ -76,7 +76,7 @@ export function testExtendedDMMFFieldImportStatement<
         '"import { myFunction } from "../../../../utils/myFunction";", "import { myFunction } from "../../../../utils/myFunction";"',
       ]);
 
-      expect(model.customImports).toEqual(
+      expect(model.modelImports).toEqual(
         new Set(["import { myFunction } from '../../../../utils/myFunction';"]),
       );
       expect(model.imports).toEqual(
@@ -104,6 +104,7 @@ export function testExtendedDMMFFieldImportStatement<
         `import { RoleSchema } from '../${DEFAULT_GENERATOR_CONFIG.inputTypePath}/RoleSchema'`,
       ]);
     });
+
     it(`should load a class with automatic and custom imports`, async () => {
       const model = getModel({
         ...MODEL_WITH_AUTO_IMPORT_FILDS,
@@ -117,6 +118,25 @@ export function testExtendedDMMFFieldImportStatement<
           `import { JsonValueSchema } from '../${DEFAULT_GENERATOR_CONFIG.inputTypePath}/JsonValueSchema'`,
           `import { Prisma } from '@prisma/client'`,
           `import { RoleSchema } from '../${DEFAULT_GENERATOR_CONFIG.inputTypePath}/RoleSchema'`,
+          "import { myFunction } from '../../../../utils/myFunction';",
+        ]),
+      );
+    });
+
+    it("should set fieldImports to the values of the fields 'imports' property", async () => {
+      const model = getModel({
+        fields: [
+          {
+            ...MODEL_BASE.fields[0],
+            documentation:
+              '@zod.import(["import { myFunction } from "../../../../utils/myFunction";", "import validator from "validator";"]).number.gt(0)',
+          },
+        ],
+      });
+
+      expect(model.fieldImports).toEqual(
+        new Set([
+          "import validator from 'validator';",
           "import { myFunction } from '../../../../utils/myFunction';",
         ]),
       );

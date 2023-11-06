@@ -14,11 +14,15 @@ export const PRISMA_FUNCTION_TYPES_WITH_VALIDATORS_WHERE_UNIQUE =
 // IMPORT STATEMENT
 // ----------------------------------------
 
+/////////////////////////////////////////////////
+// IMPORT STATEMENT
+/////////////////////////////////////////////////
+
 /**
  *   @deprecated
  */
-export const IMPORT_STATEMENT_REGEX_PATTERN =
-  /@zod\.(?<type>[\w]+)(\(\[)(?<imports>[\w "'${}/,;.*-]+)(\]\))/;
+// export const IMPORT_STATEMENT_REGEX_PATTERN =
+//   /@zod\.(?<type>[\w]+)(\(\[)(?<imports>[\w "'${}/,;.*-]+)(\]\))/;
 
 /**
  *   @deprecated

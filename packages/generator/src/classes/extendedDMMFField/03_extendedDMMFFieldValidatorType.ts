@@ -112,6 +112,12 @@ export class ExtendedDMMFFieldValidatorType extends ExtendedDMMFFieldValidatorMa
   private _getZodValidatorType(validatorType: string) {
     if (this._isZodValidatorType(validatorType)) return validatorType;
 
+    if (validatorType === 'import') {
+      throw new Error(
+        `[@zod generator error]: Only found 'import([...])' validator on field. Did you forget to add validators where the import is used?'. ${this._errorLocation}`,
+      );
+    }
+
     throw new Error(
       `[@zod generator error]: '${validatorType}' is not a valid validator type. ${this._errorLocation}`,
     );

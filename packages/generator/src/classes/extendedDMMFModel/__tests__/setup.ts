@@ -1,6 +1,7 @@
 import { DMMF } from '@prisma/generator-helper';
 
 import { GeneratorConfig } from '../../../schemas';
+import { ExtendedDMMFFieldClass } from '../../extendedDMMFField';
 
 export const DEFAULT_GENERATOR_CONFIG: GeneratorConfig = {
   useMultipleFiles: false,
@@ -21,42 +22,51 @@ export const DEFAULT_GENERATOR_CONFIG: GeneratorConfig = {
   inputTypePath: 'inputTypeSchemas',
   outputTypePath: 'outputTypeSchemas',
   writeBarrelFiles: true,
+  decimalJSInstalled: true,
 };
 
 export const MODEL_BASE: DMMF.Model = {
   name: 'User',
   dbName: null,
   fields: [
-    {
-      name: 'id',
-      kind: 'scalar',
-      isList: false,
-      isRequired: true,
-      isUnique: false,
-      isId: true,
-      isReadOnly: false,
-      hasDefaultValue: true,
-      type: 'Int',
-      default: {
-        name: 'autoincrement',
-        args: [],
+    new ExtendedDMMFFieldClass(
+      {
+        name: 'id',
+        kind: 'scalar',
+        isList: false,
+        isRequired: true,
+        isUnique: false,
+        isId: true,
+        isReadOnly: false,
+        hasDefaultValue: true,
+        type: 'Int',
+        default: {
+          name: 'autoincrement',
+          args: [],
+        },
+        isGenerated: false,
+        isUpdatedAt: false,
       },
-      isGenerated: false,
-      isUpdatedAt: false,
-    },
-    {
-      name: 'email',
-      kind: 'scalar',
-      isList: false,
-      isRequired: true,
-      isUnique: true,
-      isId: false,
-      isReadOnly: false,
-      hasDefaultValue: false,
-      type: 'String',
-      isGenerated: false,
-      isUpdatedAt: false,
-    },
+      DEFAULT_GENERATOR_CONFIG,
+      'User',
+    ),
+    new ExtendedDMMFFieldClass(
+      {
+        name: 'email',
+        kind: 'scalar',
+        isList: false,
+        isRequired: true,
+        isUnique: true,
+        isId: false,
+        isReadOnly: false,
+        hasDefaultValue: false,
+        type: 'String',
+        isGenerated: false,
+        isUpdatedAt: false,
+      },
+      DEFAULT_GENERATOR_CONFIG,
+      'User',
+    ),
   ],
   primaryKey: null,
   uniqueFields: [],
