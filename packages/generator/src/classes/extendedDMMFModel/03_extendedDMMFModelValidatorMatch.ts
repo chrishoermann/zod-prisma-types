@@ -8,8 +8,6 @@ import { ExtendedDMMFModelFlags } from './02_extendedDMMFModelFlags';
 
 export const IMPORT_STATEMENT_REGEX_PATTERN =
   /@zod(?<validatorPattern>[\w\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{Punctuation}\p{M}\p{N} (),.'"。、|\\:+*#!§$%&/{}[\]=?~><°^\\-]*[)])/u;
-// export const IMPORT_STATEMENT_REGEX_PATTERN =
-//   /@zod(?<validatorPattern>(\.[^\(\)]+(\((?:[^\(\)]+|\([^\(\)]+\))*\))?)*)(?=\s|$)/;
 
 /////////////////////////////////////////////////
 // CLASS

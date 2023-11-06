@@ -1,15 +1,8 @@
 import { DMMF } from '@prisma/generator-helper';
 import { GeneratorConfig } from '../../schemas';
 import { ExtendedDMMFModelValidatorPattern } from './04_extendedDMMFModelValidatorPattern';
-
-/////////////////////////////////////////////////
-// REGEX
-/////////////////////////////////////////////////
-
-export const IMPORT_STATEMENT_REGEX_PATTERN =
-  /(?<type>[\w]+)(\(\[)(?<imports>[\w "@'${}/,;:.~*-]+)(\]\))/;
-
-export const IMPORT_STATEMENT_REGEX = /"(?<statement>[\w "'${}/,:@;.*-]+)"/;
+import { transformImportStringToSet } from 'src/utils/transformImportStringToSet';
+import { validateImportStatements } from 'src/utils/validateImportStatements';
 
 /////////////////////////////////////////////////
 // CLASS
@@ -35,17 +28,7 @@ export class ExtendedDMMFModelImportStatement extends ExtendedDMMFModelValidator
     const importStatements = this._validatorList
       .filter((elem) => elem.includes('.import('))
       .map((importStatement) => {
-        const importStatementMatch = importStatement.match(
-          IMPORT_STATEMENT_REGEX_PATTERN,
-        )?.groups?.['imports'];
-
-        if (!importStatementMatch) {
-          throw new Error(
-            `[@zod generator error]: import statement is not valid. Check for unusal characters. ${this._errorLocation}`,
-          );
-        }
-
-        return importStatementMatch;
+        return validateImportStatements(importStatement, this._errorLocation);
       });
 
     return importStatements;
@@ -84,20 +67,7 @@ export class ExtendedDMMFModelImportStatement extends ExtendedDMMFModelValidator
 
     const importList = this._importStatements
       .map((importStatement) => {
-        const importStatementMatch = importStatement
-          .split(/(?<="),/g) // split at `"` that is followed by a `,`
-          .map(
-            (statement) =>
-              statement
-                .trim()
-                .match(IMPORT_STATEMENT_REGEX)
-                ?.groups?.['statement'].replace(/["']/g, "'"),
-          )
-          .filter(
-            (statement): statement is string => typeof statement === 'string',
-          );
-
-        return importStatementMatch;
+        return transformImportStringToSet(importStatement);
       })
       .flat();
 

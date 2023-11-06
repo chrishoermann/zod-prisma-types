@@ -149,18 +149,6 @@ export class ExtendedDMMFSchemaArg
             `import { DecimalJsLikeSchema } from './DecimalJsLikeSchema';`,
           ];
 
-          // if (type.isList) {
-          //   decimalImports.push(
-          //     `import { DecimalJSLikeListSchema } from './DecimalJsLikeListSchema';`,
-          //   );
-          // }
-
-          // if (!type.isList) {
-          //   decimalImports.push(
-          //     `import { DecimalJSLikeSchema } from './DecimalJsLikeSchema';`,
-          //   );
-          // }
-
           return decimalImports;
         }
 

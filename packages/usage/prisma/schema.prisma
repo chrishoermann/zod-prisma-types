@@ -90,8 +90,10 @@ model ModelWithComments {
 // Custom validators should be included in the generated model and input schemas
 // It should not matter if the comments are above or next to the field
 
+// commented out for testing only @zod.import(["import { myFunction } from "../../../../utils/myFunction";", "import validator from 'validator';", "import some from "@my-package:withcolon";"])
+
 /// comment line one
-/// @zod.import(["import { myFunction } from "../../../../utils/myFunction";", "import validator from 'validator';", "import some from "@my-package:withcolon";"])
+/// @zod.import(["import { myFunction } from "../../../../utils/myFunction";", "import validator from 'validator';"])
 /// comment line two
 model MyPrismaScalarsType {
   /// @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]|", required_error: "some other", description: "some description" }).cuid()
@@ -182,7 +184,6 @@ model User {
   location Location? @relation(fields: [lat, lng], references: [lat, lng])
 }
 
-/// @zod.import(["import { myFunction } from "../../../../utils/myFunction";"])
 model Post {
   id             Int           @id @default(autoincrement()) /// @zod.number.int()
   title          String /// @zod.string.min(1)
@@ -192,7 +193,7 @@ model Post {
   authorId       String
   jsonOpt        Json?
   anotherJsonOpt Json?
-  anotherEnum    AnotherEnum[] /// @zod.enum.array(.length(2, { message: "error" }).min(1).max(myFunction.some).nonempty({ message: "error" }))
+  anotherEnum    AnotherEnum[] /// @zod.enum.array(.length(2, { message: "error" }).min(1).max(10).nonempty({ message: "error" }))
 }
 
 model Profile {
@@ -344,7 +345,7 @@ model JapaneseChars {
 // MODEL VALIDATION
 // -----------------------------------------------
 
-/// @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).error({ required_error: "error", invalid_type_error: "error" , description: "error"}).refine((data) => { return true }, { message: "error" }).strict()
+/// @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).error({ required_error: "error", invalid_type_error: "error" , description: "error"}).refine((val) => myFunction(val), { message: 'Is not valid' }).strict()
 model ModelWithOptions {
   id     Int    @id @default(autoincrement())
   string String

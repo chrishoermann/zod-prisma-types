@@ -16,6 +16,12 @@ Since I'm maintaining the generator in my spare time consider buying me a coffee
 
 Be aware that some generator options have been removed, a few new ones have been added, the behavior of custom imports has changed and ts-morph is no longer needed to generate files in v2.0.0.
 
+## Breaking changes in v3.x.x
+
+- If you have used decimal or Json values you might encounter changed behavior in v3.x.x. Please read the [decimal](#decimal) and [json](#json-null-values) sections for more information.
+  If you did not use decimal or json values you can safely upgrade to v3.x.x.
+- Imports are now handled at field level. This enables the generator to add custom validation logic on input type level. If you have used custom imports in v2.x.x you need to change the syntax to the new one. Please read the [importing helpers](#importing-helpers) section for more information.
+
 ## Known issues
 
 > Since `zod version 3.21.2` some schemas throw a typescript error. Please use `zod version 3.21.1` until this issue is resolved.

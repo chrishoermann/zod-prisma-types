@@ -119,6 +119,24 @@ export function testExtendedDMMFFieldValidatorMatch<
         '.min(5, { message: "ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。" })',
       );
     });
+
+    it('should match a string with an import dircetive', async () => {
+      const match = VALIDATOR_TYPE_REGEX.exec(
+        `@zod.import(["import { myFunction } from "../../../../utils/myFunction";", "import { myFunction } from "../../../../utils/myFunction";"]).string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]|", required_error: "some other", description: "some description" }).cuid()`,
+      );
+
+      expect(match?.groups?.['validatorPattern']).toBe('.cuid()');
+      expect(match?.groups?.['import']).toBe(
+        '.import(["import { myFunction } from "../../../../utils/myFunction";", "import { myFunction } from "../../../../utils/myFunction";"])',
+      );
+      expect(match?.groups?.['imports']).toBe(
+        '"import { myFunction } from "../../../../utils/myFunction";", "import { myFunction } from "../../../../utils/myFunction";"',
+      );
+      expect(match?.groups?.['customErrors']).toBe(
+        `({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]|", required_error: "some other", description: "some description" })`,
+      );
+      expect(match?.groups?.['type']).toBe('string');
+    });
   });
 }
 

@@ -8,6 +8,7 @@ import { GeneratorConfig } from '../../schemas';
 /////////////////////////////////////////////////
 
 // Match the literal string "@zod."
+// Named capture group "import" (optional): Match the literal string ".import([" followed by one or more characters from the character class, then the literal string "])"
 // Named capture group "type": Match one or more word characters (letters, digits, or underscores) exactly once
 // Named capture group "customErrors" (optional): Match an opening parenthesis "(", followed by one or more characters from the character class, then a closing parenthesis ")"
 // The character class in "customErrors" includes word characters, Japanese Hiragana, Katakana, and Kanji characters, and various punctuation marks and symbols
@@ -16,7 +17,7 @@ import { GeneratorConfig } from '../../schemas';
 // "u" flag for Unicode support
 
 export const VALIDATOR_TYPE_REGEX =
-  /@zod\.(?<type>[\w]+){1}(?<customErrors>\([{][\w\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M} (),'ʼ"。、|\\:+*#!§$%&/{}[\]=?~><°^\\-]+[}]\))?(?<validatorPattern>[\w\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{Punctuation}\p{M}\p{N} (),.'"。、|\\:+*#!§$%&/{}[\]=?~><°^\\-]*[)])?/u;
+  /@zod(?<import>\.import\(\[(?<imports>[\w\s"@'${}/,;:.~*-]+)\]\))?\.(?<type>[\w]+){1}(?<customErrors>\([{][\w\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M} (),'ʼ"。、|\\:+*#!§$%&/{}[\]=?~><°^\\-]+[}]\))?(?<validatorPattern>[\w\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{Punctuation}\p{M}\p{N} (),.'"。、|\\:+*#!§$%&/{}[\]=?~><°^\\-]*[)])?/u;
 
 /////////////////////////////////////////////////
 // CLASS
