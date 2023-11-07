@@ -20,7 +20,7 @@ export const DEFAULT_GENERATOR_CONFIG: GeneratorConfig = {
   coerceDate: true,
   writeNullishInModelTypes: false,
   isMongoDb: false,
-  validateWhereUniqueInput: false,
+  validateWhereUniqueInput: true,
   inputTypePath: 'inputTypeSchemas',
   outputTypePath: 'outputTypeSchemas',
   writeBarrelFiles: true,

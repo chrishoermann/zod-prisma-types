@@ -139,8 +139,9 @@ model MyPrismaScalarsType {
 // Used for testing if the Json null types are correctly transformed
 
 model JsonModel {
-  id      Int   @id @default(autoincrement())
-  json    Json
+  id Int @id @default(autoincrement())
+
+  json    Json /// @zod.custom.use(z.object({contents: z.array(z.object({locale: z.string(), content: z.string()}))}))
   jsonOpt Json?
 }
 

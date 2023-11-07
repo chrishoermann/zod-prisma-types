@@ -129,12 +129,23 @@ export function testExtendedDMMFFieldValidatorMap<
 
     it(`custom validator message should return match for regex with japanese chars`, async () => {
       const result = CUSTOM_VALIDATOR_MESSAGE_REGEX.exec(
-        "use(z.string.min(2, { message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' }))",
+        ".use(z.string.min(2, { message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' }))",
       );
 
       expect(result?.groups?.validator).toBe('use');
       expect(result?.groups?.pattern).toBe(
         "z.string.min(2, { message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' })",
+      );
+    });
+
+    it(`custom validator message should return match for regex with nested objects`, async () => {
+      const result = CUSTOM_VALIDATOR_MESSAGE_REGEX.exec(
+        '.use(z.object({contents: z.array(z.object({locale: z.string(), content: z.string()}))}))',
+      );
+
+      expect(result?.groups?.validator).toBe('use');
+      expect(result?.groups?.pattern).toBe(
+        'z.object({contents: z.array(z.object({locale: z.string(), content: z.string()}))})',
       );
     });
 
@@ -987,6 +998,13 @@ export function testExtendedDMMFFieldValidatorMap<
         map({
           key: 'array',
           pattern: '.array(.length(2))',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'array',
+          pattern:
+            '.use(z.object({contents: z.array(z.object({locale: z.string(), content: z.string()}))}))',
         }),
       ).toBe(true);
     });

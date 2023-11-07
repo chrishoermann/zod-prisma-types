@@ -52,6 +52,13 @@ export function testExtendedDMMFFieldCustomValdiatorString<
         "[@zod generator error]: Validator 'wrong' is not valid for type 'String', for specified '@zod.[key] or for 'z.array.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
       );
     });
+
+    it(`should load class with nested validator string`, async () => {
+      const field = getField({
+        documentation:
+          'some text in docs @zod.custom.use(z.object({contents: z.array(z.object({locale: z.string(), content: z.string()}))}))',
+      });
+    });
   });
 }
 

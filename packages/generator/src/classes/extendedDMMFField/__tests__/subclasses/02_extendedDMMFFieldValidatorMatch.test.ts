@@ -120,6 +120,16 @@ export function testExtendedDMMFFieldValidatorMatch<
       );
     });
 
+    it(`should match nested custom annotations`, async () => {
+      const match = VALIDATOR_TYPE_REGEX.exec(
+        `@zod.custom.use(z.object({contents: z.array(z.object({locale: z.string(), content: z.string()}))}))`,
+      );
+
+      expect(match?.groups?.['validatorPattern']).toBe(
+        '.use(z.object({contents: z.array(z.object({locale: z.string(), content: z.string()}))}))',
+      );
+    });
+
     it('should match a string with an import dircetive', async () => {
       const match = VALIDATOR_TYPE_REGEX.exec(
         `@zod.import(["import { myFunction } from "../../../../utils/myFunction";", "import { myFunction } from "../../../../utils/myFunction";"]).string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]|", required_error: "some other", description: "some description" }).cuid()`,

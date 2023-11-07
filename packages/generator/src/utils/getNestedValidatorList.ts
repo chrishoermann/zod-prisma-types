@@ -19,13 +19,13 @@ export const getNestedValidatorList = (validatorPattern: string) => {
 // GET SPLIT INDICES
 // ----------------------------------------------
 
-export const getSplitIndices = (string: string) => {
+export const getSplitIndices = (string: string, match = /\.\w+$/) => {
   const splitIndices = [0];
   let depth = 0;
 
   [...string].forEach((char, idx) => {
     if (!depth && !isWordChar(char)) {
-      const splitPosition = string.substring(0, idx).match(/\.\w+$/)?.index;
+      const splitPosition = string.substring(0, idx).match(match)?.index;
       if (splitPosition) splitIndices.push(splitPosition);
     }
 
