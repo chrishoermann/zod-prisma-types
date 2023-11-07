@@ -114,7 +114,8 @@ export const writeInputObjectType = (
   }: ContentWriterOptions,
   inputType: ExtendedDMMFInputType,
 ) => {
-  const { useMultipleFiles, addInputTypeValidation } = dmmf.generatorConfig;
+  const { useMultipleFiles, addInputTypeValidation, useTypeAssertions } =
+    dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImportSet(inputType.imports);
@@ -195,8 +196,10 @@ export const writeInputObjectType = (
         });
       });
     })
-    .conditionalWrite(!writeExtendedWhereUniqueInput, `).strict();`)
-    .conditionalWrite(writeExtendedWhereUniqueInput, `).strict());`);
+    .conditionalWrite(!writeExtendedWhereUniqueInput, `).strict()`)
+    .conditionalWrite(writeExtendedWhereUniqueInput, `).strict())`)
+    .conditionalWrite(useTypeAssertions, ` as ${type};`)
+    .conditionalWrite(!useTypeAssertions, `;`);
 
   if (useMultipleFiles && !getSingleFileContent) {
     writer.blankLine().writeLine(`export default ${inputType.name}Schema;`);

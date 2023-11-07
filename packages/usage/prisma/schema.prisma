@@ -35,6 +35,7 @@ generator zod {
   // coerceDate                       = true // default is true
   // writeNullishInModelTypes         = false // default is false
   // prismaClientPath                 = "./generated/client" // optional
+  useTypeAssertions                = true // default is false
 }
 
 // MIXED CASE ENUMS AND MODELS
@@ -140,8 +141,7 @@ model MyPrismaScalarsType {
 // Used for testing if the Json null types are correctly transformed
 
 model JsonModel {
-  id Int @id @default(autoincrement())
-
+  id      Int   @id @default(autoincrement())
   json    Json
   jsonOpt Json?
 }

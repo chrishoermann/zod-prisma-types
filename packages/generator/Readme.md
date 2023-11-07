@@ -149,7 +149,7 @@ generator zod {
   addInputTypeValidation           = false // default is true
   addIncludeType                   = false // default is true
   addSelectType                    = false // default is true
-  validateWhereUniqueInput         = true // default is false
+  validateWhereUniqueInput         = false // default is true
   createOptionalDefaultValuesTypes = true // default is false
   createRelationValuesTypes        = true // default is false
   createPartialTypes               = true // default is false

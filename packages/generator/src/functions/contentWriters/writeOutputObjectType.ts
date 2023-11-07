@@ -9,7 +9,7 @@ export const writeOutputObjectType = (
 ) => {
   const { writer, writeImportSet, writeHeading } = fileWriter;
 
-  const { useMultipleFiles } = dmmf.generatorConfig;
+  const { useMultipleFiles, useTypeAssertions } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImportSet(field.argTypeImports);
@@ -127,7 +127,9 @@ export const writeOutputObjectType = (
         writer.newLine();
       });
     })
-    .write(`).strict()`);
+    .write(`).strict() `)
+    .conditionalWrite(useTypeAssertions, `as ${field.customArgType};`)
+    .conditionalWrite(!useTypeAssertions, `;`);
 
   if (useMultipleFiles && !getSingleFileContent) {
     writer.blankLine().writeLine(`export default ${field.argName}Schema;`);

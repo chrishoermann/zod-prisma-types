@@ -25,6 +25,7 @@ export const DEFAULT_GENERATOR_CONFIG: GeneratorConfig = {
   outputTypePath: 'outputTypeSchemas',
   writeBarrelFiles: true,
   decimalJSInstalled: false,
+  useTypeAssertions: false,
 };
 
 describe('testSimpleModelNoValidators', async () => {
