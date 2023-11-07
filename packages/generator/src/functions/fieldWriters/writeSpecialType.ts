@@ -80,12 +80,15 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
   }
 
   if (inputType.isJsonType) {
-    return writer
-      .write(`InputJsonValueSchema`)
-      .conditionalWrite(inputType.isList, `.array()`)
-      .conditionalWrite(isOptional, `.optional()`)
-      .conditionalWrite(isNullable, `.nullable()`)
-      .conditionalWrite(writeComma, `,`);
+    return (
+      writer
+        .write(`InputJsonValueSchema`)
+        // .conditionalWrite(!!zodCustomValidatorString, zodCustomValidatorString!)
+        .conditionalWrite(inputType.isList, `.array()`)
+        .conditionalWrite(isOptional, `.optional()`)
+        .conditionalWrite(isNullable, `.nullable()`)
+        .conditionalWrite(writeComma, `,`)
+    );
   }
 
   if (inputType.isBytesType) {

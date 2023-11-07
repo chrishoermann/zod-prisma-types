@@ -16,36 +16,47 @@ Since I'm maintaining the generator in my spare time consider buying me a coffee
 
 Be aware that some generator options have been removed, a few new ones have been added, the behavior of custom imports has changed and ts-morph is no longer needed to generate files in v2.0.0.
 
+## Breaking changes in v3.x.x
+
+- If you have used decimal or Json values you might encounter changed behavior in v3.x.x. Please read the [decimal](#decimal) and [json](#json-null-values) sections for more information. If not you can safely upgrade to v3.x.x.
+- Imports are now generally handled at field level except for model validators. This enables the generator to add the custom validation logic on input type level like `whereUnique` inputs. If you have used custom imports in v2.x.x you should change the syntax to the new one. Please read the [custom imports](#custom-imports) section for more information.
+- `validateWhereUniqueInputs` is now `true` by default
+
 ## Known issues
 
-> Since `zod version 3.21.2` some schemas throw a typescript error. Please use `zod version 3.21.1` until this issue is resolved.
+> Since `zod version 3.21.2` some schemas throw a typescript error. Please use `zod version 3.21.1` until this issue is resolved. Feel free to add some weight to the [issue on github](https://github.com/colinhacks/zod/issues/2184)
 
 ## Table of contents
 
-- [About this project](#about-this-project)
-- [Installation](#installation)
-- [Usage](#usage)
-  - [`output`](#output)
-  - [`useMultipleFiles`](#usemultiplefiles)
-  - [`writeBarrelFiles`](#writebarrelfiles)
-  - [`createInputTypes`](#createinputtypes)
-  - [`createModelTypes`](#createmodeltypes)
-  - [`addInputTypeValidation`](#addinputtypevalidation)
-  - [`addIncludeType`](#addincludetype)
-  - [`addSelectType`](#addselecttype)
-  - [`validateWhereUniqueInput`](#validatewhereuniqueinput)
-  - [`createOptionalDefaultValuesTypes`](#createoptionaldefaultvaluestypes)
-  - [`createRelationValuesTypes`](#createrelationvaluestypes)
-  - [`createPartialTypes`](#createpartialtypes)
-  - [`useDefaultValidators`](#usedefaultvalidators)
-  - [`coerceDate`](#coercedate)
-  - [`writeNullishInModelTypes`](#writenullishinmodeltypes)
-  - [`prismaClientPath`](#prismaclientpath)
-- [Skip schema generation](#skip-schema-generation)
-- [Custom Enums](#custom-enums)
-- [Json null values](#json-null-values)
-- [Decimal](#decimal)
-- [Field validators](#field-validators)
+- [zod-prisma-types](#zod-prisma-types)
+  - [Breaking changes in v2.x.x](#breaking-changes-in-v2xx)
+  - [Breaking changes in v3.x.x](#breaking-changes-in-v3xx)
+  - [Known issues](#known-issues)
+  - [Table of contents](#table-of-contents)
+  - [About this project](#about-this-project)
+  - [Installation](#installation)
+  - [Usage](#usage)
+    - [`useMultipleFiles`](#usemultiplefiles)
+    - [`output`](#output)
+    - [`writeBarrelFiles`](#writebarrelfiles)
+    - [`createInputTypes`](#createinputtypes)
+    - [`createModelTypes`](#createmodeltypes)
+    - [`addInputTypeValidation`](#addinputtypevalidation)
+    - [`addIncludeType`](#addincludetype)
+    - [`addSelectType`](#addselecttype)
+    - [`validateWhereUniqueInput`](#validatewhereuniqueinput)
+    - [`createOptionalDefaultValuesTypes`](#createoptionaldefaultvaluestypes)
+    - [`createRelationValuesTypes`](#createrelationvaluestypes)
+    - [`createPartialTypes`](#createpartialtypes)
+    - [`useDefaultValidators`](#usedefaultvalidators)
+    - [`coerceDate`](#coercedate)
+    - [`writeNullishInModelTypes`](#writenullishinmodeltypes)
+    - [`prismaClientPath`](#prismaclientpath)
+  - [Skip schema generation](#skip-schema-generation)
+  - [Custom Enums](#custom-enums)
+  - [Json null values](#json-null-values)
+  - [Decimal](#decimal)
+  - [Field validators](#field-validators)
   - [Custom type error messages](#custom-type-error-messages)
   - [String validators](#string-validators)
   - [Number validators](#number-validators)
@@ -53,18 +64,27 @@ Be aware that some generator options have been removed, a few new ones have been
   - [Date validators](#date-validators)
   - [Custom validators](#custom-validators)
   - [Array validators](#array-validators)
-  - [Omit fields](#omit-fields)
+  - [Omit Fields](#omit-fields)
   - [Validation errors](#validation-errors)
-- [Model Validators](#model-validators)
-  - [Custom imports](#custom-imports)
+    - [`Wrong zod type`](#wrong-zod-type)
+    - [`Wrong validator`](#wrong-validator)
+    - [`Typo Errors`](#typo-errors)
+  - [Model validators](#model-validators)
+    - [Custom imports](#custom-imports)
   - [Custom model error messages](#custom-model-error-messages)
-  - [Custom model Validators](#custom-model-validators)
-- [Naming of zod schemas](#naming-of-zod-schemas)
-- [Adding comments](#adding-comments)
-- [Migration from `zod-prisma`](#migration-from-zod-prisma)
-  - [Generator options](#generator-options)
-  - [Extending zod fields](#extending-zod-fields)
-  - [Importing helpers](#importing-helpers)
+  - [Custom model validators](#custom-model-validators)
+  - [Naming of zod schemas](#naming-of-zod-schemas)
+  - [Adding comments](#adding-comments)
+  - [Migration from `zod-prisma`](#migration-from-zod-prisma)
+    - [Generator options](#generator-options)
+      - [`relationModel`](#relationmodel)
+      - [`modelCase`](#modelcase)
+      - [`modelSuffix`](#modelsuffix)
+      - [`useDecimalJs`](#usedecimaljs)
+      - [`imports`](#imports)
+      - [`prismaJsonNullability`](#prismajsonnullability)
+    - [Extending zod fields](#extending-zod-fields)
+    - [Importing helpers](#importing-helpers)
 
 ## About this project
 
@@ -1251,14 +1271,14 @@ export type ModelWithOptionsCustomValidators = z.infer<
 
 ### Custom imports
 
-To add custom imports to your validator you can add them via `@zod.import([...myCustom imports as strings])` in Prismas rich comments on the model definition.
+To add custom imports to your validator you can add them via `@zod.import([...myCustom imports as strings])` in Prismas rich comments on the model or the field definition.
 
-For example:
+For example custom imports on the model level would look like this:
 
 ```prisma
-/// @zod.import(["import { myFunction } from 'mypackage'"])
+/// @zod.import(["import { myFunction } from 'mypackage'"]).refine((val) => myFunction(val), { message: 'Is not valid' })
 model MyModel {
-  myField String /// @zod.string().refine((val) => myFunction(val), { message: 'Is not valid' })
+  myField String /// @zod.string()
 }
 ```
 
@@ -1267,12 +1287,55 @@ This would result in an output like this:
 ```ts
 import { myFunction } from 'mypackage';
 
-export const MyModelSchema = z.object({
+export const MyModelSchema = z
+  .object({
+    myField: z.string(),
+  })
+  .refine((val) => myFunction(val), { message: 'Is not valid' });
+```
+
+These custom imports are only used on the generated model schemas and not on the input type schemas.
+If you want to add custom imports to the generated input type schemas too you can add them to the field definition like this:
+
+```prisma
+model ModelWithFieldLevelImport {
+  myField String ///@zod.import(["import { myFunction } from 'mypackage'"]).custom.use(z.string().refine((val) => myFunction(val), { message: 'Is not valid' }))
+}
+```
+
+This would result in an output like this:
+
+```ts
+import { myFunction } from 'mypackage';
+
+// MODEL SCHEMA
+// ---------------------------------------
+
+export const ModelWithFieldLevelImportSchema = z.object({
   myField: z
     .string()
-    .refine((val) => myFunction(val), { message: 'Is not valid' }),
+    .refine((val) => myFunction(val), { message: 'Is not valid' })
+    .optional()
+    .nullable(),
 });
+
+// INPUT SCHEMA
+
+import { myFunction } from '../../../../utils/myFunction';
+
+export const ModelWithFieldLevelImportCreateInputSchema: z.ZodType<Prisma.ModelWithFieldLevelImportCreateInput> =
+  z
+    .object({
+      myField: z
+        .string()
+        .refine((val) => myFunction(val), { message: 'Is not valid' }),
+    })
+    .strict();
 ```
+
+With this approach you can use
+
+The downside of this approach is that
 
 > Please be aware that you have to add an additional level to relative imports if you use the `useMultipleFiles` option.
 

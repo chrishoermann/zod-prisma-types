@@ -55,9 +55,14 @@ export function testExtendedDMMFFieldCustomValdiatorString<
 
     it(`should load class with nested validator string`, async () => {
       const field = getField({
+        type: 'Json',
         documentation:
           'some text in docs @zod.custom.use(z.object({contents: z.array(z.object({locale: z.string(), content: z.string()}))}))',
       });
+
+      expect(field.zodCustomValidatorString).toBe(
+        'z.object({contents: z.array(z.object({locale: z.string(), content: z.string()}))})',
+      );
     });
   });
 }

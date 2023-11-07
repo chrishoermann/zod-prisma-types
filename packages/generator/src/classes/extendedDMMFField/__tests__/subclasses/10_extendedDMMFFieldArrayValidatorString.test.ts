@@ -217,6 +217,20 @@ export function testExtendedDMMFFieldArrayValidatorString<
         '.length(myfunction.some, { message: "error" }).min(1).max(myfunction.some).nonempty({ message: "error" })',
       );
     });
+
+    it(`should load field with custom validator string with nested .array() and top level .array()`, async () => {
+      const field = getField({
+        type: 'Json',
+        isList: true,
+        documentation:
+          'some text in docs @zod.custom.use(z.object({contents: z.array(z.object({locale: z.string(), content: z.string()}))})).array(.length(2))',
+      });
+
+      expect(field.zodCustomValidatorString).toBe(
+        'z.object({contents: z.array(z.object({locale: z.string(), content: z.string()}))})',
+      );
+      expect(field.zodArrayValidatorString).toBe('.length(2)');
+    });
   });
 }
 

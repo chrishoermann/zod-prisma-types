@@ -3,6 +3,7 @@ import { DMMF } from '@prisma/generator-helper';
 import { ExtendedDMMFFieldValidatorType } from './03_extendedDMMFFieldValidatorType';
 import { GeneratorConfig } from '../../schemas';
 import { getNestedValidatorList } from '../../utils/getNestedValidatorList';
+import { removeUseContent } from '../../utils/removeUseContent';
 
 /////////////////////////////////////////////////
 // CLASS
@@ -43,10 +44,18 @@ export class ExtendedDMMFFieldValidatorPattern extends ExtendedDMMFFieldValidato
   // ----------------------------------------------
 
   protected _getZodValidatorListWithoutArray() {
-    return this._validatorList?.filter((elem) => !elem.includes('.array'));
+    return this._validatorList?.filter((elem) => {
+      // remove content from the .use block to prevent any false positives
+      const removedUseContentElem = removeUseContent(elem);
+      return !removedUseContentElem.includes('.array');
+    });
   }
 
   protected _getZodValidatorListArray() {
-    return this._validatorList?.filter((elem) => elem.includes('.array'));
+    return this._validatorList?.filter((elem) => {
+      // remove content from the .use block to prevent any false positives
+      const removedUseContentElem = removeUseContent(elem);
+      return removedUseContentElem.includes('.array');
+    });
   }
 }

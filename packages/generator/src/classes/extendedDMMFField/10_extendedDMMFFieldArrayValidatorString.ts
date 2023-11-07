@@ -6,10 +6,8 @@ import {
   ValidatorMap,
 } from './07_extendedDMMFFieldValidatorMap';
 import { GeneratorConfig } from '../../schemas';
-import {
-  getNestedValidatorList,
-  getSplitIndices,
-} from '../../utils/getNestedValidatorList';
+import { getNestedValidatorList } from '../../utils/getNestedValidatorList';
+import { removeUseContent } from '../../utils/removeUseContent';
 
 /////////////////////////////////////////////////
 // TYPE
@@ -73,17 +71,18 @@ export class ExtendedDMMFFieldArrayValidatorString extends ExtendedDMMFFieldCust
   // ----------------------------------------------
 
   private _extractArrayPattern() {
-    const pattern = this._getZodValidatorListArray()
+    // remove the content of .use() blocks to avoid false positives
+    // e.g. when .array is used in a .use() block
+    const validatorList = this._getZodValidatorListArray()?.map((elem) => {
+      if (!elem.includes('.use(')) return elem;
+      return removeUseContent(elem);
+    });
+
+    const pattern = validatorList
       ?.find((pattern) => pattern.includes('.array'))
       ?.match(ARRAY_VALIDATOR_MESSAGE_REGEX)?.groups?.['pattern'];
 
     if (pattern && !this.isList) {
-      // console.log(
-      //   'pattern',
-      //   pattern,
-      //   nestedList,
-      //   this._getZodValidatorListArray(),
-      // );
       throw new Error(
         `[@zod generator error]: '.array' validator is only allowed on lists. ${this._errorLocation}`,
       );

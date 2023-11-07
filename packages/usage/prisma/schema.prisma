@@ -117,6 +117,7 @@ model MyPrismaScalarsType {
   bigIntOpt          BigInt?
   json               Json
   jsonOpt            Json?
+  jsonCustom         Json? /// @zod.custom.use(z.object({contents: z.array(z.object({locale: z.string(), content: z.string()}))}))
   bytes              Bytes /// @zod.custom.use(z.instanceof(Buffer).refine((val) => val ? true : false, { message: 'Value is not valid' }))
   bytesOpt           Bytes?
   /// @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).custom.use(z.string().refine((val) => myFunction(val), { message: 'Is not valid' }))
@@ -141,7 +142,7 @@ model MyPrismaScalarsType {
 model JsonModel {
   id Int @id @default(autoincrement())
 
-  json    Json /// @zod.custom.use(z.object({contents: z.array(z.object({locale: z.string(), content: z.string()}))}))
+  json    Json
   jsonOpt Json?
 }
 
