@@ -129,6 +129,11 @@ export class ExtendedDMMFSchemaArg
   }
 
   getImports(fieldName: string) {
+    // if the field is omitted, no imports are needed
+    if (this.zodOmitField) {
+      return [];
+    }
+
     const imports = this.inputTypes
       .map((type) => {
         const importType = type.getZodNonScalarType();

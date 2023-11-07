@@ -20,7 +20,8 @@ Be aware that some generator options have been removed, a few new ones have been
 
 - If you have used decimal or Json values you might encounter changed behavior in v3.x.x. Please read the [decimal](#decimal) and [json](#json-null-values) sections for more information.
   If you did not use decimal or json values you can safely upgrade to v3.x.x.
-- Imports are now handled at field level. This enables the generator to add custom validation logic on input type level. If you have used custom imports in v2.x.x you need to change the syntax to the new one. Please read the [importing helpers](#importing-helpers) section for more information.
+- Imports are now generally handled at field level except for model validators. This enables the generator to add the custom validation logic on input type level like `whereUnique` inputs. If you have used custom imports in v2.x.x you should change the syntax to the new one. Please read the [importing helpers](#importing-helpers) section for more information.
+- `validateWhereUniqueInputs` is now `true` by default
 
 ## Known issues
 
