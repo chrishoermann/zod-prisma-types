@@ -24,7 +24,7 @@ Be aware that some generator options have been removed, a few new ones have been
 
 ## Known issues
 
-> Since `zod version 3.21.2` some schemas throw a typescript error. Please use `zod version 3.21.1` until this issue is resolved. Feel free to add some weight to the [issue on github](https://github.com/colinhacks/zod/issues/2184)
+> Since `zod version 3.21.2` some schemas throw a typescript error. Please use `zod version 3.21.1` until this issue is resolved. Since `zod-prisma-type version 3.1.0` you can also use `useTypeAssertions = true` in the generator config to override the type system. Use this option at your own risk. Feel free to also add some weight to the [zod issue on github](https://github.com/colinhacks/zod/issues/2184)
 
 ## Table of contents
 
@@ -51,6 +51,7 @@ Be aware that some generator options have been removed, a few new ones have been
     - [`useDefaultValidators`](#usedefaultvalidators)
     - [`coerceDate`](#coercedate)
     - [`writeNullishInModelTypes`](#writenullishinmodeltypes)
+    - [`useTypeAssertions`](#usetypeassertions)
     - [`prismaClientPath`](#prismaclientpath)
   - [Skip schema generation](#skip-schema-generation)
   - [Custom Enums](#custom-enums)
@@ -553,6 +554,22 @@ By default the generator just writes `.nullable()` in the modelTypes when a fiel
 generator zod {
   // ...rest of config
   writeNullishInModelTypes = true
+}
+```
+
+### `useTypeAssertions`
+
+> default: false
+
+Since there is a known typscript error when using `zod` greater than `3.21.1` you can now use type assertions to circumvent the error and use the latest version of `zod`.
+
+> A WORD OF WARNING: Use this solution at your own risk! Because type assertions are circumventing the type system this can lead to unexpected behavior and runtime errors.
+> But since the types worked in `zod` version `3.21.1` and the error is a known issue in `zod` version `3.21.2` I think it might be a valid solution until the issue is resolved.
+
+```prisma
+generator zod {
+  // ...rest of config
+  useTypeAssertions = true
 }
 ```
 

@@ -24,7 +24,7 @@ Be aware that some generator options have been removed, a few new ones have been
 
 ## Known issues
 
-> Since `zod version 3.21.2` some schemas throw a typescript error. Please use `zod version 3.21.1` until this issue is resolved. Feel free to add some weight to the [issue on github](https://github.com/colinhacks/zod/issues/2184)
+> Since `zod version 3.21.2` some schemas throw a typescript error. Please use `zod version 3.21.1` until this issue is resolved. Since `zod-prisma-type version 3.1.0` you can also use `useTypeAssertions = true` in the generator config to override the type system. Use this option at your own risk. Feel free to also add some weight to the [zod issue on github](https://github.com/colinhacks/zod/issues/2184)
 
 ## Table of contents
 
