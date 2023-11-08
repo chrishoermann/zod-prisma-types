@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](https://github.com/chrishoermann/zod-prisma-types/blob/master/LICENSE)
 [![Issues](https://img.shields.io/github/issues/chrishoermann/zod-prisma-types?style=for-the-badge)](https://github.com/chrishoermann/zod-prisma-types/issues)
 
-# zod-prisma-types
+# zod-prisma-types <!-- omit from toc -->
 
 `zod-prisma-types` is a generator for [prisma](www.prisma.io) that generates [zod](https://github.com/colinhacks/zod) schemas from your prisma models. This includes schemas of models, enums, inputTypes, argTypes, filters and so on. It also provides options to write advanced zod validators directly in the Prisma schema comments.
 
@@ -12,80 +12,75 @@ Since I'm maintaining the generator in my spare time consider buying me a coffee
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/chrishoermann)
 
-## Breaking changes in v2.x.x
+## Breaking changes in v2.x.x<!-- omit from toc -->
 
 Be aware that some generator options have been removed, a few new ones have been added, the behavior of custom imports has changed and ts-morph is no longer needed to generate files in v2.0.0.
 
-## Breaking changes in v3.x.x
+## Breaking changes in v3.x.x<!-- omit from toc -->
 
 - If you have used decimal or Json values you might encounter changed behavior in v3.x.x. Please read the [decimal](#decimal) and [json](#json-null-values) sections for more information. If not you can safely upgrade to v3.x.x.
 - Imports are now generally handled at field level except for model validators. This enables the generator to add the custom validation logic on input type level like `whereUnique` inputs. If you have used custom imports in v2.x.x you should change the syntax to the new one. Please read the [custom imports](#custom-imports) section for more information.
 - `validateWhereUniqueInputs` is now `true` by default
 
-## Known issues
+## Known issues<!-- omit from toc -->
 
-> Since `zod version 3.21.2` some schemas throw a typescript error. Please use `zod version 3.21.1` until this issue is resolved. Since `zod-prisma-type version 3.1.0` you can also use `useTypeAssertions = true` in the generator config to override the type system. Use this option at your own risk. Feel free to also add some weight to the [zod issue on github](https://github.com/colinhacks/zod/issues/2184)
+> Since `zod version 3.21.2` some schemas throw a typescript error. Please use `zod version 3.21.1` until this issue is resolved. Feel free to also add some weight to the [zod issue on github](https://github.com/colinhacks/zod/issues/2184). Since `zod-prisma-type version 3.1.0` you can also use `useTypeAssertions = true` in the generator config to override the type system. Use this option at your own risk. See [useTypeAssertions](#usetypeassertions) for more information.
 
-## Table of contents
+## Table of contents<!-- omit from toc -->
 
-- [zod-prisma-types](#zod-prisma-types)
-  - [Breaking changes in v2.x.x](#breaking-changes-in-v2xx)
-  - [Breaking changes in v3.x.x](#breaking-changes-in-v3xx)
-  - [Known issues](#known-issues)
-  - [Table of contents](#table-of-contents)
-  - [About this project](#about-this-project)
-  - [Installation](#installation)
-  - [Usage](#usage)
-    - [`useMultipleFiles`](#usemultiplefiles)
-    - [`output`](#output)
-    - [`writeBarrelFiles`](#writebarrelfiles)
-    - [`createInputTypes`](#createinputtypes)
-    - [`createModelTypes`](#createmodeltypes)
-    - [`addInputTypeValidation`](#addinputtypevalidation)
-    - [`addIncludeType`](#addincludetype)
-    - [`addSelectType`](#addselecttype)
-    - [`validateWhereUniqueInput`](#validatewhereuniqueinput)
-    - [`createOptionalDefaultValuesTypes`](#createoptionaldefaultvaluestypes)
-    - [`createRelationValuesTypes`](#createrelationvaluestypes)
-    - [`createPartialTypes`](#createpartialtypes)
-    - [`useDefaultValidators`](#usedefaultvalidators)
-    - [`coerceDate`](#coercedate)
-    - [`writeNullishInModelTypes`](#writenullishinmodeltypes)
-    - [`useTypeAssertions`](#usetypeassertions)
-    - [`prismaClientPath`](#prismaclientpath)
-  - [Skip schema generation](#skip-schema-generation)
-  - [Custom Enums](#custom-enums)
-  - [Json null values](#json-null-values)
-  - [Decimal](#decimal)
-  - [Field validators](#field-validators)
-  - [Custom type error messages](#custom-type-error-messages)
-  - [String validators](#string-validators)
-  - [Number validators](#number-validators)
-  - [BigInt validators](#bigint-validators)
-  - [Date validators](#date-validators)
-  - [Custom validators](#custom-validators)
-  - [Array validators](#array-validators)
-  - [Omit Fields](#omit-fields)
-  - [Validation errors](#validation-errors)
-    - [`Wrong zod type`](#wrong-zod-type)
-    - [`Wrong validator`](#wrong-validator)
-    - [`Typo Errors`](#typo-errors)
-  - [Model validators](#model-validators)
-    - [Custom imports](#custom-imports)
-  - [Custom model error messages](#custom-model-error-messages)
-  - [Custom model validators](#custom-model-validators)
-  - [Naming of zod schemas](#naming-of-zod-schemas)
-  - [Adding comments](#adding-comments)
-  - [Migration from `zod-prisma`](#migration-from-zod-prisma)
-    - [Generator options](#generator-options)
-      - [`relationModel`](#relationmodel)
-      - [`modelCase`](#modelcase)
-      - [`modelSuffix`](#modelsuffix)
-      - [`useDecimalJs`](#usedecimaljs)
-      - [`imports`](#imports)
-      - [`prismaJsonNullability`](#prismajsonnullability)
-    - [Extending zod fields](#extending-zod-fields)
-    - [Importing helpers](#importing-helpers)
+- [About this project](#about-this-project)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [`useMultipleFiles`](#usemultiplefiles)
+  - [`output`](#output)
+  - [`writeBarrelFiles`](#writebarrelfiles)
+  - [`createInputTypes`](#createinputtypes)
+  - [`createModelTypes`](#createmodeltypes)
+  - [`addInputTypeValidation`](#addinputtypevalidation)
+  - [`addIncludeType`](#addincludetype)
+  - [`addSelectType`](#addselecttype)
+  - [`validateWhereUniqueInput`](#validatewhereuniqueinput)
+  - [`createOptionalDefaultValuesTypes`](#createoptionaldefaultvaluestypes)
+  - [`createRelationValuesTypes`](#createrelationvaluestypes)
+  - [`createPartialTypes`](#createpartialtypes)
+  - [`useDefaultValidators`](#usedefaultvalidators)
+  - [`coerceDate`](#coercedate)
+  - [`writeNullishInModelTypes`](#writenullishinmodeltypes)
+  - [`useTypeAssertions`](#usetypeassertions)
+  - [`prismaClientPath`](#prismaclientpath)
+- [Skip schema generation](#skip-schema-generation)
+- [Custom Enums](#custom-enums)
+- [Json null values](#json-null-values)
+- [Decimal](#decimal)
+- [Field validators](#field-validators)
+- [Custom type error messages](#custom-type-error-messages)
+- [String validators](#string-validators)
+- [Number validators](#number-validators)
+- [BigInt validators](#bigint-validators)
+- [Date validators](#date-validators)
+- [Custom validators](#custom-validators)
+- [Array validators](#array-validators)
+- [Omit Fields](#omit-fields)
+- [Validation errors](#validation-errors)
+  - [`Wrong zod type`](#wrong-zod-type)
+  - [`Wrong validator`](#wrong-validator)
+  - [`Typo Errors`](#typo-errors)
+- [Model validators](#model-validators)
+- [Custom imports](#custom-imports)
+- [Custom model error messages](#custom-model-error-messages)
+- [Custom model validators](#custom-model-validators)
+- [Naming of zod schemas](#naming-of-zod-schemas)
+- [Adding comments](#adding-comments)
+- [Migration from `zod-prisma`](#migration-from-zod-prisma)
+  - [Generator options](#generator-options)
+    - [`relationModel`](#relationmodel)
+    - [`modelCase`](#modelcase)
+    - [`modelSuffix`](#modelsuffix)
+    - [`useDecimalJs`](#usedecimaljs)
+    - [`imports`](#imports)
+    - [`prismaJsonNullability`](#prismajsonnullability)
+  - [Extending zod fields](#extending-zod-fields)
+  - [Importing helpers](#importing-helpers)
 
 ## About this project
 
@@ -1286,7 +1281,7 @@ export type ModelWithOptionsCustomValidators = z.infer<
 >;
 ```
 
-### Custom imports
+## Custom imports
 
 To add custom imports to your validator you can add them via `@zod.import([...myCustom imports as strings])` in Prismas rich comments on the model or the field definition.
 
