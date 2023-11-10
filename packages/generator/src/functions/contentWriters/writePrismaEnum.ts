@@ -9,7 +9,7 @@ export const writePrismaEnum = (
   }: ContentWriterOptions,
   { useNativeEnum, values, name }: ExtendedDMMFSchemaEnum,
 ) => {
-  const { useMultipleFiles } = dmmf.generatorConfig;
+  const { useMultipleFiles, prismaClientPath } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
@@ -28,7 +28,7 @@ export const writePrismaEnum = (
       writer
         .conditionalWrite(
           useMultipleFiles,
-          `import { Prisma } from '@prisma/client'`,
+          `import { Prisma } from '${prismaClientPath}';`,
         )
         .blankLine()
         .write(`export const ${name}Schema = z.enum([`);
@@ -46,7 +46,7 @@ export const writePrismaEnum = (
       writer
         .conditionalWrite(
           useMultipleFiles,
-          `import { Prisma } from '@prisma/client'`,
+          `import { Prisma } from '${prismaClientPath}';`,
         )
         .blankLine()
         .write(`export const ${name}Schema = z.enum([`);
@@ -63,7 +63,7 @@ export const writePrismaEnum = (
       writer
         .conditionalWrite(
           useMultipleFiles,
-          `import { Prisma } from '@prisma/client'`,
+          `import { Prisma } from '${prismaClientPath}';`,
         )
         .blankLine()
         .write(`export const ${name}Schema = z.enum([`);
