@@ -28,21 +28,22 @@ export const writeArgTypeFiles: CreateFiles = ({ path, dmmf }) => {
       indexFileWriter.createFile(
         `${folderPath}/index.ts`,
         ({ writeExport }) => {
+          const writeExportSet = new Set<string>();
+
           dmmf.schema.outputObjectTypes.model.forEach((model) => {
             if (model.hasRelationField()) {
-              writeExport(
-                `{ ${model.name}ArgsSchema }`,
-                `./${model.name}ArgsSchema`,
-              );
+              writeExportSet.add(`${model.name}ArgsSchema`);
             }
           });
+
           dmmf.schema.outputObjectTypes.argTypes.forEach((outputType) => {
             outputType.prismaActionFields.forEach((field) => {
-              writeExport(
-                `{ ${field.argName}Schema }`,
-                `./${field.argName}Schema`,
-              );
+              writeExportSet.add(`${field.argName}Schema`);
             });
+          });
+
+          writeExportSet.forEach((exportName) => {
+            writeExport(`{ ${exportName} }`, `./${exportName}`);
           });
         },
       );

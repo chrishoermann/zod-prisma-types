@@ -33,38 +33,33 @@ export const writeInputTypeFiles: CreateFiles = ({ path, dmmf }) => {
       indexFileWriter.createFile(
         `${folderPath}/index.ts`,
         ({ writeExport }) => {
-          if (dmmf.generatorConfig.createInputTypes) {
-            dmmf.schema.inputObjectTypes.prisma.forEach(({ name }) => {
-              writeExport(`{ ${name}Schema }`, `./${name}Schema`);
-            });
-          }
+          const writeExportSet = new Set<string>();
 
-          dmmf.schema.enumTypes.prisma.forEach(({ name }) => {
-            writeExport(`{ ${name}Schema }`, `./${name}Schema`);
+          dmmf.schema.inputObjectTypes.prisma.forEach((inputType) => {
+            writeExportSet.add(`${inputType.name}Schema`);
           });
 
-          dmmf.datamodel.enums.forEach(({ name }) => {
-            writeExport(`{ ${name}Schema }`, `./${name}Schema`);
+          dmmf.schema.enumTypes.prisma.forEach((enumData) => {
+            writeExportSet.add(`${enumData.name}Schema`);
+          });
+
+          dmmf.datamodel.enums.forEach((enumData) => {
+            writeExportSet.add(`${enumData.name}Schema`);
           });
 
           if (dmmf.schema.hasJsonTypes) {
-            // writeExport(`{ transformJsonNull }`, `./transformJsonNull`);
-            // writeExport(`{ NullableJsonValue }`, `./NullableJsonValue`);
-            writeExport(`{ InputJsonValueSchema }`, `./InputJsonValueSchema`);
-            writeExport(`{ JsonValueSchema }`, `./JsonValueSchema`);
+            writeExportSet.add(`InputJsonValueSchema`);
+            writeExportSet.add(`JsonValueSchema`);
           }
 
           if (dmmf.schema.hasDecimalTypes) {
-            writeExport(`{ DecimalJsLikeSchema }`, `./DecimalJsLikeSchema`);
-            // writeExport(
-            //   `{ DecimalJSLikeListSchema }`,
-            //   `./DecimalJsLikeListSchema`,
-            // );
-            writeExport(
-              `{ isValidDecimalInput, DECIMAL_STRING_REGEX }`,
-              `./isValidDecimalInput`,
-            );
+            writeExportSet.add(`DecimalJsLikeSchema`);
+            writeExportSet.add(`isValidDecimalInput`);
           }
+
+          writeExportSet.forEach((exportName) => {
+            writeExport(`{ ${exportName} }`, `./${exportName}`);
+          });
         },
       );
     }
@@ -77,20 +72,10 @@ export const writeInputTypeFiles: CreateFiles = ({ path, dmmf }) => {
     // ------------------------------------------------------------
 
     if (dmmf.schema.hasJsonTypes) {
-      // new FileWriter().createFile(
-      //   `${folderPath}/transformJsonNull.ts`,
-      //   (fileWriter) => writeTransformJsonNull({ fileWriter, dmmf }),
-      // );
-
       new FileWriter().createFile(
         `${folderPath}/JsonValueSchema.ts`,
         (fileWriter) => writeJsonValue({ fileWriter, dmmf }),
       );
-
-      // new FileWriter().createFile(
-      //   `${folderPath}/NullableJsonValue.ts`,
-      //   (fileWriter) => writeNullableJsonValue({ fileWriter, dmmf }),
-      // );
 
       new FileWriter().createFile(
         `${folderPath}/InputJsonValueSchema.ts`,
@@ -106,11 +91,6 @@ export const writeInputTypeFiles: CreateFiles = ({ path, dmmf }) => {
         `${folderPath}/DecimalJsLikeSchema.ts`,
         (fileWriter) => writeDecimalJsLike({ fileWriter, dmmf }),
       );
-
-      // new FileWriter().createFile(
-      //   `${folderPath}/DecimalJsLikeListSchema.ts`,
-      //   (fileWriter) => writeDecimalJsLikeList({ fileWriter, dmmf }),
-      // );
 
       new FileWriter().createFile(
         `${folderPath}/isValidDecimalInput.ts`,

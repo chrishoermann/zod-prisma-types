@@ -20,12 +20,25 @@ export const writeModelFiles: CreateFiles = ({ path, dmmf }) => {
       indexFileWriter.createFile(
         `${folderPath}/index.ts`,
         ({ writeExport }) => {
+          const writeExportSet = new Set<string>();
+
           dmmf.datamodel.models.forEach((model) => {
-            writeExport(`*`, `./${model.name}Schema`);
+            writeExportSet.add(`${model.name}Schema`);
           });
           dmmf.datamodel.types.forEach((model) => {
-            writeExport(`*`, `./${model.name}Schema`);
+            writeExportSet.add(`${model.name}Schema`);
           });
+
+          writeExportSet.forEach((exportName) => {
+            writeExport(`*`, `./${exportName}`);
+          });
+
+          // dmmf.datamodel.models.forEach((model) => {
+          //   writeExport(`*`, `./${model.name}Schema`);
+          // });
+          // dmmf.datamodel.types.forEach((model) => {
+          //   writeExport(`*`, `./${model.name}Schema`);
+          // });
         },
       );
     }
