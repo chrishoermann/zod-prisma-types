@@ -30,6 +30,7 @@ Be aware that some generator options have been removed, a few new ones have been
 
 - [About this project](#about-this-project)
 - [Installation](#installation)
+- [`tsconfig.json`](#tsconfigjson)
 - [Usage](#usage)
   - [`useMultipleFiles`](#usemultiplefiles)
   - [`output`](#output)
@@ -104,6 +105,15 @@ via pnpm:
 
 ```bash
 pnpm add zod-prisma-types
+```
+
+## `tsconfig.json`
+
+For the generator to work properly you have to set the following options in your `tsconfg.json`:
+
+```json
+strict: true,
+strictNullChecks: true,
 ```
 
 ## Usage
