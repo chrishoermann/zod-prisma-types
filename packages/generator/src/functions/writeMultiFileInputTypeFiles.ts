@@ -35,9 +35,11 @@ export const writeInputTypeFiles: CreateFiles = ({ path, dmmf }) => {
         ({ writeExport }) => {
           const writeExportSet = new Set<string>();
 
-          dmmf.schema.inputObjectTypes.prisma.forEach((inputType) => {
-            writeExportSet.add(`${inputType.name}Schema`);
-          });
+          if (dmmf.generatorConfig.createInputTypes) {
+            dmmf.schema.inputObjectTypes.prisma.forEach((inputType) => {
+              writeExportSet.add(`${inputType.name}Schema`);
+            });
+          }
 
           dmmf.schema.enumTypes.prisma.forEach((enumData) => {
             writeExportSet.add(`${enumData.name}Schema`);
