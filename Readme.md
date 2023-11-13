@@ -22,9 +22,11 @@ Be aware that some generator options have been removed, a few new ones have been
 - Imports are now generally handled at field level except for model validators. This enables the generator to add the custom validation logic on input type level like `whereUnique` inputs. If you have used custom imports in v2.x.x you should change the syntax to the new one. Please read the [custom imports](#custom-imports) section for more information.
 - `validateWhereUniqueInputs` is now `true` by default
 
-## Known issues<!-- omit from toc -->
+## Known issues and Limitations<!-- omit from toc -->
 
-> Since `zod version 3.21.2` some schemas throw a typescript error. Please use `zod version 3.21.1` until this issue is resolved. Feel free to also add some weight to the [zod issue on github](https://github.com/colinhacks/zod/issues/2184). Since `zod-prisma-type version 3.1.0` you can also use `useTypeAssertions = true` in the generator config to override the type system. Use this option at your own risk. See [useTypeAssertions](#usetypeassertions) for more information.
+> - Since `zod version 3.21.2` some schemas throw a typescript error. Please use `zod version 3.21.1` until this issue is resolved. Feel free to also add some weight to the [zod issue on github](https://github.com/colinhacks/zod/issues/2184). Since `zod-prisma-type version 3.1.0` you can also use `useTypeAssertions = true` in the generator config to override the type system. Use this option at your own risk. See [useTypeAssertions](#usetypeassertions) for more information.
+> - Lowercase model names will result in Errors and duplicate schema names in the generated schemas. Please use uppercase model names and prismas `@@map()` directive when using lowercase table names in the datebase to avoid this issue.
+> - The `satisfies` operator: As some people have pointed out the `input` and `output` schemas and some of the `relation` schemas are typed as `z.ZodType<myType>`. This is required by zod for recursice types to work properly as [stated in the docs](https://zod.dev/?id=recursive-types). This has the downside that some zod methods like `.merge()`, `.omit()`, etc. are not available on these types.
 
 ## Table of contents<!-- omit from toc -->
 
