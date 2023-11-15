@@ -1,16 +1,13 @@
 import {
   writeCustomEnum,
   writeDecimalJsLike,
-  // writeDecimalJsLikeList,
   writeInclude,
   writeInputJsonValue,
   writeInputObjectType,
   writeIsValidDecimalInput,
   writeJsonValue,
-  // writeNullableJsonValue,
   writePrismaEnum,
   writeSelect,
-  // writeTransformJsonNull,
 } from '.';
 import { FileWriter } from '../classes';
 import { CreateFiles } from '../types';

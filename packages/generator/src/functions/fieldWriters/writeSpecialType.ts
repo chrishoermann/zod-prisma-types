@@ -45,7 +45,10 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
         .write(`z.union([`)
         .write(`z.number().array(),`)
         .write(`z.string().array(),`)
-        .write(`z.instanceof(Decimal).array(),`)
+        .conditionalWrite(
+          inputType.generatorConfig.decimalJSInstalled,
+          `z.instanceof(Decimal).array(),`,
+        )
         .write(`z.instanceof(Prisma.Decimal).array(),`)
         .write(`DecimalJsLikeSchema.array(),`)
         .write(`]`)
@@ -66,7 +69,10 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
       .write(`z.union([`)
       .write(`z.number(),`)
       .write(`z.string(),`)
-      .write(`z.instanceof(Decimal),`)
+      .conditionalWrite(
+        inputType.generatorConfig.decimalJSInstalled,
+        `z.instanceof(Decimal),`,
+      )
       .write(`z.instanceof(Prisma.Decimal),`)
       .write(`DecimalJsLikeSchema,`)
       .write(`]`)

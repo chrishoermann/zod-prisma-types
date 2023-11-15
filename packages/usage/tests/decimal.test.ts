@@ -7,12 +7,12 @@ import {
   DecimalNullableFilterSchema,
   isValidDecimalInput,
   DecimalJsLikeSchema,
-  DECIMAL_STRING_REGEX,
 } from '../prisma/generated/zod';
 import { DecimalJsLike } from '@prisma/client/runtime/library';
-import { it, expect, describe, beforeAll, afterAll } from 'vitest';
+import { it, expect, beforeAll, afterAll } from 'vitest';
+import { DECIMAL_STRING_REGEX } from '../prisma/generated/zod/inputTypeSchemas/isValidDecimalInput';
 
-const prismaClient = new PrismaClient();
+// const prismaClient = new PrismaClient();
 
 ///////////////////////////////////////
 // CONSTANTS
