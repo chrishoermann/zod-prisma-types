@@ -482,9 +482,9 @@ export const UserPartialWithRelationsSchema: z.ZodType<UserPartialWithRelations>
       location: z.lazy(() => LocationPartialWithRelationsSchema).nullable(),
     }),
   ).partial();
-```
 
 export type UserPartial = z.infer<typeof UserPartialSchema>;
+```
 
 ### `useDefaultValidators`
 
