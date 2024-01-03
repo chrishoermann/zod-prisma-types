@@ -107,6 +107,21 @@ export function testExtendedDMMFFieldValidatorMatch<
       );
     });
 
+    it(`should load a class with docs and custom validator containing template string`, async () => {
+      const field = getField({
+        documentation:
+          'some text in docs  @zod.custom.use(z.literal(`foo${string}`))',
+      });
+      const match = field?.['_validatorMatch'];
+      expect(match?.groups?.['validatorPattern']).toBe(
+        '.use(z.literal(`foo${string}`))',
+      );
+      expect(field?.clearedDocumentation).toBe('some text in docs');
+      expect(field.documentation).toBe(
+        'some text in docs  @zod.custom.use(z.literal(`foo${string}`))',
+      );
+    });
+
     it(`should match japanese characters in the regex`, async () => {
       const match = VALIDATOR_TYPE_REGEX.exec(
         `@zod.string({ invalid_type_error: "ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。" }).min(5, { message: "ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。" })`,

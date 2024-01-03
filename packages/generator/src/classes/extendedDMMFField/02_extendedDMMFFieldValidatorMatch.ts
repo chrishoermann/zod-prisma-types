@@ -17,7 +17,7 @@ import { GeneratorConfig } from '../../schemas';
 // "u" flag for Unicode support
 
 export const VALIDATOR_TYPE_REGEX =
-  /@zod(?<import>\.import\(\[(?<imports>[\w\s"@'${}/,;:.~*-]+)\]\))?\.(?<type>[\w]+){1}(?<customErrors>\([{][\w\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M} (),'ʼ"。、|\\:+*#!§$%&/{}[\]=?~><°^\\-]+[}]\))?(?<validatorPattern>[\w\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{Punctuation}\p{M}\p{N} (),.'"。、|\\:+*#!§$%&/{}[\]=?~><°^\\-]*[)])?/u;
+  /@zod(?<import>\.import\(\[(?<imports>[\w\s"@'${}/,;:.~*-]+)\]\))?\.(?<type>[\w]+){1}(?<customErrors>\([{][\w\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M} (),'"。、|\\:+*#!§$%&/{}[\]=?~><°^\\-]+[}]\))?(?<validatorPattern>[\w\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{Punctuation}\p{M}\p{N} (),.'`"。、|\\:+*#!§$%&/{}[\]=?~><°^\\-]*[)])?/u;
 
 /////////////////////////////////////////////////
 // CLASS
