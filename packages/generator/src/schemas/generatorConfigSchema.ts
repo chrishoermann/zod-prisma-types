@@ -76,6 +76,9 @@ export const configSchema = z.object({
     .optional()
     .default('false')
     .transform((val) => val === 'true'),
+  /**
+   * @deprecated This option is deprecated. Zod implemented a fix for this issue.
+   */
   useTypeAssertions: z
     .string()
     .optional()
