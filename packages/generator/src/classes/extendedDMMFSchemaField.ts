@@ -1,4 +1,4 @@
-import { DMMF } from '@prisma/generator-helper';
+import { DMMF, ReadonlyDeep } from '@prisma/generator-helper';
 
 import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
 import { ExtendedDMMFModel } from './extendedDMMFModel';
@@ -7,7 +7,8 @@ import { FormattedNames } from './formattedNames';
 import {
   FilterdPrismaAction,
   PRISMA_ACTION_ARG_MAP,
-  PRISMA_ACTION_ARRAY,
+  // PRISMA_ACTION_ARRAY,
+  PRISMA_ACTION_MATCHER_ARRAY,
 } from '../constants/objectMaps';
 import { GeneratorConfig } from '../schemas';
 
@@ -105,7 +106,7 @@ export class ExtendedDMMFSchemaField
     return this.outputType.namespace === 'model';
   }
 
-  private _setArgs({ args }: DMMF.SchemaField) {
+  private _setArgs({ args }: ReadonlyDeep<DMMF.SchemaField>) {
     return args.map((arg) => {
       const linkedField = this.linkedModel?.fields.find(
         (field) => field?.name === arg?.name,
@@ -121,9 +122,11 @@ export class ExtendedDMMFSchemaField
    * @returns prisma action of the field e.g. "findMany"
    */
   private _setMatchedPrismaAction() {
-    return PRISMA_ACTION_ARRAY.find((elem) =>
-      this.name.includes(elem),
-    ) as FilterdPrismaAction; // can be asserted because all other fields are filterd in ExtendedDMMFOutputType
+    const matched = PRISMA_ACTION_MATCHER_ARRAY.find(([matcher]) =>
+      this.name.includes(matcher),
+    )?.[1] as FilterdPrismaAction;
+
+    return matched;
   }
 
   /**
@@ -132,6 +135,12 @@ export class ExtendedDMMFSchemaField
    * @returns type of the model extracted from string
    */
   private _setModelType() {
+    // "createManyAndReturn" is a special case and needs to be treated differently
+    // since the naming is createMany[Model]AndReturn
+    if (this.prismaAction === 'createManyAndReturn') {
+      return this.name.replace('createMany', '').replace('AndReturn', '');
+    }
+
     return this.name
       .replace(this.prismaAction as string, '')
       .replace('OrThrow', '');

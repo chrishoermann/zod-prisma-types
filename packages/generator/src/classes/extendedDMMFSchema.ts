@@ -1,4 +1,4 @@
-import { DMMF } from '@prisma/generator-helper';
+import { DMMF, ReadonlyDeep } from '@prisma/generator-helper';
 
 import {
   ExtendedDMMFDatamodel,
@@ -23,7 +23,7 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
   readonly rootQueryType?: DMMF.Schema['rootQueryType'];
   readonly rootMutationType?: DMMF.Schema['rootMutationType'];
   readonly inputObjectTypes: {
-    readonly model?: DMMF.InputType[];
+    readonly model?: ReadonlyDeep<DMMF.InputType[]>;
     /**
      * Contains information about the prisma where, orderBy, and other input types.
      */
@@ -48,11 +48,11 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
     readonly argTypes: ExtendedDMMFOutputType[];
   };
   readonly enumTypes: {
-    readonly model?: DMMF.SchemaEnum[];
+    readonly model?: ReadonlyDeep<DMMF.SchemaEnum[]>;
     readonly prisma: ExtendedDMMFSchemaEnum[];
   };
   readonly fieldRefTypes: {
-    readonly prisma?: DMMF.FieldRefType[];
+    readonly prisma?: ReadonlyDeep<DMMF.FieldRefType[]>;
   };
   readonly hasJsonTypes: boolean;
   readonly hasBytesTypes: boolean;
@@ -82,7 +82,7 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
   }
 
   private _setExtendedInputObjectTypes(
-    schema: DMMF.Schema,
+    schema: ReadonlyDeep<DMMF.Schema>,
     datamodel: ExtendedDMMFDatamodel,
   ) {
     return {
@@ -95,24 +95,25 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
   }
 
   private _setExtendedOutputObjectTypes(
-    schema: DMMF.Schema,
+    schema: ReadonlyDeep<DMMF.Schema>,
     datamodel: ExtendedDMMFDatamodel,
   ) {
+    // The models where the name contains "CreateMany[modelName]AndReturn" must not be included!
+    // Since then additional schemas would be generated that are not used anywhere
+    // and that would not have a corresponding prisma type
+    const modelWithoutCreateManyAndReturn = schema.outputObjectTypes.model
+      .filter((type) => !type.name.includes('AndReturn'))
+      .map((type) => {
+        return new ExtendedDMMFOutputType(
+          this.generatorConfig,
+          type,
+          datamodel,
+        );
+      });
+
     return {
-      model: schema.outputObjectTypes.model.map((type) => {
-        return new ExtendedDMMFOutputType(
-          this.generatorConfig,
-          type,
-          datamodel,
-        );
-      }),
-      prisma: schema.outputObjectTypes.prisma.map((type) => {
-        return new ExtendedDMMFOutputType(
-          this.generatorConfig,
-          type,
-          datamodel,
-        );
-      }),
+      model: modelWithoutCreateManyAndReturn,
+      prisma: modelWithoutCreateManyAndReturn,
       aggregateAndCountTypes: schema.outputObjectTypes.prisma
         .filter(
           (type) =>
@@ -134,7 +135,7 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
     };
   }
 
-  private _setExtendedEnumTypes(schema: DMMF.Schema) {
+  private _setExtendedEnumTypes(schema: ReadonlyDeep<DMMF.Schema>) {
     return {
       ...schema.enumTypes,
       prisma: schema.enumTypes.prisma.map(

@@ -1,4 +1,4 @@
-import { DMMF } from '@prisma/generator-helper';
+import { DMMF, ReadonlyDeep } from '@prisma/generator-helper';
 
 import { ExtendedDMMFFieldValidatorPattern } from './04_extendedDMMFFieldValidatorPattern';
 import { GeneratorConfig } from '../../schemas';
@@ -7,7 +7,7 @@ export class ExtendedDMMFFieldDefaultValidators extends ExtendedDMMFFieldValidat
   protected _defaultValidatorString?: string;
 
   constructor(
-    field: DMMF.Field,
+    field: ReadonlyDeep<DMMF.Field>,
     generatorConfig: GeneratorConfig,
     modelName: string,
   ) {
@@ -49,12 +49,13 @@ export class ExtendedDMMFFieldDefaultValidators extends ExtendedDMMFFieldValidat
   // other properties will be used, but for now they are not.
 
   private _IsFieldDefault(
-    value?:
-      | DMMF.FieldDefault
-      | DMMF.FieldDefaultScalar
-      | DMMF.FieldDefaultScalar[],
-  ): value is DMMF.FieldDefault {
-    return (value as DMMF.FieldDefault)?.name !== undefined;
+    value?: ReadonlyDeep<
+      | ReadonlyDeep<DMMF.FieldDefault>
+      | ReadonlyDeep<DMMF.FieldDefaultScalar>
+      | ReadonlyDeep<DMMF.FieldDefaultScalar>[]
+    >,
+  ): value is ReadonlyDeep<DMMF.FieldDefault> {
+    return (value as ReadonlyDeep<DMMF.FieldDefault>)?.name !== undefined;
   }
 
   // The validator list needs to be updated after the default validator

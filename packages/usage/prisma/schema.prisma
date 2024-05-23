@@ -35,7 +35,7 @@ generator zod {
   // coerceDate                       = true // default is true
   // writeNullishInModelTypes         = false // default is false
   // prismaClientPath                 = "./generated/client" // optional
-  useTypeAssertions                = true // default is false
+  useTypeAssertions                = false // default is false
 }
 
 // MIXED CASE ENUMS AND MODELS

@@ -1,4 +1,4 @@
-import { DMMF } from '@prisma/generator-helper';
+import { DMMF, ReadonlyDeep } from '@prisma/generator-helper';
 
 import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
 import { ExtendedDMMFField } from './extendedDMMFField';
@@ -15,7 +15,7 @@ import {
 import { GeneratorConfig } from '../schemas';
 
 const SPLIT_NAME_REGEX =
-  /Unchecked|Create|Update|CreateMany|UpdateMany|Upsert|Where|WhereUnique|OrderBy|ScalarWhere|Aggregate|GroupBy/g;
+  /Unchecked|Create|Update|CreateMany|CreateManyAndReturn|UpdateMany|Upsert|Where|WhereUnique|OrderBy|ScalarWhere|Aggregate|GroupBy/g;
 
 /////////////////////////////////////////////////
 // CLASS
@@ -75,7 +75,7 @@ export class ExtendedDMMFInputType
     });
   }
 
-  private _setFields(fields: DMMF.SchemaArg[]) {
+  private _setFields(fields: ReadonlyDeep<DMMF.SchemaArg[]>) {
     // FILTER FIELD REF TYPES
     // -----------------------------------------------
 
@@ -227,7 +227,9 @@ export class ExtendedDMMFInputType
     return result;
   }
 
-  private _setExtendedWhereUniqueFields(fields: DMMF.SchemaArg[]) {
+  private _setExtendedWhereUniqueFields(
+    fields: ReadonlyDeep<DMMF.SchemaArg[]>,
+  ) {
     if (!this.constraints.fields || !this.name.includes('WhereUniqueInput')) {
       return undefined;
     }

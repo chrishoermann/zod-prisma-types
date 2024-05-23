@@ -15,24 +15,24 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^18.15.0",
-    "prisma": "^5.5.2",
+    "@types/node": "^18.19.33",
+    "prisma": "^5.14.0",
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "@prisma/client": "^5.5.2",
-    "@trpc/client": "^10.15.0",
-    "@trpc/server": "^10.15.0",
-    "@types/validator": "^13.7.13",
-    "cross-fetch": "^3.1.5",
+    "@prisma/client": "^5.14.0",
+    "@trpc/client": "^10.45.2",
+    "@trpc/server": "^10.45.2",
+    "@types/validator": "^13.11.10",
+    "cross-fetch": "^3.1.8",
     "decimal.js": "^10.4.3",
-    "prisma-zod-generator": "^0.8.11",
-    "superjson": "^2.2.0",
-    "ts-node": "^10.9.1",
+    "prisma-zod-generator": "^0.8.13",
+    "superjson": "^2.2.1",
+    "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
-    "validator": "^13.9.0",
+    "validator": "^13.12.0",
     "vitest": "^0.25.8",
-    "zod": "^3.22.4",
+    "zod": "^3.23.8",
     "zod-prisma-types": "workspace:*"
   }
 }

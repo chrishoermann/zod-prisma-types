@@ -1,4 +1,4 @@
-import { DMMF } from '@prisma/generator-helper';
+import { DMMF, ReadonlyDeep } from '@prisma/generator-helper';
 
 import { ExtendedDMMFModel } from '.';
 import { PRISMA_ACTION_ARRAY } from '../constants/objectMaps';
@@ -64,7 +64,7 @@ export class ExtendedDMMFOutputType
    * - Returns all fields that are not in `PRISMA_ACTION_ARRAY` if the fieldCategory is set to `OTHER_FIELDS`.
    */
   private _setFields(
-    fields: DMMF.SchemaField[],
+    fields: ReadonlyDeep<DMMF.SchemaField[]>,
     datamodel: ExtendedDMMFDatamodel,
     fieldCategory?: 'PRISMA_ACTION' | 'OTHER_FIELDS',
   ) {
@@ -72,7 +72,7 @@ export class ExtendedDMMFOutputType
       return fields
         .filter(
           (field) =>
-            !field.name.includes('Raw') && // necessary for mongodb bc a RawAggregate type would otherwise be generated
+            !field.name.includes('Raw') && // necessary for mongodb because a RawAggregate type would otherwise be generated
             PRISMA_ACTION_ARRAY.some((elem) => field.name.includes(elem)),
         )
         .map(

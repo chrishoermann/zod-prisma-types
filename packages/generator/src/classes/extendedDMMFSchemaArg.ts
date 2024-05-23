@@ -1,4 +1,4 @@
-import { DMMF } from '@prisma/generator-helper';
+import { DMMF, ReadonlyDeep } from '@prisma/generator-helper';
 
 import { ExtendedDMMFField, ExtendedDMMFSchemaArgInputType } from '.';
 import { GeneratorConfig } from '../schemas';
@@ -67,7 +67,7 @@ export class ExtendedDMMFSchemaArg
     this.linkedField = linkedField;
   }
 
-  private _setInputTypes = (inputTypes: DMMF.InputTypeRef[]) => {
+  private _setInputTypes = (inputTypes: ReadonlyDeep<DMMF.InputTypeRef[]>) => {
     // filter "null" from the inputTypes array to prevent the generator
     // from generating a union type with "null" and the actual field type
     // instead of e.g. a scalar type
