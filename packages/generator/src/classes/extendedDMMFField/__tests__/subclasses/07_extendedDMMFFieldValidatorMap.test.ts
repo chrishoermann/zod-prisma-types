@@ -1143,12 +1143,11 @@ export function testExtendedDMMFFieldValidatorMap<
         documentation: '@zod.string.array(.length(2))',
       });
 
-      expect(
-        () =>
-          field?.['_validatePatternInMap']({
-            key: 'use',
-            pattern: '.use(.length(2))',
-          }),
+      expect(() =>
+        field?.['_validatePatternInMap']({
+          key: 'use',
+          pattern: '.use(.length(2))',
+        }),
       ).toThrowError(
         "[@zod generator error]: Validator 'use' is not valid for type 'String', for specified '@zod.[key] or for 'z.array.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
       );
@@ -1170,8 +1169,8 @@ export function testExtendedDMMFFieldValidatorMap<
     it(`should pass invalid data for string`, async () => {
       const field = getField();
 
-      expect(
-        () => field?.['_getValidatorKeyFromPattern']('wrong(length(2))'),
+      expect(() =>
+        field?.['_getValidatorKeyFromPattern']('wrong(length(2))'),
       ).toThrowError(
         "[@zod generator error]: no matching validator key found in 'wrong(length(2))'. [Error Location]: Model: 'ModelName', Field: 'test'.",
       );
