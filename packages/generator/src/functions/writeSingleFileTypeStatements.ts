@@ -11,13 +11,13 @@ export const writeSingleFileTypeStatements: WriteStatements = (
 ) => {
   if (
     !dmmf.generatorConfig.createModelTypes ||
-    dmmf.generatorConfig.provider !== 'mongodb'
+    dmmf.datamodel.types.length === 0
   )
     return;
 
   fileWriter.writer.blankLine();
 
-  fileWriter.writeHeading(`MONGODB TYPES`, 'FAT');
+  fileWriter.writeHeading(`COMPOSITE TYPES`, 'FAT');
 
   dmmf.datamodel.types.forEach((type) => {
     fileWriter.writeHeading(`${type.formattedNames.upperCaseSpace}`, 'SLIM');
