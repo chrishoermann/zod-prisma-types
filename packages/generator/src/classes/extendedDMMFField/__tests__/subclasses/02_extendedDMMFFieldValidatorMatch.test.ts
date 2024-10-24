@@ -135,6 +135,19 @@ export function testExtendedDMMFFieldValidatorMatch<
       );
     });
 
+    it(`should match japanese character chōonpu (prolonged sound mark) in the regex`, async () => {
+      const match = VALIDATOR_TYPE_REGEX.exec(
+        `@zod.string({ invalid_type_error: "長音符ーが含まれる必要があります。" }).min(5, { message: "長音符ーが含まれる必要があります。" })`,
+      );
+
+      expect(match?.groups?.['customErrors']).toBe(
+        '({ invalid_type_error: "長音符ーが含まれる必要があります。" })',
+      );
+      expect(match?.groups?.['validatorPattern']).toBe(
+        '.min(5, { message: "長音符ーが含まれる必要があります。" })',
+      );
+    });
+
     it(`should match nested custom annotations`, async () => {
       const match = VALIDATOR_TYPE_REGEX.exec(
         `@zod.custom.use(z.object({contents: z.array(z.object({locale: z.string(), content: z.string()}))}))`,
