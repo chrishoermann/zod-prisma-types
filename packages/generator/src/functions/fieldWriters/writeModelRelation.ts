@@ -12,29 +12,16 @@ export const writeRelation = ({
   isPartial?: boolean;
   isOptionalDefaults?: boolean;
 }) => {
-  const isMongoDb = field.generatorConfig.provider === 'mongodb';
-
   writer
     .conditionalWrite(field.omitInModel(), '// omitted: ')
     .write(`${field.name}: `)
-    .conditionalWrite(
-      !isMongoDb && !isPartial && !isOptionalDefaults,
-      `z.lazy(() => ${field.type}WithRelationsSchema)`,
-    )
-
+    .write(`z.lazy(() => ${field.type}`)
     // if `isPartial` is `true`  we need to use `[ModelName]PartialWithRelationsSchema`
     // instead of`[ModelName]WithRelationsSchema` since this model is a model where all
     // fields are optional.
-
-    .conditionalWrite(
-      !isMongoDb && isPartial,
-      `z.lazy(() => ${field.type}PartialWithRelationsSchema)`,
-    )
-    .conditionalWrite(
-      !isMongoDb && isOptionalDefaults,
-      `z.lazy(() => ${field.type}OptionalDefaultsWithRelationsSchema)`,
-    )
-    .conditionalWrite(isMongoDb, `z.lazy(() => ${field.type}Schema)`);
-
+    .conditionalWrite(isPartial, 'Partial')
+    .conditionalWrite(isOptionalDefaults, 'OptionalDefaults')
+    .conditionalWrite(!field.isCompositeType, 'WithRelations')
+    .write('Schema)');
   writeFieldAdditions({ writer, field, writeOptionalDefaults });
 };

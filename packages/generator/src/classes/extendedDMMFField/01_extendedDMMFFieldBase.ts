@@ -39,6 +39,7 @@ export class ExtendedDMMFFieldBase
   readonly isJsonType: boolean;
   readonly isBytesType: boolean;
   readonly isDecimalType: boolean;
+  readonly isCompositeType: boolean;
   readonly isOptionalOnDefaultValue: boolean;
   readonly isOptionalDefaultField: boolean;
 
@@ -74,6 +75,7 @@ export class ExtendedDMMFFieldBase
     this.isJsonType = this._setIsJsonType();
     this.isBytesType = this._setIsBytesType();
     this.isDecimalType = this._setIsDecimalType();
+    this.isCompositeType = this._setIsCompositeType();
     this.isOptionalOnDefaultValue = this._setDefaultValueOptional();
     this.isOptionalDefaultField = this._setIsOptionalDefaultField();
 
@@ -90,6 +92,10 @@ export class ExtendedDMMFFieldBase
 
   private _setIsDecimalType() {
     return this.type === 'Decimal';
+  }
+
+  private _setIsCompositeType() {
+    return !this.relationName && this.kind === 'object';
   }
 
   private _setIsNullable() {

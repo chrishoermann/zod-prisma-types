@@ -122,12 +122,18 @@ strictNullChecks: true,
 
 > Supports prisma 4.x - 5.x
 
-Just add the following code to your `prisma.schema` file to create a single `index.ts` file in the `./generated/zod` output folder containing all the zod prisma schemas.
+Add the following code to your `prisma.schema` file:
 
 ```prisma
 generator zod {
   provider       = "zod-prisma-types"
 }
+```
+
+Then run the following command to create a single `index.ts` file in the `./generated/zod` output folder containing all the zod prisma schemas:
+
+```sh
+npx prisma generate zod
 ```
 
 Then import the schema's into your file:

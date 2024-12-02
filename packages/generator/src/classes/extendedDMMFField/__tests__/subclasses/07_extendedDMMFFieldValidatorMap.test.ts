@@ -42,99 +42,99 @@ export function testExtendedDMMFFieldValidatorMap<
   describe("ExtendedDMMFFieldValidatorMap's regex with japanese chars", () => {
     it(`string validator number should return match for regex with japanese chars`, async () => {
       const result = STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX.exec(
-        ".min(5, {message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'})",
+        ".min(5, {message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。'})",
       );
       expect(result?.groups?.validator).toBe('min');
       expect(result?.groups?.number).toBe('5');
       expect(result?.groups?.message).toBe(
-        "{message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'}",
+        "{message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。'}",
       );
     });
 
     it(`string validator message should return match for regex with japanese chars`, async () => {
       const result = STRING_VALIDATOR_MESSAGE_REGEX.exec(
-        ".email({message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'})",
+        ".email({message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。'})",
       );
       expect(result?.groups?.validator).toBe('email');
       expect(result?.groups?.message).toBe(
-        "{message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'}",
+        "{message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。'}",
       );
     });
 
     it(`string validator string should return match for regex with japanese chars`, async () => {
       const result = STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX.exec(
-        ".startsWith('ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。', {message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'})",
+        ".startsWith('ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。', {message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。'})",
       );
       expect(result?.groups?.validator).toBe('startsWith');
       expect(result?.groups?.string).toBe(
-        "'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'",
+        "'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。'",
       );
       expect(result?.groups?.message).toBe(
-        "{message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'}",
+        "{message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。'}",
       );
     });
 
     it(`number validator number should return match for regex with japanese chars`, async () => {
       const result = NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX.exec(
-        ".min(2, {message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'})",
+        ".min(2, {message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。'})",
       );
       expect(result?.groups?.validator).toBe('min');
       expect(result?.groups?.number).toBe('2');
       expect(result?.groups?.message).toBe(
-        "{message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'}",
+        "{message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。'}",
       );
     });
 
     it(`number validator message should return match for regex with japanese chars`, async () => {
       const result = NUMBER_VALIDATOR_MESSAGE_REGEX.exec(
-        ".int({message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'})",
+        ".int({message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。'})",
       );
       expect(result?.groups?.validator).toBe('int');
       expect(result?.groups?.message).toBe(
-        "{message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'}",
+        "{message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。'}",
       );
     });
 
     it(`date validator number should return match for regex with japanese chars`, async () => {
       const result = DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX.exec(
-        ".min(new Date(01-01-2022), { message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' })",
+        ".min(new Date(01-01-2022), { message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。' })",
       );
       expect(result?.groups?.validator).toBe('min');
       expect(result?.groups?.date).toBe('new Date(01-01-2022)');
       expect(result?.groups?.message).toBe(
-        "{ message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' }",
+        "{ message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。' }",
       );
     });
 
     it(`bigint validator number should return match for regex with japanese chars`, async () => {
       const result = BIGINT_VALIDATOR_NUMBER_AND_MESSAGE_REGEX.exec(
-        ".gt(2n, { message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' })",
+        ".gt(2n, { message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。' })",
       );
       expect(result?.groups?.validator).toBe('gt');
       expect(result?.groups?.number).toBe('2n');
       expect(result?.groups?.message).toBe(
-        "{ message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' }",
+        "{ message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。' }",
       );
     });
 
     it(`bigint validator message should return match for regex with japanese chars`, async () => {
       const result = BIGINT_VALIDATOR_MESSAGE_REGEX.exec(
-        ".positive({message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'})",
+        ".positive({message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。'})",
       );
       expect(result?.groups?.validator).toBe('positive');
       expect(result?.groups?.message).toBe(
-        "{message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。'}",
+        "{message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。'}",
       );
     });
 
     it(`custom validator message should return match for regex with japanese chars`, async () => {
       const result = CUSTOM_VALIDATOR_MESSAGE_REGEX.exec(
-        ".use(z.string.min(2, { message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' }))",
+        ".use(z.string.min(2, { message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。' }))",
       );
 
       expect(result?.groups?.validator).toBe('use');
       expect(result?.groups?.pattern).toBe(
-        "z.string.min(2, { message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' })",
+        "z.string.min(2, { message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。' })",
       );
     });
 
@@ -151,12 +151,12 @@ export function testExtendedDMMFFieldValidatorMap<
 
     it(`array validator message should return match for regex with japanese chars`, async () => {
       const result = CUSTOM_VALIDATOR_MESSAGE_REGEX.exec(
-        "array(min(2, { message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' }))",
+        "array(min(2, { message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。' }))",
       );
 
       expect(result?.groups?.validator).toBe('array');
       expect(result?.groups?.pattern).toBe(
-        "min(2, { message: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' })",
+        "min(2, { message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。' })",
       );
     });
   });

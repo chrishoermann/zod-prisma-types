@@ -11,19 +11,19 @@ import {
 describe(`ExtendedDMMFFieldValidatorCustomErrors`, () => {
   it(`array validator number should return match for regex with japanese chars`, async () => {
     const result = VALIDATOR_CUSTOM_ERROR_REGEX.exec(
-      "({ invalid_type_error: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。', required_error: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。', description: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' })",
+      "({ invalid_type_error: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。', required_error: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。', description: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。' })",
     );
     expect(result?.groups?.object).toBe(
-      "{ invalid_type_error: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。', required_error: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。', description: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' }",
+      "{ invalid_type_error: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。', required_error: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。', description: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。' }",
     );
     expect(result?.groups?.messages).toBe(
-      " invalid_type_error: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。', required_error: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。', description: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' ",
+      " invalid_type_error: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。', required_error: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。', description: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。' ",
     );
   });
 
   it(`array validator number should return match for regex with japanese chars`, async () => {
     const messageArray =
-      " invalid_type_error: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。', required_error: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。', description: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' "
+      " invalid_type_error: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。', required_error: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。', description: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。' "
         .replace(VALIDATOR_CUSTOM_ERROR_MESSAGE_REGEX, '')
         .match(VALIDATOR_CUSTOM_ERROR_SPLIT_KEYS_REGEX);
 
@@ -49,7 +49,7 @@ describe(`ExtendedDMMFFieldValidatorCustomErrors`, () => {
   });
   it(`array validator number should return match for regex with japanese chars`, async () => {
     const messageArray =
-      " invalid_type_error: 'ÁÀȦÂÄǞǍĂĀÃÅǺǼǢĆĊĈČĎḌḐḒÉÈĖÊËĚĔĒẼE̊ẸǴĠĜǦĞG̃ĢĤḤáàȧâäǟǎăāãåǻǽǣćċĉčďḍḑḓéèėêëěĕēẽe̊ẹǵġĝǧğg̃ģĥḥÍÌİÎÏǏĬĪĨỊĴĶǨĹĻĽĿḼM̂M̄ʼNŃN̂ṄN̈ŇN̄ÑŅṊÓÒȮȰÔÖȪǑŎŌÕȬŐỌǾƠíìiîïǐĭīĩịĵķǩĺļľŀḽm̂m̄ŉńn̂ṅn̈ňn̄ñņṋóòôȯȱöȫǒŏōõȭőọǿơP̄ŔŘŖŚŜṠŠȘṢŤȚṬṰÚÙÛÜǓŬŪŨŰŮỤẂẀŴẄÝỲŶŸȲỸŹŻŽẒǮp̄ŕřŗśŝṡšşṣťțṭṱúùûüǔŭūũűůụẃẁŵẅýỳŷÿȳỹźżžẓǯßœŒçÇ', required_error: 'ÁÀȦÂÄǞǍĂĀÃÅǺǼǢĆĊĈČĎḌḐḒÉÈĖÊËĚĔĒẼE̊ẸǴĠĜǦĞG̃ĢĤḤáàȧâäǟǎăāãåǻǽǣćċĉčďḍḑḓéèėêëěĕēẽe̊ẹǵġĝǧğg̃ģĥḥÍÌİÎÏǏĬĪĨỊĴĶǨĹĻĽĿḼM̂M̄ʼNŃN̂ṄN̈ŇN̄ÑŅṊÓÒȮȰÔÖȪǑŎŌÕȬŐỌǾƠíìiîïǐĭīĩịĵķǩĺļľŀḽm̂m̄ŉńn̂ṅn̈ňn̄ñņṋóòôȯȱöȫǒŏōõȭőọǿơP̄ŔŘŖŚŜṠŠȘṢŤȚṬṰÚÙÛÜǓŬŪŨŰŮỤẂẀŴẄÝỲŶŸȲỸŹŻŽẒǮp̄ŕřŗśŝṡšşṣťțṭṱúùûüǔŭūũűůụẃẁŵẅýỳŷÿȳỹźżžẓǯßœŒçÇ', description: 'ひらがな、カタカナ、漢字が少なくとも1つずつ含まれる必要があります。' "
+      " invalid_type_error: 'ÁÀȦÂÄǞǍĂĀÃÅǺǼǢĆĊĈČĎḌḐḒÉÈĖÊËĚĔĒẼE̊ẸǴĠĜǦĞG̃ĢĤḤáàȧâäǟǎăāãåǻǽǣćċĉčďḍḑḓéèėêëěĕēẽe̊ẹǵġĝǧğg̃ģĥḥÍÌİÎÏǏĬĪĨỊĴĶǨĹĻĽĿḼM̂M̄ʼNŃN̂ṄN̈ŇN̄ÑŅṊÓÒȮȰÔÖȪǑŎŌÕȬŐỌǾƠíìiîïǐĭīĩịĵķǩĺļľŀḽm̂m̄ŉńn̂ṅn̈ňn̄ñņṋóòôȯȱöȫǒŏōõȭőọǿơP̄ŔŘŖŚŜṠŠȘṢŤȚṬṰÚÙÛÜǓŬŪŨŰŮỤẂẀŴẄÝỲŶŸȲỸŹŻŽẒǮp̄ŕřŗśŝṡšşṣťțṭṱúùûüǔŭūũűůụẃẁŵẅýỳŷÿȳỹźżžẓǯßœŒçÇ', required_error: 'ÁÀȦÂÄǞǍĂĀÃÅǺǼǢĆĊĈČĎḌḐḒÉÈĖÊËĚĔĒẼE̊ẸǴĠĜǦĞG̃ĢĤḤáàȧâäǟǎăāãåǻǽǣćċĉčďḍḑḓéèėêëěĕēẽe̊ẹǵġĝǧğg̃ģĥḥÍÌİÎÏǏĬĪĨỊĴĶǨĹĻĽĿḼM̂M̄ʼNŃN̂ṄN̈ŇN̄ÑŅṊÓÒȮȰÔÖȪǑŎŌÕȬŐỌǾƠíìiîïǐĭīĩịĵķǩĺļľŀḽm̂m̄ŉńn̂ṅn̈ňn̄ñņṋóòôȯȱöȫǒŏōõȭőọǿơP̄ŔŘŖŚŜṠŠȘṢŤȚṬṰÚÙÛÜǓŬŪŨŰŮỤẂẀŴẄÝỲŶŸȲỸŹŻŽẒǮp̄ŕřŗśŝṡšşṣťțṭṱúùûüǔŭūũűůụẃẁŵẅýỳŷÿȳỹźżžẓǯßœŒçÇ', description: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。' "
         .replace(VALIDATOR_CUSTOM_ERROR_MESSAGE_REGEX, '')
         .match(VALIDATOR_CUSTOM_ERROR_SPLIT_KEYS_REGEX);
 
