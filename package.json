@@ -12,5 +12,6 @@
   "license": "ISC",
   "dependencies": {
     "turbo": "^1.8.3"
-  }
+  },
+  "packageManager": "pnpm@9.14.2"
 }
