@@ -39,6 +39,12 @@ export interface ExtendedDMMFField extends DMMF.Field, FormattedNames {
    * Is used in writer functions.
    * Makes the code more readable when it is in a seperate property.
    */
+  readonly isCompositeType: boolean;
+
+  /**
+   * Is used in writer functions.
+   * Makes the code more readable when it is in a seperate property.
+   */
   readonly isOptionalOnDefaultValue: boolean;
 
   /**
