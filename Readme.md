@@ -12,6 +12,9 @@ Since I'm maintaining the generator in my spare time consider buying me a coffee
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/chrishoermann)
 
+## Supported versions
+Currently this package supports Prisma versions 4.x - 5.x, if you are having an issue please try reverting from Prisma 6.x before opening an issue.
+
 ## Breaking changes in v2.x.x<!-- omit from toc -->
 
 Be aware that some generator options have been removed, a few new ones have been added, the behavior of custom imports has changed and ts-morph is no longer needed to generate files in v2.0.0.
