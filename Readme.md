@@ -13,7 +13,9 @@ Since I'm maintaining the generator in my spare time consider buying me a coffee
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/chrishoermann)
 
 ## Supported versions
-Currently this package supports Prisma versions 4.x - 5.x, if you are having an issue please try reverting from Prisma 6.x before opening an issue.
+
+Currently this package supports Prisma versions 4.x - 5.x. Version 6.x is also supported but there could be edge cases where the generator does not work as expected yet.
+If you are having an issue please try reverting from Prisma 6.x before opening an issue.
 
 ## Breaking changes in v2.x.x<!-- omit from toc -->
 
@@ -33,6 +35,7 @@ Be aware that some generator options have been removed, a few new ones have been
 
 ## Table of contents<!-- omit from toc -->
 
+- [Supported versions](#supported-versions)
 - [About this project](#about-this-project)
 - [Installation](#installation)
 - [`tsconfig.json`](#tsconfigjson)

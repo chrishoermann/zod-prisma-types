@@ -67,7 +67,11 @@ export const writeSelect = (
       });
     });
 
-  writer.write(`).strict()`);
+  writer
+    .write(`).strict()`)
+    .write(' as z.ZodType<Prisma.')
+    .write(`${model.name}Select>`)
+    .newLine();
 
   if (useMultipleFiles && !getSingleFileContent) {
     writer.blankLine().writeLine(`export default ${model.name}SelectSchema;`);
