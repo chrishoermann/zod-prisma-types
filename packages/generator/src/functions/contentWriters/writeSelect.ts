@@ -69,8 +69,8 @@ export const writeSelect = (
 
   writer
     .write(`).strict()`)
-    .write(' as z.ZodType<Prisma.')
-    .write(`${model.name}Select>`)
+    // .write(' as z.ZodType<Prisma.')
+    // .write(`${model.name}Select>`)
     .newLine();
 
   if (useMultipleFiles && !getSingleFileContent) {
