@@ -63,7 +63,7 @@ model MODELWithUpperCase {
 
 model ModelWithOmitFields {
   id           String  @id @default(cuid())
-  string       String?
+  string       String? /// @zod.string.describe("Some description")
   omitField    String? /// @zod.custom.omit([model, input])
   omitRequired String /// @zod.custom.omit([model, input])
 }

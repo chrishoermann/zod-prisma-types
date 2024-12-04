@@ -422,6 +422,12 @@ export function testExtendedDMMFFieldValidatorMap<
           pattern: '.array(.length(2))',
         }),
       ).toBe(true);
+      expect(
+        map({
+          key: 'describe',
+          pattern: '.describe("some")',
+        }),
+      ).toBe(true);
     });
 
     it(`should pass valid string with message data to validator map`, async () => {
@@ -647,6 +653,12 @@ export function testExtendedDMMFFieldValidatorMap<
           pattern: '.array(.length(2))',
         }),
       ).toBe(true);
+      expect(
+        map({
+          key: 'describe',
+          pattern: '.describe("some")',
+        }),
+      ).toBe(true);
     });
 
     it(`should pass valid number with message data to validator map`, async () => {
@@ -731,7 +743,7 @@ export function testExtendedDMMFFieldValidatorMap<
       ).toBe(true);
     });
 
-    it(`should pass ivalid data to to validator map`, async () => {
+    it(`should pass invalid data to to validator map`, async () => {
       const map = field?.['_validatorMap']['number'];
 
       expect(() =>
@@ -744,7 +756,7 @@ export function testExtendedDMMFFieldValidatorMap<
       );
     });
 
-    it(`should pass ivalid key to to validator map`, async () => {
+    it(`should pass invalid key to to validator map`, async () => {
       const map = field?.['_validatorMap']['number'];
 
       expect(() =>
@@ -780,6 +792,12 @@ export function testExtendedDMMFFieldValidatorMap<
           pattern: '.array(.length(2))',
         }),
       ).toBe(true);
+      expect(
+        map({
+          key: 'describe',
+          pattern: '.describe("some")',
+        }),
+      ).toBe(true);
     });
 
     it(`should pass valid date with message data to validator map`, async () => {
@@ -804,7 +822,7 @@ export function testExtendedDMMFFieldValidatorMap<
       ).toBe(true);
     });
 
-    it(`should pass ivalid data to to validator map`, async () => {
+    it(`should pass invalid data to to validator map`, async () => {
       const map = field?.['_validatorMap']['date'];
 
       expect(() =>
@@ -817,7 +835,7 @@ export function testExtendedDMMFFieldValidatorMap<
       );
     });
 
-    it(`should pass ivalid key to to validator map`, async () => {
+    it(`should pass invalid key to to validator map`, async () => {
       const map = field?.['_validatorMap']['date'];
 
       expect(() =>
@@ -893,6 +911,12 @@ export function testExtendedDMMFFieldValidatorMap<
         map({
           key: 'array',
           pattern: '.array(.length(2))',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'describe',
+          pattern: '.describe("some")',
         }),
       ).toBe(true);
     });
