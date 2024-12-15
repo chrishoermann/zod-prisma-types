@@ -42,53 +42,36 @@ export const writeModelOrType = (
       }
 
       const imports = new Set<string>();
-      const typeImports: string[][] = [];
-      const schemaImports: string[][] = [];
 
       model.filteredRelationFields.forEach((field) => {
-        if (!dmmf.generatorConfig.isMongoDb) {
-          typeImports.push([
-            `${field.type}WithRelations`,
-            `${field.type}Schema`,
-          ]);
-          schemaImports.push([
-            `${field.type}WithRelationsSchema`,
-            `${field.type}Schema`,
-          ]);
+        const importName = `${field.type}Schema`;
+        const typeImports: string[] = [];
+        const schemaImports: string[] = [];
+        const withRelationsOrNot = !field.isCompositeType
+          ? 'WithRelations'
+          : '';
+        typeImports.push(`${field.type}${withRelationsOrNot}`);
+        schemaImports.push(`${field.type}${withRelationsOrNot}Schema`);
 
-          if (model.writePartialTypes) {
-            typeImports.push([
-              `${field.type}PartialWithRelations`,
-              `${field.type}Schema`,
-            ]);
-            schemaImports.push([
-              `${field.type}PartialWithRelationsSchema`,
-              `${field.type}Schema`,
-            ]);
-          }
-
-          if (model.writeOptionalDefaultValuesTypes) {
-            typeImports.push([
-              `${field.type}OptionalDefaultsWithRelations`,
-              `${field.type}Schema`,
-            ]);
-            schemaImports.push([
-              `${field.type}OptionalDefaultsWithRelationsSchema`,
-              `${field.type}Schema`,
-            ]);
-          }
-        } else {
-          typeImports.push([`${field.type}`, `${field.type}Schema`]);
-          schemaImports.push([`${field.type}Schema`, `${field.type}Schema`]);
+        if (model.writePartialTypes) {
+          typeImports.push(`${field.type}Partial${withRelationsOrNot}`);
+          schemaImports.push(`${field.type}Partial${withRelationsOrNot}Schema`);
         }
-      });
 
-      typeImports.forEach((type) => {
-        imports.add(`import type { ${type[0]} } from './${type[1]}'`);
-      });
-
-      schemaImports.forEach((schema) => {
-        imports.add(`import { ${schema[0]} } from './${schema[1]}'`);
+        if (model.writeOptionalDefaultValuesTypes) {
+          typeImports.push(
+            `${field.type}OptionalDefaults${withRelationsOrNot}`,
+          );
+          schemaImports.push(
+            `${field.type}OptionalDefaults${withRelationsOrNot}Schema`,
+          );
+        }
+        imports.add(
+          `import { ${schemaImports.join(', ')} } from './${importName}'`,
+        );
+        imports.add(
+          `import type { ${typeImports.join(', ')} } from './${importName}'`,
+        );
       });
 
       writeImportSet(imports);
@@ -240,10 +223,10 @@ export const writeModelOrType = (
             .conditionalWrite(!field.isRequired, '?')
             .write(': ')
             .conditionalWrite(
-              !dmmf.generatorConfig.isMongoDb,
+              !field.isCompositeType,
               `${field.type}WithRelations`,
             )
-            .conditionalWrite(dmmf.generatorConfig.isMongoDb, `${field.type}`)
+            .conditionalWrite(field.isCompositeType, `${field.type}`)
             .conditionalWrite(field.isList, '[]')
             .conditionalWrite(!field.isRequired, ' | null')
             .write(';')
@@ -308,10 +291,13 @@ export const writeModelOrType = (
             .conditionalWrite(!field.isRequired, '?')
             .write(': ')
             .conditionalWrite(
-              !dmmf.generatorConfig.isMongoDb,
+              !field.isCompositeType,
               `${field.type}OptionalDefaultsWithRelations`,
             )
-            .conditionalWrite(dmmf.generatorConfig.isMongoDb, `${field.type}`)
+            .conditionalWrite(
+              field.isCompositeType,
+              `${field.type}OptionalDefaults`,
+            )
             .conditionalWrite(field.isList, '[]')
             .conditionalWrite(!field.isRequired, ' | null')
             .write(';')
@@ -381,10 +367,10 @@ export const writeModelOrType = (
             .write('?')
             .write(': ')
             .conditionalWrite(
-              !dmmf.generatorConfig.isMongoDb,
+              !field.isCompositeType,
               `${field.type}PartialWithRelations`,
             )
-            .conditionalWrite(dmmf.generatorConfig.isMongoDb, `${field.type}`)
+            .conditionalWrite(field.isCompositeType, `${field.type}Partial`)
             .conditionalWrite(field.isList, '[]')
             .conditionalWrite(!field.isRequired, ' | null')
             .write(';')

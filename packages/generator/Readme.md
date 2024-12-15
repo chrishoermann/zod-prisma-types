@@ -12,6 +12,11 @@ Since I'm maintaining the generator in my spare time consider buying me a coffee
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/chrishoermann)
 
+## Supported versions
+
+Currently this package supports Prisma versions 4.x - 5.x. Version 6.x is also supported but there could be edge cases where the generator does not work as expected yet.
+If you are having an issue please try reverting from Prisma 6.x before opening an issue.
+
 ## Breaking changes in v2.x.x<!-- omit from toc -->
 
 Be aware that some generator options have been removed, a few new ones have been added, the behavior of custom imports has changed and ts-morph is no longer needed to generate files in v2.0.0.
@@ -30,6 +35,7 @@ Be aware that some generator options have been removed, a few new ones have been
 
 ## Table of contents<!-- omit from toc -->
 
+- [Supported versions](#supported-versions)
 - [About this project](#about-this-project)
 - [Installation](#installation)
 - [`tsconfig.json`](#tsconfigjson)
@@ -122,12 +128,18 @@ strictNullChecks: true,
 
 > Supports prisma 4.x - 5.x
 
-Just add the following code to your `prisma.schema` file to create a single `index.ts` file in the `./generated/zod` output folder containing all the zod prisma schemas.
+Add the following code to your `prisma.schema` file:
 
 ```prisma
 generator zod {
   provider       = "zod-prisma-types"
 }
+```
+
+Then run the following command to create a single `index.ts` file in the `./generated/zod` output folder containing all the zod prisma schemas:
+
+```sh
+npx prisma generate zod
 ```
 
 Then import the schema's into your file:
@@ -482,9 +494,9 @@ export const UserPartialWithRelationsSchema: z.ZodType<UserPartialWithRelations>
       location: z.lazy(() => LocationPartialWithRelationsSchema).nullable(),
     }),
   ).partial();
-```
 
 export type UserPartial = z.infer<typeof UserPartialSchema>;
+```
 
 ### `useDefaultValidators`
 

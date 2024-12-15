@@ -14,6 +14,7 @@ export class ExtendedDMMFModelBase
 
   readonly name: DMMF.Model['name'];
   readonly dbName: DMMF.Model['dbName'];
+  readonly schema: DMMF.Model['schema'];
   readonly uniqueFields: DMMF.Model['uniqueFields'];
   readonly uniqueIndexes: DMMF.Model['uniqueIndexes'];
   readonly documentation?: DMMF.Model['documentation'];
@@ -35,6 +36,7 @@ export class ExtendedDMMFModelBase
     this.generatorConfig = generatorConfig;
     this.name = model.name;
     this.dbName = model.dbName;
+    this.schema = model.schema;
     this.uniqueFields = model.uniqueFields;
     this.uniqueIndexes = model.uniqueIndexes;
     this.documentation = model.documentation;
