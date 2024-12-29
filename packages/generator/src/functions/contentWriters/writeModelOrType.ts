@@ -222,11 +222,7 @@ export const writeModelOrType = (
             .write(field.name)
             .conditionalWrite(!field.isRequired, '?')
             .write(': ')
-            .conditionalWrite(
-              !field.isCompositeType,
-              `${field.type}WithRelations`,
-            )
-            .conditionalWrite(field.isCompositeType, `${field.type}`)
+            .write(`${field.type}`)
             .conditionalWrite(field.isList, '[]')
             .conditionalWrite(!field.isRequired, ' | null')
             .write(';')
