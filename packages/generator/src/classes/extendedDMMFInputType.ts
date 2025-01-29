@@ -15,7 +15,7 @@ import {
 import { GeneratorConfig } from '../schemas';
 
 const SPLIT_NAME_REGEX =
-  /Unchecked|Create|Update|CreateMany|CreateManyAndReturn|UpdateMany|Upsert|Where|WhereUnique|OrderBy|ScalarWhere|Aggregate|GroupBy/g;
+  /Unchecked|Create|Update|CreateMany|CreateManyAndReturn|UpdateMany|UpdateManyAndReturn|Upsert|Where|WhereUnique|OrderBy|ScalarWhere|Aggregate|GroupBy/g;
 
 /////////////////////////////////////////////////
 // CLASS

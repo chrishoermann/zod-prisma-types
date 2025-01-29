@@ -102,7 +102,8 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
     // Since then additional schemas would be generated that are not used anywhere
     // and that would not have a corresponding prisma type
     const modelWithoutCreateManyAndReturn = schema.outputObjectTypes.model
-      .filter((type) => !type.name.includes('AndReturn'))
+      .filter((type) => !type.name.includes('createManyAndReturn'))
+      .filter((type) => !type.name.includes('updateManyAndReturn'))
       .map((type) => {
         return new ExtendedDMMFOutputType(
           this.generatorConfig,
