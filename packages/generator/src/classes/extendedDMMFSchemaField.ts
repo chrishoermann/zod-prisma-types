@@ -135,10 +135,21 @@ export class ExtendedDMMFSchemaField
    * @returns type of the model extracted from string
    */
   private _setModelType() {
-    // "createManyAndReturn" is a special case and needs to be treated differently
-    // since the naming is createMany[Model]AndReturn
-    if (this.prismaAction === 'createManyAndReturn') {
+    // createMany" and "updateMany" have a special case where the model name contains "AndReturn"
+    // e.g. "createManyUserAndReturn" -> "User"
+
+    if (
+      (this.prismaAction === 'createMany' && this.name.includes('AndReturn')) ||
+      this.prismaAction === 'createManyAndReturn'
+    ) {
       return this.name.replace('createMany', '').replace('AndReturn', '');
+    }
+
+    if (
+      (this.prismaAction === 'updateMany' && this.name.includes('AndReturn')) ||
+      this.prismaAction === 'updateManyAndReturn'
+    ) {
+      return this.name.replace('updateMany', '').replace('AndReturn', '');
     }
 
     return this.name

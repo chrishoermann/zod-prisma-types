@@ -102,9 +102,9 @@ export const PRISMA_ACTION_ARG_MAP: Record<
   createOne: new FormattedNames('create'),
   createMany: new FormattedNames('createMany'),
   createManyAndReturn: new FormattedNames('createManyAndReturn'),
+  updateManyAndReturn: new FormattedNames('updateManyAndReturn'),
   updateOne: new FormattedNames('update'),
   updateMany: new FormattedNames('updateMany'),
-  updateManyAndReturn: new FormattedNames('updateManyAndReturn'),
   upsertOne: new FormattedNames('upsert'),
   deleteOne: new FormattedNames('delete'),
   deleteMany: new FormattedNames('deleteMany'),
@@ -116,16 +116,18 @@ export const PRISMA_ACTION_ARG_MAP: Record<
  * This array contains all prisma actions for which
  * we want to generate a zod input schema.
  */
-export const PRISMA_ACTION_ARRAY: FilterdPrismaAction[] = [
+export const PRISMA_ACTION_ARRAY: (
+  | Exclude<FilterdPrismaAction, 'createManyAndReturn'>
+  | 'AndReturn'
+)[] = [
   'findUnique',
   'findMany',
   'findFirst',
   'createOne',
+  'AndReturn', // special case for createManyAndReturn - order is important
   'createMany',
-  'createManyAndReturn',
   'updateOne',
   'updateMany',
-  'updateManyAndReturn',
   'upsertOne',
   'deleteOne',
   'deleteMany',
@@ -138,11 +140,10 @@ export const PRISMA_ACTION_MATCHER_ARRAY: PrimsaMatcherArray[] = [
   ['findMany', 'findMany'],
   ['findFirst', 'findFirst'],
   ['createOne', 'createOne'],
-  ['createManyAndReturn', 'createManyAndReturn'],
+  ['AndReturn', 'createManyAndReturn'],
   ['createMany', 'createMany'],
   ['updateOne', 'updateOne'],
   ['updateMany', 'updateMany'],
-  ['updateManyAndReturn', 'updateManyAndReturn'],
   ['upsertOne', 'upsertOne'],
   ['deleteOne', 'deleteOne'],
   ['deleteMany', 'deleteMany'],
@@ -150,4 +151,8 @@ export const PRISMA_ACTION_MATCHER_ARRAY: PrimsaMatcherArray[] = [
   ['groupBy', 'groupBy'],
 ];
 
-type PrimsaMatcherArray = [FilterdPrismaAction, FilterdPrismaAction];
+type PrismaActionMapperKeys =
+  | Exclude<FilterdPrismaAction, 'createManyAndReturn'>
+  | 'AndReturn';
+
+type PrimsaMatcherArray = [PrismaActionMapperKeys, FilterdPrismaAction];

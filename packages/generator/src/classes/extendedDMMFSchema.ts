@@ -104,6 +104,8 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
     const modelWithoutCreateManyAndReturn = schema.outputObjectTypes.model
       .filter((type) => !type.name.includes('createManyAndReturn'))
       .filter((type) => !type.name.includes('updateManyAndReturn'))
+      // since 6.3.0 the it should only be exclude everything wiht "AndReturn" and not only "CreateManyAndReturn"
+      .filter((type) => !type.name.includes('AndReturn'))
       .map((type) => {
         return new ExtendedDMMFOutputType(
           this.generatorConfig,
