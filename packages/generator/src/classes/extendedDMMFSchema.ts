@@ -102,8 +102,8 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
     // Since then additional schemas would be generated that are not used anywhere
     // and that would not have a corresponding prisma type
     const modelWithoutCreateManyAndReturn = schema.outputObjectTypes.model
-      .filter((type) => !type.name.includes('createManyAndReturn'))
-      .filter((type) => !type.name.includes('updateManyAndReturn'))
+      // .filter((type) => !type.name.includes('createManyAndReturn'))
+      // .filter((type) => !type.name.includes('updateManyAndReturn'))
       // since 6.3.0 the it should only be exclude everything wiht "AndReturn" and not only "CreateManyAndReturn"
       .filter((type) => !type.name.includes('AndReturn'))
       .map((type) => {

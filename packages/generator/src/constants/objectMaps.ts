@@ -140,7 +140,8 @@ export const PRISMA_ACTION_MATCHER_ARRAY: PrimsaMatcherArray[] = [
   ['findMany', 'findMany'],
   ['findFirst', 'findFirst'],
   ['createOne', 'createOne'],
-  ['AndReturn', 'createManyAndReturn'],
+  // ['AndReturn', 'createManyAndReturn'], // not needed anymore - is handled via createMany in extendedDMMFSchemaField
+  // ['AndReturn', 'updateManyAndReturn'], // not needed anymore - is handled via updateMany in extendedDMMFSchemaField
   ['createMany', 'createMany'],
   ['updateOne', 'updateOne'],
   ['updateMany', 'updateMany'],
