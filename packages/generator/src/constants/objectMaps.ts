@@ -104,6 +104,7 @@ export const PRISMA_ACTION_ARG_MAP: Record<
   createManyAndReturn: new FormattedNames('createManyAndReturn'),
   updateOne: new FormattedNames('update'),
   updateMany: new FormattedNames('updateMany'),
+  updateManyAndReturn: new FormattedNames('updateManyAndReturn'),
   upsertOne: new FormattedNames('upsert'),
   deleteOne: new FormattedNames('delete'),
   deleteMany: new FormattedNames('deleteMany'),
@@ -115,18 +116,16 @@ export const PRISMA_ACTION_ARG_MAP: Record<
  * This array contains all prisma actions for which
  * we want to generate a zod input schema.
  */
-export const PRISMA_ACTION_ARRAY: (
-  | Exclude<FilterdPrismaAction, 'createManyAndReturn'>
-  | 'AndReturn'
-)[] = [
+export const PRISMA_ACTION_ARRAY: FilterdPrismaAction[] = [
   'findUnique',
   'findMany',
   'findFirst',
   'createOne',
-  'AndReturn', // special case for createManyAndReturn - order is important
   'createMany',
+  'createManyAndReturn',
   'updateOne',
   'updateMany',
+  'updateManyAndReturn',
   'upsertOne',
   'deleteOne',
   'deleteMany',
@@ -139,10 +138,11 @@ export const PRISMA_ACTION_MATCHER_ARRAY: PrimsaMatcherArray[] = [
   ['findMany', 'findMany'],
   ['findFirst', 'findFirst'],
   ['createOne', 'createOne'],
-  ['AndReturn', 'createManyAndReturn'],
+  ['createManyAndReturn', 'createManyAndReturn'],
   ['createMany', 'createMany'],
   ['updateOne', 'updateOne'],
   ['updateMany', 'updateMany'],
+  ['updateManyAndReturn', 'updateManyAndReturn'],
   ['upsertOne', 'upsertOne'],
   ['deleteOne', 'deleteOne'],
   ['deleteMany', 'deleteMany'],
@@ -150,8 +150,4 @@ export const PRISMA_ACTION_MATCHER_ARRAY: PrimsaMatcherArray[] = [
   ['groupBy', 'groupBy'],
 ];
 
-type PrismaActionMapperKeys =
-  | Exclude<FilterdPrismaAction, 'createManyAndReturn'>
-  | 'AndReturn';
-
-type PrimsaMatcherArray = [PrismaActionMapperKeys, FilterdPrismaAction];
+type PrimsaMatcherArray = [FilterdPrismaAction, FilterdPrismaAction];

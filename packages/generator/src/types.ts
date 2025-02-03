@@ -136,6 +136,7 @@ export type PrismaAction =
   | 'createManyAndReturn'
   | 'updateOne'
   | 'updateMany'
+  | 'updateManyAndReturn'
   | 'upsertOne'
   | 'deleteOne'
   | 'deleteMany'
