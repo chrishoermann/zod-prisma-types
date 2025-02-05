@@ -67,8 +67,12 @@ export const writeOutputObjectType = (
           `select: ${field.modelType}SelectSchema.optional(),`,
         )
         .conditionalWriteLine(
-          field.writeIncludeArg,
+          field.writeIncludeArg && !useMultipleFiles,
           `include: ${field.modelType}IncludeSchema.optional(),`,
+        )
+        .conditionalWriteLine(
+          field.writeIncludeArg && useMultipleFiles,
+          `include: z.lazy(() => ${field.modelType}IncludeSchema).optional(),`,
         );
       field.args.forEach((arg) => {
         writer.write(`${arg.name}: `);
