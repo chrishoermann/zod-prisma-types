@@ -6,8 +6,8 @@ import { ExtendedDMMFSchemaArg } from './extendedDMMFSchemaArg';
 import { FormattedNames } from './formattedNames';
 import {
   FilterdPrismaAction,
+  FilterdPrismaActionPrimitive,
   PRISMA_ACTION_ARG_MAP,
-  // PRISMA_ACTION_ARRAY,
   PRISMA_ACTION_MATCHER_ARRAY,
 } from '../constants/objectMaps';
 import { GeneratorConfig } from '../schemas';
@@ -23,10 +23,8 @@ const OMIT_FIELDS_UNION_REGEX = /create|update|upsert|delete|data/;
 const WRITE_INCLUDE_SELECT_FIELDS_REGEX =
   /findUnique|findUniqueOrThrow|findFirst|findFirstOrThrow|findMany|create|update|upsert|delete/;
 
-const WRITE_NO_INCLUDE_SELECT_FIELDS_REGEX = /createMany|updateMany|deleteMany/;
-
-// const MUTEX_FIELDS_REGEX = /create|update|upsert/;
-// const MUTEX_FIELDS_MANY_REGEX = /createMany|updateMany/;
+const WRITE_NO_INCLUDE_SELECT_FIELDS_REGEX =
+  /createMany|updateMany|deleteMany|updateManyAndReturn|createManyAndReturn/;
 
 /////////////////////////////////////////////////
 // CLASS
@@ -46,7 +44,10 @@ export class ExtendedDMMFSchemaField
    * Prisma action of the field.
    * @example "findManyUser"
    */
-  readonly prismaAction: FilterdPrismaAction;
+  readonly prismaAction: {
+    action?: FilterdPrismaAction;
+    primitive: FilterdPrismaActionPrimitive[];
+  };
   /**
    * String that contains the arg name according to prisma types.
    * @example "UserFindManyArgs"
@@ -122,39 +123,27 @@ export class ExtendedDMMFSchemaField
    * @returns prisma action of the field e.g. "findMany"
    */
   private _setMatchedPrismaAction() {
-    const matched = PRISMA_ACTION_MATCHER_ARRAY.find(([matcher]) =>
-      this.name.includes(matcher),
-    )?.[1] as FilterdPrismaAction;
+    const matched = PRISMA_ACTION_MATCHER_ARRAY.find(([matcher]) => {
+      return matcher.every((match) => this.name.includes(match));
+    });
 
-    return matched;
+    return {
+      action: matched?.[1] as FilterdPrismaAction,
+      primitive: matched?.[0] ?? [],
+    };
   }
 
   /**
    * Extracts the type of the model from the prisma action.
+   * It uses the strings defined in `PRISMA_ACTION_MATCHER_ARRAY` to extract the model type.
    * @example "findManyUser" -> "User"
    * @returns type of the model extracted from string
    */
   private _setModelType() {
-    // createMany" and "updateMany" have a special case where the model name contains "AndReturn"
-    // e.g. "createManyUserAndReturn" -> "User"
-
-    if (
-      (this.prismaAction === 'createMany' && this.name.includes('AndReturn')) ||
-      this.prismaAction === 'createManyAndReturn'
-    ) {
-      return this.name.replace('createMany', '').replace('AndReturn', '');
-    }
-
-    if (
-      (this.prismaAction === 'updateMany' && this.name.includes('AndReturn')) ||
-      this.prismaAction === 'updateManyAndReturn'
-    ) {
-      return this.name.replace('updateMany', '').replace('AndReturn', '');
-    }
-
-    return this.name
-      .replace(this.prismaAction as string, '')
-      .replace('OrThrow', '');
+    return this.prismaAction.primitive.reduce(
+      (acc, curr) => acc.replace(curr, ''),
+      this.name,
+    );
   }
 
   /**
@@ -164,11 +153,7 @@ export class ExtendedDMMFSchemaField
    */
   private _setArgName() {
     const argName: FormattedNames | undefined =
-      PRISMA_ACTION_ARG_MAP[this.prismaAction];
-
-    if (this.name.includes('OrThrow')) {
-      return `${this.modelType}${argName?.formattedNames.pascalCase}OrThrowArgs`;
-    }
+      PRISMA_ACTION_ARG_MAP[this.prismaAction?.action as FilterdPrismaAction];
 
     if (!argName) return;
 
@@ -340,20 +325,6 @@ export class ExtendedDMMFSchemaField
       !this.generatorConfig.addSelectType
     );
   }
-
-  /**
-   * Used to determine if the field contains a union that
-   * should be mutually exclusive as in prismas `Without<..>` type
-   * used in `create`, `update` and `upsert` args.
-   */
-  // private _shouldAddDataToOmitUnionArray() {
-  //   return (
-  //     // check if the field contains `create`, `upsert`o `update` in its name
-  //     MUTEX_FIELDS_REGEX.test(this.name) &&
-  //     // check if the field does not contains `createMany` or `updateMany` in its name
-  //     !MUTEX_FIELDS_MANY_REGEX.test(this.name)
-  //   );
-  // }
 
   private _getOmitFieldsUnion(omitUnionArray: string[]) {
     return omitUnionArray.join(' | ');

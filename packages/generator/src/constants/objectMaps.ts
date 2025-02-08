@@ -1,6 +1,7 @@
 import { FormattedNames } from '../classes/formattedNames';
 import {
   PrismaAction,
+  PrismaActionPrimitives,
   PrismaScalarType,
   ZodCustomErrorKey,
   ZodPrismaScalarType,
@@ -87,6 +88,11 @@ export type FilterdPrismaAction = Exclude<
   'executeRaw' | 'queryRaw' | 'count'
 >;
 
+export type FilterdPrismaActionPrimitive = Exclude<
+  PrismaActionPrimitives,
+  'executeRaw' | 'queryRaw' | 'count'
+>;
+
 /**
  * Map is used to get the right naming for the prisma action
  * according to the prisma schema.
@@ -97,8 +103,10 @@ export const PRISMA_ACTION_ARG_MAP: Record<
   FormattedNames
 > = {
   findUnique: new FormattedNames('findUnique'),
+  findUniqueOrThrow: new FormattedNames('findUniqueOrThrow'),
   findMany: new FormattedNames('findMany'),
   findFirst: new FormattedNames('findFirst'),
+  findFirstOrThrow: new FormattedNames('findFirstOrThrow'),
   createOne: new FormattedNames('create'),
   createMany: new FormattedNames('createMany'),
   createManyAndReturn: new FormattedNames('createManyAndReturn'),
@@ -116,44 +124,45 @@ export const PRISMA_ACTION_ARG_MAP: Record<
  * This array contains all prisma actions for which
  * we want to generate a zod input schema.
  */
-export const PRISMA_ACTION_ARRAY: (
-  | Exclude<FilterdPrismaAction, 'createManyAndReturn'>
-  | 'AndReturn'
-)[] = [
-  'findUnique',
-  'findMany',
-  'findFirst',
-  'createOne',
-  'AndReturn', // special case for createManyAndReturn - order is important
-  'createMany',
-  'updateOne',
-  'updateMany',
-  'upsertOne',
-  'deleteOne',
-  'deleteMany',
-  'aggregate',
-  'groupBy',
+export const PRISMA_ACTION_ARRAY: FilterdPrismaActionPrimitive[][] = [
+  ['findUnique', 'OrThrow'],
+  ['findUnique'],
+  ['findMany'],
+  ['findFirst', 'OrThrow'],
+  ['findFirst'],
+  ['createOne'],
+  ['createMany', 'AndReturn'],
+  ['createMany'],
+  ['updateOne'],
+  ['updateMany', 'AndReturn'],
+  ['updateMany'],
+  ['upsertOne'],
+  ['deleteOne'],
+  ['deleteMany'],
+  ['aggregate'],
+  ['groupBy'],
 ];
 
-export const PRISMA_ACTION_MATCHER_ARRAY: PrimsaMatcherArray[] = [
-  ['findUnique', 'findUnique'],
-  ['findMany', 'findMany'],
-  ['findFirst', 'findFirst'],
-  ['createOne', 'createOne'],
-  // ['AndReturn', 'createManyAndReturn'], // not needed anymore - is handled via createMany in extendedDMMFSchemaField
-  // ['AndReturn', 'updateManyAndReturn'], // not needed anymore - is handled via updateMany in extendedDMMFSchemaField
-  ['createMany', 'createMany'],
-  ['updateOne', 'updateOne'],
-  ['updateMany', 'updateMany'],
-  ['upsertOne', 'upsertOne'],
-  ['deleteOne', 'deleteOne'],
-  ['deleteMany', 'deleteMany'],
-  ['aggregate', 'aggregate'],
-  ['groupBy', 'groupBy'],
+export const PRISMA_ACTION_MATCHER_ARRAY: PrismaActionMatcher[] = [
+  [['findUnique', 'OrThrow'], 'findUniqueOrThrow'],
+  [['findUnique'], 'findUnique'],
+  [['findMany'], 'findMany'],
+  [['findFirst', 'OrThrow'], 'findFirstOrThrow'],
+  [['findFirst'], 'findFirst'],
+  [['createOne'], 'createOne'],
+  [['createMany', 'AndReturn'], 'createManyAndReturn'],
+  [['updateMany', 'AndReturn'], 'updateManyAndReturn'],
+  [['createMany'], 'createMany'],
+  [['updateOne'], 'updateOne'],
+  [['updateMany'], 'updateMany'],
+  [['upsertOne'], 'upsertOne'],
+  [['deleteOne'], 'deleteOne'],
+  [['deleteMany'], 'deleteMany'],
+  [['aggregate'], 'aggregate'],
+  [['groupBy'], 'groupBy'],
 ];
 
-type PrismaActionMapperKeys =
-  | Exclude<FilterdPrismaAction, 'createManyAndReturn'>
-  | 'AndReturn';
-
-type PrimsaMatcherArray = [PrismaActionMapperKeys, FilterdPrismaAction];
+export type PrismaActionMatcher = [
+  FilterdPrismaActionPrimitive[],
+  FilterdPrismaAction,
+];

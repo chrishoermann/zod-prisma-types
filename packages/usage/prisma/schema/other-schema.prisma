@@ -1,0 +1,17 @@
+// model SomeModelInAnotherFile {
+//     id      Int     @id @default(autoincrement())
+//     string  String
+//     myValue MYValue
+// }
+
+// enum MYValue {
+//     A
+//     B
+//     C
+// }
+
+// model MODELWithUpperCase {
+//     id      Int     @id @default(autoincrement())
+//     STRING  String
+//     MYValue MYValue
+// }

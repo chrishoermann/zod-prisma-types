@@ -73,24 +73,36 @@ export class ExtendedDMMFOutputType
         .filter(
           (field) =>
             !field.name.includes('Raw') && // necessary for mongodb because a RawAggregate type would otherwise be generated
-            PRISMA_ACTION_ARRAY.some((elem) => field.name.includes(elem)),
+            PRISMA_ACTION_ARRAY.some((elem) => {
+              return elem.every((e) => field.name.includes(e));
+            }),
         )
-        .map(
-          (field) =>
-            new ExtendedDMMFSchemaField(this.generatorConfig, field, datamodel),
-        );
+        .map((field) => {
+          // console.log('prisma fields', field.name);
+          return new ExtendedDMMFSchemaField(
+            this.generatorConfig,
+            field,
+            datamodel,
+          );
+        });
     }
 
     if (fieldCategory === 'OTHER_FIELDS') {
       return fields
         .filter(
           (field) =>
-            !PRISMA_ACTION_ARRAY.some((elem) => field.name.includes(elem)),
+            !PRISMA_ACTION_ARRAY.some((elem) => {
+              return elem.every((e) => field.name.includes(e));
+            }),
         )
-        .map(
-          (field) =>
-            new ExtendedDMMFSchemaField(this.generatorConfig, field, datamodel),
-        );
+        .map((field) => {
+          // console.log('other fields', field.name);
+          return new ExtendedDMMFSchemaField(
+            this.generatorConfig,
+            field,
+            datamodel,
+          );
+        });
     }
 
     return fields.map((field) => {

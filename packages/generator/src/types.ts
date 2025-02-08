@@ -127,10 +127,30 @@ export type WriteBaseFilterTypesFunction = (options?: {
   aggregates?: boolean;
 }) => (writer: CodeBlockWriter) => void;
 
-export type PrismaAction =
+export type PrismaActionPrimitives =
+  | 'OrThrow'
+  | 'AndReturn'
   | 'findUnique'
   | 'findMany'
   | 'findFirst'
+  | 'createOne'
+  | 'createMany'
+  | 'updateOne'
+  | 'updateMany'
+  | 'upsertOne'
+  | 'deleteOne'
+  | 'deleteMany'
+  | 'executeRaw'
+  | 'aggregate'
+  | 'count'
+  | 'groupBy';
+
+export type PrismaAction =
+  | 'findUnique'
+  | 'findUniqueOrThrow'
+  | 'findMany'
+  | 'findFirst'
+  | 'findFirstOrThrow'
   | 'createOne'
   | 'createMany'
   | 'createManyAndReturn'

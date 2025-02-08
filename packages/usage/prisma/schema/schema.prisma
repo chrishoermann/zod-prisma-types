@@ -1,10 +1,10 @@
-// // This is your Prisma schema file,
-// // learn more about it in the docs: https://pris.ly/d/prisma-schema
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
   provider        = "prisma-client-js"
   // output   = "./generated/client"
-  previewFeatures = ["views"]
+  previewFeatures = ["views", "prismaSchemaFolder"]
   // previewFeatures = ["views"]
 }
 
@@ -19,7 +19,7 @@ datasource db {
 generator zod {
   provider                         = "ts-node-dev ../generator/src/bin.ts"
   // provider                         = "zod-prisma-types"
-  output                           = "./generated/zod" // default is ./generated/zod
+  output                           = "../generated/zod" // default is ./generated/zod
   useMultipleFiles                 = true // default is false 
   writeBarrelFiles                 = true // default is true
   // createInputTypes                 = false // default is true
@@ -467,4 +467,39 @@ model ModelWithFieldLevelImport {
 //   COACH
 //   RECRUITER
 //   DOCTOR
+// }
+
+// generator zod {
+//   provider         = "ts-node-dev ../generator/src/bin.ts"
+//   // provider                         = "zod-prisma-types"
+//   output           = "../generated/zod" // default is ./generated/zod
+//   useMultipleFiles = true // default is false 
+// }
+
+// generator client {
+//   provider        = "prisma-client-js"
+//   output          = "../generated/client"
+//   previewFeatures = ["views", "prismaSchemaFolder"]
+
+//   // binaryTargets = ["native", "rhel-openssl-3.0.x", "debian-openssl-3.0.x"]
+// }
+
+// datasource db {
+//   provider  = "postgresql"
+//   url       = env("DATABASE_URL")
+//   directUrl = env("DIRECT_URL")
+// }
+
+// model Campaigns {
+//   id                  Int       @id @default(autoincrement())
+//   user_id             String
+//   name                String
+//   product_description String
+//   start_date          DateTime  @default(now())
+//   end_date            DateTime?
+//   is_active           Boolean   @default(true)
+//   created_at          DateTime  @default(now())
+//   updated_at          DateTime  @updatedAt
+
+//   @@map("campaigns")
 // }
