@@ -14,8 +14,7 @@ Since I'm maintaining the generator in my spare time consider buying me a coffee
 
 ## Supported versions
 
-Currently this package supports Prisma versions 4.x - 5.x. Version 6.x is also supported but there could be edge cases where the generator does not work as expected yet.
-If you are having an issue please try reverting from Prisma 6.x before opening an issue.
+Currently this package supports Prisma versions 4.x - 6.x.
 
 ## Breaking changes in v2.x.x<!-- omit from toc -->
 
@@ -29,7 +28,6 @@ Be aware that some generator options have been removed, a few new ones have been
 
 ## Known issues and Limitations<!-- omit from toc -->
 
-> - Since `zod version 3.21.2` some schemas throw a typescript error. Please use `zod version 3.21.1` until this issue is resolved. Feel free to also add some weight to the [zod issue on github](https://github.com/colinhacks/zod/issues/2184). Since `zod-prisma-type version 3.1.0` you can also use `useTypeAssertions = true` in the generator config to override the type system. Use this option at your own risk. See [useTypeAssertions](#usetypeassertions) for more information.
 > - Lowercase model names will result in Errors and duplicate schema names in the generated schemas. Please use uppercase model names and prismas `@@map()` directive when using lowercase table names in the datebase to avoid this issue.
 > - The `satisfies` operator: As some people have pointed out the `input` and `output` schemas and some of the `relation` schemas are typed as `z.ZodType<myType>`. This is required by zod for recursice types to work properly as [stated in the docs](https://zod.dev/?id=recursive-types). This has the downside that some zod methods like `.merge()`, `.omit()`, etc. are not available on these types.
 

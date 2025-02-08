@@ -1,8 +1,8 @@
-// model SomeModelInAnotherFile {
-//     id      Int     @id @default(autoincrement())
-//     string  String
-//     myValue MYValue
-// }
+model SomeModelInAnotherFile {
+    id      Int     @id @default(autoincrement())
+    string  String
+    myValue MYValue
+}
 
 // enum MYValue {
 //     A

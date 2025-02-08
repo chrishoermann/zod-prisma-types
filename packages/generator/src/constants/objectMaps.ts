@@ -143,6 +143,11 @@ export const PRISMA_ACTION_ARRAY: FilterdPrismaActionPrimitive[][] = [
   ['groupBy'],
 ];
 
+/**
+ * This array is used match the types of the prisma actions
+ * to the correct prisma action name used in the prisma DMMF
+ */
+
 export const PRISMA_ACTION_MATCHER_ARRAY: PrismaActionMatcher[] = [
   [['findUnique', 'OrThrow'], 'findUniqueOrThrow'],
   [['findUnique'], 'findUnique'],
