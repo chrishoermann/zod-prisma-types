@@ -99,6 +99,15 @@ export class ExtendedDMMFInputType
         (modelField) => modelField.name === field.name,
       );
 
+      // delete all fields that are part of the UpdateOperationsInput
+      let inputTypes = field.inputTypes;
+      if (
+        this.generatorConfig.disableUpdateOperationsInput &&
+        inputTypes.some((item) => item.type.endsWith('UpdateOperationsInput'))
+      ) {
+        inputTypes = inputTypes.filter((item) => !item.type.endsWith('UpdateOperationsInput'));
+      }
+
       // validators and omitField should only be written for create and update types.
       // this prevents validation in e.g. search queries in "where inputs",
       // where strings like email addresses can be incomplete.
@@ -116,7 +125,7 @@ export class ExtendedDMMFInputType
 
       return new ExtendedDMMFSchemaArg(
         this.generatorConfig,
-        { ...field, ...optionalValidators },
+        { ...field, ...optionalValidators, inputTypes },
         linkedField,
       );
     });
