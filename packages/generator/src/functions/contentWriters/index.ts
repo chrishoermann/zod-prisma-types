@@ -14,5 +14,6 @@ export * from './writeModelFields';
 export * from './writeNullableJsonValue';
 export * from './writeOutputObjectType';
 export * from './writePrismaEnum';
+export * from './writeRemoveUndefined';
 export * from './writeSelect';
 export * from './writeTransformJsonNull';

@@ -12,6 +12,7 @@
     "moduleResolution": "node",
     "isolatedModules": false,
     "esModuleInterop": true,
+    // "exactOptionalPropertyTypes": true,
     "skipLibCheck": true,
     "allowJs": false,
     "resolveJsonModule": true,

@@ -108,17 +108,24 @@ const writeInputTypeField = ({
 
 export const writeInputObjectType = (
   {
-    fileWriter: { writer, writeImportSet },
+    fileWriter: { writer, writeImportSet, writeImport },
     dmmf,
     getSingleFileContent = false,
   }: ContentWriterOptions,
   inputType: ExtendedDMMFInputType,
 ) => {
-  const { useMultipleFiles, addInputTypeValidation, useTypeAssertions } =
-    dmmf.generatorConfig;
+  const {
+    useMultipleFiles,
+    useExactOptionalPropertyTypes,
+    addInputTypeValidation,
+    useTypeAssertions,
+  } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImportSet(inputType.imports);
+    if (useExactOptionalPropertyTypes) {
+      writeImport('ru', `./RemoveUndefined`);
+    }
   }
 
   // when an omit field is present, the type is not a native prism type
@@ -196,8 +203,11 @@ export const writeInputObjectType = (
         });
       });
     })
-    .conditionalWrite(!writeExtendedWhereUniqueInput, `).strict()`)
-    .conditionalWrite(writeExtendedWhereUniqueInput, `).strict())`)
+    .write(`)`)
+    .conditionalWrite(!writeExtendedWhereUniqueInput, `.strict()`)
+    .conditionalWrite(writeExtendedWhereUniqueInput, `.strict()`)
+    .conditionalWrite(useExactOptionalPropertyTypes, '.transform(ru)')
+    .conditionalWrite(writeExtendedWhereUniqueInput, `)`)
     .conditionalWrite(useTypeAssertions, ` as ${type};`)
     .conditionalWrite(!useTypeAssertions, `;`);
 

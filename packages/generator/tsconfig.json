@@ -12,6 +12,7 @@
     "strict": true,
     "strictPropertyInitialization": true,
     "esModuleInterop": true,
+    "exactOptionalPropertyTypes": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,

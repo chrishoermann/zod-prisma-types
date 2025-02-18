@@ -11,6 +11,7 @@ import {
 } from '.';
 import { FileWriter } from '../classes';
 import { CreateFiles } from '../types';
+import { writeRemoveUndefined } from './contentWriters/writeRemoveUndefined';
 
 /////////////////////////////////////////////////
 // FUNCTION
@@ -46,6 +47,10 @@ export const writeInputTypeFiles: CreateFiles = ({ path, dmmf }) => {
             writeExportSet.add(`${enumData.name}Schema`);
           });
 
+          if (dmmf.generatorConfig.useExactOptionalPropertyTypes) {
+            writeExportSet.add('RemoveUndefined');
+          }
+
           if (dmmf.schema.hasJsonTypes) {
             writeExportSet.add(`InputJsonValueSchema`);
             writeExportSet.add(`JsonValueSchema`);
@@ -66,6 +71,16 @@ export const writeInputTypeFiles: CreateFiles = ({ path, dmmf }) => {
     ////////////////////////////////////////////////////
     // WRITE HELPER FUNCTIONS & SCHEMAS
     ////////////////////////////////////////////////////
+
+    // EXACT OPTIONAL PROPERTY TYPES
+    // ------------------------------------------------------------
+
+    if (dmmf.generatorConfig.useExactOptionalPropertyTypes) {
+      new FileWriter().createFile(
+        `${folderPath}/RemoveUndefined.ts`,
+        (fileWriter) => writeRemoveUndefined({ fileWriter, dmmf }),
+      );
+    }
 
     // JSON
     // ------------------------------------------------------------
