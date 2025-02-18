@@ -9,11 +9,19 @@ export const writeSelect = (
   }: ContentWriterOptions,
   model: ExtendedDMMFOutputType,
 ) => {
-  const { useMultipleFiles, prismaClientPath } = dmmf.generatorConfig;
+  const {
+    useMultipleFiles,
+    useExactOptionalPropertyTypes,
+    prismaClientPath,
+    inputTypePath,
+  } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
     writeImport('type { Prisma }', prismaClientPath);
+    if (useExactOptionalPropertyTypes) {
+      writeImport('ru', `../${inputTypePath}/RemoveUndefined`);
+    }
     writeImportSet(model.selectImports);
   }
 
@@ -68,7 +76,9 @@ export const writeSelect = (
     });
 
   writer
-    .write(`).strict()`)
+    .write(`)`)
+    .write(`.strict()`)
+    .conditionalWrite(useExactOptionalPropertyTypes, '.transform(ru)')
     // .write(' as z.ZodType<Prisma.')
     // .write(`${model.name}Select>`)
     .newLine();
