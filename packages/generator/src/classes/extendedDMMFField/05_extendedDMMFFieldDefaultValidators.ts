@@ -23,10 +23,16 @@ export class ExtendedDMMFFieldDefaultValidators extends ExtendedDMMFFieldValidat
   private _setZodDefaultValidator() {
     if (!this.generatorConfig.useDefaultValidators) return;
     if (this._validatorList?.includes('.noDefault()')) return;
+    if (this._isCuid2()) return '.cuid2()';
     if (this._isCuid()) return '.cuid()';
     if (this._isUuid()) return '.uuid()';
     if (this._isInt()) return '.int()';
     return undefined;
+  }
+
+  private _isCuid2() {
+    if (this._IsFieldDefault(this.default)) return this.default.name === 'cuid' && this.default.args?.[0] === 2;
+    return false;
   }
 
   private _isCuid() {
