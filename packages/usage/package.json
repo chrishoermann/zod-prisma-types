@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "vitest",
+    "test": "vitest --no-file-parallelism",
     "gen:prisma": "prisma generate --schema prisma/schema",
     "run:dev": "ts-node-dev app/client.ts",
     "tsc": "tsc",
