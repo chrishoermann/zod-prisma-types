@@ -1,4 +1,4 @@
-import { DMMF } from '@prisma/generator-helper';
+import type DMMF from '@prisma/dmmf';
 import { it, expect, describe } from 'vitest';
 
 import { DEFAULT_GENERATOR_CONFIG, MODEL_BASE } from '../setup';
