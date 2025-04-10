@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "vitest",
-    "gen:prisma": "prisma generate",
+    "gen:prisma": "prisma generate --schema prisma/schema",
     "run:dev": "ts-node-dev app/client.ts",
     "tsc": "tsc",
     "clean": "git clean -xdf node_modules"
