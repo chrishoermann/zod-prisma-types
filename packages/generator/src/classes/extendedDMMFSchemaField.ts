@@ -158,7 +158,9 @@ export class ExtendedDMMFSchemaField
 
     if (!argName) return;
 
-    return `${this.modelType}${argName.formattedNames.pascalCase}Args`;
+    const modelTypeName =
+      typeof this.modelType === 'string' ? this.modelType : this.modelType.name;
+    return `${modelTypeName}${argName.formattedNames.pascalCase}Args`;
   }
 
   /**
@@ -192,8 +194,12 @@ export class ExtendedDMMFSchemaField
     const imports: string[] = ["import { z } from 'zod';", prismaImport];
 
     if (this.writeIncludeArg) {
+      const modelTypeName =
+        typeof this.modelType === 'string'
+          ? this.modelType
+          : this.modelType.name;
       imports.push(
-        `import { ${this.modelType}IncludeSchema } from '../${this.generatorConfig.inputTypePath}/${this.modelType}IncludeSchema'`,
+        `import { ${modelTypeName}IncludeSchema } from '../${this.generatorConfig.inputTypePath}/${modelTypeName}IncludeSchema'`,
       );
     }
 
