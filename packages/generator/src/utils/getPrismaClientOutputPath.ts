@@ -1,4 +1,4 @@
-import { GeneratorOptions } from '@prisma/generator-helper';
+import type { GeneratorOptions } from '@prisma/generator-helper';
 import path from 'path';
 
 export const getPrismaClientOutputPath = (options: GeneratorOptions) => {

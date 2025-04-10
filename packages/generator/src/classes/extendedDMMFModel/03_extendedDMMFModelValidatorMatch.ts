@@ -1,4 +1,4 @@
-import { DMMF } from '@prisma/generator-helper';
+import type DMMF from '@prisma/dmmf';
 import { GeneratorConfig } from '../../schemas';
 import { ExtendedDMMFModelFlags } from './02_extendedDMMFModelFlags';
 

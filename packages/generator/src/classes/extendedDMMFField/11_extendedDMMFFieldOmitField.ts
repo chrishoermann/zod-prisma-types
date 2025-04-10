@@ -1,4 +1,4 @@
-import { DMMF } from '@prisma/generator-helper';
+import type DMMF from '@prisma/dmmf';
 
 import { ExtendedDMMFFieldArrayValidatorString } from './10_extendedDMMFFieldArrayValidatorString';
 import { CUSTOM_OMIT_VALIDATOR_MESSAGE_REGEX } from './07_extendedDMMFFieldValidatorMap';

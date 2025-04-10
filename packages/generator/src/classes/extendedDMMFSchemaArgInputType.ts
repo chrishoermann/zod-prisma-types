@@ -1,4 +1,4 @@
-import { DMMF } from '@prisma/generator-helper';
+import type DMMF from '@prisma/dmmf';
 
 import { PRISMA_TO_ZOD_TYPE_MAP } from '../constants/objectMaps';
 import { GeneratorConfig } from '../schemas';
