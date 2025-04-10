@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma } from '../prisma/generated/client';
 import { client } from './trpc/client';
 import { getServer } from './trpc/server';
 import Decimal from 'decimal.js';
@@ -8,7 +8,7 @@ import {
   isValidDecimalInput,
   DecimalJsLikeSchema,
 } from '../prisma/generated/zod';
-import { DecimalJsLike } from '@prisma/client/runtime/library';
+import { DecimalJsLike } from '../prisma/generated/client/runtime/library';
 import { it, expect, beforeAll, afterAll } from 'vitest';
 import { DECIMAL_STRING_REGEX } from '../prisma/generated/zod/inputTypeSchemas/isValidDecimalInput';
 
