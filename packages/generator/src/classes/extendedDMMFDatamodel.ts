@@ -1,9 +1,9 @@
-import { DMMF, ReadonlyDeep } from '@prisma/generator-helper';
+import { DMMF } from '@prisma/generator-helper';
 
-import { ExtendedDMMFEnum } from './extendedDMMFEnum';
-import { ExtendedDMMFModel, ExtendedDMMFModelClass } from './extendedDMMFModel';
 import { GeneratorConfig } from '../schemas';
+import { ExtendedDMMFEnum } from './extendedDMMFEnum';
 import { ExtendedDMMFIndex } from './extendedDMMFIndex';
+import { ExtendedDMMFModel, ExtendedDMMFModelClass } from './extendedDMMFModel';
 
 export interface ExtendedDMMFDatamodelOptions {
   datamodel: DMMF.Datamodel;
@@ -22,7 +22,7 @@ export class ExtendedDMMFDatamodel {
 
   constructor(
     readonly generatorConfig: GeneratorConfig,
-    datamodel: ReadonlyDeep<DMMF.Datamodel>,
+    datamodel: Readonly<DMMF.Datamodel>,
   ) {
     this.generatorConfig = generatorConfig;
     this.enums = this._getExtendedEnums(datamodel.enums);
@@ -31,19 +31,19 @@ export class ExtendedDMMFDatamodel {
     this.types = this._getExtendedModels(datamodel.types);
   }
 
-  private _getExtendedModels(models: ReadonlyDeep<DMMF.Model[]>) {
+  private _getExtendedModels(models: Readonly<DMMF.Model[]>) {
     return models.map(
       (model) => new ExtendedDMMFModelClass(this.generatorConfig, model),
     );
   }
 
-  private _getExtendedEnums(enums: ReadonlyDeep<DMMF.DatamodelEnum[]>) {
+  private _getExtendedEnums(enums: Readonly<DMMF.DatamodelEnum[]>) {
     return enums.map(
       (elem) => new ExtendedDMMFEnum(this.generatorConfig, elem),
     );
   }
 
-  private _getExtendedIndexes(indexes: ReadonlyDeep<DMMF.Index[]>) {
+  private _getExtendedIndexes(indexes: Readonly<DMMF.Index[]>) {
     return indexes.map(
       (elem) => new ExtendedDMMFIndex(this.generatorConfig, elem),
     );

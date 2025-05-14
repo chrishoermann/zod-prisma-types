@@ -1,4 +1,4 @@
-import { DMMF, ReadonlyDeep } from '@prisma/generator-helper';
+import { DMMF } from '@prisma/generator-helper';
 
 import { GeneratorConfig } from '../schemas';
 
@@ -7,8 +7,8 @@ import { GeneratorConfig } from '../schemas';
 /////////////////////////////////////////////////
 
 export class ExtendedDMMFMappings implements DMMF.Mappings {
-  readonly modelOperations: ReadonlyDeep<DMMF.ModelMapping[]>;
-  readonly otherOperations: ReadonlyDeep<{
+  readonly modelOperations: Readonly<DMMF.ModelMapping[]>;
+  readonly otherOperations: Readonly<{
     readonly read: string[];
     readonly write: string[];
   }>;

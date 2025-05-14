@@ -1,4 +1,4 @@
-import { DMMF, ReadonlyDeep } from '@prisma/generator-helper';
+import { DMMF } from '@prisma/generator-helper';
 
 import { ExtendedDMMFModel } from '.';
 import { PRISMA_ACTION_ARRAY } from '../constants/objectMaps';
@@ -64,7 +64,7 @@ export class ExtendedDMMFOutputType
    * - Returns all fields that are not in `PRISMA_ACTION_ARRAY` if the fieldCategory is set to `OTHER_FIELDS`.
    */
   private _setFields(
-    fields: ReadonlyDeep<DMMF.SchemaField[]>,
+    fields: Readonly<DMMF.SchemaField[]>,
     datamodel: ExtendedDMMFDatamodel,
     fieldCategory?: 'PRISMA_ACTION' | 'OTHER_FIELDS',
   ) {

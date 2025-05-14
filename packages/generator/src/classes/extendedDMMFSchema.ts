@@ -1,4 +1,4 @@
-import { DMMF, ReadonlyDeep } from '@prisma/generator-helper';
+import { DMMF } from '@prisma/generator-helper';
 
 import {
   ExtendedDMMFDatamodel,
@@ -23,7 +23,7 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
   readonly rootQueryType?: DMMF.Schema['rootQueryType'];
   readonly rootMutationType?: DMMF.Schema['rootMutationType'];
   readonly inputObjectTypes: {
-    readonly model?: ReadonlyDeep<DMMF.InputType[]>;
+    readonly model?: Readonly<DMMF.InputType[]>;
     /**
      * Contains information about the prisma where, orderBy, and other input types.
      */
@@ -48,11 +48,11 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
     readonly argTypes: ExtendedDMMFOutputType[];
   };
   readonly enumTypes: {
-    readonly model?: ReadonlyDeep<DMMF.SchemaEnum[]>;
+    readonly model?: Readonly<DMMF.SchemaEnum[]>;
     readonly prisma: ExtendedDMMFSchemaEnum[];
   };
   readonly fieldRefTypes: {
-    readonly prisma?: ReadonlyDeep<DMMF.FieldRefType[]>;
+    readonly prisma?: Readonly<DMMF.FieldRefType[]>;
   };
   readonly hasJsonTypes: boolean;
   readonly hasBytesTypes: boolean;
@@ -82,7 +82,7 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
   }
 
   private _setExtendedInputObjectTypes(
-    schema: ReadonlyDeep<DMMF.Schema>,
+    schema: Readonly<DMMF.Schema>,
     datamodel: ExtendedDMMFDatamodel,
   ) {
     return {
@@ -95,7 +95,7 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
   }
 
   private _setExtendedOutputObjectTypes(
-    schema: ReadonlyDeep<DMMF.Schema>,
+    schema: Readonly<DMMF.Schema>,
     datamodel: ExtendedDMMFDatamodel,
   ) {
     // The models where the name contains "CreateMany[modelName]AndReturn" must not be included!
@@ -138,7 +138,7 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
     };
   }
 
-  private _setExtendedEnumTypes(schema: ReadonlyDeep<DMMF.Schema>) {
+  private _setExtendedEnumTypes(schema: Readonly<DMMF.Schema>) {
     return {
       ...schema.enumTypes,
       prisma: schema.enumTypes.prisma.map(

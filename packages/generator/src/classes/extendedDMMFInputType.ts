@@ -1,5 +1,10 @@
-import { DMMF, ReadonlyDeep } from '@prisma/generator-helper';
+import { DMMF } from '@prisma/generator-helper';
 
+import {
+  PRISMA_FUNCTION_TYPES_WITH_VALIDATORS,
+  PRISMA_FUNCTION_TYPES_WITH_VALIDATORS_WHERE_UNIQUE,
+} from '../constants/regex';
+import { GeneratorConfig } from '../schemas';
 import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
 import { ExtendedDMMFField } from './extendedDMMFField';
 import { ExtendedDMMFModel } from './extendedDMMFModel';
@@ -8,11 +13,6 @@ import {
   ZodValidatorOptions,
 } from './extendedDMMFSchemaArg';
 import { FormattedNames } from './formattedNames';
-import {
-  PRISMA_FUNCTION_TYPES_WITH_VALIDATORS,
-  PRISMA_FUNCTION_TYPES_WITH_VALIDATORS_WHERE_UNIQUE,
-} from '../constants/regex';
-import { GeneratorConfig } from '../schemas';
 
 const SPLIT_NAME_REGEX =
   /Unchecked|Create|Update|CreateMany|CreateManyAndReturn|UpdateMany|UpdateManyAndReturn|Upsert|Where|WhereUnique|OrderBy|ScalarWhere|Aggregate|GroupBy/g;
@@ -75,7 +75,7 @@ export class ExtendedDMMFInputType
     });
   }
 
-  private _setFields(fields: ReadonlyDeep<DMMF.SchemaArg[]>) {
+  private _setFields(fields: Readonly<DMMF.SchemaArg[]>) {
     // FILTER FIELD REF TYPES
     // -----------------------------------------------
 
@@ -227,9 +227,7 @@ export class ExtendedDMMFInputType
     return result;
   }
 
-  private _setExtendedWhereUniqueFields(
-    fields: ReadonlyDeep<DMMF.SchemaArg[]>,
-  ) {
+  private _setExtendedWhereUniqueFields(fields: Readonly<DMMF.SchemaArg[]>) {
     if (!this.constraints.fields || !this.name.includes('WhereUniqueInput')) {
       return undefined;
     }

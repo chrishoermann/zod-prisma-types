@@ -1,4 +1,4 @@
-import { DMMF, ReadonlyDeep } from '@prisma/generator-helper';
+import { DMMF } from '@prisma/generator-helper';
 
 import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
 import { ExtendedDMMFModel } from './extendedDMMFModel';
@@ -107,7 +107,7 @@ export class ExtendedDMMFSchemaField
     return this.outputType.namespace === 'model';
   }
 
-  private _setArgs({ args }: ReadonlyDeep<DMMF.SchemaField>) {
+  private _setArgs({ args }: Readonly<DMMF.SchemaField>) {
     return args.map((arg) => {
       const linkedField = this.linkedModel?.fields.find(
         (field) => field?.name === arg?.name,
