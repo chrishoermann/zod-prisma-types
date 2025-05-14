@@ -1,5 +1,5 @@
 {
-  "name": "zod-prisma-types",
+  "name": "@pmcorrea/zod-prisma-types",
   "version": "3.2.5",
   "description": "Generates zod schemas from Prisma models with advanced validation",
   "author": "Chris Hörmann",
