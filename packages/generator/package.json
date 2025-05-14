@@ -1,6 +1,6 @@
 {
   "name": "@pmcorrea/zod-prisma-types",
-  "version": "3.2.5",
+  "version": "3.2.7",
   "description": "Generates zod schemas from Prisma models with advanced validation",
   "author": "Chris Hörmann",
   "license": "MIT",
@@ -23,7 +23,7 @@
     "url": "https://github.com/petercorrea/zod-prisma-types.git"
   },
   "bin": {
-    "@pmcorrea/zod-prisma-types": "dist/bin.js"
+    "zod-prisma-types": "dist/bin.js"
   },
   "scripts": {
     "lint": "eslint --ext ts,tsx,js,jsx --fix .",
