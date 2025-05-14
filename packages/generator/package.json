@@ -23,7 +23,7 @@
     "url": "https://github.com/petercorrea/zod-prisma-types.git"
   },
   "bin": {
-    "zod-prisma-types": "dist/bin.js"
+    "@pmcorrea/zod-prisma-types": "dist/bin.js"
   },
   "scripts": {
     "lint": "eslint --ext ts,tsx,js,jsx --fix .",
