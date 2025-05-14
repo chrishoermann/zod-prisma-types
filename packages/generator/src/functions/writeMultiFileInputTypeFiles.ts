@@ -57,7 +57,7 @@ export const writeInputTypeFiles: CreateFiles = ({ path, dmmf }) => {
           }
 
           writeExportSet.forEach((exportName) => {
-            writeExport(`{ ${exportName} }`, `./${exportName}`);
+            writeExport(`*`, `./${exportName}`);
           });
         },
       );
