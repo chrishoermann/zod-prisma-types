@@ -15,14 +15,27 @@ export const generateMultipleFiles = ({ dmmf, path }: CreateOptions) => {
     new FileWriter(dmmf.generatorConfig).createFile(
       `${path}/index.ts`,
       ({ writeExport }) => {
+        const shouldUseExtensionForRelativeImports = [
+          'node16',
+          'nodenext',
+        ].includes(dmmf.generatorConfig.moduleResolution);
+        const moduleSuffix = shouldUseExtensionForRelativeImports
+          ? '/index.js'
+          : '';
         if (createModelTypes) {
-          writeExport('*', './modelSchema');
+          writeExport('*', './modelSchema' + moduleSuffix);
         }
 
-        writeExport('*', `./${dmmf.generatorConfig.inputTypePath}`);
+        writeExport(
+          '*',
+          `./${dmmf.generatorConfig.inputTypePath + moduleSuffix}`,
+        );
 
         if (createInputTypes) {
-          writeExport('*', `./${dmmf.generatorConfig.outputTypePath}`);
+          writeExport(
+            '*',
+            `./${dmmf.generatorConfig.outputTypePath + moduleSuffix}`,
+          );
         }
       },
     );
