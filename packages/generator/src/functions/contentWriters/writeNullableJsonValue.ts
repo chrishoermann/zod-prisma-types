@@ -1,16 +1,18 @@
 import { type ContentWriterOptions } from '../../types';
 
 export const writeNullableJsonValue = ({
-  fileWriter: { writer, writeImport },
+  fileWriter: { writer, writeImports },
   dmmf,
   getSingleFileContent = false,
 }: ContentWriterOptions) => {
   const { useMultipleFiles } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImport('{ z }', 'zod');
-    writeImport('transformJsonNull', './transformJsonNull');
-    writeImport('JsonValueSchema', './JsonValueSchema');
+    writeImports([
+      { name: 'z', path: 'zod' },
+      { name: 'transformJsonNull', path: './transformJsonNull' },
+      { name: 'JsonValueSchema', path: './JsonValueSchema' },
+    ]);
   }
 
   writer

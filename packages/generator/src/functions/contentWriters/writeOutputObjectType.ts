@@ -7,12 +7,12 @@ export const writeOutputObjectType = (
   { fileWriter, dmmf, getSingleFileContent = false }: ContentWriterOptions,
   field: ExtendedDMMFSchemaField,
 ) => {
-  const { writer, writeImportSet, writeHeading } = fileWriter;
+  const { writer, writeImports, writeHeading } = fileWriter;
 
   const { useMultipleFiles, useTypeAssertions } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImportSet(field.argTypeImports);
+    writeImports(field.argTypeImports);
 
     // determine if the outputType should include the "select" or "include" field
     const modelWithSelect = dmmf.schema.getModelWithIncludeAndSelect(field);
@@ -33,9 +33,11 @@ export const writeOutputObjectType = (
       const filterdImports = [
         ...modelWithSelect.includeImports,
         ...modelWithSelect.selectImports,
-      ].filter((imp) => !!field.argName && !imp.includes(`/${field.argName}`));
+      ].filter(
+        (imp) => !(field.argName && imp.path.includes(`/${field.argName}`)),
+      );
 
-      writeImportSet(new Set(filterdImports));
+      writeImports(filterdImports);
 
       // Only write the select type if the outputType has a "select" or "include" field.
       // Some outputTypes like "CreateMany", "UpdateMany", "DeleteMany"

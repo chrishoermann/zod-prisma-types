@@ -13,6 +13,7 @@ import {
   PRISMA_FUNCTION_TYPES_WITH_VALIDATORS_WHERE_UNIQUE,
 } from '../constants/regex';
 import { GeneratorConfig } from '../schemas';
+import { writeImportStatementOptions } from './fileWriter';
 
 const SPLIT_NAME_REGEX =
   /Unchecked|Create|Update|CreateMany|CreateManyAndReturn|UpdateMany|UpdateManyAndReturn|Upsert|Where|WhereUnique|OrderBy|ScalarWhere|Aggregate|GroupBy/g;
@@ -35,7 +36,7 @@ export class ExtendedDMMFInputType
   readonly isBytesField: boolean;
   readonly isDecimalField: boolean;
   readonly omitFields: string[] = [];
-  readonly imports: Set<string>;
+  readonly imports: writeImportStatementOptions[];
   /** @deprecated */
   readonly isWhereUniqueInput?: boolean;
   readonly extendedWhereUniqueFields?: ExtendedDMMFSchemaArg[][];
@@ -182,27 +183,32 @@ export class ExtendedDMMFInputType
 
   private _setImports() {
     const { prismaClientPath, decimalJSInstalled } = this.generatorConfig;
-    const prismaImport = this.isDecimalField
-      ? `import { Prisma } from '${prismaClientPath}';`
-      : `import type { Prisma } from '${prismaClientPath}';`;
-    const decimalJSImport =
-      decimalJSInstalled && this.isDecimalField
-        ? `import Decimal from 'decimal.js';`
-        : '';
-    const zodImport = "import { z } from 'zod';";
-
-    const fieldImports = [
-      prismaImport,
-      decimalJSImport,
-      zodImport,
+    const fieldImports: writeImportStatementOptions[] = [];
+    fieldImports.push({
+      name: 'Prisma',
+      path: prismaClientPath,
+      isTypeOnly: !this.isDecimalField, // if the field is a decimal field
+    });
+    if (decimalJSInstalled && this.isDecimalField) {
+      fieldImports.push({
+        name: 'Decimal',
+        path: 'decimal.js',
+        isDefault: true,
+      });
+    }
+    fieldImports.push({
+      name: 'z',
+      path: 'zod',
+    });
+    fieldImports.push(
       ...this.fields.map((field) => field.getImports(this.name)).flat(),
-    ];
+    );
 
     if (this._fieldIsPrismaFunctionType() && this.linkedModel?.fieldImports) {
       fieldImports.push(...this.linkedModel.fieldImports);
     }
 
-    return new Set(fieldImports);
+    return fieldImports;
   }
 
   private _getExtendedWhereUniqueFieldCombinations(

@@ -1,6 +1,10 @@
 import { DMMF, ReadonlyDeep } from '@prisma/generator-helper';
 
-import { ExtendedDMMFField, ExtendedDMMFSchemaArgInputType } from '.';
+import {
+  ExtendedDMMFField,
+  ExtendedDMMFSchemaArgInputType,
+  writeImportStatementOptions,
+} from '.';
 import { GeneratorConfig } from '../schemas';
 import { FormattedNames } from './formattedNames';
 
@@ -128,7 +132,7 @@ export class ExtendedDMMFSchemaArg
     return /create|update|upsert|delete|data/.test(this.name);
   }
 
-  getImports(fieldName: string) {
+  getImports(fieldName: string): writeImportStatementOptions[] {
     // if the field is omitted, no imports are needed
     if (this.zodOmitField) {
       return [];
@@ -141,33 +145,45 @@ export class ExtendedDMMFSchemaArg
 
         // exclude the import for the current model if it references itself
         if (stringImportType === fieldName) {
-          return;
+          return [];
         }
 
         if (type.isJsonType) {
-          return `import { InputJsonValueSchema } from './InputJsonValueSchema';`;
+          return [
+            {
+              name: 'InputJsonValueSchema',
+              path: './InputJsonValueSchema',
+            },
+          ];
         }
 
         if (type.isDecimalType) {
-          const decimalImports = [
-            `import { isValidDecimalInput } from './isValidDecimalInput';`,
-            `import { DecimalJsLikeSchema } from './DecimalJsLikeSchema';`,
+          return [
+            {
+              name: 'isValidDecimalInput',
+              path: './isValidDecimalInput',
+            },
+            {
+              name: 'DecimalJsLikeSchema',
+              path: './DecimalJsLikeSchema',
+            },
           ];
-
-          return decimalImports;
         }
 
         // get imports for all non scalar types (e.g. enums, models)
         if (importType) {
-          return `import { ${importType}Schema } from './${importType}Schema';`;
+          return [
+            {
+              name: `${importType}Schema`,
+              path: `./${importType}Schema`,
+            },
+          ];
         }
 
         return undefined;
       })
       .flat()
-      .filter(
-        (importString): importString is string => importString !== undefined,
-      );
+      .filter((importString) => importString !== undefined);
 
     return imports;
   }

@@ -4,6 +4,7 @@ import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
 import { ExtendedDMMFMappings } from './extendedDMMFMappings';
 import { ExtendedDMMFSchema } from './extendedDMMFSchema';
 import { GeneratorConfig } from '../schemas';
+import { writeImportStatementOptions } from './fileWriter';
 
 /////////////////////////////////////////////////
 // CLASS
@@ -14,8 +15,8 @@ export class ExtendedDMMF implements DMMF.Document {
   readonly datamodel: ExtendedDMMFDatamodel;
   readonly schema: ExtendedDMMFSchema;
   readonly mappings: DMMF.Mappings;
-  readonly imports: Set<string>;
-  readonly customImports: Set<string>;
+  readonly imports: writeImportStatementOptions[];
+  readonly customImports: writeImportStatementOptions[];
 
   constructor(dmmf: DMMF.Document, config: GeneratorConfig) {
     this.generatorConfig = this._setGeneratorConfig(config);
@@ -39,15 +40,11 @@ export class ExtendedDMMF implements DMMF.Document {
   }
 
   private _getImports() {
-    return new Set(
-      this.datamodel.models.map((model) => [...model.imports]).flat(),
-    );
+    return this.datamodel.models.map((model) => [...model.imports]).flat();
   }
 
   private _getModelImports() {
-    return new Set(
-      this.datamodel.models.map((model) => [...model.modelImports]).flat(),
-    );
+    return this.datamodel.models.map((model) => [...model.modelImports]).flat();
   }
 
   private _getExtendedMappings(dmmf: DMMF.Document) {

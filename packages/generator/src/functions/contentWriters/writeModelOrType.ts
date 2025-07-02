@@ -1,5 +1,5 @@
 import { writeModelFields } from '.';
-import { ExtendedDMMFModel } from '../../classes';
+import { ExtendedDMMFModel, writeImportStatementOptions } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
 import { writeRelation } from '../fieldWriters';
 
@@ -8,13 +8,7 @@ import { writeRelation } from '../fieldWriters';
 
 export const writeModelOrType = (
   {
-    fileWriter: {
-      writer,
-      writeImport,
-      writeImportSet,
-      writeJSDoc,
-      writeHeading,
-    },
+    fileWriter: { writer, writeImports, writeJSDoc, writeHeading },
     dmmf,
     getSingleFileContent = false,
   }: ContentWriterOptions,
@@ -23,59 +17,63 @@ export const writeModelOrType = (
   const { useMultipleFiles, createRelationValuesTypes } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImport('{ z }', 'zod');
-    writeImportSet(model.imports);
+    const imports: writeImportStatementOptions[] = [];
+    imports.push({ name: 'z', path: 'zod' });
+    imports.push(...model.imports);
 
     if (createRelationValuesTypes && model.hasRelationFields) {
       // import the necessary types to handle json nulls
-      // if (model.hasOptionalJsonFields) {
-      //   writeImport(
-      //     `type { JsonValueType | null }`,
-      //     `../${inputTypePath}/transformJsonNull`,
-      //   );
-      // }
       if (model.hasOptionalJsonFields) {
-        writeImport(
-          `type { JsonValueType }`,
-          `../inputTypeSchemas/JsonValueSchema`,
-        );
+        imports.push({
+          name: 'JsonValueType',
+          path: `../inputTypeSchemas/JsonValueSchema`,
+          isTypeOnly: true,
+        });
       }
 
-      const imports = new Set<string>();
+      // const importSet = new Set<string>();
 
       model.filteredRelationFields.forEach((field) => {
-        const importName = `${field.type}Schema`;
-        const typeImports: string[] = [];
-        const schemaImports: string[] = [];
+        const importPath = `./${field.type}Schema`;
         const withRelationsOrNot = !field.isCompositeType
           ? 'WithRelations'
           : '';
-        typeImports.push(`${field.type}${withRelationsOrNot}`);
-        schemaImports.push(`${field.type}${withRelationsOrNot}Schema`);
+        imports.push({
+          name: `${field.type}${withRelationsOrNot}`,
+          path: importPath,
+          isTypeOnly: true,
+        });
+        imports.push({
+          name: `${field.type}${withRelationsOrNot}Schema`,
+          path: importPath,
+        });
 
         if (model.writePartialTypes) {
-          typeImports.push(`${field.type}Partial${withRelationsOrNot}`);
-          schemaImports.push(`${field.type}Partial${withRelationsOrNot}Schema`);
+          imports.push({
+            name: `${field.type}Partial${withRelationsOrNot}`,
+            path: importPath,
+            isTypeOnly: true,
+          });
+          imports.push({
+            name: `${field.type}Partial${withRelationsOrNot}Schema`,
+            path: importPath,
+          });
         }
 
         if (model.writeOptionalDefaultValuesTypes) {
-          typeImports.push(
-            `${field.type}OptionalDefaults${withRelationsOrNot}`,
-          );
-          schemaImports.push(
-            `${field.type}OptionalDefaults${withRelationsOrNot}Schema`,
-          );
+          imports.push({
+            name: `${field.type}OptionalDefaults${withRelationsOrNot}`,
+            path: importPath,
+            isTypeOnly: true,
+          });
+          imports.push({
+            name: `${field.type}OptionalDefaults${withRelationsOrNot}Schema`,
+            path: importPath,
+          });
         }
-        imports.add(
-          `import { ${schemaImports.join(', ')} } from './${importName}'`,
-        );
-        imports.add(
-          `import type { ${typeImports.join(', ')} } from './${importName}'`,
-        );
       });
-
-      writeImportSet(imports);
     }
+    writeImports(imports);
   }
 
   writer.blankLine();

@@ -108,7 +108,7 @@ const writeInputTypeField = ({
 
 export const writeInputObjectType = (
   {
-    fileWriter: { writer, writeImportSet },
+    fileWriter: { writer, writeImports },
     dmmf,
     getSingleFileContent = false,
   }: ContentWriterOptions,
@@ -118,7 +118,7 @@ export const writeInputObjectType = (
     dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImportSet(inputType.imports);
+    writeImports(inputType.imports);
   }
 
   // when an omit field is present, the type is not a native prism type
