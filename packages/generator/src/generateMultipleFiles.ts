@@ -12,17 +12,20 @@ export const generateMultipleFiles = ({ dmmf, path }: CreateOptions) => {
 
   // Create the index file
   if (writeBarrelFiles) {
-    new FileWriter().createFile(`${path}/index.ts`, ({ writeExport }) => {
-      if (createModelTypes) {
-        writeExport('*', './modelSchema');
-      }
+    new FileWriter(dmmf.generatorConfig).createFile(
+      `${path}/index.ts`,
+      ({ writeExport }) => {
+        if (createModelTypes) {
+          writeExport('*', './modelSchema');
+        }
 
-      writeExport('*', `./${dmmf.generatorConfig.inputTypePath}`);
+        writeExport('*', `./${dmmf.generatorConfig.inputTypePath}`);
 
-      if (createInputTypes) {
-        writeExport('*', `./${dmmf.generatorConfig.outputTypePath}`);
-      }
-    });
+        if (createInputTypes) {
+          writeExport('*', `./${dmmf.generatorConfig.outputTypePath}`);
+        }
+      },
+    );
   }
 
   writeModelFiles({ path, dmmf });

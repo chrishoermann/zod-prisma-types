@@ -3,7 +3,7 @@ import { type ContentWriterOptions } from '../../types';
 
 export const writeSelect = (
   {
-    fileWriter: { writer, writeImport, writeImportSet },
+    fileWriter: { writer, writeImports },
     dmmf,
     getSingleFileContent = false,
   }: ContentWriterOptions,
@@ -12,9 +12,18 @@ export const writeSelect = (
   const { useMultipleFiles, prismaClientPath } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImport('{ z }', 'zod');
-    writeImport('type { Prisma }', prismaClientPath);
-    writeImportSet(model.selectImports);
+    writeImports([
+      {
+        name: 'z',
+        path: 'zod',
+      },
+      {
+        name: 'Prisma',
+        path: prismaClientPath,
+        isTypeOnly: true,
+      },
+      ...model.selectImports,
+    ]);
   }
 
   writer

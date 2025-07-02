@@ -11,7 +11,7 @@ export const writeModelFiles: CreateFiles = ({ path, dmmf }) => {
 
   if (!createModelTypes) return;
 
-  const indexFileWriter = new FileWriter();
+  const indexFileWriter = new FileWriter(dmmf.generatorConfig);
 
   const folderPath = indexFileWriter.createPath(`${path}/modelSchema`);
 
@@ -44,14 +44,14 @@ export const writeModelFiles: CreateFiles = ({ path, dmmf }) => {
     }
 
     dmmf.datamodel.models.forEach((model) => {
-      new FileWriter().createFile(
+      new FileWriter(dmmf.generatorConfig).createFile(
         `${folderPath}/${model.name}Schema.ts`,
         (fileWriter) => writeModelOrType({ fileWriter, dmmf }, model),
       );
     });
 
     dmmf.datamodel.types.forEach((model) => {
-      new FileWriter().createFile(
+      new FileWriter(dmmf.generatorConfig).createFile(
         `${folderPath}/${model.name}Schema.ts`,
         (fileWriter) => writeModelOrType({ fileWriter, dmmf }, model),
       );

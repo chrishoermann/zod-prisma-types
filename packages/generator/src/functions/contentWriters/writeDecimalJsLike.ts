@@ -1,15 +1,17 @@
 import { type ContentWriterOptions } from '../../types';
 
 export const writeDecimalJsLike = ({
-  fileWriter: { writer, writeImport },
+  fileWriter: { writer, writeImports },
   dmmf,
   getSingleFileContent = false,
 }: ContentWriterOptions) => {
   const { useMultipleFiles, prismaClientPath } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImport('{ z }', 'zod');
-    writeImport('type { Prisma }', `${prismaClientPath}`);
+    writeImports([
+      { name: 'z', path: 'zod' },
+      { name: 'Prisma', path: prismaClientPath, isTypeOnly: true },
+    ]);
   }
 
   writer

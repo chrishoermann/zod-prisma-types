@@ -3,7 +3,7 @@ import { type ContentWriterOptions } from '../../types';
 
 export const writeCustomEnum = (
   {
-    fileWriter: { writer, writeImport },
+    fileWriter: { writer, writeImports },
     dmmf,
     getSingleFileContent = false,
   }: ContentWriterOptions,
@@ -12,7 +12,7 @@ export const writeCustomEnum = (
   const { useMultipleFiles } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImport('{ z }', 'zod');
+    writeImports([{ name: 'z', path: 'zod' }]);
   }
 
   writer.blankLine().write(`export const ${name}Schema = z.enum([`);

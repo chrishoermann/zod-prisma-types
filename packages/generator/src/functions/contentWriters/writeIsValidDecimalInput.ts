@@ -1,14 +1,20 @@
 import { type ContentWriterOptions } from '../../types';
 
 export const writeIsValidDecimalInput = ({
-  fileWriter: { writer, writeImport },
+  fileWriter: { writer, writeImports },
   dmmf,
   getSingleFileContent = false,
 }: ContentWriterOptions) => {
   const { useMultipleFiles, prismaClientPath } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImport('type { Prisma }', `${prismaClientPath}`);
+    writeImports([
+      {
+        name: 'Prisma',
+        path: prismaClientPath,
+        isTypeOnly: true,
+      },
+    ]);
   }
 
   writer

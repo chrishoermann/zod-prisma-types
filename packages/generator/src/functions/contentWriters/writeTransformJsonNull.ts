@@ -1,7 +1,7 @@
 import { type ContentWriterOptions } from '../../types';
 
 export const writeTransformJsonNull = ({
-  fileWriter: { writer, writeImport },
+  fileWriter: { writer, writeImports },
   dmmf,
   getSingleFileContent = false,
 }: ContentWriterOptions) => {
@@ -10,7 +10,7 @@ export const writeTransformJsonNull = ({
   // TODO: check how to get DbNUll and JsonNull from PrismaClient without importing the whole namespace
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImport('{ Prisma }', prismaClientPath);
+    writeImports([{ name: 'Prisma', path: prismaClientPath }]);
   }
 
   writer
