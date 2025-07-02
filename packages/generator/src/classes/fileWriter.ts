@@ -135,15 +135,7 @@ export class FileWriter {
     // This will allow us to group imports by path and type
     // and avoid duplicate imports for the same path
     imports.forEach(({ name, path, isDefault, isTypeOnly, as }) => {
-      const isRelativeImport = path.startsWith('.');
       const importPath = this.resolveModulePath(path);
-      console.log(
-        'Processing import:',
-        name,
-        path,
-        isRelativeImport,
-        importPath,
-      );
       const nameWithAs = as ? `${name} as ${as}` : name;
       if (!pathMap.has(importPath)) {
         pathMap.set(importPath, {
