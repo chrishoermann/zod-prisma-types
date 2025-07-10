@@ -186,16 +186,12 @@ export class ExtendedDMMFSchemaField
   }
 
   private _setArgTypeImports() {
-    const { prismaClientPath, moduleResolution } = this.generatorConfig;
-    const prismaImportPath =
-      moduleResolution === 'node16' || moduleResolution === 'nodenext'
-        ? `${prismaClientPath}/index.js`
-        : prismaClientPath;
+    const { prismaClientPath } = this.generatorConfig;
 
     const prismaImport: writeImportStatementOptions = {
       name: 'Prisma',
       isTypeOnly: true,
-      path: prismaImportPath,
+      path: prismaClientPath,
     };
 
     const imports: writeImportStatementOptions[] = [
