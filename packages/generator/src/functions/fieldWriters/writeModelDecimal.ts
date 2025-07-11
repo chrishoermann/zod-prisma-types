@@ -7,12 +7,19 @@ export const writeDecimal = ({
   field,
   model,
   writeOptionalDefaults = false,
+  dmmf,
 }: ExtendedWriteFieldOptions) => {
+  const { isPrismaQueryCompiler } = dmmf.generatorConfig;
+
+  const decimalTypeName = isPrismaQueryCompiler
+    ? 'PrismaDecimal'
+    : 'Prisma.Decimal';
+
   writer
     .conditionalWrite(field.omitInModel(), '// omitted: ')
     .write(`${field.formattedNames.original}: `)
     .write(
-      `z.instanceof(Prisma.Decimal, { message: "Field '${field.formattedNames.original}' must be a Decimal. Location: ['Models', '${model.formattedNames.original}']"`,
+      `z.instanceof(${decimalTypeName}, { message: "Field '${field.formattedNames.original}' must be a Decimal. Location: ['Models', '${model.formattedNames.original}']"`,
     )
     // .conditionalWrite(!!field.zodCustomErrors, field.zodCustomErrors!)
     // .write(`)`)

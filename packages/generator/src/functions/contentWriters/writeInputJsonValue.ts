@@ -5,17 +5,30 @@ export const writeInputJsonValue = ({
   dmmf,
   getSingleFileContent = false,
 }: ContentWriterOptions) => {
-  const { useMultipleFiles, prismaClientPath } = dmmf.generatorConfig;
+  const {
+    useMultipleFiles,
+    prismaClientPath,
+    prismaLibraryPath,
+    isPrismaQueryCompiler,
+  } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
-    writeImport('{ Prisma }', prismaClientPath);
+    if (isPrismaQueryCompiler) {
+      writeImport('type { InputJsonValue }', prismaLibraryPath);
+    } else {
+      writeImport('{ Prisma }', prismaClientPath);
+    }
   }
+
+  const inputJsonValueTypeName = isPrismaQueryCompiler
+    ? 'InputJsonValue'
+    : 'Prisma.InputJsonValue';
 
   writer
     .blankLine()
     .writeLine(
-      `export const InputJsonValueSchema: z.ZodType<Prisma.InputJsonValue> = z.lazy(() =>`,
+      `export const InputJsonValueSchema: z.ZodType<${inputJsonValueTypeName}> = z.lazy(() =>`,
     )
     .withIndentationLevel(1, () => {
       writer

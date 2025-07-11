@@ -47,7 +47,12 @@ export class ExtendedDMMFModelImportStatement extends ExtendedDMMFModelValidator
   private _getAutomaticImports() {
     const statements: string[] = [];
 
-    const { inputTypePath, prismaClientPath } = this.generatorConfig;
+    const {
+      inputTypePath,
+      prismaClientPath,
+      prismaLibraryPath,
+      isPrismaQueryCompiler,
+    } = this.generatorConfig;
 
     if (this.fields.some((field) => field.isJsonType)) {
       statements.push(
@@ -56,7 +61,13 @@ export class ExtendedDMMFModelImportStatement extends ExtendedDMMFModelValidator
     }
 
     if (this.hasDecimalFields) {
-      statements.push(`import { Prisma } from '${prismaClientPath}'`);
+      if (isPrismaQueryCompiler) {
+        statements.push(
+          `import { Decimal as PrismaDecimal } from '${prismaLibraryPath}';`,
+        );
+      } else {
+        statements.push(`import { Prisma } from '${prismaClientPath}'`);
+      }
     }
 
     this.enumFields.forEach((field) => {
