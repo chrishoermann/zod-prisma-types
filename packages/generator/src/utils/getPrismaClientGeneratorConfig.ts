@@ -9,8 +9,19 @@ export const getPrismaClientGeneratorConfig = (options: GeneratorOptions) => {
       g.provider.value === 'prisma-client',
   );
 
-  const isPrismaQueryCompiler =
-    prismaClientOptions?.previewFeatures.includes('queryCompiler');
+  const isPrismaClientGenerator =
+    prismaClientOptions?.provider.value === 'prisma-client';
+
+  const prismaLibraryPath = prismaClientOptions?.previewFeatures.includes(
+    'queryCompiler',
+  )
+    ? '@prisma/client/runtime/client'
+    : '@prisma/client/runtime/library';
+
+  const baseOptions = {
+    isPrismaClientGenerator,
+    prismaLibraryPath,
+  };
 
   // check if custom output is used on generator or prisma client
   if (
@@ -18,14 +29,14 @@ export const getPrismaClientGeneratorConfig = (options: GeneratorOptions) => {
     !prismaClientOptions?.isCustomOutput ||
     !prismaClientOptions?.output?.value
   )
-    return { isPrismaQueryCompiler };
+    return baseOptions;
 
   // check if the prisma client path is already set in the generator config
   // if so this path is used instead of the automatically located path
 
   if (options.generator.config?.['prismaClientPath']) {
     return {
-      isPrismaQueryCompiler,
+      ...baseOptions,
       prismaClientPath: options.generator.config?.['prismaClientPath'],
     };
   }
@@ -35,17 +46,17 @@ export const getPrismaClientGeneratorConfig = (options: GeneratorOptions) => {
     .relative(options.generator.output.value, prismaClientOptions.output.value)
     .replace(/\\/g, '/');
 
-  if (!prismaClientPath) return { isPrismaQueryCompiler };
+  if (!prismaClientPath) return baseOptions;
 
   // if multiple files are used the path needs to add one level up
   // because the schemas are generated in subfolders of the output path
   if (options.generator.config?.['useMultipleFiles']) {
     return {
-      isPrismaQueryCompiler,
+      ...baseOptions,
       prismaClientPath: `../${prismaClientPath}`,
     };
   }
 
   // return path to be spread into the generator config
-  return { isPrismaQueryCompiler, prismaClientPath };
+  return { ...baseOptions, prismaClientPath };
 };

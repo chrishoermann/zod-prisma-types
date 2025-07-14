@@ -9,20 +9,20 @@ export const writeJsonValue = ({
     useMultipleFiles,
     prismaClientPath,
     prismaLibraryPath,
-    isPrismaQueryCompiler,
+    isPrismaClientGenerator,
   } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
 
-    if (isPrismaQueryCompiler) {
+    if (isPrismaClientGenerator) {
       writeImport('type { JsonValue }', prismaLibraryPath);
     } else {
       writeImport('type { Prisma }', prismaClientPath);
     }
   }
 
-  const jsonValueTypeName = isPrismaQueryCompiler
+  const jsonValueTypeName = isPrismaClientGenerator
     ? 'JsonValue'
     : 'Prisma.JsonValue';
 

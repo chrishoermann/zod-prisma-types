@@ -50,11 +50,11 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
           `z.instanceof(Decimal).array(),`,
         )
         .conditionalWrite(
-          inputType.generatorConfig.isPrismaQueryCompiler,
+          inputType.generatorConfig.isPrismaClientGenerator,
           `z.instanceof(PrismaDecimal).array(),`,
         )
         .conditionalWrite(
-          !inputType.generatorConfig.isPrismaQueryCompiler,
+          !inputType.generatorConfig.isPrismaClientGenerator,
           `z.instanceof(Prisma.Decimal).array(),`,
         )
         .write(`DecimalJsLikeSchema.array(),`)
@@ -81,11 +81,11 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
         `z.instanceof(Decimal),`,
       )
       .conditionalWrite(
-        inputType.generatorConfig.isPrismaQueryCompiler,
+        inputType.generatorConfig.isPrismaClientGenerator,
         `z.instanceof(PrismaDecimal),`,
       )
       .conditionalWrite(
-        !inputType.generatorConfig.isPrismaQueryCompiler,
+        !inputType.generatorConfig.isPrismaClientGenerator,
         `z.instanceof(Prisma.Decimal),`,
       )
       .write(`DecimalJsLikeSchema,`)

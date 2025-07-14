@@ -95,7 +95,7 @@ export const configSchema = z.object({
   outputTypePath: z.string().optional().default('outputTypeSchemas'), // currently only used internally
   prismaVersion: PrismaVersionSchema.optional(),
   decimalJSInstalled: z.boolean().default(false),
-  isPrismaQueryCompiler: z.boolean().default(false),
+  isPrismaClientGenerator: z.boolean().default(false),
   prismaLibraryPath: z
     .string()
     .optional()

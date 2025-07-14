@@ -9,19 +9,19 @@ export const writeDecimalJsLikeList = ({
     useMultipleFiles,
     prismaClientPath,
     prismaLibraryPath,
-    isPrismaQueryCompiler,
+    isPrismaClientGenerator,
   } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
-    if (isPrismaQueryCompiler) {
+    if (isPrismaClientGenerator) {
       writeImport('type { DecimalJsLike }', `${prismaLibraryPath}`);
     } else {
       writeImport('type { Prisma }', `${prismaClientPath}`);
     }
   }
 
-  const decimalJsLikeListTypeName = isPrismaQueryCompiler
+  const decimalJsLikeListTypeName = isPrismaClientGenerator
     ? 'DecimalJsLike'
     : 'Prisma.DecimalJsLike';
 

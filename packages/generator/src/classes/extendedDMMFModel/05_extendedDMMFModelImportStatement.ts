@@ -51,7 +51,7 @@ export class ExtendedDMMFModelImportStatement extends ExtendedDMMFModelValidator
       inputTypePath,
       prismaClientPath,
       prismaLibraryPath,
-      isPrismaQueryCompiler,
+      isPrismaClientGenerator,
     } = this.generatorConfig;
 
     if (this.fields.some((field) => field.isJsonType)) {
@@ -61,7 +61,7 @@ export class ExtendedDMMFModelImportStatement extends ExtendedDMMFModelValidator
     }
 
     if (this.hasDecimalFields) {
-      if (isPrismaQueryCompiler) {
+      if (isPrismaClientGenerator) {
         statements.push(
           `import { Decimal as PrismaDecimal } from '${prismaLibraryPath}';`,
         );

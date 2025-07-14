@@ -9,18 +9,18 @@ export const writeIsValidDecimalInput = ({
     useMultipleFiles,
     prismaClientPath,
     prismaLibraryPath,
-    isPrismaQueryCompiler,
+    isPrismaClientGenerator,
   } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    if (isPrismaQueryCompiler) {
+    if (isPrismaClientGenerator) {
       writeImport('type { DecimalJsLike }', `${prismaLibraryPath}`);
     } else {
       writeImport('type { Prisma }', `${prismaClientPath}`);
     }
   }
 
-  const decimalJsLikeTypeName = isPrismaQueryCompiler
+  const decimalJsLikeTypeName = isPrismaClientGenerator
     ? 'DecimalJsLike'
     : 'Prisma.DecimalJsLike';
 

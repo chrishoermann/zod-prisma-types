@@ -13,7 +13,7 @@ export const writePrismaEnum = (
     useMultipleFiles,
     prismaClientPath,
     prismaLibraryPath,
-    isPrismaQueryCompiler,
+    isPrismaClientGenerator,
   } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
@@ -32,11 +32,11 @@ export const writePrismaEnum = (
     if (name === 'JsonNullValueInput') {
       writer
         .conditionalWrite(
-          useMultipleFiles && !isPrismaQueryCompiler,
+          useMultipleFiles && !isPrismaClientGenerator,
           `import { Prisma } from '${prismaClientPath}';`,
         )
         .conditionalWrite(
-          useMultipleFiles && isPrismaQueryCompiler,
+          useMultipleFiles && isPrismaClientGenerator,
           `import { objectEnumValues } from '${prismaLibraryPath}';`,
         )
         .blankLine()
@@ -44,7 +44,7 @@ export const writePrismaEnum = (
       values.forEach((value) => {
         writer.write(`'${value}',`);
       });
-      const jsonNullTypeName = isPrismaQueryCompiler
+      const jsonNullTypeName = isPrismaClientGenerator
         ? 'objectEnumValues.instances.JsonNull'
         : 'Prisma.JsonNull';
       writer.write(
@@ -57,11 +57,11 @@ export const writePrismaEnum = (
     if (name === 'NullableJsonNullValueInput') {
       writer
         .conditionalWrite(
-          useMultipleFiles && !isPrismaQueryCompiler,
+          useMultipleFiles && !isPrismaClientGenerator,
           `import { Prisma } from '${prismaClientPath}';`,
         )
         .conditionalWrite(
-          useMultipleFiles && isPrismaQueryCompiler,
+          useMultipleFiles && isPrismaClientGenerator,
           `import { objectEnumValues } from '${prismaLibraryPath}';`,
         )
         .blankLine()
@@ -69,10 +69,10 @@ export const writePrismaEnum = (
       values.forEach((value) => {
         writer.write(`'${value}',`);
       });
-      const jsonNullTypeName = isPrismaQueryCompiler
+      const jsonNullTypeName = isPrismaClientGenerator
         ? 'objectEnumValues.instances.JsonNull'
         : 'Prisma.JsonNull';
-      const dbNullTypeName = isPrismaQueryCompiler
+      const dbNullTypeName = isPrismaClientGenerator
         ? 'objectEnumValues.instances.DbNull'
         : 'Prisma.DbNull';
       writer.write(
@@ -84,11 +84,11 @@ export const writePrismaEnum = (
     if (name === 'JsonNullValueFilter') {
       writer
         .conditionalWrite(
-          useMultipleFiles && !isPrismaQueryCompiler,
+          useMultipleFiles && !isPrismaClientGenerator,
           `import { Prisma } from '${prismaClientPath}';`,
         )
         .conditionalWrite(
-          useMultipleFiles && isPrismaQueryCompiler,
+          useMultipleFiles && isPrismaClientGenerator,
           `import { objectEnumValues } from '${prismaLibraryPath}';`,
         )
         .blankLine()
@@ -96,13 +96,13 @@ export const writePrismaEnum = (
       values.forEach((value) => {
         writer.write(`'${value}',`);
       });
-      const jsonNullTypeName = isPrismaQueryCompiler
+      const jsonNullTypeName = isPrismaClientGenerator
         ? 'objectEnumValues.instances.JsonNull'
         : 'Prisma.JsonNull';
-      const dbNullTypeName = isPrismaQueryCompiler
+      const dbNullTypeName = isPrismaClientGenerator
         ? 'objectEnumValues.instances.DbNull'
         : 'Prisma.DbNull';
-      const anyNullTypeName = isPrismaQueryCompiler
+      const anyNullTypeName = isPrismaClientGenerator
         ? 'objectEnumValues.instances.AnyNull'
         : 'Prisma.AnyNull';
       writer.write(

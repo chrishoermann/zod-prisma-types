@@ -9,9 +9,9 @@ export const writeDecimal = ({
   writeOptionalDefaults = false,
   dmmf,
 }: ExtendedWriteFieldOptions) => {
-  const { isPrismaQueryCompiler } = dmmf.generatorConfig;
+  const { isPrismaClientGenerator } = dmmf.generatorConfig;
 
-  const decimalTypeName = isPrismaQueryCompiler
+  const decimalTypeName = isPrismaClientGenerator
     ? 'PrismaDecimal'
     : 'Prisma.Decimal';
 

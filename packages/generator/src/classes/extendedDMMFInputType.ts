@@ -184,14 +184,14 @@ export class ExtendedDMMFInputType
     const {
       prismaClientPath,
       prismaLibraryPath,
-      isPrismaQueryCompiler,
+      isPrismaClientGenerator,
       decimalJSInstalled,
     } = this.generatorConfig;
 
     const prismaImports = [];
 
     if (this.isDecimalField) {
-      if (isPrismaQueryCompiler) {
+      if (isPrismaClientGenerator) {
         prismaImports.push(
           `import { Decimal as PrismaDecimal } from '${prismaLibraryPath}';`,
         );
@@ -200,7 +200,7 @@ export class ExtendedDMMFInputType
       }
     }
 
-    if (!this.isDecimalField || isPrismaQueryCompiler) {
+    if (!this.isDecimalField || isPrismaClientGenerator) {
       prismaImports.push(`import type { Prisma } from '${prismaClientPath}';`);
     }
 

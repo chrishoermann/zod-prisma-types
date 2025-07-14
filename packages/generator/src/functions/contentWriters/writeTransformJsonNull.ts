@@ -9,24 +9,24 @@ export const writeTransformJsonNull = ({
     useMultipleFiles,
     prismaClientPath,
     prismaLibraryPath,
-    isPrismaQueryCompiler,
+    isPrismaClientGenerator,
   } = dmmf.generatorConfig;
 
   // TODO: check how to get DbNUll and JsonNull from PrismaClient without importing the whole namespace
 
   if (useMultipleFiles && !getSingleFileContent) {
-    if (isPrismaQueryCompiler) {
+    if (isPrismaClientGenerator) {
       writeImport('type { objectEnumValues, JsonValue }', prismaLibraryPath);
     } else {
       writeImport('{ Prisma }', prismaClientPath);
     }
   }
 
-  const jsonValueTypeName = isPrismaQueryCompiler
+  const jsonValueTypeName = isPrismaClientGenerator
     ? 'JsonValue'
     : 'Prisma.JsonValue';
 
-  const nullTypesTypeName = isPrismaQueryCompiler
+  const nullTypesTypeName = isPrismaClientGenerator
     ? 'typeof objectEnumValues.instances'
     : 'Prisma.NullTypes';
 

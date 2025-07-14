@@ -12,13 +12,13 @@ export const writeSingleFileImportStatements: WriteStatements = (
     prismaClientPath,
     prismaLibraryPath,
     decimalJSInstalled,
-    isPrismaQueryCompiler,
+    isPrismaClientGenerator,
   } = dmmf.generatorConfig;
   writeImport('{ z }', 'zod');
 
-  // If using the "no-rust" query compiler, we can import directly from the
+  // If using the "prisma-client" compiler, we can import directly from the
   // runtime library to avoid importing the entire client.
-  if (isPrismaQueryCompiler) {
+  if (isPrismaClientGenerator) {
     const namesToImport = [];
 
     if (dmmf.schema.hasJsonTypes) {
