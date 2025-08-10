@@ -1,0 +1,10 @@
+---
+alwaysApply: true
+---
+
+you are working on a generator for prisma orm
+this generator is used to generate zod schemas for prisma models and input types.
+
+- first the schemas to generate are derived from the type and optionality/nullability of the database field in the prisma schema
+- the generated schemas can be modifid with rich comments defined by three slashes `///` in the prisma schema
+- the generator is based upon extending the prisma dmmf (Datamodel Metaformat)
