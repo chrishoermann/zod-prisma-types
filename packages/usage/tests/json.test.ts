@@ -1,8 +1,7 @@
 import {
   JsonModel as JsonModelPrisma,
-  Prisma,
   PrismaClient,
-} from '@prisma/client';
+} from '../prisma/generated/client';
 import {
   JsonModel,
   JsonModelCreateInputSchema,

@@ -1,6 +1,6 @@
-import { GeneratorOptions } from '@prisma/generator-helper';
+import type { GeneratorOptions } from '@prisma/generator-helper';
 
-import { getPrismaClientOutputPath } from './getPrismaClientOutputPath';
+import { getPrismaClientGeneratorConfig } from './getPrismaClientGeneratorConfig';
 import { getPrismaClientProvider } from './getPrismaDbProvider';
 import { configSchema } from '../schemas';
 import { getPrismaVersion } from './getPrismaVersion';
@@ -12,7 +12,7 @@ export const parseGeneratorConfig = (generatorOptions: GeneratorOptions) => {
 
   return configSchema.parse({
     ...generatorOptions.generator.config,
-    ...getPrismaClientOutputPath(generatorOptions),
+    ...getPrismaClientGeneratorConfig(generatorOptions),
     ...getPrismaClientProvider(generatorOptions),
     prismaVersion: getPrismaVersion(),
     decimalJSInstalled: getDecimalJSInstalled(),

@@ -26,7 +26,6 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
   },
 ) => {
   if (!inputType.isSpecialType()) return;
-
   if (
     zodCustomValidatorString &&
     inputType.generatorConfig.addInputTypeValidation
@@ -49,7 +48,14 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
           inputType.generatorConfig.decimalJSInstalled,
           `z.instanceof(Decimal).array(),`,
         )
-        .write(`z.instanceof(Prisma.Decimal).array(),`)
+        .conditionalWrite(
+          inputType.generatorConfig.isPrismaClientGenerator,
+          `z.instanceof(PrismaDecimal).array(),`,
+        )
+        .conditionalWrite(
+          !inputType.generatorConfig.isPrismaClientGenerator,
+          `z.instanceof(Prisma.Decimal).array(),`,
+        )
         .write(`DecimalJsLikeSchema.array(),`)
         .write(`]`)
         .conditionalWrite(!!zodCustomErrors, `, ${zodCustomErrors!}`)
@@ -73,7 +79,14 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
         inputType.generatorConfig.decimalJSInstalled,
         `z.instanceof(Decimal),`,
       )
-      .write(`z.instanceof(Prisma.Decimal),`)
+      .conditionalWrite(
+        inputType.generatorConfig.isPrismaClientGenerator,
+        `z.instanceof(PrismaDecimal),`,
+      )
+      .conditionalWrite(
+        !inputType.generatorConfig.isPrismaClientGenerator,
+        `z.instanceof(Prisma.Decimal),`,
+      )
       .write(`DecimalJsLikeSchema,`)
       .write(`]`)
       .conditionalWrite(!!zodCustomErrors, `, ${zodCustomErrors!}`)
@@ -98,8 +111,16 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
   }
 
   if (inputType.isBytesType) {
+    const prismaVersion = inputType.generatorConfig.prismaVersion;
     return writer
-      .write(`z.instanceof(Buffer)`)
+      .conditionalWrite(
+        prismaVersion?.major === 6 || prismaVersion === undefined,
+        `z.instanceof(Uint8Array<ArrayBufferLike>)`,
+      )
+      .conditionalWrite(
+        prismaVersion?.major === 5 || prismaVersion?.major === 4,
+        `z.instanceof(Buffer)`,
+      )
       .conditionalWrite(inputType.isList, `.array()`)
       .conditionalWrite(isOptional, `.optional()`)
       .conditionalWrite(isNullable, `.nullable()`)

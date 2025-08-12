@@ -18,7 +18,11 @@ export const getPrismaVersion = () => {
       path.join(process.cwd(), 'package.json'),
       'utf-8',
     );
-    const jsonData = JSON.parse(rawData);
+    const jsonData = z
+      .object({
+        dependencies: z.record(z.string()),
+      })
+      .parse(JSON.parse(rawData));
 
     // Extract @prisma/client version
     let prismaVersion = jsonData['dependencies']['@prisma/client'];
@@ -34,7 +38,7 @@ export const getPrismaVersion = () => {
 
     return version;
   } catch (error) {
-    console.error(`Error reading package.json: ${error}`);
+    console.error('Error reading package.json:', error);
     return undefined;
   }
 };

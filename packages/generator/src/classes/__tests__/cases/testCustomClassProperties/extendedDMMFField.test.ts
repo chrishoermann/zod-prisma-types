@@ -49,7 +49,7 @@ describe('testSimpleModelNoValidators', async () => {
     expect(fields[0].type).toBe('String');
     expect(fields[0].isGenerated).toBe(false);
     expect(fields[0].hasDefaultValue).toBe(true);
-    expect(fields[0].default).toStrictEqual({ name: 'cuid', args: [] });
+    expect(fields[0].default).toStrictEqual({ name: 'cuid', args: [1] });
     expect(fields[0].relationToFields).toBeUndefined();
     expect(fields[0].relationOnDelete).toBeUndefined();
     expect(fields[0].relationName).toBeUndefined();

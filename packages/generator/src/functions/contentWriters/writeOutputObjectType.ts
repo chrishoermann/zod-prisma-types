@@ -70,18 +70,22 @@ export const writeOutputObjectType = (
     .write(` = `)
     .write(`z.object(`)
     .inlineBlock(() => {
+      const modelType =
+        typeof field.modelType === 'string'
+          ? field.modelType
+          : field.modelType.name;
       writer
         .conditionalWriteLine(
           field.writeSelectArg,
-          `select: ${field.modelType}SelectSchema.optional(),`,
+          `select: ${modelType}SelectSchema.optional(),`,
         )
         .conditionalWriteLine(
           field.writeIncludeArg && !useMultipleFiles,
-          `include: ${field.modelType}IncludeSchema.optional(),`,
+          `include: ${modelType}IncludeSchema.optional(),`,
         )
         .conditionalWriteLine(
           field.writeIncludeArg && useMultipleFiles,
-          `include: z.lazy(() => ${field.modelType}IncludeSchema).optional(),`,
+          `include: z.lazy(() => ${modelType}IncludeSchema).optional(),`,
         );
       field.args.forEach((arg) => {
         writer.write(`${arg.name}: `);

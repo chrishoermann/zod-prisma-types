@@ -1,8 +1,9 @@
-import { DMMF } from '@prisma/generator-helper';
+import type DMMF from '@prisma/dmmf';
 import { it, expect, describe } from 'vitest';
 
 import { DEFAULT_GENERATOR_CONFIG, FIELD_BASE } from '../setup';
 import {
+  ARRAY_VALIDATOR_MESSAGE_REGEX,
   BIGINT_VALIDATOR_MESSAGE_REGEX,
   BIGINT_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
   CUSTOM_VALIDATOR_MESSAGE_REGEX,
@@ -10,6 +11,7 @@ import {
   ExtendedDMMFFieldValidatorMap,
   NUMBER_VALIDATOR_MESSAGE_REGEX,
   NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
+  STRING_VALIDATOR_DATETIME_REGEX,
   STRING_VALIDATOR_MESSAGE_REGEX,
   STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
   STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX,
@@ -69,6 +71,16 @@ export function testExtendedDMMFFieldValidatorMap<
       expect(result?.groups?.string).toBe(
         "'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。'",
       );
+      expect(result?.groups?.message).toBe(
+        "{message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。'}",
+      );
+    });
+
+    it(`string validator datetime should return match for regex with japanese chars`, async () => {
+      const result = STRING_VALIDATOR_DATETIME_REGEX.exec(
+        ".datetime({ message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。', offset: true, local: true, precision: 2 })",
+      );
+      expect(result?.groups?.validator).toBe('datetime');
       expect(result?.groups?.message).toBe(
         "{message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。'}",
       );
@@ -151,7 +163,7 @@ export function testExtendedDMMFFieldValidatorMap<
 
     it(`array validator message should return match for regex with japanese chars`, async () => {
       const result = CUSTOM_VALIDATOR_MESSAGE_REGEX.exec(
-        "array(min(2, { message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。' }))",
+        ".array(min(2, { message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。' }))",
       );
 
       expect(result?.groups?.validator).toBe('array');
@@ -251,7 +263,7 @@ export function testExtendedDMMFFieldValidatorMap<
 
     it(`custom validator message should return match for regex with japanese chars`, async () => {
       const result = CUSTOM_VALIDATOR_MESSAGE_REGEX.exec(
-        "use(z.string.min(2, { message: 'ÁÀȦÂÄǞǍĂĀÃÅǺǼǢĆĊĈČĎḌḐḒÉÈĖÊËĚĔĒẼE̊ẸǴĠĜǦĞG̃ĢĤḤáàȧâäǟǎăāãåǻǽǣćċĉčďḍḑḓéèėêëěĕēẽe̊ẹǵġĝǧğg̃ģĥḥÍÌİÎÏǏĬĪĨỊĴĶǨĹĻĽĿḼM̂M̄ʼNŃN̂ṄN̈ŇN̄ÑŅṊÓÒȮȰÔÖȪǑŎŌÕȬŐỌǾƠíìiîïǐĭīĩịĵķǩĺļľŀḽm̂m̄ŉńn̂ṅn̈ňn̄ñņṋóòôȯȱöȫǒŏōõȭőọǿơP̄ŔŘŖŚŜṠŠȘṢŤȚṬṰÚÙÛÜǓŬŪŨŰŮỤẂẀŴẄÝỲŶŸȲỸŹŻŽẒǮp̄ŕřŗśŝṡšşṣťțṭṱúùûüǔŭūũűůụẃẁŵẅýỳŷÿȳỹźżžẓǯßœŒçÇs' }))",
+        ".use(z.string.min(2, { message: 'ÁÀȦÂÄǞǍĂĀÃÅǺǼǢĆĊĈČĎḌḐḒÉÈĖÊËĚĔĒẼE̊ẸǴĠĜǦĞG̃ĢĤḤáàȧâäǟǎăāãåǻǽǣćċĉčďḍḑḓéèėêëěĕēẽe̊ẹǵġĝǧğg̃ģĥḥÍÌİÎÏǏĬĪĨỊĴĶǨĹĻĽĿḼM̂M̄ʼNŃN̂ṄN̈ŇN̄ÑŅṊÓÒȮȰÔÖȪǑŎŌÕȬŐỌǾƠíìiîïǐĭīĩịĵķǩĺļľŀḽm̂m̄ŉńn̂ṅn̈ňn̄ñņṋóòôȯȱöȫǒŏōõȭőọǿơP̄ŔŘŖŚŜṠŠȘṢŤȚṬṰÚÙÛÜǓŬŪŨŰŮỤẂẀŴẄÝỲŶŸȲỸŹŻŽẒǮp̄ŕřŗśŝṡšşṣťțṭṱúùûüǔŭūũűůụẃẁŵẅýỳŷÿȳỹźżžẓǯßœŒçÇs' }))",
       );
 
       expect(result?.groups?.validator).toBe('use');
@@ -262,7 +274,7 @@ export function testExtendedDMMFFieldValidatorMap<
 
     it(`array validator message should return match for regex with japanese chars`, async () => {
       const result = CUSTOM_VALIDATOR_MESSAGE_REGEX.exec(
-        "array(min(2, { message: 'ÁÀȦÂÄǞǍĂĀÃÅǺǼǢĆĊĈČĎḌḐḒÉÈĖÊËĚĔĒẼE̊ẸǴĠĜǦĞG̃ĢĤḤáàȧâäǟǎăāãåǻǽǣćċĉčďḍḑḓéèėêëěĕēẽe̊ẹǵġĝǧğg̃ģĥḥÍÌİÎÏǏĬĪĨỊĴĶǨĹĻĽĿḼM̂M̄ʼNŃN̂ṄN̈ŇN̄ÑŅṊÓÒȮȰÔÖȪǑŎŌÕȬŐỌǾƠíìiîïǐĭīĩịĵķǩĺļľŀḽm̂m̄ŉńn̂ṅn̈ňn̄ñņṋóòôȯȱöȫǒŏōõȭőọǿơP̄ŔŘŖŚŜṠŠȘṢŤȚṬṰÚÙÛÜǓŬŪŨŰŮỤẂẀŴẄÝỲŶŸȲỸŹŻŽẒǮp̄ŕřŗśŝṡšşṣťțṭṱúùûüǔŭūũűůụẃẁŵẅýỳŷÿȳỹźżžẓǯßœŒçÇs' }))",
+        ".array(min(2, { message: 'ÁÀȦÂÄǞǍĂĀÃÅǺǼǢĆĊĈČĎḌḐḒÉÈĖÊËĚĔĒẼE̊ẸǴĠĜǦĞG̃ĢĤḤáàȧâäǟǎăāãåǻǽǣćċĉčďḍḑḓéèėêëěĕēẽe̊ẹǵġĝǧğg̃ģĥḥÍÌİÎÏǏĬĪĨỊĴĶǨĹĻĽĿḼM̂M̄ʼNŃN̂ṄN̈ŇN̄ÑŅṊÓÒȮȰÔÖȪǑŎŌÕȬŐỌǾƠíìiîïǐĭīĩịĵķǩĺļľŀḽm̂m̄ŉńn̂ṅn̈ňn̄ñņṋóòôȯȱöȫǒŏōõȭőọǿơP̄ŔŘŖŚŜṠŠȘṢŤȚṬṰÚÙÛÜǓŬŪŨŰŮỤẂẀŴẄÝỲŶŸȲỸŹŻŽẒǮp̄ŕřŗśŝṡšşṣťțṭṱúùûüǔŭūũűůụẃẁŵẅýỳŷÿȳỹźżžẓǯßœŒçÇs' }))",
       );
 
       expect(result?.groups?.validator).toBe('array');
