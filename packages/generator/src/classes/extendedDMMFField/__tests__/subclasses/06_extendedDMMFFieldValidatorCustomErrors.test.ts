@@ -7,7 +7,7 @@ import { GeneratorConfig } from '../../../../schemas/generatorConfigSchema';
 
 /////////////////////////////////////////////
 // TEST SUITE
-/////////////////////////////////////////////
+///////////////////////////////////////////////
 
 export function testExtendedDMMFFieldValidatorCustomErrors<
   T extends ExtendedDMMFFieldValidatorCustomErrors,
@@ -60,7 +60,7 @@ export function testExtendedDMMFFieldValidatorCustomErrors<
 
 /////////////////////////////////////////////
 // TEST EXECUTION
-/////////////////////////////////////////////
+///////////////////////////////////////////////
 
 testExtendedDMMFFieldValidatorCustomErrors(
   ExtendedDMMFFieldValidatorCustomErrors,

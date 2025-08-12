@@ -1,0 +1,88 @@
+---
+alwaysApply: true
+---
+
+## Zod v4 migration rules (for zod-prisma-types)
+
+These rules guide updates to the Prisma→Zod generator to target Zod v4.x.x (with Prisma 6.x.x).
+
+### Scope
+
+- Target Zod v4.x.x. If unsure whether Zod v4 supports a feature, check `https://zod.dev/v4` and migration notes. Do not assume.
+- Keep Prisma at v6.x.x.
+
+### High‑leverage changes (centralize Zod differences)
+
+- Add a small compat layer to isolate Zod API/output differences:
+  - Create `packages/generator/src/functions/zodCompat.ts`.
+  - Export helpers for all emitted Zod fragments so we don’t inline `z.` chains across the codebase:
+    - `writeZodImport(writer)`
+    - `createScalarSchema(type: 'string'|'number'|'bigint'|'date', customErrors?: string): string`
+    - `createCoercedScalarSchema(type: 'date'|...): string` (wraps `z.coerce.date` etc.)
+    - `buildObjectOptions(opts: { required_error?: string; invalid_type_error?: string; description?: string }): string` (return the correct object‑options literal for `z.object` in v4; if v4 differs, adapt here)
+    - `buildValidatorCall(kind: 'string'|'number'|'bigint'|'date'|'array'|'object', key: string, args: string): string`
+    - `combineObjectSchemas(left: string, right: string, mode: 'merge'|'and'): string`
+    - `wrapAsRecursiveZodType<T>(schemaExpr: string): string` (central place to keep `z.ZodType<T>` annotations if still required)
+- Refactor writers to call these helpers instead of emitting raw `z.` strings:
+  - `packages/generator/src/functions/writeSingleFileImportStatements.ts`
+  - `packages/generator/src/functions/contentWriters/writeModelOrType.ts`
+  - `packages/generator/src/functions/fieldWriters/writeModelScalar.ts`
+  - Consider the rest of `fieldWriters` and `contentWriters` where `z.` chains are constructed.
+
+### Where Zod is used (touchpoints you may need to change)
+
+- Imports: `writeSingleFileImportStatements.ts`, `writeModelOrType.ts` → unify via `zodCompat.writeZodImport`.
+- Prisma→Zod scalar mapping: `classes/extendedDMMFField/12_extendedDMMFFieldZodType.ts` and duplicate in `constants/objectMaps.ts`.
+- Field writers: `functions/fieldWriters/*` (scalar, enum, relation, json/bytes/special) → route through compat.
+- Model/object writers: `functions/contentWriters/*` (object creation, `.merge()`, `.and()`, `.partial()`, `.strict()`/`.passthrough()` etc.).
+- Custom errors and object options: `classes/extendedDMMFField/06_extendedDMMFFieldValidatorCustomErrors.ts`, `classes/extendedDMMFModel/06_extendedDMMFModelCustomErrors.ts`, and `constants/objectMaps.ts` (`ZOD_VALID_ERROR_KEYS`).
+- Validator recognition: `classes/extendedDMMFField/07_extendedDMMFFieldValidatorMap.ts` (string/number/date/bigint/array/object regex maps).
+
+### Zod v4 checks to confirm before emitting code
+
+- Validators and names are unchanged or updated (string: `min|max|length|email|url|uuid|cuid|cuid2|ulid|regex|includes|startsWith|endsWith|datetime|ip|cidr|emoji|nanoid`; number: `int|gt|gte|lt|lte|positive|nonpositive|negative|nonnegative|finite|multipleOf|step`; bigint/date similar). If any renamed/removed, update regex maps and compat chaining.
+- `z.object(shape, options)` second‑arg keys: confirm `{ required_error, invalid_type_error, description }` still supported. If not, adapt `zodCompat.buildObjectOptions` and update custom error builders to emit v4‑correct forms.
+- `.coerce` API still available (e.g., `z.coerce.date`) for DateTime fields. Leave behavior gated by `config.coerceDate`.
+- `.nullable()`, `.nullish()`, `.optional()` semantics unchanged.
+- `.merge()` vs `.and()` semantics unchanged (overwrite vs intersection). If any change, adjust via `zodCompat.mergeOrAnd` and call sites.
+- `.refine()` and `.superRefine()` options: confirm error option keys (e.g., `{ message }` or newer key) and adapt emitters accordingly.
+
+### Config rules
+
+- Keep existing generator config surface in `schemas/generatorConfigSchema.ts`.
+- `useTypeAssertions` is deprecated; if Zod v4 resolves the TS issue, treat it as a no‑op (retain to avoid breaking users, mark deprecated in docs). Remove usage branches if any remain.
+
+### JSON/Decimal/Bytes
+
+- JSON null/DbNull/JsonNull handling stays as implemented (Prisma‑bound, not Zod‑bound).
+- Decimal support via `decimal.js` remains.
+- Bytes handling unchanged.
+
+### Validator maps and error emission
+
+- Only change regex maps or emitted option keys if Zod v4 changed API names or option shapes.
+- Centralize error object building in `zodCompat` so we can tweak once (both per‑validator `{ message?: string }` and object‑level options).
+
+### Testing requirements
+
+- Update `packages/usage` to Zod v4 and run the full test suite.
+- Fix tests by adjusting expected generated code to v4 where necessary (esp. object options and per‑validator options if changed).
+- Add/keep tests for: object‑level options, date coercion on/off, nullability, recursive relation schemas, default validators, `whereUnique` validation path.
+
+### Docs
+
+- Update `Readme.md` and `packages/generator/Readme.md`:
+  - Supported versions (Zod v4).
+  - Any changes to emitted object options or validator option keys.
+  - Note `useTypeAssertions` is deprecated/no‑op under v4.
+
+### Optional dual support (v3 + v4)
+
+- If needed, `zodCompat` may detect zod major version at runtime and branch emissions. Keep the rest of the code version‑agnostic.
+
+### Acceptance criteria
+
+- Generator runs against Zod v4 producing compilable TS.
+- Unit/integration tests green under Zod v4.
+- No regressions for JSON/Decimal/Bytes.
+- Docs reflect Zod v4 behavior.

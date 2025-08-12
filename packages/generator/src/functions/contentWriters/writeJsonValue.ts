@@ -1,4 +1,5 @@
 import { type ContentWriterOptions } from '../../types';
+import { writeZodImport } from '../zodCompatibility';
 
 export const writeJsonValue = ({
   fileWriter: { writer, writeImport },
@@ -13,7 +14,7 @@ export const writeJsonValue = ({
   } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImport('{ z }', 'zod');
+    writeZodImport(writeImport);
 
     if (isPrismaClientGenerator) {
       writeImport('type { JsonValue }', prismaLibraryPath);

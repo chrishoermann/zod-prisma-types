@@ -1,4 +1,5 @@
 import { type ContentWriterOptions } from '../../types';
+import { writeZodImport } from '../zodCompatibility';
 
 export const writeNullableJsonValue = ({
   fileWriter: { writer, writeImport },
@@ -8,7 +9,7 @@ export const writeNullableJsonValue = ({
   const { useMultipleFiles } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImport('{ z }', 'zod');
+    writeZodImport(writeImport);
     writeImport('transformJsonNull', './transformJsonNull');
     writeImport('JsonValueSchema', './JsonValueSchema');
   }

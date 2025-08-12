@@ -36,6 +36,11 @@ export function testExtendedDMMFFieldDefaultValidators<
       expect(field?.['_defaultValidatorString']).toBe('.cuid()');
     });
 
+    it(`should load a class with cuid2 default validator`, async () => {
+      const field = getField({ default: { name: 'cuid', args: [2] } });
+      expect(field?.['_defaultValidatorString']).toBe('.cuid2()');
+    });
+
     it(`should load a class with uuid default validator`, async () => {
       const field = getField({ default: { name: 'uuid', args: [] } });
       expect(field?.['_defaultValidatorString']).toBe('.uuid()');

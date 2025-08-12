@@ -1,5 +1,6 @@
 import { ExtendedDMMFEnum } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
+import { writeZodImport } from '../zodCompatibility';
 
 export const writeCustomEnum = (
   {
@@ -12,7 +13,7 @@ export const writeCustomEnum = (
   const { useMultipleFiles } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImport('{ z }', 'zod');
+    writeZodImport(writeImport);
   }
 
   writer.blankLine().write(`export const ${name}Schema = z.enum([`);

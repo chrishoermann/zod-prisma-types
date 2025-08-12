@@ -122,16 +122,17 @@ export function testExtendedDMMFFieldValidatorMatch<
       );
     });
 
+    // Test is somehow failing with chinese characters
     it(`should match japanese characters in the regex`, async () => {
       const match = VALIDATOR_TYPE_REGEX.exec(
-        `@zod.string({ invalid_type_error: "ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。" }).min(5, { message: "ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。" })`,
+        `@zod.string({ error: "ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。" }).min(5, { error: "ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。" })`,
       );
 
       expect(match?.groups?.['customErrors']).toBe(
-        '({ invalid_type_error: "ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。" })',
+        '({ error: "ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。" })',
       );
       expect(match?.groups?.['validatorPattern']).toBe(
-        '.min(5, { message: "ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。" })',
+        '.min(5, { error: "ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。" })',
       );
     });
 
@@ -147,7 +148,7 @@ export function testExtendedDMMFFieldValidatorMatch<
 
     it('should match a string with an import dircetive', async () => {
       const match = VALIDATOR_TYPE_REGEX.exec(
-        `@zod.import(["import { myFunction } from "../../../../utils/myFunction";", "import { myFunction } from "../../../../utils/myFunction";"]).string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]|", required_error: "some other", description: "some description" }).cuid()`,
+        `@zod.import(["import { myFunction } from "../../../../utils/myFunction";", "import { myFunction } from "../../../../utils/myFunction";"]).string({ error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]|", description: "some description" }).cuid()`,
       );
 
       expect(match?.groups?.['validatorPattern']).toBe('.cuid()');
@@ -158,9 +159,61 @@ export function testExtendedDMMFFieldValidatorMatch<
         '"import { myFunction } from "../../../../utils/myFunction";", "import { myFunction } from "../../../../utils/myFunction";"',
       );
       expect(match?.groups?.['customErrors']).toBe(
-        `({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]|", required_error: "some other", description: "some description" })`,
+        `({ error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]|", description: "some description" })`,
       );
       expect(match?.groups?.['type']).toBe('string');
+    });
+
+    it('should match function-based error customization for string type', async () => {
+      const match = VALIDATOR_TYPE_REGEX.exec(
+        `@zod.string({ error: (issue) => issue.input === undefined ? "This field is required" : "Not a string" }).min(5, { error: (issue) => \`Value must be at least \${issue.minimum} characters\` })`,
+      );
+
+      expect(match?.groups?.['customErrors']).toBe(
+        '({ error: (issue) => issue.input === undefined ? "This field is required" : "Not a string" })',
+      );
+      expect(match?.groups?.['validatorPattern']).toBe(
+        '.min(5, { error: (issue) => `Value must be at least ${issue.minimum} characters` })',
+      );
+    });
+
+    it('should match function-based error customization for number type', async () => {
+      const match = VALIDATOR_TYPE_REGEX.exec(
+        `@zod.number({ error: (issue) => issue.input === undefined ? "This field is required" : "Must be a number" }).gt(0, { error: (issue) => \`Value must be greater than \${issue.minimum}\` })`,
+      );
+
+      expect(match?.groups?.['customErrors']).toBe(
+        '({ error: (issue) => issue.input === undefined ? "This field is required" : "Must be a number" })',
+      );
+      expect(match?.groups?.['validatorPattern']).toBe(
+        '.gt(0, { error: (issue) => `Value must be greater than ${issue.minimum}` })',
+      );
+    });
+
+    it('should match function-based error customization with conditional logic', async () => {
+      const match = VALIDATOR_TYPE_REGEX.exec(
+        `@zod.string({ error: (issue) => { if (issue.code === "invalid_type") return "Invalid type"; if (issue.code === "too_small") return "Too short"; return undefined; } }).min(3, { error: (issue) => issue.code === "too_small" ? \`Minimum length is \${issue.minimum}\` : undefined })`,
+      );
+
+      expect(match?.groups?.['customErrors']).toBe(
+        '({ error: (issue) => { if (issue.code === "invalid_type") return "Invalid type"; if (issue.code === "too_small") return "Too short"; return undefined; } })',
+      );
+      expect(match?.groups?.['validatorPattern']).toBe(
+        '.min(3, { error: (issue) => issue.code === "too_small" ? `Minimum length is ${issue.minimum}` : undefined })',
+      );
+    });
+
+    it('should match function-based error customization for date type', async () => {
+      const match = VALIDATOR_TYPE_REGEX.exec(
+        `@zod.date({ error: (issue) => issue.input === undefined ? "Date is required" : "Invalid date format" }).min(new Date("2020-01-01"), { error: (issue) => \`Date must be after \${issue.minimum.toISOString().split('T')[0]}\` })`,
+      );
+
+      expect(match?.groups?.['customErrors']).toBe(
+        '({ error: (issue) => issue.input === undefined ? "Date is required" : "Invalid date format" })',
+      );
+      expect(match?.groups?.['validatorPattern']).toBe(
+        '.min(new Date("2020-01-01"), { error: (issue) => `Date must be after ${issue.minimum.toISOString().split(\'T\')[0]}` })',
+      );
     });
   });
 }

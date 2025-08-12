@@ -4,7 +4,7 @@
 generator client {
   provider        = "prisma-client-js"
   output   = "../generated/client"
-  previewFeatures = ["views", "prismaSchemaFolder"]
+  previewFeatures = ["views"]
   // previewFeatures = ["views"]
 }
 

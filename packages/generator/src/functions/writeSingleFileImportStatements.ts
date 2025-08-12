@@ -1,4 +1,5 @@
 import { type WriteStatements } from '../types';
+import { writeZodImport } from './zodCompatibility';
 
 /////////////////////////////////////////////////
 // FUNCTION
@@ -14,7 +15,7 @@ export const writeSingleFileImportStatements: WriteStatements = (
     decimalJSInstalled,
     isPrismaClientGenerator,
   } = dmmf.generatorConfig;
-  writeImport('{ z }', 'zod');
+  writeZodImport(writeImport);
 
   // If using the "prisma-client" compiler, we can import directly from the
   // runtime library to avoid importing the entire client.

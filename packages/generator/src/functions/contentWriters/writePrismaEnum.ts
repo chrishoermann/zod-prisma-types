@@ -1,5 +1,6 @@
 import { ExtendedDMMFSchemaEnum } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
+import { writeZodImport } from '../zodCompatibility';
 
 export const writePrismaEnum = (
   {
@@ -17,7 +18,7 @@ export const writePrismaEnum = (
   } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImport('{ z }', 'zod');
+    writeZodImport(writeImport);
   }
 
   if (useNativeEnum) {

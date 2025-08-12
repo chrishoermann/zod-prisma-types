@@ -1,5 +1,6 @@
 import { ExtendedDMMFOutputType } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
+import { writeZodImport } from '../zodCompatibility';
 
 /**
  * The args schema is used in "include" and "select" schemas
@@ -21,7 +22,7 @@ export const writeArgs = (
   } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImport('{ z }', 'zod');
+    writeZodImport(writeImport);
     writeImport('type { Prisma }', prismaClientPath);
     writeImport(
       `{ ${model.name}SelectSchema }`,

@@ -1,4 +1,5 @@
 import { type ContentWriterOptions } from '../../types';
+import { writeZodImport } from '../zodCompatibility';
 
 export const writeDecimalJsLikeList = ({
   fileWriter: { writer, writeImport },
@@ -13,7 +14,7 @@ export const writeDecimalJsLikeList = ({
   } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImport('{ z }', 'zod');
+    writeZodImport(writeImport);
     if (isPrismaClientGenerator) {
       writeImport('type { DecimalJsLike }', `${prismaLibraryPath}`);
     } else {

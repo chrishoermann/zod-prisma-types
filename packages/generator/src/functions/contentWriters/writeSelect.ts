@@ -1,5 +1,6 @@
 import { ExtendedDMMFOutputType } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
+import { writeZodImport } from '../zodCompatibility';
 
 export const writeSelect = (
   {
@@ -17,7 +18,7 @@ export const writeSelect = (
   } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImport('{ z }', 'zod');
+    writeZodImport(writeImport);
     writeImport('type { Prisma }', prismaClientPath);
     if (useExactOptionalPropertyTypes) {
       writeImport('ru', `../${inputTypePath}/RemoveUndefined`);

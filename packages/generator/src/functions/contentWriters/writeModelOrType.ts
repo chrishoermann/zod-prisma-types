@@ -2,6 +2,7 @@ import { writeModelFields } from '.';
 import { ExtendedDMMFModel } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
 import { writeRelation } from '../fieldWriters';
+import { writeZodImport } from '../zodCompatibility';
 
 //// NEEDS REFACTORING ////
 // This function is a mess and needs to be refactored into smaller, more manageable pieces.
@@ -23,7 +24,7 @@ export const writeModelOrType = (
   const { useMultipleFiles, createRelationValuesTypes } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImport('{ z }', 'zod');
+    writeZodImport(writeImport);
     writeImportSet(model.imports);
 
     if (createRelationValuesTypes && model.hasRelationFields) {
