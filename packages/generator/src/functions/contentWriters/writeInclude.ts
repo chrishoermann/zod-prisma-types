@@ -9,11 +9,19 @@ export const writeInclude = (
   model: ExtendedDMMFOutputType,
   getSingleFileContent = false,
 ) => {
-  const { useMultipleFiles, prismaClientPath } = dmmf.generatorConfig;
+  const {
+    useMultipleFiles,
+    useExactOptionalPropertyTypes,
+    prismaClientPath,
+    inputTypePath,
+  } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
     writeImport('type { Prisma }', prismaClientPath);
+    if (useExactOptionalPropertyTypes) {
+      writeImport('ru', `../${inputTypePath}/RemoveUndefined`);
+    }
     writeImportSet(model.includeImports);
   }
 
@@ -45,7 +53,9 @@ export const writeInclude = (
         }
       });
     })
-    .write(`).strict()`);
+    .write(`).strict()`)
+    .conditionalWrite(useExactOptionalPropertyTypes, '.transform(ru)')
+    .write(`;`);
 
   if (useMultipleFiles && !getSingleFileContent) {
     writer.blankLine().writeLine(`export default ${model.name}IncludeSchema;`);

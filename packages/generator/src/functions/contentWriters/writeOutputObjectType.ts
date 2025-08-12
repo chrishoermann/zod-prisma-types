@@ -7,12 +7,21 @@ export const writeOutputObjectType = (
   { fileWriter, dmmf, getSingleFileContent = false }: ContentWriterOptions,
   field: ExtendedDMMFSchemaField,
 ) => {
-  const { writer, writeImportSet, writeHeading } = fileWriter;
+  const { writer, writeImportSet, writeImport, writeHeading } = fileWriter;
 
-  const { useMultipleFiles, useTypeAssertions } = dmmf.generatorConfig;
+  const {
+    useMultipleFiles,
+    useExactOptionalPropertyTypes,
+    useTypeAssertions,
+    inputTypePath,
+  } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImportSet(field.argTypeImports);
+
+    if (useExactOptionalPropertyTypes) {
+      writeImport('ru', `../${inputTypePath}/RemoveUndefined`);
+    }
 
     // determine if the outputType should include the "select" or "include" field
     const modelWithSelect = dmmf.schema.getModelWithIncludeAndSelect(field);
@@ -135,7 +144,9 @@ export const writeOutputObjectType = (
         writer.newLine();
       });
     })
-    .write(`).strict() `)
+    .write(`)`)
+    .write(`.strict()`)
+    .conditionalWrite(useExactOptionalPropertyTypes, '.transform(ru)')
     .conditionalWrite(useTypeAssertions, `as ${field.customArgType};`)
     .conditionalWrite(!useTypeAssertions, `;`);
 

@@ -12,8 +12,13 @@ export const writeArgs = (
   }: ContentWriterOptions,
   model: ExtendedDMMFOutputType,
 ) => {
-  const { useMultipleFiles, prismaClientPath, inputTypePath, prismaVersion } =
-    dmmf.generatorConfig;
+  const {
+    useMultipleFiles,
+    useExactOptionalPropertyTypes,
+    prismaClientPath,
+    inputTypePath,
+    prismaVersion,
+  } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImport('{ z }', 'zod');
@@ -22,6 +27,9 @@ export const writeArgs = (
       `{ ${model.name}SelectSchema }`,
       `../${inputTypePath}/${model.name}SelectSchema`,
     );
+    if (useExactOptionalPropertyTypes) {
+      writeImport('ru', `../${inputTypePath}/RemoveUndefined`);
+    }
     if (model.hasRelationField()) {
       writeImport(
         `{ ${model.name}IncludeSchema }`,
@@ -55,7 +63,9 @@ export const writeArgs = (
           `include: z.lazy(() => ${model.name}IncludeSchema).optional(),`,
         );
     })
-    .write(`).strict();`);
+    .write(`).strict()`)
+    .conditionalWrite(useExactOptionalPropertyTypes, '.transform(ru)')
+    .write(`;`);
 
   if (useMultipleFiles && !getSingleFileContent) {
     writer.blankLine().writeLine(`export default ${model.name}ArgsSchema;`);
