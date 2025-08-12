@@ -1,0 +1,21 @@
+---
+alwaysApply: true
+---
+
+you are working on a generator for prisma orm
+this generator is used to generate zod schemas for prisma models and input types.
+
+- first the schemas to generate are derived from the type and optionality/nullability of the database field in the prisma schema
+- the generated schemas can be modifid with rich comments defined by three slashes `///` in the prisma schema
+- the generator is based upon extending the prisma dmmf (Datamodel Metaformat)
+- the current version of zod that needs to be targeted by the generator is v4.x.x - docs can be found here: https://zod.dev/v4
+  - - if you are not shure what the current version of zod currently can do, always ask if a feature is implemented - do not come up with your own ideas of what it can do
+- the current version of Prisma is v6.x.x with v7 on the horizon
+  - if you are not shure what the current version of prisma currently can do, always ask if a feature is implemented - do not come up with your own ideas of what it can do
+
+## Workspace
+
+the workspace is structured in a monorepo using turborepo
+
+- the actual generator can be found in packages/generator
+- the project for testing can be found in packages/usage which hosts a simple app with a prisma schema found in packages/usage/prisma/schema/\*\*.prisma
