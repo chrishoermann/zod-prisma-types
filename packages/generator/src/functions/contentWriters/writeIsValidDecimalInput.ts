@@ -5,11 +5,24 @@ export const writeIsValidDecimalInput = ({
   dmmf,
   getSingleFileContent = false,
 }: ContentWriterOptions) => {
-  const { useMultipleFiles, prismaClientPath } = dmmf.generatorConfig;
+  const {
+    useMultipleFiles,
+    prismaClientPath,
+    prismaLibraryPath,
+    isPrismaClientGenerator,
+  } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImport('type { Prisma }', `${prismaClientPath}`);
+    if (isPrismaClientGenerator) {
+      writeImport('type { DecimalJsLike }', `${prismaLibraryPath}`);
+    } else {
+      writeImport('type { Prisma }', `${prismaClientPath}`);
+    }
   }
+
+  const decimalJsLikeTypeName = isPrismaClientGenerator
+    ? 'DecimalJsLike'
+    : 'Prisma.DecimalJsLike';
 
   writer
     .blankLine()
@@ -21,7 +34,7 @@ export const writeIsValidDecimalInput = ({
     .withIndentationLevel(1, () => {
       writer
         .write(
-          `(v?: null | string | number | Prisma.DecimalJsLike): v is string | number | Prisma.DecimalJsLike => `,
+          `(v?: null | string | number | ${decimalJsLikeTypeName}): v is string | number | ${decimalJsLikeTypeName} => `,
         )
         .inlineBlock(() => {
           writer

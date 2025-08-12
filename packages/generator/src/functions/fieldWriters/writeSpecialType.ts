@@ -49,7 +49,14 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
           inputType.generatorConfig.decimalJSInstalled,
           `z.instanceof(Decimal).array(),`,
         )
-        .write(`z.instanceof(Prisma.Decimal).array(),`)
+        .conditionalWrite(
+          inputType.generatorConfig.isPrismaClientGenerator,
+          `z.instanceof(PrismaDecimal).array(),`,
+        )
+        .conditionalWrite(
+          !inputType.generatorConfig.isPrismaClientGenerator,
+          `z.instanceof(Prisma.Decimal).array(),`,
+        )
         .write(`DecimalJsLikeSchema.array(),`)
         .write(`]`)
         .conditionalWrite(!!zodCustomErrors, `, ${zodCustomErrors!}`)
@@ -73,7 +80,14 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
         inputType.generatorConfig.decimalJSInstalled,
         `z.instanceof(Decimal),`,
       )
-      .write(`z.instanceof(Prisma.Decimal),`)
+      .conditionalWrite(
+        inputType.generatorConfig.isPrismaClientGenerator,
+        `z.instanceof(PrismaDecimal),`,
+      )
+      .conditionalWrite(
+        !inputType.generatorConfig.isPrismaClientGenerator,
+        `z.instanceof(Prisma.Decimal),`,
+      )
       .write(`DecimalJsLikeSchema,`)
       .write(`]`)
       .conditionalWrite(!!zodCustomErrors, `, ${zodCustomErrors!}`)
