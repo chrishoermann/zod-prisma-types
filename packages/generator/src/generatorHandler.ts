@@ -27,6 +27,7 @@ generatorHandler({
       prettyName: 'Zod Prisma Types',
     };
   },
+  // eslint-disable-next-line @typescript-eslint/require-await
   onGenerate: async (generatorOptions) => {
     if (skipGenerator()) return;
 

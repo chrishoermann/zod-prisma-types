@@ -1,4 +1,5 @@
-import { DMMF, ReadonlyDeep } from '@prisma/generator-helper';
+import type DMMF from '@prisma/dmmf';
+import type { ReadonlyDeep } from '@prisma/dmmf/dist/util';
 
 import { ExtendedDMMFModel } from '.';
 import { PRISMA_ACTION_ARRAY } from '../constants/objectMaps';

@@ -1,4 +1,4 @@
-import { DMMF } from '@prisma/generator-helper';
+import type DMMF from '@prisma/dmmf';
 
 import { ExtendedDMMFFieldValidatorMatch } from './02_extendedDMMFFieldValidatorMatch';
 import { GeneratorConfig } from '../../schemas';

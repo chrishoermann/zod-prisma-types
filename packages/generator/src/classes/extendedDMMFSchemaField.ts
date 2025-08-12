@@ -1,4 +1,5 @@
-import { DMMF, ReadonlyDeep } from '@prisma/generator-helper';
+import type DMMF from '@prisma/dmmf';
+import type { ReadonlyDeep } from '@prisma/dmmf/dist/util';
 
 import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
 import { ExtendedDMMFModel } from './extendedDMMFModel';
@@ -157,7 +158,9 @@ export class ExtendedDMMFSchemaField
 
     if (!argName) return;
 
-    return `${this.modelType}${argName.formattedNames.pascalCase}Args`;
+    const modelTypeName =
+      typeof this.modelType === 'string' ? this.modelType : this.modelType.name;
+    return `${modelTypeName}${argName.formattedNames.pascalCase}Args`;
   }
 
   /**
@@ -191,8 +194,12 @@ export class ExtendedDMMFSchemaField
     const imports: string[] = ["import { z } from 'zod';", prismaImport];
 
     if (this.writeIncludeArg) {
+      const modelTypeName =
+        typeof this.modelType === 'string'
+          ? this.modelType
+          : this.modelType.name;
       imports.push(
-        `import { ${this.modelType}IncludeSchema } from '../${this.generatorConfig.inputTypePath}/${this.modelType}IncludeSchema'`,
+        `import { ${modelTypeName}IncludeSchema } from '../${this.generatorConfig.inputTypePath}/${modelTypeName}IncludeSchema'`,
       );
     }
 

@@ -1,4 +1,4 @@
-import { GeneratorOptions } from '@prisma/generator-helper';
+import type { GeneratorOptions } from '@prisma/generator-helper';
 
 import { getPrismaClientGeneratorConfig } from './getPrismaClientGeneratorConfig';
 import { getPrismaClientProvider } from './getPrismaDbProvider';
