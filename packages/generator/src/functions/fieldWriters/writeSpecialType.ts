@@ -26,7 +26,6 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
   },
 ) => {
   if (!inputType.isSpecialType()) return;
-
   if (
     zodCustomValidatorString &&
     inputType.generatorConfig.addInputTypeValidation
@@ -98,8 +97,16 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
   }
 
   if (inputType.isBytesType) {
+    const prismaVersion = inputType.generatorConfig.prismaVersion;
     return writer
-      .write(`z.instanceof(Buffer)`)
+      .conditionalWrite(
+        prismaVersion?.major === 6 || prismaVersion === undefined,
+        `z.instanceof(Uint8Array<ArrayBufferLike>)`,
+      )
+      .conditionalWrite(
+        prismaVersion?.major === 5 || prismaVersion?.major === 4,
+        `z.instanceof(Buffer)`,
+      )
       .conditionalWrite(inputType.isList, `.array()`)
       .conditionalWrite(isOptional, `.optional()`)
       .conditionalWrite(isNullable, `.nullable()`)
