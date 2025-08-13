@@ -11,6 +11,11 @@ export const configSchema = z.object({
     .optional()
     .default('false')
     .transform((val) => val === 'true'),
+  moduleResolution: z
+    .string()
+    .optional()
+    .default('node10')
+    .transform((val) => `${val}`.toLowerCase()),
   writeBarrelFiles: z
     .string()
     .optional()

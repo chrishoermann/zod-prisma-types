@@ -4,6 +4,7 @@ import { OmitFieldMode } from './11_extendedDMMFFieldOmitField';
 import { GeneratorConfig } from '../../schemas';
 import { FormattedNames } from '../formattedNames';
 import { ExtendedDMMFFieldImportMatch } from './13_extendedDMMFFieldImportMatch';
+import { writeImportStatementOptions } from '../fileWriter';
 
 export interface ExtendedDMMFField extends DMMF.Field, FormattedNames {
   /**
@@ -118,7 +119,7 @@ export interface ExtendedDMMFField extends DMMF.Field, FormattedNames {
    * Contains the imprt string that should be used for a field's refine function or similar.
    * @description `import { myFunction } from "../../../../utils/myFunction";`
    */
-  readonly imports: Set<string>;
+  readonly imports: writeImportStatementOptions[];
 }
 
 /**

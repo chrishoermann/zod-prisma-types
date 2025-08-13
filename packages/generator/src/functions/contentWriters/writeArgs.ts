@@ -1,12 +1,16 @@
-import { ExtendedDMMFOutputType } from '../../classes';
+import {
+  ExtendedDMMFOutputType,
+  writeImportStatementOptions,
+} from '../../classes';
 import { type ContentWriterOptions } from '../../types';
+import { getCommonArgImports } from './getCommonImports';
 
 /**
  * The args schema is used in "include" and "select" schemas
  */
 export const writeArgs = (
   {
-    fileWriter: { writer, writeImport },
+    fileWriter: { writer, writeImports },
     dmmf,
     getSingleFileContent = false,
   }: ContentWriterOptions,
@@ -15,28 +19,27 @@ export const writeArgs = (
   const {
     useMultipleFiles,
     useExactOptionalPropertyTypes,
-    prismaClientPath,
     inputTypePath,
     prismaVersion,
   } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImport('{ z }', 'zod');
-    writeImport('type { Prisma }', prismaClientPath);
-    writeImport(
-      `{ ${model.name}SelectSchema }`,
-      `../${inputTypePath}/${model.name}SelectSchema`,
+    const imports: writeImportStatementOptions[] = getCommonArgImports(
+      dmmf.generatorConfig,
     );
-    if (useExactOptionalPropertyTypes) {
-      writeImport('ru', `../${inputTypePath}/RemoveUndefined`);
-    }
+    imports.push({
+      name: `${model.name}SelectSchema`,
+      path: `../${inputTypePath}/${model.name}SelectSchema`,
+    });
     if (model.hasRelationField()) {
-      writeImport(
-        `{ ${model.name}IncludeSchema }`,
-        `../${inputTypePath}/${model.name}IncludeSchema`,
-      );
+      imports.push({
+        name: `${model.name}IncludeSchema`,
+        path: `../${inputTypePath}/${model.name}IncludeSchema`,
+      });
     }
+    writeImports(imports);
   }
+
   writer
     .blankLine()
     .write(`export const ${model.name}ArgsSchema: `)

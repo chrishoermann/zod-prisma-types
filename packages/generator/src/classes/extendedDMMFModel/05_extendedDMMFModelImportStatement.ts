@@ -3,6 +3,8 @@ import { GeneratorConfig } from '../../schemas';
 import { ExtendedDMMFModelValidatorPattern } from './04_extendedDMMFModelValidatorPattern';
 import { transformImportStringToList } from '../../utils/transformImportStringToList';
 import { validateImportStatement } from '../../utils/validateImportStatements';
+import { writeImportStatementOptions } from '../fileWriter';
+import { transformImportListToOptions } from '../../utils/transformImportListToOptions';
 
 /////////////////////////////////////////////////
 // CLASS
@@ -10,10 +12,10 @@ import { validateImportStatement } from '../../utils/validateImportStatements';
 
 export class ExtendedDMMFModelImportStatement extends ExtendedDMMFModelValidatorPattern {
   protected _importStatements?: string[];
-  protected _automaticImports?: string[];
-  readonly modelImports: Set<string>;
-  readonly fieldImports: Set<string>;
-  readonly imports: Set<string>;
+  protected _automaticImports?: writeImportStatementOptions[];
+  readonly modelImports: writeImportStatementOptions[];
+  readonly fieldImports: writeImportStatementOptions[];
+  readonly imports: writeImportStatementOptions[];
 
   constructor(generatorConfig: GeneratorConfig, model: DMMF.Model) {
     super(generatorConfig, model);
@@ -45,7 +47,7 @@ export class ExtendedDMMFModelImportStatement extends ExtendedDMMFModelValidator
    * @returns array of import statements that are automatically added to the model's imports.
    */
   private _getAutomaticImports() {
-    const statements: string[] = [];
+    const statements: writeImportStatementOptions[] = [];
 
     const {
       inputTypePath,
@@ -55,32 +57,39 @@ export class ExtendedDMMFModelImportStatement extends ExtendedDMMFModelValidator
     } = this.generatorConfig;
 
     if (this.fields.some((field) => field.isJsonType)) {
-      statements.push(
-        `import { JsonValueSchema } from '../${inputTypePath}/JsonValueSchema'`,
-      );
+      statements.push({
+        name: 'JsonValueSchema',
+        path: `../${inputTypePath}/JsonValueSchema`,
+      });
     }
 
     if (this.hasDecimalFields) {
       if (isPrismaClientGenerator) {
-        statements.push(
-          `import { Decimal as PrismaDecimal } from '${prismaLibraryPath}';`,
-        );
+        statements.push({
+          name: 'Decimal',
+          as: 'PrismaDecimal',
+          path: prismaLibraryPath,
+        });
       } else {
-        statements.push(`import { Prisma } from '${prismaClientPath}'`);
+        statements.push({
+          name: 'Prisma',
+          path: prismaClientPath,
+        });
       }
     }
 
     this.enumFields.forEach((field) => {
-      statements.push(
-        `import { ${field.type}Schema } from '../${inputTypePath}/${field.type}Schema'`,
-      );
+      statements.push({
+        name: `${field.type}Schema`,
+        path: `../${inputTypePath}/${field.type}Schema`,
+      });
     });
 
     return statements;
   }
 
   private _getModelImports() {
-    if (!this._importStatements) return new Set<string>();
+    if (!this._importStatements) return [];
 
     const importList = this._importStatements
       .map((importStatement) => {
@@ -88,33 +97,33 @@ export class ExtendedDMMFModelImportStatement extends ExtendedDMMFModelValidator
       })
       .flat();
 
-    return new Set(importList);
+    return transformImportListToOptions(importList);
   }
 
   private _getImports() {
-    const imports = new Set<string>();
+    const imports: writeImportStatementOptions[] = [];
 
     if (this._automaticImports) {
-      this._automaticImports.forEach((statement) => imports.add(statement));
+      this._automaticImports.forEach((statement) => imports.push(statement));
     }
 
     if (this.modelImports) {
-      this.modelImports.forEach((statement) => imports.add(statement));
+      this.modelImports.forEach((statement) => imports.push(statement));
     }
 
     if (this.fieldImports) {
-      this.fieldImports.forEach((statement) => imports.add(statement));
+      this.fieldImports.forEach((statement) => imports.push(statement));
     }
 
     return imports;
   }
 
   private _getFieldImports() {
-    const imports = new Set<string>();
+    const imports: writeImportStatementOptions[] = [];
 
     this.fields.forEach((field) => {
       if (field.imports) {
-        field.imports.forEach((statement) => imports.add(statement));
+        field.imports.forEach((statement) => imports.push(statement));
       }
     });
 

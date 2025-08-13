@@ -1,28 +1,27 @@
-import { ExtendedDMMFOutputType } from '../../classes';
+import {
+  ExtendedDMMFOutputType,
+  writeImportStatementOptions,
+} from '../../classes';
 import { type ContentWriterOptions } from '../../types';
+import { getCommonArgImports } from './getCommonImports';
 
 export const writeSelect = (
   {
-    fileWriter: { writer, writeImport, writeImportSet },
+    fileWriter: { writer, writeImports },
     dmmf,
     getSingleFileContent = false,
   }: ContentWriterOptions,
   model: ExtendedDMMFOutputType,
 ) => {
-  const {
-    useMultipleFiles,
-    useExactOptionalPropertyTypes,
-    prismaClientPath,
-    inputTypePath,
-  } = dmmf.generatorConfig;
+  const { useMultipleFiles, useExactOptionalPropertyTypes } =
+    dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImport('{ z }', 'zod');
-    writeImport('type { Prisma }', prismaClientPath);
-    if (useExactOptionalPropertyTypes) {
-      writeImport('ru', `../${inputTypePath}/RemoveUndefined`);
-    }
-    writeImportSet(model.selectImports);
+    const imports: writeImportStatementOptions[] = getCommonArgImports(
+      dmmf.generatorConfig,
+    );
+    imports.push(...model.selectImports);
+    writeImports(imports);
   }
 
   writer

@@ -1,7 +1,8 @@
+import { writeImportStatementOptions } from 'src/classes';
 import { type ContentWriterOptions } from '../../types';
 
 export const writeJsonValue = ({
-  fileWriter: { writer, writeImport },
+  fileWriter: { writer, writeImports },
   dmmf,
   getSingleFileContent = false,
 }: ContentWriterOptions) => {
@@ -13,13 +14,22 @@ export const writeJsonValue = ({
   } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImport('{ z }', 'zod');
-
+    const imports: writeImportStatementOptions[] = [];
+    imports.push({ name: 'z', path: 'zod' });
     if (isPrismaClientGenerator) {
-      writeImport('type { JsonValue }', prismaLibraryPath);
+      imports.push({
+        name: 'JsonValue',
+        path: prismaLibraryPath,
+        isTypeOnly: true,
+      });
     } else {
-      writeImport('type { Prisma }', prismaClientPath);
+      imports.push({
+        name: 'Prisma',
+        path: prismaClientPath,
+        isTypeOnly: true,
+      });
     }
+    writeImports(imports);
   }
 
   const jsonValueTypeName = isPrismaClientGenerator

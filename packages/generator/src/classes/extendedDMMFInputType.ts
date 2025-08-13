@@ -14,6 +14,7 @@ import {
   PRISMA_FUNCTION_TYPES_WITH_VALIDATORS_WHERE_UNIQUE,
 } from '../constants/regex';
 import { GeneratorConfig } from '../schemas';
+import { writeImportStatementOptions } from './fileWriter';
 
 const SPLIT_NAME_REGEX =
   /Unchecked|Create|Update|CreateMany|CreateManyAndReturn|UpdateMany|UpdateManyAndReturn|Upsert|Where|WhereUnique|OrderBy|ScalarWhere|Aggregate|GroupBy/g;
@@ -36,7 +37,7 @@ export class ExtendedDMMFInputType
   readonly isBytesField: boolean;
   readonly isDecimalField: boolean;
   readonly omitFields: string[] = [];
-  readonly imports: Set<string>;
+  readonly imports: writeImportStatementOptions[];
   /** @deprecated */
   readonly isWhereUniqueInput?: boolean;
   readonly extendedWhereUniqueFields?: ExtendedDMMFSchemaArg[][];
@@ -189,40 +190,61 @@ export class ExtendedDMMFInputType
       decimalJSInstalled,
     } = this.generatorConfig;
 
-    const prismaImports = [];
+    const fieldImports: writeImportStatementOptions[] = [];
+    const prismaImports: writeImportStatementOptions[] = [];
 
+    // If the field is a decimal field, we need to import the
+    // Decimal class in order to use `z.instanceof`
     if (this.isDecimalField) {
       if (isPrismaClientGenerator) {
-        prismaImports.push(
-          `import { Decimal as PrismaDecimal } from '${prismaLibraryPath}';`,
-        );
+        // If isPrismaClientGenerator, import Prisma.Decimal as PrismaDecimal
+        // We also need to import { type Prisma } below
+        prismaImports.push({
+          name: 'Decimal',
+          as: 'PrismaDecimal',
+          path: prismaLibraryPath,
+        });
       } else {
-        prismaImports.push(`import { Prisma } from '${prismaClientPath}';`);
+        // If not isPrismaClientGenerator, import whole Prisma client
+        prismaImports.push({
+          name: 'Prisma',
+          path: prismaClientPath,
+        });
+      }
+      if (decimalJSInstalled) {
+        // If decimal.js is installed, import Decimal from decimal.js
+        fieldImports.push({
+          name: 'Decimal',
+          path: 'decimal.js',
+          isDefault: true,
+        });
       }
     }
 
     if (!this.isDecimalField || isPrismaClientGenerator) {
-      prismaImports.push(`import type { Prisma } from '${prismaClientPath}';`);
+      prismaImports.push({
+        name: 'Prisma',
+        path: prismaClientPath,
+        isTypeOnly: true,
+      });
     }
 
-    const decimalJSImport =
-      decimalJSInstalled && this.isDecimalField
-        ? `import Decimal from 'decimal.js';`
-        : '';
-    const zodImport = "import { z } from 'zod';";
+    const zodImport: writeImportStatementOptions = {
+      name: 'z',
+      path: 'zod',
+    };
 
-    const fieldImports = [
+    fieldImports.push(
       ...prismaImports,
-      decimalJSImport,
       zodImport,
       ...this.fields.map((field) => field.getImports(this.name)).flat(),
-    ];
+    );
 
     if (this._fieldIsPrismaFunctionType() && this.linkedModel?.fieldImports) {
       fieldImports.push(...this.linkedModel.fieldImports);
     }
 
-    return new Set(fieldImports);
+    return fieldImports;
   }
 
   private _getExtendedWhereUniqueFieldCombinations(

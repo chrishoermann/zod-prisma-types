@@ -1,7 +1,8 @@
+import { writeImportStatementOptions } from 'src/classes';
 import { type ContentWriterOptions } from '../../types';
 
 export const writeIsValidDecimalInput = ({
-  fileWriter: { writer, writeImport },
+  fileWriter: { writer, writeImports },
   dmmf,
   getSingleFileContent = false,
 }: ContentWriterOptions) => {
@@ -13,11 +14,21 @@ export const writeIsValidDecimalInput = ({
   } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
+    const imports: writeImportStatementOptions[] = [];
     if (isPrismaClientGenerator) {
-      writeImport('type { DecimalJsLike }', `${prismaLibraryPath}`);
+      imports.push({
+        name: 'DecimalJsLike',
+        path: prismaLibraryPath,
+        isTypeOnly: true,
+      });
     } else {
-      writeImport('type { Prisma }', `${prismaClientPath}`);
+      imports.push({
+        name: 'Prisma',
+        path: prismaClientPath,
+        isTypeOnly: true,
+      });
     }
+    writeImports(imports);
   }
 
   const decimalJsLikeTypeName = isPrismaClientGenerator

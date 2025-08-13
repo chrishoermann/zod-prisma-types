@@ -1,9 +1,12 @@
-import { ExtendedDMMFSchemaEnum } from '../../classes';
+import {
+  ExtendedDMMFSchemaEnum,
+  writeImportStatementOptions,
+} from '../../classes';
 import { type ContentWriterOptions } from '../../types';
 
 export const writePrismaEnum = (
   {
-    fileWriter: { writer, writeImport },
+    fileWriter: { writer, writeImports },
     dmmf,
     getSingleFileContent = false,
   }: ContentWriterOptions,
@@ -16,8 +19,32 @@ export const writePrismaEnum = (
     isPrismaClientGenerator,
   } = dmmf.generatorConfig;
 
-  if (useMultipleFiles && !getSingleFileContent) {
-    writeImport('{ z }', 'zod');
+  if (useMultipleFiles) {
+    const imports: writeImportStatementOptions[] = [];
+    if (!getSingleFileContent) {
+      imports.push({ name: 'z', path: 'zod' });
+    }
+    if (
+      !useNativeEnum &&
+      [
+        'JsonNullValueInput',
+        'NullableJsonNullValueInput',
+        'JsonNullValueFilter',
+      ].includes(name)
+    ) {
+      if (isPrismaClientGenerator) {
+        imports.push({
+          name: 'objectEnumValues',
+          path: prismaLibraryPath,
+        });
+      } else {
+        imports.push({
+          name: 'Prisma',
+          path: prismaClientPath,
+        });
+      }
+    }
+    writeImports(imports);
   }
 
   if (useNativeEnum) {
@@ -30,17 +57,7 @@ export const writePrismaEnum = (
     writer.write(`]);`);
   } else {
     if (name === 'JsonNullValueInput') {
-      writer
-        .conditionalWrite(
-          useMultipleFiles && !isPrismaClientGenerator,
-          `import { Prisma } from '${prismaClientPath}';`,
-        )
-        .conditionalWrite(
-          useMultipleFiles && isPrismaClientGenerator,
-          `import { objectEnumValues } from '${prismaLibraryPath}';`,
-        )
-        .blankLine()
-        .write(`export const ${name}Schema = z.enum([`);
+      writer.blankLine().write(`export const ${name}Schema = z.enum([`);
       values.forEach((value) => {
         writer.write(`'${value}',`);
       });
@@ -55,17 +72,7 @@ export const writePrismaEnum = (
     }
 
     if (name === 'NullableJsonNullValueInput') {
-      writer
-        .conditionalWrite(
-          useMultipleFiles && !isPrismaClientGenerator,
-          `import { Prisma } from '${prismaClientPath}';`,
-        )
-        .conditionalWrite(
-          useMultipleFiles && isPrismaClientGenerator,
-          `import { objectEnumValues } from '${prismaLibraryPath}';`,
-        )
-        .blankLine()
-        .write(`export const ${name}Schema = z.enum([`);
+      writer.blankLine().write(`export const ${name}Schema = z.enum([`);
       values.forEach((value) => {
         writer.write(`'${value}',`);
       });
@@ -82,17 +89,7 @@ export const writePrismaEnum = (
       return;
     }
     if (name === 'JsonNullValueFilter') {
-      writer
-        .conditionalWrite(
-          useMultipleFiles && !isPrismaClientGenerator,
-          `import { Prisma } from '${prismaClientPath}';`,
-        )
-        .conditionalWrite(
-          useMultipleFiles && isPrismaClientGenerator,
-          `import { objectEnumValues } from '${prismaLibraryPath}';`,
-        )
-        .blankLine()
-        .write(`export const ${name}Schema = z.enum([`);
+      writer.blankLine().write(`export const ${name}Schema = z.enum([`);
       values.forEach((value) => {
         writer.write(`'${value}',`);
       });

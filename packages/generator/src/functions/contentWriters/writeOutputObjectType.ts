@@ -1,5 +1,8 @@
 import { writeNonScalarType, writeScalarType, writeSpecialType } from '..';
-import { ExtendedDMMFSchemaField } from '../../classes';
+import {
+  ExtendedDMMFSchemaField,
+  writeImportStatementOptions,
+} from '../../classes';
 import { type ContentWriterOptions } from '../../types';
 import { writeSelect } from './writeSelect';
 
@@ -7,8 +10,7 @@ export const writeOutputObjectType = (
   { fileWriter, dmmf, getSingleFileContent = false }: ContentWriterOptions,
   field: ExtendedDMMFSchemaField,
 ) => {
-  const { writer, writeImportSet, writeImport, writeHeading } = fileWriter;
-
+  const { writer, writeImports, writeHeading } = fileWriter;
   const {
     useMultipleFiles,
     useExactOptionalPropertyTypes,
@@ -17,11 +19,17 @@ export const writeOutputObjectType = (
   } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImportSet(field.argTypeImports);
-
+    const imports: writeImportStatementOptions[] = [];
     if (useExactOptionalPropertyTypes) {
-      writeImport('ru', `../${inputTypePath}/RemoveUndefined`);
+      imports.push({
+        name: 'ru',
+        path: `../${inputTypePath}/RemoveUndefined`,
+        isDefault: true,
+      });
     }
+    imports.push(...field.argTypeImports);
+
+    writeImports(imports);
 
     // determine if the outputType should include the "select" or "include" field
     const modelWithSelect = dmmf.schema.getModelWithIncludeAndSelect(field);
@@ -42,9 +50,11 @@ export const writeOutputObjectType = (
       const filterdImports = [
         ...modelWithSelect.includeImports,
         ...modelWithSelect.selectImports,
-      ].filter((imp) => !!field.argName && !imp.includes(`/${field.argName}`));
+      ].filter(
+        (imp) => !(field.argName && imp.path.includes(`/${field.argName}`)),
+      );
 
-      writeImportSet(new Set(filterdImports));
+      writeImports(filterdImports);
 
       // Only write the select type if the outputType has a "select" or "include" field.
       // Some outputTypes like "CreateMany", "UpdateMany", "DeleteMany"

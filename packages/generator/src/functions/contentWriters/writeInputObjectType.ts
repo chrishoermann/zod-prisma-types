@@ -1,7 +1,11 @@
 import CodeBlockWriter from 'code-block-writer';
 
 import { writeNonScalarType, writeScalarType, writeSpecialType } from '..';
-import { ExtendedDMMFInputType, ExtendedDMMFSchemaArg } from '../../classes';
+import {
+  ExtendedDMMFInputType,
+  ExtendedDMMFSchemaArg,
+  writeImportStatementOptions,
+} from '../../classes';
 import { type ContentWriterOptions } from '../../types';
 
 /////////////////////////////////////////////
@@ -108,7 +112,7 @@ const writeInputTypeField = ({
 
 export const writeInputObjectType = (
   {
-    fileWriter: { writer, writeImportSet, writeImport },
+    fileWriter: { writer, writeImports },
     dmmf,
     getSingleFileContent = false,
   }: ContentWriterOptions,
@@ -122,10 +126,15 @@ export const writeInputObjectType = (
   } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImportSet(inputType.imports);
+    const imports: writeImportStatementOptions[] = [...inputType.imports];
     if (useExactOptionalPropertyTypes) {
-      writeImport('ru', `./RemoveUndefined`);
+      imports.push({
+        name: 'ru',
+        path: './RemoveUndefined',
+        isDefault: true,
+      });
     }
+    writeImports(imports);
   }
 
   // when an omit field is present, the type is not a native prism type

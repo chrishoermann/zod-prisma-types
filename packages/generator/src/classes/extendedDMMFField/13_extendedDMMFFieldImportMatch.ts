@@ -4,6 +4,8 @@ import { GeneratorConfig } from '../../schemas';
 import { transformImportStringToList } from '../../utils/transformImportStringToList';
 import { validateImportStatement } from '../../utils/validateImportStatements';
 import { ExtendedDMMFFieldZodType } from './12_extendedDMMFFieldZodType';
+import { transformImportListToOptions } from '../../utils/transformImportListToOptions';
+import { writeImportStatementOptions } from '../fileWriter';
 
 /////////////////////////////////////////////////
 // CLASS
@@ -11,7 +13,7 @@ import { ExtendedDMMFFieldZodType } from './12_extendedDMMFFieldZodType';
 
 export class ExtendedDMMFFieldImportMatch extends ExtendedDMMFFieldZodType {
   protected _importStatements?: string;
-  readonly imports: Set<string>;
+  readonly imports: writeImportStatementOptions[];
 
   constructor(
     field: DMMF.Field,
@@ -33,7 +35,8 @@ export class ExtendedDMMFFieldImportMatch extends ExtendedDMMFFieldZodType {
   }
 
   private _getImports() {
-    if (!this._importStatements) return new Set([]);
-    return new Set(transformImportStringToList(this._importStatements));
+    if (!this._importStatements) return [];
+    const importList = transformImportStringToList(this._importStatements);
+    return transformImportListToOptions(importList);
   }
 }

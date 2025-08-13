@@ -1,7 +1,7 @@
 import type DMMF from '@prisma/dmmf';
 import type { ReadonlyDeep } from '@prisma/dmmf/dist/util';
 
-import { ExtendedDMMFModel } from '.';
+import { ExtendedDMMFModel, writeImportStatementOptions } from '.';
 import { PRISMA_ACTION_ARRAY } from '../constants/objectMaps';
 import { GeneratorConfig } from '../schemas';
 import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
@@ -21,8 +21,8 @@ export class ExtendedDMMFOutputType
   readonly prismaActionFields: ExtendedDMMFSchemaField[];
   readonly prismaOtherFields: ExtendedDMMFSchemaField[];
   readonly linkedModel?: ExtendedDMMFModel;
-  readonly selectImports: Set<string>;
-  readonly includeImports: Set<string>;
+  readonly selectImports: writeImportStatementOptions[];
+  readonly includeImports: writeImportStatementOptions[];
 
   constructor(
     readonly generatorConfig: GeneratorConfig,
@@ -46,6 +46,24 @@ export class ExtendedDMMFOutputType
     this.linkedModel = this._setLinkedModel(datamodel);
     this.selectImports = this._setSelectImports();
     this.includeImports = this._setIncludeImports();
+  }
+
+  /**
+   * Generates the import string for the given import name and path.
+   * This function is used to generate the import statements for the output types.
+   * It checks the module resolution setting and adds the .js extension if necessary.
+   * @param schemaName Name of the schema to be imported
+   * @returns A string representing the import statement
+   *          e.g. `import { MyModelArgsSchema } from "../prisma/MyModelArgsSchema.js"`
+   */
+  private _generateSchemaImportString(
+    schemaName: string,
+  ): writeImportStatementOptions {
+    const { outputTypePath } = this.generatorConfig;
+    return {
+      name: schemaName,
+      path: `../${outputTypePath}/${schemaName}`,
+    };
   }
 
   /**
@@ -116,19 +134,22 @@ export class ExtendedDMMFOutputType
   }
 
   private _setSelectImports() {
-    const imports = new Set<string>();
-    const { outputTypePath } = this.generatorConfig;
+    const imports: writeImportStatementOptions[] = [];
 
     this.fields.forEach((field) => {
       if (field.writeSelectFindManyField) {
-        return imports.add(
-          `import { ${field.outputType.type}FindManyArgsSchema } from "../${outputTypePath}/${field.outputType.type}FindManyArgsSchema"`,
+        return imports.push(
+          this._generateSchemaImportString(
+            `${field.outputType.type}FindManyArgsSchema`,
+          ),
         );
       }
 
       if (field.writeSelectField) {
-        return imports.add(
-          `import { ${field.outputType.type}ArgsSchema } from "../${outputTypePath}/${field.outputType.type}ArgsSchema"`,
+        return imports.push(
+          this._generateSchemaImportString(
+            `${field.outputType.type}ArgsSchema`,
+          ),
         );
       }
 
@@ -139,19 +160,22 @@ export class ExtendedDMMFOutputType
   }
 
   private _setIncludeImports() {
-    const imports = new Set<string>();
-    const { outputTypePath } = this.generatorConfig;
+    const imports: writeImportStatementOptions[] = [];
 
     this.fields.forEach((field) => {
       if (field.writeIncludeFindManyField) {
-        return imports.add(
-          `import { ${field.outputType.type}FindManyArgsSchema } from "../${outputTypePath}/${field.outputType.type}FindManyArgsSchema"`,
+        return imports.push(
+          this._generateSchemaImportString(
+            `${field.outputType.type}FindManyArgsSchema`,
+          ),
         );
       }
 
       if (field.writeIncludeField) {
-        return imports.add(
-          `import { ${field.outputType.type}ArgsSchema } from "../${outputTypePath}/${field.outputType.type}ArgsSchema"`,
+        return imports.push(
+          this._generateSchemaImportString(
+            `${field.outputType.type}ArgsSchema`,
+          ),
         );
       }
 

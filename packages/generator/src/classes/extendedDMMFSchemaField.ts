@@ -12,6 +12,7 @@ import {
   PRISMA_ACTION_MATCHER_ARRAY,
 } from '../constants/objectMaps';
 import { GeneratorConfig } from '../schemas';
+import { writeImportStatementOptions } from './fileWriter';
 
 /////////////////////////////////////////////////
 // REGEX
@@ -65,7 +66,7 @@ export class ExtendedDMMFSchemaField
    */
   readonly linkedModel?: ExtendedDMMFModel;
   readonly hasOmitFields: boolean;
-  readonly argTypeImports: Set<string>;
+  readonly argTypeImports: writeImportStatementOptions[];
   readonly writeSelectFindManyField: boolean;
   readonly writeSelectField: boolean;
   readonly writeIncludeFindManyField: boolean;
@@ -189,39 +190,52 @@ export class ExtendedDMMFSchemaField
 
   private _setArgTypeImports() {
     const { prismaClientPath } = this.generatorConfig;
-    const prismaImport = `import type { Prisma } from '${prismaClientPath}';`;
 
-    const imports: string[] = ["import { z } from 'zod';", prismaImport];
+    const prismaImport: writeImportStatementOptions = {
+      name: 'Prisma',
+      isTypeOnly: true,
+      path: prismaClientPath,
+    };
+
+    const imports: writeImportStatementOptions[] = [
+      {
+        name: 'z',
+        path: 'zod',
+      },
+      prismaImport,
+    ];
 
     if (this.writeIncludeArg) {
       const modelTypeName =
         typeof this.modelType === 'string'
           ? this.modelType
           : this.modelType.name;
-      imports.push(
-        `import { ${modelTypeName}IncludeSchema } from '../${this.generatorConfig.inputTypePath}/${modelTypeName}IncludeSchema'`,
-      );
+      imports.push({
+        name: `${modelTypeName}IncludeSchema`,
+        path: `../${this.generatorConfig.inputTypePath}/${modelTypeName}IncludeSchema`,
+      });
     }
 
     this.args.forEach((arg) => {
       if (arg.hasMultipleTypes) {
         return arg.inputTypes.forEach((inputType) => {
-          imports.push(
-            `import { ${inputType.type}Schema } from '../${this.generatorConfig.inputTypePath}/${inputType.type}Schema'`,
-          );
+          imports.push({
+            name: `${inputType.type}Schema`,
+            path: `../${this.generatorConfig.inputTypePath}/${inputType.type}Schema`,
+          });
         });
       }
 
-      return imports.push(
-        `import { ${arg.inputTypes[0].type}Schema } from '../${this.generatorConfig.inputTypePath}/${arg.inputTypes[0].type}Schema'`,
-      );
+      return imports.push({
+        name: `${arg.inputTypes[0].type}Schema`,
+        path: `../${this.generatorConfig.inputTypePath}/${arg.inputTypes[0].type}Schema`,
+      });
     });
 
     // IntSchema and BooleanSchema are not needed since z.boolen() and z.number() are used
-    return new Set(
-      imports.filter(
-        (imp) => !imp.includes('IntSchema') && !imp.includes('BooleanSchema'),
-      ),
+    return imports.filter(
+      (imp) =>
+        !imp.name.includes('IntSchema') && !imp.name.includes('BooleanSchema'),
     );
   }
 

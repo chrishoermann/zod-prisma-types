@@ -3,6 +3,7 @@ import { FormattedNames } from '../formattedNames';
 import { ExtendedDMMFModelFormatingHelpers } from './08_extendedDMMFModelFormatingHelpers';
 import { ExtendedDMMFField } from '../extendedDMMFField';
 import { GeneratorConfig } from '../../schemas/generatorConfigSchema';
+import { writeImportStatementOptions } from '../fileWriter';
 
 /////////////////////////////////////////////////
 // TYPES  INTERFACE
@@ -113,19 +114,19 @@ export interface ExtendedDMMFModel extends DMMF.Model, FormattedNames {
    * Set of import statements that are used in the model and need to be added to the generated file.
    * Contains model, field and automatic imports like `import { InputJsonValue } from "../inputTypes/InputJsonValue";` for json fields.
    */
-  readonly imports: Set<string>;
+  readonly imports: writeImportStatementOptions[];
 
   /**
    * Set of import statements that are used in the model and need to be added to the generated file.
    * Contains only the model imports from the model's documentation.
    */
-  readonly modelImports: Set<string>;
+  readonly modelImports: writeImportStatementOptions[];
 
   /**
    * Set of import statements that are used in the model and need to be added to the generated file.
    * Contains only the field level imports from the model's documentation.
    */
-  readonly fieldImports: Set<string>;
+  readonly fieldImports: writeImportStatementOptions[];
 
   /**
    * Documentation string provided via rich comments without the `@zod` directives.

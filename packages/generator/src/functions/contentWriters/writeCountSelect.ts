@@ -1,5 +1,9 @@
-import { ExtendedDMMFOutputType } from '../../classes';
+import {
+  ExtendedDMMFOutputType,
+  writeImportStatementOptions,
+} from '../../classes';
 import { type ContentWriterOptions } from '../../types';
+import { getCommonArgImports } from './getCommonImports';
 
 /**
  * `[Model]CountOutputTypeSelectSchema` needs to be generated when the model has a _count field.
@@ -7,25 +11,20 @@ import { type ContentWriterOptions } from '../../types';
  */
 export const writeCountSelect = (
   {
-    fileWriter: { writer, writeImport },
+    fileWriter: { writer, writeImports },
     dmmf,
     getSingleFileContent = false,
   }: ContentWriterOptions,
   model: ExtendedDMMFOutputType,
 ) => {
-  const {
-    useMultipleFiles,
-    useExactOptionalPropertyTypes,
-    prismaClientPath,
-    inputTypePath,
-  } = dmmf.generatorConfig;
+  const { useMultipleFiles, useExactOptionalPropertyTypes } =
+    dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImport('{ z }', 'zod');
-    writeImport('type { Prisma }', prismaClientPath);
-    if (useExactOptionalPropertyTypes) {
-      writeImport('ru', `../${inputTypePath}/RemoveUndefined`);
-    }
+    const imports: writeImportStatementOptions[] = getCommonArgImports(
+      dmmf.generatorConfig,
+    );
+    writeImports(imports);
   }
 
   writer

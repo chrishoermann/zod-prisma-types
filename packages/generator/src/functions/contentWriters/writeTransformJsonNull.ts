@@ -1,7 +1,8 @@
+import { writeImportStatementOptions } from 'src/classes';
 import { type ContentWriterOptions } from '../../types';
 
 export const writeTransformJsonNull = ({
-  fileWriter: { writer, writeImport },
+  fileWriter: { writer, writeImports },
   dmmf,
   getSingleFileContent = false,
 }: ContentWriterOptions) => {
@@ -15,11 +16,22 @@ export const writeTransformJsonNull = ({
   // TODO: check how to get DbNUll and JsonNull from PrismaClient without importing the whole namespace
 
   if (useMultipleFiles && !getSingleFileContent) {
+    const imports: writeImportStatementOptions[] = [];
     if (isPrismaClientGenerator) {
-      writeImport('type { objectEnumValues, JsonValue }', prismaLibraryPath);
+      imports.push({
+        name: 'objectEnumValues',
+        path: prismaLibraryPath,
+        isTypeOnly: true,
+      });
+      imports.push({
+        name: 'JsonValue',
+        path: prismaLibraryPath,
+        isTypeOnly: true,
+      });
     } else {
-      writeImport('{ Prisma }', prismaClientPath);
+      imports.push({ name: 'Prisma', path: prismaClientPath });
     }
+    writeImports(imports);
   }
 
   const jsonValueTypeName = isPrismaClientGenerator
