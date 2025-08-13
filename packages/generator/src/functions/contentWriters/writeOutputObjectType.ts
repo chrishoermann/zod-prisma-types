@@ -1,5 +1,8 @@
 import { writeNonScalarType, writeScalarType, writeSpecialType } from '..';
-import { ExtendedDMMFSchemaField } from '../../classes';
+import {
+  ExtendedDMMFSchemaField,
+  writeImportStatementOptions,
+} from '../../classes';
 import { type ContentWriterOptions } from '../../types';
 import { writeSelect } from './writeSelect';
 
@@ -8,11 +11,25 @@ export const writeOutputObjectType = (
   field: ExtendedDMMFSchemaField,
 ) => {
   const { writer, writeImports, writeHeading } = fileWriter;
-
-  const { useMultipleFiles, useTypeAssertions } = dmmf.generatorConfig;
+  const {
+    useMultipleFiles,
+    useExactOptionalPropertyTypes,
+    useTypeAssertions,
+    inputTypePath,
+  } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImports(field.argTypeImports);
+    const imports: writeImportStatementOptions[] = [];
+    if (useExactOptionalPropertyTypes) {
+      imports.push({
+        name: 'ru',
+        path: `../${inputTypePath}/RemoveUndefined`,
+        isDefault: true,
+      });
+    }
+    imports.push(...field.argTypeImports);
+
+    writeImports(imports);
 
     // determine if the outputType should include the "select" or "include" field
     const modelWithSelect = dmmf.schema.getModelWithIncludeAndSelect(field);
@@ -63,18 +80,22 @@ export const writeOutputObjectType = (
     .write(` = `)
     .write(`z.object(`)
     .inlineBlock(() => {
+      const modelType =
+        typeof field.modelType === 'string'
+          ? field.modelType
+          : field.modelType.name;
       writer
         .conditionalWriteLine(
           field.writeSelectArg,
-          `select: ${field.modelType}SelectSchema.optional(),`,
+          `select: ${modelType}SelectSchema.optional(),`,
         )
         .conditionalWriteLine(
           field.writeIncludeArg && !useMultipleFiles,
-          `include: ${field.modelType}IncludeSchema.optional(),`,
+          `include: ${modelType}IncludeSchema.optional(),`,
         )
         .conditionalWriteLine(
           field.writeIncludeArg && useMultipleFiles,
-          `include: z.lazy(() => ${field.modelType}IncludeSchema).optional(),`,
+          `include: z.lazy(() => ${modelType}IncludeSchema).optional(),`,
         );
       field.args.forEach((arg) => {
         writer.write(`${arg.name}: `);
@@ -133,7 +154,9 @@ export const writeOutputObjectType = (
         writer.newLine();
       });
     })
-    .write(`).strict() `)
+    .write(`)`)
+    .write(`.strict()`)
+    .conditionalWrite(useExactOptionalPropertyTypes, '.transform(ru)')
     .conditionalWrite(useTypeAssertions, `as ${field.customArgType};`)
     .conditionalWrite(!useTypeAssertions, `;`);
 

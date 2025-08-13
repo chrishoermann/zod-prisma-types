@@ -3,6 +3,7 @@ import {
   writeImportStatementOptions,
 } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
+import { getCommonArgImports } from './getCommonImports';
 
 /**
  * The args schema is used in "include" and "select" schemas
@@ -15,13 +16,17 @@ export const writeArgs = (
   }: ContentWriterOptions,
   model: ExtendedDMMFOutputType,
 ) => {
-  const { useMultipleFiles, prismaClientPath, inputTypePath, prismaVersion } =
-    dmmf.generatorConfig;
+  const {
+    useMultipleFiles,
+    useExactOptionalPropertyTypes,
+    inputTypePath,
+    prismaVersion,
+  } = dmmf.generatorConfig;
 
-  const imports: writeImportStatementOptions[] = [];
   if (useMultipleFiles && !getSingleFileContent) {
-    imports.push({ name: 'z', path: 'zod' });
-    imports.push({ name: 'Prisma', path: prismaClientPath, isTypeOnly: true });
+    const imports: writeImportStatementOptions[] = getCommonArgImports(
+      dmmf.generatorConfig,
+    );
     imports.push({
       name: `${model.name}SelectSchema`,
       path: `../${inputTypePath}/${model.name}SelectSchema`,
@@ -32,8 +37,9 @@ export const writeArgs = (
         path: `../${inputTypePath}/${model.name}IncludeSchema`,
       });
     }
+    writeImports(imports);
   }
-  writeImports(imports);
+
   writer
     .blankLine()
     .write(`export const ${model.name}ArgsSchema: `)
@@ -60,7 +66,9 @@ export const writeArgs = (
           `include: z.lazy(() => ${model.name}IncludeSchema).optional(),`,
         );
     })
-    .write(`).strict();`);
+    .write(`).strict()`)
+    .conditionalWrite(useExactOptionalPropertyTypes, '.transform(ru)')
+    .write(`;`);
 
   if (useMultipleFiles && !getSingleFileContent) {
     writer.blankLine().writeLine(`export default ${model.name}ArgsSchema;`);

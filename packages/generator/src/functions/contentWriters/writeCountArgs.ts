@@ -3,6 +3,7 @@ import {
   writeImportStatementOptions,
 } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
+import { getCommonArgImports } from './getCommonImports';
 
 export const writeCountArgs = (
   {
@@ -12,13 +13,13 @@ export const writeCountArgs = (
   }: ContentWriterOptions,
   model: ExtendedDMMFOutputType,
 ) => {
-  const { useMultipleFiles, prismaClientPath, prismaVersion } =
+  const { useMultipleFiles, useExactOptionalPropertyTypes, prismaVersion } =
     dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    const imports: writeImportStatementOptions[] = [];
-    imports.push({ name: 'z', path: 'zod' });
-    imports.push({ name: 'Prisma', path: prismaClientPath, isTypeOnly: true });
+    const imports: writeImportStatementOptions[] = getCommonArgImports(
+      dmmf.generatorConfig,
+    );
     imports.push({
       name: `${model.name}CountOutputTypeSelectSchema`,
       path: `./${model.name}CountOutputTypeSelectSchema`,
@@ -47,7 +48,9 @@ export const writeCountArgs = (
         `select: z.lazy(() => ${model.name}CountOutputTypeSelectSchema).nullish(),`,
       );
     })
-    .write(`).strict();`);
+    .write(`).strict()`)
+    .conditionalWrite(useExactOptionalPropertyTypes, '.transform(ru)')
+    .write(`;`);
 
   if (useMultipleFiles && !getSingleFileContent) {
     writer

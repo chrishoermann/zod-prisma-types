@@ -3,18 +3,20 @@ import {
   writeImportStatementOptions,
 } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
+import { getCommonArgImports } from './getCommonImports';
 
 export const writeInclude = (
   { fileWriter: { writer, writeImports }, dmmf }: ContentWriterOptions,
   model: ExtendedDMMFOutputType,
   getSingleFileContent = false,
 ) => {
-  const { useMultipleFiles, prismaClientPath } = dmmf.generatorConfig;
+  const { useMultipleFiles, useExactOptionalPropertyTypes } =
+    dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    const imports: writeImportStatementOptions[] = [];
-    imports.push({ name: 'z', path: 'zod' });
-    imports.push({ name: 'Prisma', path: prismaClientPath, isTypeOnly: true });
+    const imports: writeImportStatementOptions[] = getCommonArgImports(
+      dmmf.generatorConfig,
+    );
     imports.push(...model.includeImports);
     writeImports(imports);
   }
@@ -47,7 +49,9 @@ export const writeInclude = (
         }
       });
     })
-    .write(`).strict()`);
+    .write(`).strict()`)
+    .conditionalWrite(useExactOptionalPropertyTypes, '.transform(ru)')
+    .write(`;`);
 
   if (useMultipleFiles && !getSingleFileContent) {
     writer.blankLine().writeLine(`export default ${model.name}IncludeSchema;`);

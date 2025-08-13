@@ -1,5 +1,4 @@
-import { Prisma } from '@prisma/client';
-import { DecimalJsLike } from '@prisma/client/runtime/library';
+import { Prisma } from '../../prisma/generated/client';
 import { z } from 'zod';
 import {
   DecimalJsLikeSchema,

@@ -3,7 +3,7 @@
 
 generator client {
   provider        = "prisma-client-js"
-  // output   = "./generated/client"
+  output   = "../generated/client"
   previewFeatures = ["views", "prismaSchemaFolder"]
   // previewFeatures = ["views"]
 }
@@ -20,7 +20,7 @@ generator zod {
   provider                         = "ts-node-dev ../generator/src/bin.ts"
   // provider                         = "zod-prisma-types"
   output                           = "../generated/zod" // default is ./generated/zod
-  useMultipleFiles                 = true // default is false 
+  useMultipleFiles                 = true // default is false
   writeBarrelFiles                 = true // default is true
   // createInputTypes                 = false // default is true
   // createModelTypes                 = false // default is true
@@ -36,12 +36,13 @@ generator zod {
   // writeNullishInModelTypes         = false // default is false
   // prismaClientPath                 = "./generated/client" // optional
   useTypeAssertions                = false // default is false
+  useExactOptionalPropertyTypes    = true // default is false
 }
 
 // MIXED CASE ENUMS AND MODELS
 // -----------------------------------------------
 
-// Check if EnumS and modelS with mixed casing work 
+// Check if EnumS and modelS with mixed casing work
 
 enum MYValue {
   A
@@ -78,7 +79,7 @@ model ModelWithOmitFields {
 /// comment line two
 model ModelWithComments {
   id           String  @id @default(uuid())
-  /// comment before validator @zod.string.min(4).max(10) 
+  /// comment before validator @zod.string.min(4).max(10)
   /// comment after validator
   string       String?
   omitField    String? /// @zod.custom.omit([model, input])
@@ -113,7 +114,7 @@ model MyPrismaScalarsType {
   decimal            Decimal
   decimalOpt         Decimal?
   date               DateTime  @default(now())
-  dateOpt            DateTime? /// @zod.date({ invalid_type_error: "wrong date type" })  
+  dateOpt            DateTime? /// @zod.date({ invalid_type_error: "wrong date type" })
   bigInt             BigInt /// @zod.bigint({ invalid_type_error: "error" }).gt(5n, { message: "gt error" })
   bigIntOpt          BigInt?
   json               Json
@@ -135,7 +136,7 @@ model MyPrismaScalarsType {
   updatedAt DateTime @updatedAt
 }
 
-// JSON MODEL 
+// JSON MODEL
 // -----------------------------------------------
 
 // Used for testing if the Json null types are correctly transformed
@@ -170,7 +171,7 @@ enum AnotherEnum {
 model User {
   id         String      @id @default(cuid()) /// @zod.string.cuid()
   email      String      @unique /// @zod.string.email({ message: "Invalid email address" })
-  /// some other comment 
+  /// some other comment
   /// @zod.string.min(1).max(100) some message after
   name       String?
   /// @zod.object.array(.length(2, { message: "error" }).min(1).max(2).nonempty({ message: "error" }))
@@ -261,8 +262,8 @@ model DateModel {
 model StringRegexModel {
   id          Int    @id @default(autoincrement())
   string      String /// @zod.string.regex(/^[a-z0-9]+$/i, { message: "error" })
-  stringTwo   String /// @zod.string.regex(/^\\d+\\s*\\d+|$/) 
-  stringThree String /// @zod.string.regex(/^d+s*d+$/) 
+  stringTwo   String /// @zod.string.regex(/^\\d+\\s*\\d+|$/)
+  stringThree String /// @zod.string.regex(/^d+s*d+$/)
   stringFour  String /// @zod.string.regex(/^3|4$/)
 }
 

@@ -1,3 +1,4 @@
+import { writeImportStatementOptions } from 'src/classes';
 import { type ContentWriterOptions } from '../../types';
 
 export const writeJsonValue = ({
@@ -5,19 +6,40 @@ export const writeJsonValue = ({
   dmmf,
   getSingleFileContent = false,
 }: ContentWriterOptions) => {
-  const { useMultipleFiles, prismaClientPath } = dmmf.generatorConfig;
+  const {
+    useMultipleFiles,
+    prismaClientPath,
+    prismaLibraryPath,
+    isPrismaClientGenerator,
+  } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImports([
-      { name: 'z', path: 'zod' },
-      { name: 'Prisma', path: prismaClientPath, isTypeOnly: true },
-    ]);
+    const imports: writeImportStatementOptions[] = [];
+    imports.push({ name: 'z', path: 'zod' });
+    if (isPrismaClientGenerator) {
+      imports.push({
+        name: 'JsonValue',
+        path: prismaLibraryPath,
+        isTypeOnly: true,
+      });
+    } else {
+      imports.push({
+        name: 'Prisma',
+        path: prismaClientPath,
+        isTypeOnly: true,
+      });
+    }
+    writeImports(imports);
   }
+
+  const jsonValueTypeName = isPrismaClientGenerator
+    ? 'JsonValue'
+    : 'Prisma.JsonValue';
 
   writer
     .blankLine()
     .writeLine(
-      `export const JsonValueSchema: z.ZodType<Prisma.JsonValue> = z.lazy(() =>`,
+      `export const JsonValueSchema: z.ZodType<${jsonValueTypeName}> = z.lazy(() =>`,
     )
     .withIndentationLevel(1, () => {
       writer

@@ -8,6 +8,7 @@ import {
   writeTransformJsonNull,
 } from '.';
 import { type WriteStatements } from '../types';
+import { writeRemoveUndefined } from './contentWriters/writeRemoveUndefined';
 
 /////////////////////////////////////////////////
 // FUNCTION
@@ -20,6 +21,17 @@ export const writeSingleFileHelperStatements: WriteStatements = (
   fileWriter.writer.blankLine();
   fileWriter.writeHeading('HELPER FUNCTIONS', 'FAT');
   fileWriter.writer.blankLine();
+
+  // EXACT OPTIONAL PROPERTY TYPES
+  // ------------------------------------------------------------
+
+  if (dmmf.generatorConfig.useExactOptionalPropertyTypes) {
+    fileWriter.writeHeading(`EXACT OPTIONAL PROPERTY TYPES`, 'SLIM');
+
+    writeRemoveUndefined({ fileWriter, dmmf });
+
+    fileWriter.writer.newLine();
+  }
 
   // JSON
   // ------------------------------------------------------------

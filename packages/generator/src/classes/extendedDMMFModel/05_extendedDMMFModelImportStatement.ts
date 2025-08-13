@@ -1,4 +1,4 @@
-import { DMMF } from '@prisma/generator-helper';
+import type DMMF from '@prisma/dmmf';
 import { GeneratorConfig } from '../../schemas';
 import { ExtendedDMMFModelValidatorPattern } from './04_extendedDMMFModelValidatorPattern';
 import { transformImportStringToList } from '../../utils/transformImportStringToList';
@@ -49,7 +49,12 @@ export class ExtendedDMMFModelImportStatement extends ExtendedDMMFModelValidator
   private _getAutomaticImports() {
     const statements: writeImportStatementOptions[] = [];
 
-    const { inputTypePath, prismaClientPath } = this.generatorConfig;
+    const {
+      inputTypePath,
+      prismaClientPath,
+      prismaLibraryPath,
+      isPrismaClientGenerator,
+    } = this.generatorConfig;
 
     if (this.fields.some((field) => field.isJsonType)) {
       statements.push({
@@ -59,10 +64,18 @@ export class ExtendedDMMFModelImportStatement extends ExtendedDMMFModelValidator
     }
 
     if (this.hasDecimalFields) {
-      statements.push({
-        name: 'Prisma',
-        path: prismaClientPath,
-      });
+      if (isPrismaClientGenerator) {
+        statements.push({
+          name: 'Decimal',
+          as: 'PrismaDecimal',
+          path: prismaLibraryPath,
+        });
+      } else {
+        statements.push({
+          name: 'Prisma',
+          path: prismaClientPath,
+        });
+      }
     }
 
     this.enumFields.forEach((field) => {

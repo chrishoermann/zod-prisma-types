@@ -7,15 +7,7 @@ import { writeImportStatementOptions } from '../classes';
 const rIdentifier = `[^\\s0-9{}][^\\s{}]+`;
 const rIdentifierWithAs = `${rIdentifier}(\\s+as\\s+${rIdentifier})?`;
 const rIdentifierWithAsAndType = `(type\\s+)?${rIdentifierWithAs}`;
-const importStatementRegex = `"\
-\\s*import\
-\\s+(?<isType>type)?\
-\\s+(?<default>${rIdentifierWithAs})?\
-\\s*,?\
-\\s*(?<named>{(${rIdentifierWithAsAndType},?\\s*)*})?\
-\\s+from\
-\\s+(?<path>['"][^'"]+['"])\
-\\s*;?`;
+const importStatementRegex = `"\\s*import\\s+(?<isType>type)?\\s+(?<default>${rIdentifierWithAs})?\\s*,?\\s*(?<named>{(${rIdentifierWithAsAndType},?\\s*)*})?\\s+from\\s+(?<path>['"][^'"]+['"])\\s*;?`;
 
 const importIdentifierToOptions = (
   identifier: string,

@@ -1,4 +1,4 @@
-import { DMMF } from '@prisma/generator-helper';
+import type DMMF from '@prisma/dmmf';
 import { FormattedNames } from '../formattedNames';
 import { ExtendedDMMFModelFormatingHelpers } from './08_extendedDMMFModelFormatingHelpers';
 import { ExtendedDMMFField } from '../extendedDMMFField';

@@ -1,9 +1,9 @@
-import { DMMF } from '@prisma/generator-helper';
+import type DMMF from '@prisma/dmmf';
 
 import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
 import { ExtendedDMMFMappings } from './extendedDMMFMappings';
 import { ExtendedDMMFSchema } from './extendedDMMFSchema';
-import { GeneratorConfig } from '../schemas';
+import type { GeneratorConfig } from '../schemas';
 import { writeImportStatementOptions } from './fileWriter';
 
 /////////////////////////////////////////////////

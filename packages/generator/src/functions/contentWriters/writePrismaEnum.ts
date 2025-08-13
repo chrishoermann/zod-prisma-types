@@ -12,7 +12,12 @@ export const writePrismaEnum = (
   }: ContentWriterOptions,
   { useNativeEnum, values, name }: ExtendedDMMFSchemaEnum,
 ) => {
-  const { useMultipleFiles, prismaClientPath } = dmmf.generatorConfig;
+  const {
+    useMultipleFiles,
+    prismaClientPath,
+    prismaLibraryPath,
+    isPrismaClientGenerator,
+  } = dmmf.generatorConfig;
 
   if (useMultipleFiles) {
     const imports: writeImportStatementOptions[] = [];
@@ -20,16 +25,24 @@ export const writePrismaEnum = (
       imports.push({ name: 'z', path: 'zod' });
     }
     if (
+      !useNativeEnum &&
       [
         'JsonNullValueInput',
         'NullableJsonNullValueInput',
         'JsonNullValueFilter',
       ].includes(name)
     ) {
-      imports.push({
-        name: 'Prisma',
-        path: prismaClientPath,
-      });
+      if (isPrismaClientGenerator) {
+        imports.push({
+          name: 'objectEnumValues',
+          path: prismaLibraryPath,
+        });
+      } else {
+        imports.push({
+          name: 'Prisma',
+          path: prismaClientPath,
+        });
+      }
     }
     writeImports(imports);
   }
@@ -48,8 +61,11 @@ export const writePrismaEnum = (
       values.forEach((value) => {
         writer.write(`'${value}',`);
       });
+      const jsonNullTypeName = isPrismaClientGenerator
+        ? 'objectEnumValues.instances.JsonNull'
+        : 'Prisma.JsonNull';
       writer.write(
-        `]).transform((value) => (value === 'JsonNull' ? Prisma.JsonNull : value));`,
+        `]).transform((value) => (value === 'JsonNull' ? ${jsonNullTypeName} : value));`,
       );
 
       return;
@@ -60,8 +76,14 @@ export const writePrismaEnum = (
       values.forEach((value) => {
         writer.write(`'${value}',`);
       });
+      const jsonNullTypeName = isPrismaClientGenerator
+        ? 'objectEnumValues.instances.JsonNull'
+        : 'Prisma.JsonNull';
+      const dbNullTypeName = isPrismaClientGenerator
+        ? 'objectEnumValues.instances.DbNull'
+        : 'Prisma.DbNull';
       writer.write(
-        `]).transform((value) => value === 'JsonNull' ? Prisma.JsonNull : value === 'DbNull' ? Prisma.DbNull : value);`,
+        `]).transform((value) => value === 'JsonNull' ? ${jsonNullTypeName} : value === 'DbNull' ? ${dbNullTypeName} : value);`,
       );
 
       return;
@@ -71,8 +93,17 @@ export const writePrismaEnum = (
       values.forEach((value) => {
         writer.write(`'${value}',`);
       });
+      const jsonNullTypeName = isPrismaClientGenerator
+        ? 'objectEnumValues.instances.JsonNull'
+        : 'Prisma.JsonNull';
+      const dbNullTypeName = isPrismaClientGenerator
+        ? 'objectEnumValues.instances.DbNull'
+        : 'Prisma.DbNull';
+      const anyNullTypeName = isPrismaClientGenerator
+        ? 'objectEnumValues.instances.AnyNull'
+        : 'Prisma.AnyNull';
       writer.write(
-        `]).transform((value) => value === 'JsonNull' ? Prisma.JsonNull : value === 'DbNull' ? Prisma.JsonNull : value === 'AnyNull' ? Prisma.AnyNull : value);`,
+        `]).transform((value) => value === 'JsonNull' ? ${jsonNullTypeName} : value === 'DbNull' ? ${dbNullTypeName} : value === 'AnyNull' ? ${anyNullTypeName} : value);`,
       );
 
       return;

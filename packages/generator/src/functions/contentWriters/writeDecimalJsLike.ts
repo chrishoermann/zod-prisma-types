@@ -1,3 +1,4 @@
+import { writeImportStatementOptions } from 'src/classes';
 import { type ContentWriterOptions } from '../../types';
 
 export const writeDecimalJsLike = ({
@@ -5,19 +6,40 @@ export const writeDecimalJsLike = ({
   dmmf,
   getSingleFileContent = false,
 }: ContentWriterOptions) => {
-  const { useMultipleFiles, prismaClientPath } = dmmf.generatorConfig;
+  const {
+    useMultipleFiles,
+    prismaClientPath,
+    prismaLibraryPath,
+    isPrismaClientGenerator,
+  } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImports([
-      { name: 'z', path: 'zod' },
-      { name: 'Prisma', path: prismaClientPath, isTypeOnly: true },
-    ]);
+    const imports: writeImportStatementOptions[] = [];
+    imports.push({ name: 'z', path: 'zod' });
+    if (isPrismaClientGenerator) {
+      imports.push({
+        name: 'DecimalJsLike',
+        path: prismaLibraryPath,
+        isTypeOnly: true,
+      });
+    } else {
+      imports.push({
+        name: 'Prisma',
+        path: prismaClientPath,
+        isTypeOnly: true,
+      });
+    }
+    writeImports(imports);
   }
+
+  const decimalJsLikeTypeName = isPrismaClientGenerator
+    ? 'DecimalJsLike'
+    : 'Prisma.DecimalJsLike';
 
   writer
     .blankLine()
     .writeLine(
-      `export const DecimalJsLikeSchema: z.ZodType<Prisma.DecimalJsLike> = z.object({`,
+      `export const DecimalJsLikeSchema: z.ZodType<${decimalJsLikeTypeName}> = z.object({`,
     )
     .withIndentationLevel(1, () => {
       writer

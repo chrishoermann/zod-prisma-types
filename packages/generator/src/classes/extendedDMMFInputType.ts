@@ -1,4 +1,5 @@
-import { DMMF, ReadonlyDeep } from '@prisma/generator-helper';
+import type DMMF from '@prisma/dmmf';
+import type { ReadonlyDeep } from '@prisma/dmmf/dist/util';
 
 import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
 import { ExtendedDMMFField } from './extendedDMMFField';
@@ -182,25 +183,60 @@ export class ExtendedDMMFInputType
   }
 
   private _setImports() {
-    const { prismaClientPath, decimalJSInstalled } = this.generatorConfig;
+    const {
+      prismaClientPath,
+      prismaLibraryPath,
+      isPrismaClientGenerator,
+      decimalJSInstalled,
+    } = this.generatorConfig;
+
     const fieldImports: writeImportStatementOptions[] = [];
-    fieldImports.push({
-      name: 'Prisma',
-      path: prismaClientPath,
-      isTypeOnly: !this.isDecimalField, // if the field is a decimal field
-    });
-    if (decimalJSInstalled && this.isDecimalField) {
-      fieldImports.push({
-        name: 'Decimal',
-        path: 'decimal.js',
-        isDefault: true,
+    const prismaImports: writeImportStatementOptions[] = [];
+
+    // If the field is a decimal field, we need to import the
+    // Decimal class in order to use `z.instanceof`
+    if (this.isDecimalField) {
+      if (isPrismaClientGenerator) {
+        // If isPrismaClientGenerator, import Prisma.Decimal as PrismaDecimal
+        // We also need to import { type Prisma } below
+        prismaImports.push({
+          name: 'Decimal',
+          as: 'PrismaDecimal',
+          path: prismaLibraryPath,
+        });
+      } else {
+        // If not isPrismaClientGenerator, import whole Prisma client
+        prismaImports.push({
+          name: 'Prisma',
+          path: prismaClientPath,
+        });
+      }
+      if (decimalJSInstalled) {
+        // If decimal.js is installed, import Decimal from decimal.js
+        fieldImports.push({
+          name: 'Decimal',
+          path: 'decimal.js',
+          isDefault: true,
+        });
+      }
+    }
+
+    if (!this.isDecimalField || isPrismaClientGenerator) {
+      prismaImports.push({
+        name: 'Prisma',
+        path: prismaClientPath,
+        isTypeOnly: true,
       });
     }
-    fieldImports.push({
+
+    const zodImport: writeImportStatementOptions = {
       name: 'z',
       path: 'zod',
-    });
+    };
+
     fieldImports.push(
+      ...prismaImports,
+      zodImport,
       ...this.fields.map((field) => field.getImports(this.name)).flat(),
     );
 

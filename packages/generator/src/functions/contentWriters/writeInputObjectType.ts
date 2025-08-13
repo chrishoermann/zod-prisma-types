@@ -1,7 +1,11 @@
 import CodeBlockWriter from 'code-block-writer';
 
 import { writeNonScalarType, writeScalarType, writeSpecialType } from '..';
-import { ExtendedDMMFInputType, ExtendedDMMFSchemaArg } from '../../classes';
+import {
+  ExtendedDMMFInputType,
+  ExtendedDMMFSchemaArg,
+  writeImportStatementOptions,
+} from '../../classes';
 import { type ContentWriterOptions } from '../../types';
 
 /////////////////////////////////////////////
@@ -114,11 +118,23 @@ export const writeInputObjectType = (
   }: ContentWriterOptions,
   inputType: ExtendedDMMFInputType,
 ) => {
-  const { useMultipleFiles, addInputTypeValidation, useTypeAssertions } =
-    dmmf.generatorConfig;
+  const {
+    useMultipleFiles,
+    useExactOptionalPropertyTypes,
+    addInputTypeValidation,
+    useTypeAssertions,
+  } = dmmf.generatorConfig;
 
   if (useMultipleFiles && !getSingleFileContent) {
-    writeImports(inputType.imports);
+    const imports: writeImportStatementOptions[] = [...inputType.imports];
+    if (useExactOptionalPropertyTypes) {
+      imports.push({
+        name: 'ru',
+        path: './RemoveUndefined',
+        isDefault: true,
+      });
+    }
+    writeImports(imports);
   }
 
   // when an omit field is present, the type is not a native prism type
@@ -196,8 +212,11 @@ export const writeInputObjectType = (
         });
       });
     })
-    .conditionalWrite(!writeExtendedWhereUniqueInput, `).strict()`)
-    .conditionalWrite(writeExtendedWhereUniqueInput, `).strict())`)
+    .write(`)`)
+    .conditionalWrite(!writeExtendedWhereUniqueInput, `.strict()`)
+    .conditionalWrite(writeExtendedWhereUniqueInput, `.strict()`)
+    .conditionalWrite(useExactOptionalPropertyTypes, '.transform(ru)')
+    .conditionalWrite(writeExtendedWhereUniqueInput, `)`)
     .conditionalWrite(useTypeAssertions, ` as ${type};`)
     .conditionalWrite(!useTypeAssertions, `;`);
 
