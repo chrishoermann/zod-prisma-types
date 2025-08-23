@@ -76,6 +76,7 @@ export const PRISMA_TO_ZOD_TYPE_MAP: Record<
 export const ZOD_VALID_ERROR_KEYS: ZodCustomErrorKey[] = [
   'invalid_type_error',
   'required_error',
+  'error',
   'description',
 ];
 

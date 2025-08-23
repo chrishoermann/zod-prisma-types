@@ -5,6 +5,7 @@
 export type ZodCustomErrorKey =
   | 'invalid_type_error'
   | 'required_error'
+  | 'error'
   | 'description';
 
 /////////////////////////////////////////////////
@@ -20,16 +21,18 @@ export const VALIDATOR_CUSTOM_ERROR_REGEX =
 export const VALIDATOR_CUSTOM_ERROR_MESSAGE_REGEX =
   /[ ]?"[\w\p{Script=Cyrillic}\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M} ()-.,'ʼ:+\-*#!§$%&/{}[\]=?~><°^|]+"[,]?[ ]?/gu;
 
-export const VALIDATOR_CUSTOM_ERROR_SPLIT_KEYS_REGEX = /[\w]+(?=:)/gu;
+export const VALIDATOR_CUSTOM_ERROR_SPLIT_KEYS_REGEX =
+  /([a-zA-Z_][a-zA-Z0-9_]*)(?=\s*:)/gu;
 
 /////////////////////////////////////////////////
 // CONSTANTS
 /////////////////////////////////////////////////
 
 export const ZOD_VALID_ERROR_KEYS: ZodCustomErrorKey[] = [
-  'invalid_type_error',
-  'required_error',
-  'description',
+  'invalid_type_error', // deprecated in zod v4
+  'required_error', // deprecated in zod v4
+  'error', // new in zod v4
+  'description', // new in zod v4
 ];
 
 /////////////////////////////////////////////////
@@ -54,9 +57,12 @@ export const validateCustomError = (
 
   if (!messages) return;
 
-  const customErrorKeysArray = messages
-    .replace(VALIDATOR_CUSTOM_ERROR_MESSAGE_REGEX, '')
-    .match(VALIDATOR_CUSTOM_ERROR_SPLIT_KEYS_REGEX);
+  // Extract only the top-level keys by looking for patterns like "key: value"
+  // This regex looks for word characters followed by optional whitespace and a colon
+  const customErrorKeysArray =
+    messages
+      .match(VALIDATOR_CUSTOM_ERROR_SPLIT_KEYS_REGEX)
+      ?.map((key) => key.replace(/\s*:$/, '')) || [];
 
   const isValid = customErrorKeysArray?.every((key) => {
     if (ZOD_VALID_ERROR_KEYS?.includes(key as ZodCustomErrorKey)) return true;

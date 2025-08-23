@@ -3,7 +3,7 @@ import { it, expect, describe } from 'vitest';
 
 import { DEFAULT_GENERATOR_CONFIG, FIELD_BASE } from '../setup';
 import {
-  ARRAY_VALIDATOR_MESSAGE_REGEX,
+  // ARRAY_VALIDATOR_MESSAGE_REGEX,
   BIGINT_VALIDATOR_MESSAGE_REGEX,
   BIGINT_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
   CUSTOM_VALIDATOR_MESSAGE_REGEX,
@@ -82,7 +82,7 @@ export function testExtendedDMMFFieldValidatorMap<
       );
       expect(result?.groups?.validator).toBe('datetime');
       expect(result?.groups?.message).toBe(
-        "{message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。'}",
+        "{ message: 'ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。'",
       );
     });
 
@@ -400,8 +400,26 @@ export function testExtendedDMMFFieldValidatorMap<
       ).toBe(true);
       expect(
         map({
-          key: 'ip',
-          pattern: '.ip()',
+          key: 'ipv4',
+          pattern: '.ipv4()',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'ipv6',
+          pattern: '.ipv6()',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'cidrv4',
+          pattern: '.cidrv4()',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'cidrv6',
+          pattern: '.cidrv6()',
         }),
       ).toBe(true);
       expect(
@@ -424,6 +442,24 @@ export function testExtendedDMMFFieldValidatorMap<
       ).toBe(true);
       expect(
         map({
+          key: 'uppercase',
+          pattern: '.uppercase()',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'lowercase',
+          pattern: '.lowercase()',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'normalize',
+          pattern: '.normalize()',
+        }),
+      ).toBe(true);
+      expect(
+        map({
           key: 'noDefault',
           pattern: '.noDefault()',
         }),
@@ -438,6 +474,88 @@ export function testExtendedDMMFFieldValidatorMap<
         map({
           key: 'describe',
           pattern: '.describe("some")',
+        }),
+      ).toBe(true);
+
+      // Zod v4 string format validators
+      expect(
+        map({
+          key: 'date',
+          pattern: '.date()',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'time',
+          pattern: '.time()',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'duration',
+          pattern: '.duration()',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'base64',
+          pattern: '.base64()',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'base64url',
+          pattern: '.base64url()',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'hex',
+          pattern: '.hex()',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'jwt',
+          pattern: '.jwt()',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'hash',
+          pattern: '.hash()',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'guid',
+          pattern: '.guid()',
+        }),
+      ).toBe(true);
+
+      // ISO validators (aliases)
+      expect(
+        map({
+          key: 'isoDate',
+          pattern: '.isoDate()',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'isoTime',
+          pattern: '.isoTime()',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'isoDatetime',
+          pattern: '.isoDatetime()',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'isoDuration',
+          pattern: '.isoDuration()',
         }),
       ).toBe(true);
     });
@@ -552,8 +670,108 @@ export function testExtendedDMMFFieldValidatorMap<
           pattern: '.toUpperCase({ message: "someMessage" })',
         }),
       ).toBe(true);
+      expect(
+        map({
+          key: 'uppercase',
+          pattern: '.uppercase({ message: "someMessage" })',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'lowercase',
+          pattern: '.lowercase({ message: "someMessage" })',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'normalize',
+          pattern: '.normalize({ message: "someMessage" })',
+        }),
+      ).toBe(true);
       expect(map({ key: 'noDefault', pattern: '.noDefault()' })).toBe(true);
       expect(map({ key: 'array', pattern: '.array(.length(2))' })).toBe(true);
+
+      // Zod v4 string format validators with message support
+      expect(
+        map({
+          key: 'date',
+          pattern: '.date({ message: "someMessage" })',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'time',
+          pattern: '.time({ message: "someMessage" })',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'duration',
+          pattern: '.duration({ message: "someMessage" })',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'base64',
+          pattern: '.base64({ message: "someMessage" })',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'base64url',
+          pattern: '.base64url({ message: "someMessage" })',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'hex',
+          pattern: '.hex({ message: "someMessage" })',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'jwt',
+          pattern: '.jwt({ message: "someMessage" })',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'hash',
+          pattern: '.hash({ message: "someMessage" })',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'guid',
+          pattern: '.guid({ message: "someMessage" })',
+        }),
+      ).toBe(true);
+
+      // ISO validators (aliases) with message support
+      expect(
+        map({
+          key: 'isoDate',
+          pattern: '.isoDate({ message: "someMessage" })',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'isoTime',
+          pattern: '.isoTime({ message: "someMessage" })',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'isoDatetime',
+          pattern: '.isoDatetime({ message: "someMessage" })',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'isoDuration',
+          pattern: '.isoDuration({ message: "someMessage" })',
+        }),
+      ).toBe(true);
     });
 
     it(`should pass ivalid data to to validator map`, async () => {
@@ -659,6 +877,15 @@ export function testExtendedDMMFFieldValidatorMap<
           pattern: '.noDefault()',
         }),
       ).toBe(true);
+
+      // Zod v4 new number validators
+      expect(
+        map({
+          key: 'int32',
+          pattern: '.int32()',
+        }),
+      ).toBe(true);
+
       expect(
         map({
           key: 'array',
@@ -747,6 +974,15 @@ export function testExtendedDMMFFieldValidatorMap<
           pattern: '.noDefault({ message: "someMessage" })',
         }),
       ).toBe(true);
+
+      // Zod v4 new number validators with message support
+      expect(
+        map({
+          key: 'int32',
+          pattern: '.int32({ message: "someMessage" })',
+        }),
+      ).toBe(true);
+
       expect(
         map({
           key: 'array',
@@ -895,6 +1131,27 @@ export function testExtendedDMMFFieldValidatorMap<
           pattern: '.multipleOf(2n)',
         }),
       ).toBe(true);
+
+      // Zod v4 BigInt aliases
+      expect(
+        map({
+          key: 'min',
+          pattern: '.min(2n)',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'max',
+          pattern: '.max(2n)',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'step',
+          pattern: '.step(2n)',
+        }),
+      ).toBe(true);
+
       expect(
         map({
           key: 'positive',

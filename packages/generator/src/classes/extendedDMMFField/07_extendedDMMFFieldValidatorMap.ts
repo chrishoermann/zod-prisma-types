@@ -14,32 +14,52 @@ export type ZodStringValidatorKeys =
   | 'max'
   | 'min'
   | 'length'
-  | 'email'
-  | 'url'
-  | 'emoji'
-  | 'uuid'
-  | 'nanoid'
-  | 'cuid'
-  | 'cuid2'
-  | 'ulid'
   | 'regex'
-  | 'includes'
   | 'startsWith'
   | 'endsWith'
-  | 'datetime'
-  | 'ip'
-  | 'cidr'
+  | 'includes'
 
   // transforms
   | 'trim'
   | 'toLowerCase'
   | 'toUpperCase'
+  | 'uppercase'
+  | 'lowercase'
+  | 'normalize'
 
-  // added in zod 3.23
-  // | 'date'
-  // | 'time'
-  // | 'duration'
-  // | 'base64'
+  // Zod v4 string format validators
+  | 'email'
+  | 'uuid'
+  | 'url'
+  | 'httpUrl'
+  | 'hostname'
+  | 'emoji'
+  | 'base64'
+  | 'base64url'
+  | 'hex'
+  | 'jwt'
+  | 'nanoid'
+  | 'cuid'
+  | 'cuid2'
+  | 'ulid'
+  | 'ipv4'
+  | 'ipv6'
+  | 'cidrv4'
+  | 'cidrv6'
+  | 'hash'
+  | 'guid'
+
+  // Date/Time validators (keeping existing ones)
+  | 'date'
+  | 'time'
+  | 'duration'
+  | 'datetime'
+
+  // ISO validators (aliases)
+  | 'isoDate'
+  | 'isoTime'
+  | 'isoDatetime'
+  | 'isoDuration'
 
   // base
   | 'noDefault';
@@ -61,7 +81,10 @@ export type ZodNumberValidatorKeys =
   | 'multipleOf'
   | 'step'
   | 'finite'
-  | 'noDefault';
+  | 'noDefault'
+
+  // Zod v4 new number validators
+  | 'int32';
 
 export type ZodDateValidatorKeys =
   | ZodSharedValidatorKeys
@@ -74,13 +97,16 @@ export type ZodBigIntValidatorKeys =
   | ZodDescribedValidatorKeys
   | 'gt'
   | 'gte'
+  | 'min' // alias for gte
   | 'lt'
   | 'lte'
+  | 'max' // alias for lte
   | 'positive'
   | 'nonpositive'
   | 'negative'
   | 'nonnegative'
-  | 'multipleOf';
+  | 'multipleOf'
+  | 'step'; // alias for multipleOf
 
 export type ZodCustomValidatorKeys = ZodSharedValidatorKeys | 'use' | 'omit';
 
@@ -104,10 +130,10 @@ export const VALIDATOR_KEY_REGEX = /(\.(?<validatorKey>[\w]+))/;
 // STRING
 // ----------------------------------------
 export const STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
-  /.(?<validator>min|max|length)\((?<number>[\d]+)([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Cyrillic}\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M}ʼ]+['"][ ]?[}])?\)/u;
+  /.(?<validator>min|max|length)\((?<number>\d+)([,]\s*)?(?<message>\{\s*message:\s*['"][^'"]*['"]\s*\})?\)/u;
 
 export const STRING_VALIDATOR_MESSAGE_REGEX =
-  /.(?<validator>email|url|emoji|uuid|nanoid|cuid|cuid2|ulid|toLowerCase|toUpperCase|trim|datetime|ip|cidr|noDefault)(\((?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Cyrillic}\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M}ʼ]+['"][ ]?[}])?\))/u;
+  /.(?<validator>email|uuid|url|httpUrl|hostname|emoji|base64|base64url|hex|jwt|nanoid|cuid|cuid2|ulid|ipv4|ipv6|cidrv4|cidrv6|hash|guid|date|time|duration|datetime|isoDate|isoTime|isoDatetime|isoDuration|toLowerCase|toUpperCase|trim|uppercase|lowercase|normalize|noDefault)(\((?<message>\{\s*message:\s*['"][^'"]*['"]\s*\})?\))/u;
 
 export const STRING_VALIDATOR_REGEX = /.(regex)(\((?<message>.*)\))/;
 
@@ -115,36 +141,36 @@ export const STRING_VALIDATOR_DESCRIBE_REGEX =
   /.(describe)(\((?<message>.*)\))/;
 
 export const STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX =
-  /.(?<validator>startsWith|endsWith|includes)\((?<string>['"][\w\W\p{Script=Cyrillic}\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M}ʼ]+['"])([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Cyrillic}\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M}ʼ]+['"][ ]?[}])?\)/u;
+  /.(?<validator>startsWith|endsWith|includes)\((?<string>['"][^'"]*['"])([,]\s*)?(?<message>\{\s*message:\s*['"][^'"]*['"]\s*\})?\)/u;
 
 export const STRING_VALIDATOR_DATETIME_REGEX =
-  /.(?<validator>datetime)(\((?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Cyrillic}\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M}ʼ]+['"])?[ ]?(?<offset>,?[ ]?offset:[ ]?(true|false))?[ ]?(,?[ ]?local:[ ]?(?<local>true|false))?[ ]?(,?[ ]?precision:[ ]?(?<precision>\d+))?[ ]?[}]?\))/u;
+  /.(?<validator>datetime)(\((?<message>\{\s*message:\s*['"][^'"]*['"])?(?<offset>[,]?\s*offset:\s*(true|false))?(?<local>[,]?\s*local:\s*(true|false))?(?<precision>[,]?\s*precision:\s*\d+)?\s*\}?\))/u;
 
 // NUMBER
 // ----------------------------------------
 export const NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
-  /.(?<validator>min|max|gt|gte|lt|lte|multipleOf|step)\((?<number>[-\d.]+)([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Cyrillic}\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M}ʼ]+['"][ ]?[}])?\)/u;
+  /.(?<validator>min|max|gt|gte|lt|lte|multipleOf|step)\((?<number>[-\d.]+)([,]\s*)?(?<message>\{\s*message:\s*['"][^'"]*['"]\s*\})?\)/u;
 
 export const NUMBER_VALIDATOR_MESSAGE_REGEX =
-  /.(?<validator>int|positive|nonnegative|negative|nonpositive|finite|noDefault)(\((?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Cyrillic}\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M}ʼ]+['"][ ]?[}])?\))/u;
+  /.(?<validator>int|int32|positive|nonnegative|negative|nonpositive|finite|noDefault)(\((?<message>\{\s*message:\s*['"][^'"]*['"]\s*\})?\))/u;
 
 // DATE
 // ----------------------------------------
 export const DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
-  /.(?<validator>min|max)(\()(?<date>(new Date\((['"()\w.-]+)?\)))([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Cyrillic}\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M}ʼ]+['"][ ]?[}])?\)/u;
+  /.(?<validator>min|max)\((?<date>new Date\([^)]*\))([,]\s*)?(?<message>\{\s*message:\s*['"][^'"]*['"]\s*\})?\)/u;
 
 // BIGINT
 // ----------------------------------------
 export const BIGINT_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
-  /.(?<validator>gt|gte|lt|lte|multipleOf)\((?<number>[\w]+)([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Cyrillic}\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M}ʼ]+['"][ ]?[}])?\)/u;
+  /.(?<validator>gt|gte|min|lt|lte|max|multipleOf|step)\((?<number>\w+)([,]\s*)?(?<message>\{\s*message:\s*['"][^'"]*['"]\s*\})?\)/u;
 
 export const BIGINT_VALIDATOR_MESSAGE_REGEX =
-  /.(?<validator>positive|nonnegative|negative|nonpositive|array)(\((?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Cyrillic}\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M}ʼ]+['"][ ]?[}])?\))/u;
+  /.(?<validator>positive|nonnegative|negative|nonpositive|array)(\((?<message>\{\s*message:\s*['"][^'"]*['"]\s*\})?\))/u;
 
 // CUSTOM
 // ----------------------------------------
 export const CUSTOM_VALIDATOR_MESSAGE_REGEX =
-  /(?<validator>use|array|omit)(\()(?<pattern>[\w\p{Script=Cyrillic}\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M}ʼ (),.'"。、:+\-*#!§$%&/{}[\]=?~><°^|]+)\)/u;
+  /.(?<validator>use|array|omit)\((?<pattern>.*)\)/u;
 
 export const CUSTOM_OMIT_VALIDATOR_MESSAGE_REGEX =
   /(?<validator>omit)(\()(?<pattern>[\w ,'"[\]]+)\)/;
@@ -152,7 +178,7 @@ export const CUSTOM_OMIT_VALIDATOR_MESSAGE_REGEX =
 // ARRAY
 // ----------------------------------------
 export const ARRAY_VALIDATOR_MESSAGE_REGEX =
-  /(?<validator>array)(\((?<pattern>[\w\p{Script=Cyrillic}\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M}ʼ (),.'"。、:+\-*#!§$%&/{}[\]=?~><°^]+)\))/u;
+  /.(?<validator>array)\((?<pattern>.*)\)/u;
 
 /////////////////////////////////////////////
 // REGEX MAPS
@@ -170,26 +196,52 @@ export const STRING_VALIDATOR_REGEX_MAP: ValidatorMap<ZodStringValidatorKeys> =
     max: STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
     min: STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
     length: STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
-    email: STRING_VALIDATOR_MESSAGE_REGEX,
-    url: STRING_VALIDATOR_MESSAGE_REGEX,
-    emoji: STRING_VALIDATOR_MESSAGE_REGEX,
-    nanoid: STRING_VALIDATOR_MESSAGE_REGEX,
-    uuid: STRING_VALIDATOR_MESSAGE_REGEX,
-    cuid: STRING_VALIDATOR_MESSAGE_REGEX,
-    cuid2: STRING_VALIDATOR_MESSAGE_REGEX,
-    ulid: STRING_VALIDATOR_MESSAGE_REGEX,
     regex: STRING_VALIDATOR_REGEX,
     includes: STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX,
     startsWith: STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX,
     endsWith: STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX,
-    datetime: STRING_VALIDATOR_MESSAGE_REGEX,
-    ip: STRING_VALIDATOR_MESSAGE_REGEX,
-    cidr: STRING_VALIDATOR_MESSAGE_REGEX,
 
     // transforms
     trim: STRING_VALIDATOR_MESSAGE_REGEX,
     toLowerCase: STRING_VALIDATOR_MESSAGE_REGEX,
     toUpperCase: STRING_VALIDATOR_MESSAGE_REGEX,
+    uppercase: STRING_VALIDATOR_MESSAGE_REGEX,
+    lowercase: STRING_VALIDATOR_MESSAGE_REGEX,
+    normalize: STRING_VALIDATOR_MESSAGE_REGEX,
+
+    // Zod v4 string format validators
+    email: STRING_VALIDATOR_MESSAGE_REGEX,
+    uuid: STRING_VALIDATOR_MESSAGE_REGEX,
+    url: STRING_VALIDATOR_MESSAGE_REGEX,
+    httpUrl: STRING_VALIDATOR_MESSAGE_REGEX,
+    hostname: STRING_VALIDATOR_MESSAGE_REGEX,
+    emoji: STRING_VALIDATOR_MESSAGE_REGEX,
+    base64: STRING_VALIDATOR_MESSAGE_REGEX,
+    base64url: STRING_VALIDATOR_MESSAGE_REGEX,
+    hex: STRING_VALIDATOR_MESSAGE_REGEX,
+    jwt: STRING_VALIDATOR_MESSAGE_REGEX,
+    nanoid: STRING_VALIDATOR_MESSAGE_REGEX,
+    cuid: STRING_VALIDATOR_MESSAGE_REGEX,
+    cuid2: STRING_VALIDATOR_MESSAGE_REGEX,
+    ulid: STRING_VALIDATOR_MESSAGE_REGEX,
+    ipv4: STRING_VALIDATOR_MESSAGE_REGEX,
+    ipv6: STRING_VALIDATOR_MESSAGE_REGEX,
+    cidrv4: STRING_VALIDATOR_MESSAGE_REGEX,
+    cidrv6: STRING_VALIDATOR_MESSAGE_REGEX,
+    hash: STRING_VALIDATOR_MESSAGE_REGEX,
+    guid: STRING_VALIDATOR_MESSAGE_REGEX,
+
+    // Date/Time validators (keeping existing ones)
+    date: STRING_VALIDATOR_MESSAGE_REGEX,
+    time: STRING_VALIDATOR_MESSAGE_REGEX,
+    duration: STRING_VALIDATOR_MESSAGE_REGEX,
+    datetime: STRING_VALIDATOR_MESSAGE_REGEX,
+
+    // ISO validators (aliases)
+    isoDate: STRING_VALIDATOR_MESSAGE_REGEX,
+    isoTime: STRING_VALIDATOR_MESSAGE_REGEX,
+    isoDatetime: STRING_VALIDATOR_MESSAGE_REGEX,
+    isoDuration: STRING_VALIDATOR_MESSAGE_REGEX,
 
     noDefault: STRING_VALIDATOR_MESSAGE_REGEX,
 
@@ -222,6 +274,10 @@ export const NUMBER_VALIDATOR_REGEX_MAP: ValidatorMap<ZodNumberValidatorKeys> =
     nonnegative: NUMBER_VALIDATOR_MESSAGE_REGEX,
     finite: NUMBER_VALIDATOR_MESSAGE_REGEX,
     noDefault: NUMBER_VALIDATOR_MESSAGE_REGEX,
+
+    // Zod v4 new number validators
+    int32: NUMBER_VALIDATOR_MESSAGE_REGEX,
+
     array: ARRAY_VALIDATOR_MESSAGE_REGEX,
     describe: STRING_VALIDATOR_DESCRIBE_REGEX,
   };
@@ -251,13 +307,16 @@ export const BIGINT_VALIDATOR_REGEX_MAP: ValidatorMap<ZodBigIntValidatorKeys> =
   {
     gt: BIGINT_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
     gte: BIGINT_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
+    min: BIGINT_VALIDATOR_NUMBER_AND_MESSAGE_REGEX, // alias for gte
     lt: BIGINT_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
     lte: BIGINT_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
+    max: BIGINT_VALIDATOR_NUMBER_AND_MESSAGE_REGEX, // alias for lte
     positive: BIGINT_VALIDATOR_MESSAGE_REGEX,
     nonpositive: BIGINT_VALIDATOR_MESSAGE_REGEX,
     negative: BIGINT_VALIDATOR_MESSAGE_REGEX,
     nonnegative: BIGINT_VALIDATOR_MESSAGE_REGEX,
     multipleOf: BIGINT_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
+    step: BIGINT_VALIDATOR_NUMBER_AND_MESSAGE_REGEX, // alias for multipleOf
     array: ARRAY_VALIDATOR_MESSAGE_REGEX,
     describe: STRING_VALIDATOR_DESCRIBE_REGEX,
   };

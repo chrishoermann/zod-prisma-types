@@ -32,7 +32,8 @@ export class ExtendedDMMFFieldDefaultValidators extends ExtendedDMMFFieldValidat
   }
 
   private _isCuid2() {
-    if (this._IsFieldDefault(this.default)) return this.default.name === 'cuid' && this.default.args?.[0] === 2;
+    if (this._IsFieldDefault(this.default))
+      return this.default.name === 'cuid' && this.default.args?.[0] === 2;
     return false;
   }
 
