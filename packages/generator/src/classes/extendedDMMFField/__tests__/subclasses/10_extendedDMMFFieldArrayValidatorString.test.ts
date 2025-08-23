@@ -231,6 +231,166 @@ export function testExtendedDMMFFieldArrayValidatorString<
       );
       expect(field.zodArrayValidatorString).toBe('.length(2)');
     });
+
+    // Additional error case tests
+    describe('Error Cases and Edge Cases', () => {
+      it(`should throw error for invalid array validator 'invalid'`, async () => {
+        expect(() =>
+          getField({
+            documentation:
+              'some text in docs @zod.string.min(4).array(.invalid())',
+            isList: true,
+          }),
+        ).toThrowError(
+          "[@zod generator error]: Validator 'invalid' is not valid for type 'String', for specified '@zod.[key] or for 'z.array.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
+        );
+      });
+
+      it(`should throw error for malformed array validator pattern`, async () => {
+        expect(() =>
+          getField({
+            documentation:
+              'some text in docs @zod.string.min(4).array(.length(2, { message: "test" }',
+            isList: true,
+          }),
+        ).toThrowError(
+          "[@zod generator error]: Could not match validator 'array' with validatorPattern '.array(.length(2, { message: \"test\" }'. Please check for typos! [Error Location]: Model: 'ModelName', Field: 'test'.",
+        );
+      });
+
+      it(`should throw error for array validator with invalid message format`, async () => {
+        expect(() =>
+          getField({
+            documentation:
+              'some text in docs @zod.string.min(4).array(.length(2, { invalid_key: "test" })',
+            isList: true,
+          }),
+        ).toThrowError(
+          "[@zod generator error]: Could not match validator 'length' with validatorPattern '.length(2, { invalid_key: \"test\" }'. Please check for typos! [Error Location]: Model: 'ModelName', Field: 'test'.",
+        );
+      });
+
+      it(`should throw error for array validator with missing opening parenthesis`, async () => {
+        expect(() =>
+          getField({
+            documentation:
+              'some text in docs @zod.string.min(4).array(.length 2)',
+            isList: true,
+          }),
+        ).toThrowError(
+          "[@zod generator error]: Could not match validator 'length' with validatorPattern '.length 2'. Please check for typos! [Error Location]: Model: 'ModelName', Field: 'test'.",
+        );
+      });
+
+      it(`should throw error for array validator with missing closing parenthesis`, async () => {
+        expect(() =>
+          getField({
+            documentation:
+              'some text in docs @zod.string.min(4).array(.length(2',
+            isList: true,
+          }),
+        ).toThrowError(
+          "[@zod generator error]: Could not match validator 'array' with validatorPattern '.array(.length(2'. Please check for typos! [Error Location]: Model: 'ModelName', Field: 'test'.",
+        );
+      });
+
+      it(`should throw error for array validator with empty parentheses`, async () => {
+        expect(() =>
+          getField({
+            documentation:
+              'some text in docs @zod.string.min(4).array(.length())',
+            isList: true,
+          }),
+        ).toThrowError(
+          "[@zod generator error]: Could not match validator 'length' with validatorPattern '.length()'. Please check for typos! [Error Location]: Model: 'ModelName', Field: 'test'.",
+        );
+      });
+
+      it(`should throw error for array validator with invalid validator name`, async () => {
+        expect(() =>
+          getField({
+            documentation:
+              'some text in docs @zod.string.min(4).array(.invalidValidator(2))',
+            isList: true,
+          }),
+        ).toThrowError(
+          "[@zod generator error]: Validator 'invalidValidator' is not valid for type 'String', for specified '@zod.[key] or for 'z.array.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
+        );
+      });
+
+      it(`should throw error for array validator with wrong field type`, async () => {
+        expect(() =>
+          getField({
+            type: 'Float',
+            isList: true,
+            documentation:
+              'some text in docs @zod.string.min(4).array(.length(2))',
+          }),
+        ).toThrowError(
+          "[@zod generator error]: Validator 'string' is not valid for type 'Float'. [Error Location]: Model: 'ModelName', Field: 'test'.",
+        );
+      });
+
+      it(`should throw error for array validator with complex invalid pattern`, async () => {
+        expect(() =>
+          getField({
+            documentation:
+              'some text in docs @zod.string.min(4).array(.length(2, { message: "test", extra: "value" })',
+            isList: true,
+          }),
+        ).toThrowError(
+          "[@zod generator error]: Could not match validator 'length' with validatorPattern '.length(2, { message: \"test\", extra: \"value\" }'. Please check for typos! [Error Location]: Model: 'ModelName', Field: 'test'.",
+        );
+      });
+
+      it(`should throw error for array validator with invalid array syntax`, async () => {
+        expect(() =>
+          getField({
+            documentation:
+              'some text in docs @zod.string.min(4).array(.length(2, message: "test"))',
+            isList: true,
+          }),
+        ).toThrowError(
+          "[@zod generator error]: Could not match validator 'length' with validatorPattern '.length(2, message: \"test\")'. Please check for typos! [Error Location]: Model: 'ModelName', Field: 'test'.",
+        );
+      });
+
+      it(`should throw error for array validator with wrong message key`, async () => {
+        expect(() =>
+          getField({
+            documentation:
+              'some text in docs @zod.string.min(4).array(.length(2, { msg: "test" }))',
+            isList: true,
+          }),
+        ).toThrowError(
+          "[@zod generator error]: Could not match validator 'length' with validatorPattern '.length(2, { msg: \"test\" })'. Please check for typos! [Error Location]: Model: 'ModelName', Field: 'test'.",
+        );
+      });
+
+      it(`should throw error for array validator with invalid function call`, async () => {
+        expect(() =>
+          getField({
+            documentation:
+              'some text in docs @zod.string.min(4).array(.length(myFunction()))',
+            isList: true,
+          }),
+        ).toThrowError(
+          "[@zod generator error]: Could not match validator 'length' with validatorPattern '.length(myFunction())'. Please check for typos! [Error Location]: Model: 'ModelName', Field: 'test'.",
+        );
+      });
+
+      it(`should throw error for array validator with nested invalid validators`, async () => {
+        expect(() =>
+          getField({
+            documentation:
+              'some text in docs @zod.string.min(4).array(.length(2).invalid().max(5))',
+            isList: true,
+          }),
+        ).toThrowError(
+          "[@zod generator error]: Validator 'invalid' is not valid for type 'String', for specified '@zod.[key] or for 'z.array.[key]'. [Error Location]: Model: 'ModelName', Field: 'test'.",
+        );
+      });
+    });
   });
 }
 

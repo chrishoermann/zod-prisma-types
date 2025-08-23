@@ -20,13 +20,13 @@ export type ZodArrayValidatorKeys = 'min' | 'max' | 'length' | 'nonempty';
 /////////////////////////////////////////////////
 
 export const ARRAY_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
-  /.(?<validator>min|max|length|nonempty)\((?<number>[\d]+)([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]+['"][ ]?[}])?\)/u;
+  /.(?<validator>min|max|length|nonempty)\((?<number>[\d]+)([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][^'"]*['"][ ]?[}])?\)/u;
 
 export const ARRAY_VALIDATOR_NUMBER_OR_STRING_AND_MESSAGE_REGEX =
-  /.(?<validator>min|max|length|nonempty)\((?<number>[\w.]+)([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]+['"][ ]?[}])?\)/u;
+  /.(?<validator>min|max|length|nonempty)\((?<number>[\w.]+)([,][ ]?)?(?<message>[{][ ]?message:[ ]?['"][^'"]*['"][ ]?[}])?\)/u;
 
 export const ARRAY_VALIDATOR_WITH_MESSAGE_REGEX =
-  /(?<validator>nonempty)(\((?<message>[{][ ]?message:[ ]?['"][\w\W\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]+['"][ ]?[}])?\))/u;
+  /(?<validator>nonempty)(\((?<message>[{][ ]?message:[ ]?['"][^'"]*['"][ ]?[}])?\))/u;
 
 /////////////////////////////////////////////////
 // MAP

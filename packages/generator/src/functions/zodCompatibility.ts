@@ -18,7 +18,7 @@ export type ZodScalarPrimitiveType =
 export function writeZodImport(
   writeImport: CreateFileOptions['writeImport'],
 ): void {
-  writeImport('{ z }', 'zod');
+  writeImport('{ z }', 'zod/v4/core');
 }
 
 /**
@@ -100,6 +100,6 @@ export function combineObjectSchemas(
  * Identity wrapper to keep a single place to add z.ZodType<T> annotations if required.
  * Call sites can do: `const S: z.ZodType<T> = ${wrapAsRecursiveZodType(expr)}` if needed.
  */
-export function wrapAsRecursiveZodType<T>(schemaExpr: string): string {
+export function wrapAsRecursiveZodType(schemaExpr: string): string {
   return schemaExpr;
 }

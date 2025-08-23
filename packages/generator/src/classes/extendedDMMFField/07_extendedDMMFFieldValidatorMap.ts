@@ -8,26 +8,9 @@ import { ZodValidatorType } from './03_extendedDMMFFieldValidatorType';
 export type ZodSharedValidatorKeys = 'array';
 export type ZodDescribedValidatorKeys = 'describe';
 
-export type ZodStringValidatorKeys =
-  | ZodSharedValidatorKeys
-  | ZodDescribedValidatorKeys
-  | 'max'
-  | 'min'
-  | 'length'
-  | 'regex'
-  | 'startsWith'
-  | 'endsWith'
-  | 'includes'
-
-  // transforms
-  | 'trim'
-  | 'toLowerCase'
-  | 'toUpperCase'
-  | 'uppercase'
-  | 'lowercase'
-  | 'normalize'
-
-  // Zod v4 string format validators
+// these validators are moved to top level in zod v4
+// so we create a separate type and object to handle them
+export type ZodSharedStringFormatValidators =
   | 'email'
   | 'uuid'
   | 'url'
@@ -59,7 +42,27 @@ export type ZodStringValidatorKeys =
   | 'isoDate'
   | 'isoTime'
   | 'isoDatetime'
-  | 'isoDuration'
+  | 'isoDuration';
+
+export type ZodStringValidatorKeys =
+  | ZodSharedValidatorKeys
+  | ZodDescribedValidatorKeys
+  | ZodSharedStringFormatValidators
+  | 'max'
+  | 'min'
+  | 'length'
+  | 'regex'
+  | 'startsWith'
+  | 'endsWith'
+  | 'includes'
+
+  // transforms
+  | 'trim'
+  | 'toLowerCase'
+  | 'toUpperCase'
+  | 'uppercase'
+  | 'lowercase'
+  | 'normalize'
 
   // base
   | 'noDefault';
@@ -135,6 +138,9 @@ export const STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
 export const STRING_VALIDATOR_MESSAGE_REGEX =
   /.(?<validator>email|uuid|url|httpUrl|hostname|emoji|base64|base64url|hex|jwt|nanoid|cuid|cuid2|ulid|ipv4|ipv6|cidrv4|cidrv6|hash|guid|date|time|duration|datetime|isoDate|isoTime|isoDatetime|isoDuration|toLowerCase|toUpperCase|trim|uppercase|lowercase|normalize|noDefault)(\((?<message>\{\s*message:\s*['"][^'"]*['"]\s*\})?\))/u;
 
+export const STRING_FORMAT_VALIDATOR_MESSAGE_REGEX =
+  /.(?<validator>email|uuid|url|httpUrl|hostname|emoji|base64|base64url|hex|jwt|nanoid|cuid|cuid2|ulid|ipv4|ipv6|cidrv4|cidrv6|hash|guid|date|time|duration|datetime|isoDate|isoTime|isoDatetime|isoDuration)(\((?<message>\{\s*message:\s*['"][^'"]*['"]\s*\})?\))/u;
+
 export const STRING_VALIDATOR_REGEX = /.(regex)(\((?<message>.*)\))/;
 
 export const STRING_VALIDATOR_DESCRIBE_REGEX =
@@ -185,6 +191,43 @@ export const ARRAY_VALIDATOR_MESSAGE_REGEX =
 /////////////////////////////////////////////
 
 /**
+ * This is used to validate the string format validators.
+ * it is extracted to a separate object in case we need to use it in the render functions
+ * to determine if a validator can be moved to the top level.
+ */
+export const STRING_FORMAT_VALIDATOR_REGEX_MAP: ValidatorMap<ZodSharedStringFormatValidators> =
+  {
+    email: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    uuid: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    url: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    httpUrl: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    hostname: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    emoji: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    base64: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    base64url: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    hex: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    jwt: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    nanoid: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    cuid: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    cuid2: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    ulid: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    ipv4: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    ipv6: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    cidrv4: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    cidrv6: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    hash: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    guid: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    date: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    time: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    duration: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    datetime: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    isoDate: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    isoTime: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    isoDatetime: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    isoDuration: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+  };
+
+/**
  * Maps the right regex to the right validator key.
  *
  * Used to determine if a validator key is valid for a `string` type.
@@ -193,6 +236,10 @@ export const ARRAY_VALIDATOR_MESSAGE_REGEX =
  */
 export const STRING_VALIDATOR_REGEX_MAP: ValidatorMap<ZodStringValidatorKeys> =
   {
+    // string format validators
+    ...STRING_FORMAT_VALIDATOR_REGEX_MAP,
+
+    // string validators
     max: STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
     min: STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
     length: STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
@@ -208,40 +255,6 @@ export const STRING_VALIDATOR_REGEX_MAP: ValidatorMap<ZodStringValidatorKeys> =
     uppercase: STRING_VALIDATOR_MESSAGE_REGEX,
     lowercase: STRING_VALIDATOR_MESSAGE_REGEX,
     normalize: STRING_VALIDATOR_MESSAGE_REGEX,
-
-    // Zod v4 string format validators
-    email: STRING_VALIDATOR_MESSAGE_REGEX,
-    uuid: STRING_VALIDATOR_MESSAGE_REGEX,
-    url: STRING_VALIDATOR_MESSAGE_REGEX,
-    httpUrl: STRING_VALIDATOR_MESSAGE_REGEX,
-    hostname: STRING_VALIDATOR_MESSAGE_REGEX,
-    emoji: STRING_VALIDATOR_MESSAGE_REGEX,
-    base64: STRING_VALIDATOR_MESSAGE_REGEX,
-    base64url: STRING_VALIDATOR_MESSAGE_REGEX,
-    hex: STRING_VALIDATOR_MESSAGE_REGEX,
-    jwt: STRING_VALIDATOR_MESSAGE_REGEX,
-    nanoid: STRING_VALIDATOR_MESSAGE_REGEX,
-    cuid: STRING_VALIDATOR_MESSAGE_REGEX,
-    cuid2: STRING_VALIDATOR_MESSAGE_REGEX,
-    ulid: STRING_VALIDATOR_MESSAGE_REGEX,
-    ipv4: STRING_VALIDATOR_MESSAGE_REGEX,
-    ipv6: STRING_VALIDATOR_MESSAGE_REGEX,
-    cidrv4: STRING_VALIDATOR_MESSAGE_REGEX,
-    cidrv6: STRING_VALIDATOR_MESSAGE_REGEX,
-    hash: STRING_VALIDATOR_MESSAGE_REGEX,
-    guid: STRING_VALIDATOR_MESSAGE_REGEX,
-
-    // Date/Time validators (keeping existing ones)
-    date: STRING_VALIDATOR_MESSAGE_REGEX,
-    time: STRING_VALIDATOR_MESSAGE_REGEX,
-    duration: STRING_VALIDATOR_MESSAGE_REGEX,
-    datetime: STRING_VALIDATOR_MESSAGE_REGEX,
-
-    // ISO validators (aliases)
-    isoDate: STRING_VALIDATOR_MESSAGE_REGEX,
-    isoTime: STRING_VALIDATOR_MESSAGE_REGEX,
-    isoDatetime: STRING_VALIDATOR_MESSAGE_REGEX,
-    isoDuration: STRING_VALIDATOR_MESSAGE_REGEX,
 
     noDefault: STRING_VALIDATOR_MESSAGE_REGEX,
 
