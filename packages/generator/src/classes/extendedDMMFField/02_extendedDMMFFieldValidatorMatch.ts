@@ -19,6 +19,11 @@ import { GeneratorConfig } from '../../schemas';
 export const VALIDATOR_TYPE_REGEX =
   /@zod(?<import>\.import\(\[(?<imports>[\w\s"@'${}/,;:.~*-]+)\]\))?\.(?<type>[\w]+){1}(?<customErrors>\([{][\s\S]*?[}]\))?(?<validatorPattern>[\s\S]*)?/u;
 
+// alternative version that introduces some other issues especially with Japanese characters
+// /@zod(?<import>\.import\(\[(?<imports>[\w\s"@'${}\/,;:.~*-]+)\]\))?\.(?<type>[\w]+){1}(?<customErrors>\([{][\s\S]*?[}]\))?(?<validatorPattern>[\w\p{Script=Cyrillic}\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{Punctuation}\p{M}\p{N} (),.'`"。、|\\:+*#!§$%&\/{}[\]=?~><°^\\-]*[)])?/u;
+
+export const ZOD_DIRECTIVE_CLEANUP_REGEX = /@zod[^@]*?(?=\s+\w|@zod|$)/g;
+
 /////////////////////////////////////////////////
 // CLASS
 /////////////////////////////////////////////////

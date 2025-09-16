@@ -122,7 +122,6 @@ export function testExtendedDMMFFieldValidatorMatch<
       );
     });
 
-    // Test is somehow failing with chinese characters
     it(`should match japanese characters in the regex`, async () => {
       const match = VALIDATOR_TYPE_REGEX.exec(
         `@zod.string({ error: "ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。" }).min(5, { error: "ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。" })`,

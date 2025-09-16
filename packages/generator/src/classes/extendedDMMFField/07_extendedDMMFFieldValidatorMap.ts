@@ -179,7 +179,7 @@ export const CUSTOM_VALIDATOR_MESSAGE_REGEX =
   /.(?<validator>use|array|omit)\((?<pattern>.*)\)/u;
 
 export const CUSTOM_OMIT_VALIDATOR_MESSAGE_REGEX =
-  /(?<validator>omit)(\()(?<pattern>[\w ,'"[\]]+)\)/;
+  /.(?<validator>omit)\((?<pattern>\[[^\]]+\])\)/;
 
 // ARRAY
 // ----------------------------------------

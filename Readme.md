@@ -31,9 +31,14 @@ Be aware that some generator options have been removed, a few new ones have been
 > - Lowercase model names will result in Errors and duplicate schema names in the generated schemas. Please use uppercase model names and prismas `@@map()` directive when using lowercase table names in the datebase to avoid this issue.
 > - The `satisfies` operator: As some people have pointed out the `input` and `output` schemas and some of the `relation` schemas are typed as `z.ZodType<myType>`. This is required by zod for recursice types to work properly as [stated in the docs](https://zod.dev/?id=recursive-types). This has the downside that some zod methods like `.merge()`, `.omit()`, etc. are not available on these types.
 
+## Known bugs
+
+- if you need to add rich comments to your prisma file alongside the validator string, always add the validator string last. The regex to match the strings currently has some problems validating the strings when a comment comes after the validator string
+
 ## Table of contents<!-- omit from toc -->
 
 - [Supported versions](#supported-versions)
+- [Known bugs](#known-bugs)
 - [About this project](#about-this-project)
 - [Installation](#installation)
 - [`tsconfig.json`](#tsconfigjson)

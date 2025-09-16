@@ -26,6 +26,9 @@ export const DEFAULT_GENERATOR_CONFIG: GeneratorConfig = {
   writeBarrelFiles: true,
   decimalJSInstalled: false,
   useTypeAssertions: false,
+  isPrismaClientGenerator: false,
+  prismaLibraryPath: '@prisma/client/runtime/library',
+  useExactOptionalPropertyTypes: false,
 };
 
 describe('testSimpleModelNoValidators', async () => {

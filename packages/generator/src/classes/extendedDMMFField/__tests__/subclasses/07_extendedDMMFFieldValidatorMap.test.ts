@@ -1176,6 +1176,19 @@ export function testExtendedDMMFFieldValidatorMap<
           pattern: '.nonnegative()',
         }),
       ).toBe(true);
+      // Zod v4 BigInt aliases
+      expect(
+        map({
+          key: 'step',
+          pattern: '.step(2n)',
+        }),
+      ).toBe(true);
+      expect(
+        map({
+          key: 'multipleOf',
+          pattern: '.multipleOf(2n)',
+        }),
+      ).toBe(true);
       expect(
         map({
           key: 'array',

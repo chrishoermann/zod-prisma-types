@@ -68,6 +68,86 @@ export function testExtendedDMMFFieldValidatorType<
       expect(field?.['_validatorType']).toBe('object');
     });
 
+    it(`should load a class with docs and valid number validator string for Int`, async () => {
+      const field = getField({
+        type: 'Int',
+        kind: 'scalar',
+        documentation: 'some text in docs @zod.number.int()',
+      });
+      expect(field?.['_validatorMatch']).toBeDefined();
+      expect(field?.['_validatorType']).toBe('number');
+    });
+
+    it(`should load a class with docs and valid number validator string for Float`, async () => {
+      const field = getField({
+        type: 'Float',
+        kind: 'scalar',
+        documentation: 'some text in docs @zod.number.positive()',
+      });
+      expect(field?.['_validatorMatch']).toBeDefined();
+      expect(field?.['_validatorType']).toBe('number');
+    });
+
+    it(`should load a class with docs and valid bigint validator string`, async () => {
+      const field = getField({
+        type: 'BigInt',
+        kind: 'scalar',
+        documentation: 'some text in docs @zod.bigint.positive()',
+      });
+      expect(field?.['_validatorMatch']).toBeDefined();
+      expect(field?.['_validatorType']).toBe('bigint');
+    });
+
+    it(`should load a class with docs and valid date validator string`, async () => {
+      const field = getField({
+        type: 'DateTime',
+        kind: 'scalar',
+        documentation: 'some text in docs @zod.date.min(new Date())',
+      });
+      expect(field?.['_validatorMatch']).toBeDefined();
+      expect(field?.['_validatorType']).toBe('date');
+    });
+
+    it(`should load a class with docs and valid custom validator string for String`, async () => {
+      const field = getField({
+        type: 'String',
+        kind: 'scalar',
+        documentation: 'some text in docs @zod.custom(z.string().min(1))',
+      });
+      expect(field?.['_validatorMatch']).toBeDefined();
+      expect(field?.['_validatorType']).toBe('custom');
+    });
+
+    it(`should load a class with docs and valid custom validator string for Boolean`, async () => {
+      const field = getField({
+        type: 'Boolean',
+        kind: 'scalar',
+        documentation: 'some text in docs @zod.custom(z.boolean())',
+      });
+      expect(field?.['_validatorMatch']).toBeDefined();
+      expect(field?.['_validatorType']).toBe('custom');
+    });
+
+    it(`should load a class with docs and valid custom validator string for Json`, async () => {
+      const field = getField({
+        type: 'Json',
+        kind: 'scalar',
+        documentation: 'some text in docs @zod.custom(z.object({}))',
+      });
+      expect(field?.['_validatorMatch']).toBeDefined();
+      expect(field?.['_validatorType']).toBe('custom');
+    });
+
+    it(`should load a class with docs and valid custom validator string for Bytes`, async () => {
+      const field = getField({
+        type: 'Bytes',
+        kind: 'scalar',
+        documentation: 'some text in docs @zod.custom(z.instanceof(Buffer))',
+      });
+      expect(field?.['_validatorMatch']).toBeDefined();
+      expect(field?.['_validatorType']).toBe('custom');
+    });
+
     it(`should load a class with docs and invalid validator string`, async () => {
       expect(() =>
         getField({
@@ -75,6 +155,54 @@ export function testExtendedDMMFFieldValidatorType<
         }),
       ).toThrowError(
         "[@zod generator error]: 'numer' is not a valid validator type. [Error Location]: Model: 'ModelName', Field: 'test'.",
+      );
+    });
+
+    it(`should throw error for invalid validator type on wrong field type`, async () => {
+      expect(() =>
+        getField({
+          type: 'String',
+          kind: 'scalar',
+          documentation: 'some text in docs @zod.number.int()',
+        }),
+      ).toThrowError(
+        "[@zod generator error]: Validator 'number' is not valid for type 'String'. [Error Location]: Model: 'ModelName', Field: 'test'.",
+      );
+    });
+
+    it(`should throw error for string validator on Int field`, async () => {
+      expect(() =>
+        getField({
+          type: 'Int',
+          kind: 'scalar',
+          documentation: 'some text in docs @zod.string.max(10)',
+        }),
+      ).toThrowError(
+        "[@zod generator error]: Validator 'string' is not valid for type 'Int'. [Error Location]: Model: 'ModelName', Field: 'test'.",
+      );
+    });
+
+    it(`should throw error for date validator on String field`, async () => {
+      expect(() =>
+        getField({
+          type: 'String',
+          kind: 'scalar',
+          documentation: 'some text in docs @zod.date.min(new Date())',
+        }),
+      ).toThrowError(
+        "[@zod generator error]: Validator 'date' is not valid for type 'String'. [Error Location]: Model: 'ModelName', Field: 'test'.",
+      );
+    });
+
+    it(`should throw error for bigint validator on Float field`, async () => {
+      expect(() =>
+        getField({
+          type: 'Float',
+          kind: 'scalar',
+          documentation: 'some text in docs @zod.bigint.positive()',
+        }),
+      ).toThrowError(
+        "[@zod generator error]: Validator 'bigint' is not valid for type 'Float'. [Error Location]: Model: 'ModelName', Field: 'test'.",
       );
     });
 

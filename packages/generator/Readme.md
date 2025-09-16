@@ -31,9 +31,14 @@ Be aware that some generator options have been removed, a few new ones have been
 > - Lowercase model names will result in Errors and duplicate schema names in the generated schemas. Please use uppercase model names and prismas `@@map()` directive when using lowercase table names in the datebase to avoid this issue.
 > - The `satisfies` operator: As some people have pointed out the `input` and `output` schemas and some of the `relation` schemas are typed as `z.ZodType<myType>`. This is required by zod for recursice types to work properly as [stated in the docs](https://zod.dev/?id=recursive-types). This has the downside that some zod methods like `.merge()`, `.omit()`, etc. are not available on these types.
 
+## Known bugs
+
+- if you need to add rich comments to your prisma file alongside the validator string, always add the validator string last. The regex to match the strings currently has some problems validating the strings when a comment comes after the validator string
+
 ## Table of contents<!-- omit from toc -->
 
 - [Supported versions](#supported-versions)
+- [Known bugs](#known-bugs)
 - [About this project](#about-this-project)
 - [Installation](#installation)
 - [`tsconfig.json`](#tsconfigjson)
@@ -62,8 +67,6 @@ Be aware that some generator options have been removed, a few new ones have been
 - [Field validators](#field-validators)
 - [Custom type error messages](#custom-type-error-messages)
 - [String validators](#string-validators)
-  - [Basic string validators](#basic-string-validators)
-  - [Date/Time string validators](#datetime-string-validators)
 - [Number validators](#number-validators)
 - [BigInt validators](#bigint-validators)
 - [Date validators](#date-validators)
@@ -982,31 +985,9 @@ model MyModel {
 
 To add custom validators to the prisma `String` field you can use the `@zod.string` key. On this key you can use all string-specific validators that are mentioned in the [`zod-docs`](https://github.com/colinhacks/zod#strings). You can also add a custom error message to each validator as stated in the docs.
 
-### Basic string validators
-
 ```prisma
 model MyModel {
   myField String /// @zod.string.min(3, { message: "min error" }).max(10, { message: "max error" }).[...chain more validators]
-}
-```
-
-### Date/Time string validators
-
-For validating date and time strings, you can use both the legacy validators and the new ISO-specific validators - both will write the new z.iso.[validator]() schema
-
-```prisma
-model MyModel {
-  // Legacy date/time validators (maintained for backward compatibility)
-  dateString     String /// @zod.string.date() -> z.iso.date()
-  timeString     String /// @zod.string.time() -> z.iso.time()
-  datetimeString String /// @zod.string.datetime() -> z.iso.datetime()
-  durationString String /// @zod.string.duration() -> z.iso.duration()
-
-  // ISO-specific validators (recommended for new projects)
-  isoDateString     String /// @zod.string.isoDate() -> z.iso.date()
-  isoTimeString     String /// @zod.string.isoTime() -> z.iso.time()
-  isoDatetimeString String /// @zod.string.isoDatetime() -> z.iso.datetime()
-  isoDurationString String /// @zod.string.isoDuration() -> z.iso.duration()
 }
 ```
 
