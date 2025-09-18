@@ -34,6 +34,18 @@ export function testExtendedDMMFFieldValidatorCustomErrors<
 
     it(`should load a class with valid custom error messages`, async () => {
       const field = getField({
+        documentation: `@zod.string({ required_error: "error", invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]|" , description: "error"})`,
+      });
+      expect(field?.['_validatorCustomError']).toBe(
+        `({ required_error: "error", invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]|" , description: "error"})`,
+      );
+      expect(field?.zodCustomErrors).toBe(
+        `{ required_error: "error", invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]|" , description: "error"}`,
+      );
+    });
+
+    it(`should load a class with valid custom error messages`, async () => {
+      const field = getField({
         documentation:
           '@zod.string({ required_error: "error", invalid_type_error: "error" , description: "error"})',
       });
@@ -112,7 +124,7 @@ export function testExtendedDMMFFieldValidatorCustomErrors<
     it(`should load a class with function-based error and validator-specific errors`, async () => {
       const field = getField({
         documentation:
-          '@zod.string({ error: (issue) => "Generic error" }).min(5, { error: (issue) => `Value must be at least ${issue.minimum} characters` })',
+          '@zod.string({ error: (issue) => "Generic error" }).min(5, { error: "Value must be at least 5 characters" })',
       });
       expect(field?.['_validatorCustomError']).toBe(
         '({ error: (issue) => "Generic error" })',
@@ -139,7 +151,7 @@ export function testExtendedDMMFFieldValidatorCustomErrors<
       const field = getField({
         type: 'Int',
         documentation:
-          '@zod.number({ error: (issue) => issue.input === undefined ? "This field is required" : "Must be a number" }).gt(0, { error: (issue) => `Value must be greater than ${issue.minimum}` })',
+          '@zod.number({ error: (issue) => issue.input === undefined ? "This field is required" : "Must be a number" }).gt(0, { error: "Value must be greater than 0" })',
       });
       expect(field?.['_validatorCustomError']).toBe(
         '({ error: (issue) => issue.input === undefined ? "This field is required" : "Must be a number" })',
@@ -153,7 +165,7 @@ export function testExtendedDMMFFieldValidatorCustomErrors<
       const field = getField({
         type: 'DateTime',
         documentation:
-          '@zod.date({ error: (issue) => issue.input === undefined ? "Date is required" : "Invalid date format" }).min(new Date("2020-01-01"), { error: (issue) => `Date must be after ${issue.minimum.toISOString().split(\'T\')[0]}` })',
+          '@zod.date({ error: (issue) => issue.input === undefined ? "Date is required" : "Invalid date format" }).min(new Date("2020-01-01"), { error: "Date must be after 2020-01-01" })',
       });
       expect(field?.['_validatorCustomError']).toBe(
         '({ error: (issue) => issue.input === undefined ? "Date is required" : "Invalid date format" })',

@@ -17,12 +17,10 @@ export const VALIDATOR_CUSTOM_ERROR_REGEX =
 
 // !!!! non word characters (/W) must not be included in the regex
 // since it would break the split into an array !!!!
-
 export const VALIDATOR_CUSTOM_ERROR_MESSAGE_REGEX =
   /[ ]?"[\w\p{Script=Cyrillic}\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M} ()-.,'ʼ:+\-*#!§$%&/{}[\]=?~><°^|]+"[,]?[ ]?/gu;
 
-export const VALIDATOR_CUSTOM_ERROR_SPLIT_KEYS_REGEX =
-  /([a-zA-Z_][a-zA-Z0-9_]*)(?=\s*:)/gu;
+export const VALIDATOR_CUSTOM_ERROR_SPLIT_KEYS_REGEX = /[\w]+(?=:)/gu;
 
 /////////////////////////////////////////////////
 // CONSTANTS
@@ -48,7 +46,6 @@ export const ZOD_VALID_ERROR_KEYS: ZodCustomErrorKey[] = [
 
 export const validateCustomError = (
   customError: string,
-
   errorLocation: string,
 ) => {
   const match = customError.match(VALIDATOR_CUSTOM_ERROR_REGEX);
@@ -57,12 +54,11 @@ export const validateCustomError = (
 
   if (!messages) return;
 
-  // Extract only the top-level keys by looking for patterns like "key: value"
-  // This regex looks for word characters followed by optional whitespace and a colon
-  const customErrorKeysArray =
-    messages
-      .match(VALIDATOR_CUSTOM_ERROR_SPLIT_KEYS_REGEX)
-      ?.map((key) => key.replace(/\s*:$/, '')) || [];
+  // remove actual error messages and split the keys into an array
+  // to check if the keys are valid
+  const customErrorKeysArray = messages
+    .replace(VALIDATOR_CUSTOM_ERROR_MESSAGE_REGEX, '')
+    .match(VALIDATOR_CUSTOM_ERROR_SPLIT_KEYS_REGEX);
 
   const isValid = customErrorKeysArray?.every((key) => {
     if (ZOD_VALID_ERROR_KEYS?.includes(key as ZodCustomErrorKey)) return true;

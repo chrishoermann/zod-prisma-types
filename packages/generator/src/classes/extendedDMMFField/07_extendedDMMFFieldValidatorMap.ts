@@ -133,13 +133,13 @@ export const VALIDATOR_KEY_REGEX = /(\.(?<validatorKey>[\w]+))/;
 // STRING
 // ----------------------------------------
 export const STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
-  /.(?<validator>min|max|length)\((?<number>\d+)([,]\s*)?(?<message>\{\s*message:\s*['"][^'"]*['"]\s*\})?\)/u;
+  /.(?<validator>min|max|length)\((?<number>\d+)([,]\s*)?(?<message>\{\s*(?:message|error):\s*['"][^'"]*['"]\s*\})?\)/u;
 
 export const STRING_VALIDATOR_MESSAGE_REGEX =
-  /.(?<validator>email|uuid|url|httpUrl|hostname|emoji|base64|base64url|hex|jwt|nanoid|cuid|cuid2|ulid|ipv4|ipv6|cidrv4|cidrv6|hash|guid|date|time|duration|datetime|isoDate|isoTime|isoDatetime|isoDuration|toLowerCase|toUpperCase|trim|uppercase|lowercase|normalize|noDefault)(\((?<message>\{\s*message:\s*['"][^'"]*['"]\s*\})?\))/u;
+  /.(?<validator>email|uuid|url|httpUrl|hostname|emoji|base64|base64url|hex|jwt|nanoid|cuid|cuid2|ulid|ipv4|ipv6|cidrv4|cidrv6|hash|guid|date|time|duration|datetime|isoDate|isoTime|isoDatetime|isoDuration|toLowerCase|toUpperCase|trim|uppercase|lowercase|normalize|noDefault)(\((?<message>\{\s*(?:message|error):\s*['"][^'"]*['"]\s*\})?\))/u;
 
 export const STRING_FORMAT_VALIDATOR_MESSAGE_REGEX =
-  /.(?<validator>email|uuid|url|httpUrl|hostname|emoji|base64|base64url|hex|jwt|nanoid|cuid|cuid2|ulid|ipv4|ipv6|cidrv4|cidrv6|hash|guid|date|time|duration|datetime|isoDate|isoTime|isoDatetime|isoDuration)(\((?<message>\{\s*message:\s*['"][^'"]*['"]\s*\})?\))/u;
+  /.(?<validator>email|uuid|url|httpUrl|hostname|emoji|base64|base64url|hex|jwt|nanoid|cuid|cuid2|ulid|ipv4|ipv6|cidrv4|cidrv6|hash|guid|date|time|duration|datetime|isoDate|isoTime|isoDatetime|isoDuration)(\((?<message>\{\s*(?:message|error):\s*['"][^'"]*['"]\s*\})?\))/u;
 
 export const STRING_VALIDATOR_REGEX = /.(regex)(\((?<message>.*)\))/;
 
@@ -147,7 +147,7 @@ export const STRING_VALIDATOR_DESCRIBE_REGEX =
   /.(describe)(\((?<message>.*)\))/;
 
 export const STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX =
-  /.(?<validator>startsWith|endsWith|includes)\((?<string>['"][^'"]*['"])([,]\s*)?(?<message>\{\s*message:\s*['"][^'"]*['"]\s*\})?\)/u;
+  /.(?<validator>startsWith|endsWith|includes)\((?<string>['"][^'"]*['"])([,]\s*)?(?<message>\{\s*(?:message|error):\s*['"][^'"]*['"]\s*\})?\)/u;
 
 export const STRING_VALIDATOR_DATETIME_REGEX =
   /.(?<validator>datetime)(\((?<message>\{\s*message:\s*['"][^'"]*['"])?(?<offset>[,]?\s*offset:\s*(true|false))?(?<local>[,]?\s*local:\s*(true|false))?(?<precision>[,]?\s*precision:\s*\d+)?\s*\}?\))/u;
@@ -155,28 +155,31 @@ export const STRING_VALIDATOR_DATETIME_REGEX =
 // NUMBER
 // ----------------------------------------
 export const NUMBER_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
-  /.(?<validator>min|max|gt|gte|lt|lte|multipleOf|step)\((?<number>[-\d.]+)([,]\s*)?(?<message>\{\s*message:\s*['"][^'"]*['"]\s*\})?\)/u;
+  /.(?<validator>min|max|gt|gte|lt|lte|multipleOf|step)\((?<number>[-\d.]+)([,]\s*)?(?<message>\{\s*(?:message|error):\s*['"][^'"]*['"]\s*\})?\)/u;
 
 export const NUMBER_VALIDATOR_MESSAGE_REGEX =
-  /.(?<validator>int|int32|positive|nonnegative|negative|nonpositive|finite|noDefault)(\((?<message>\{\s*message:\s*['"][^'"]*['"]\s*\})?\))/u;
+  /.(?<validator>int|int32|positive|nonnegative|negative|nonpositive|finite|noDefault)(\((?<message>\{\s*(?:message|error):\s*['"][^'"]*['"]\s*\})?\))/u;
 
 // DATE
 // ----------------------------------------
 export const DATE_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
-  /.(?<validator>min|max)\((?<date>new Date\([^)]*\))([,]\s*)?(?<message>\{\s*message:\s*['"][^'"]*['"]\s*\})?\)/u;
+  /.(?<validator>min|max)\((?<date>new Date\([^)]*\))([,]\s*)?(?<message>\{\s*(?:message|error):\s*['"][^'"]*['"]\s*\})?\)/u;
 
 // BIGINT
 // ----------------------------------------
 export const BIGINT_VALIDATOR_NUMBER_AND_MESSAGE_REGEX =
-  /.(?<validator>gt|gte|min|lt|lte|max|multipleOf|step)\((?<number>\w+)([,]\s*)?(?<message>\{\s*message:\s*['"][^'"]*['"]\s*\})?\)/u;
+  /.(?<validator>gt|gte|min|lt|lte|max|multipleOf|step)\((?<number>\w+)([,]\s*)?(?<message>\{\s*(?:message|error):\s*['"][^'"]*['"]\s*\})?\)/u;
 
 export const BIGINT_VALIDATOR_MESSAGE_REGEX =
-  /.(?<validator>positive|nonnegative|negative|nonpositive|array)(\((?<message>\{\s*message:\s*['"][^'"]*['"]\s*\})?\))/u;
+  /.(?<validator>positive|nonnegative|negative|nonpositive|array)(\((?<message>\{\s*(?:message|error):\s*['"][^'"]*['"]\s*\})?\))/u;
 
 // CUSTOM
 // ----------------------------------------
 export const CUSTOM_VALIDATOR_MESSAGE_REGEX =
   /.(?<validator>use|array|omit)\((?<pattern>.*)\)/u;
+
+// export const CUSTOM_VALIDATOR_MESSAGE_REGEX =
+//   /(?<validator>use|array|omit)(\()(?<pattern>[\w\p{Script=Cyrillic}\p{Script=Latin}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{M}ʼ (),.'"。、:+\-*#!§$%&/{}[\]=?~><°^|]+)\)/u;
 
 export const CUSTOM_OMIT_VALIDATOR_MESSAGE_REGEX =
   /.(?<validator>omit)\((?<pattern>\[[^\]]+\])\)/;

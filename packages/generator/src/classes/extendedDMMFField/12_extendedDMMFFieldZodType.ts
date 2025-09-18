@@ -37,7 +37,7 @@ export type PrismaScalarType =
   | 'Json'
   | 'Bytes';
 
-// "Json" | "Bytes" are handled seperately in the generator functions
+// "Json" | "Bytes" | "Decimal" are handled seperately in the generator functions
 export type ZodPrismaScalarType = Exclude<
   PrismaScalarType,
   'Json' | 'Bytes' | 'Decimal'

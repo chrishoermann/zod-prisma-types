@@ -112,7 +112,7 @@ export function testExtendedDMMFFieldValidatorType<
       const field = getField({
         type: 'String',
         kind: 'scalar',
-        documentation: 'some text in docs @zod.custom(z.string().min(1))',
+        documentation: 'some text in docs @zod.custom.use(z.string().min(1))',
       });
       expect(field?.['_validatorMatch']).toBeDefined();
       expect(field?.['_validatorType']).toBe('custom');
@@ -122,7 +122,7 @@ export function testExtendedDMMFFieldValidatorType<
       const field = getField({
         type: 'Boolean',
         kind: 'scalar',
-        documentation: 'some text in docs @zod.custom(z.boolean())',
+        documentation: 'some text in docs @zod.custom.use(z.boolean())',
       });
       expect(field?.['_validatorMatch']).toBeDefined();
       expect(field?.['_validatorType']).toBe('custom');
@@ -132,7 +132,7 @@ export function testExtendedDMMFFieldValidatorType<
       const field = getField({
         type: 'Json',
         kind: 'scalar',
-        documentation: 'some text in docs @zod.custom(z.object({}))',
+        documentation: 'some text in docs @zod.custom.use(z.object({}))',
       });
       expect(field?.['_validatorMatch']).toBeDefined();
       expect(field?.['_validatorType']).toBe('custom');
@@ -142,7 +142,8 @@ export function testExtendedDMMFFieldValidatorType<
       const field = getField({
         type: 'Bytes',
         kind: 'scalar',
-        documentation: 'some text in docs @zod.custom(z.instanceof(Buffer))',
+        documentation:
+          'some text in docs @zod.custom.use(z.instanceof(Buffer))',
       });
       expect(field?.['_validatorMatch']).toBeDefined();
       expect(field?.['_validatorType']).toBe('custom');
