@@ -1,8 +1,7 @@
 import type { GeneratorConfig } from '../schemas';
 
 /**
- * Global config store - similar to React Context but simpler
- * This allows config to be accessed anywhere without prop drilling
+ * Global config store
  */
 class GlobalConfigStore {
   private config: GeneratorConfig | null = null;

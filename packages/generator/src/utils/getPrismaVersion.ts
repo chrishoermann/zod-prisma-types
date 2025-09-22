@@ -20,7 +20,7 @@ export const getPrismaVersion = () => {
     );
     const jsonData = z
       .object({
-        dependencies: z.record(z.string()),
+        dependencies: z.record(z.string(), z.string()),
       })
       .parse(JSON.parse(rawData));
 
