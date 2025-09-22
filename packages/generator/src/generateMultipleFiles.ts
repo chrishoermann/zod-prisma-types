@@ -4,28 +4,30 @@ import {
   writeInputTypeFiles,
   writeModelFiles,
 } from './functions';
-import { CreateOptions } from './types';
+import { getConfig } from './config';
 
-export const generateMultipleFiles = ({ dmmf, path }: CreateOptions) => {
-  const { createModelTypes, createInputTypes, writeBarrelFiles } =
-    dmmf.generatorConfig;
+export const generateMultipleFiles = () => {
+  const config = getConfig();
 
   // Create the index file
-  if (writeBarrelFiles) {
-    new FileWriter().createFile(`${path}/index.ts`, ({ writeExport }) => {
-      if (createModelTypes) {
-        writeExport('*', './modelSchema');
-      }
+  if (config.writeBarrelFiles) {
+    new FileWriter().createFile(
+      `${config.outputPath}/index.ts`,
+      ({ writeExport }) => {
+        if (config.createModelTypes) {
+          writeExport('*', './modelSchema');
+        }
 
-      writeExport('*', `./${dmmf.generatorConfig.inputTypePath}`);
+        writeExport('*', `./${config.inputTypePath}`);
 
-      if (createInputTypes) {
-        writeExport('*', `./${dmmf.generatorConfig.outputTypePath}`);
-      }
-    });
+        if (config.createInputTypes) {
+          writeExport('*', `./${config.outputTypePath}`);
+        }
+      },
+    );
   }
 
-  writeModelFiles({ path, dmmf });
-  writeInputTypeFiles({ path, dmmf });
-  writeArgTypeFiles({ path, dmmf });
+  writeModelFiles();
+  writeInputTypeFiles();
+  writeArgTypeFiles();
 };

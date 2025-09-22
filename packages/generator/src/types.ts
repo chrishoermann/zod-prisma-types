@@ -10,11 +10,11 @@ import {
   ZodValidatorOptions,
 } from './classes';
 
-export type WriteStatements = (
-  datamodel: ExtendedDMMF,
-  writer: CreateFileOptions,
-) => void;
+export type WriteStatements = (writer: CreateFileOptions) => void;
 
+/**
+ * @deprecated Use the `outputPath` from the global config and the extended DMMF singleton instead
+ */
 export interface CreateOptions {
   dmmf: ExtendedDMMF;
   path: string;
@@ -40,7 +40,8 @@ export type PrismaScalarTypeMap<T> = Record<PrismaScalarType, T>;
 export type ZodCustomErrorKey =
   | 'invalid_type_error'
   | 'required_error'
-  | 'description';
+  | 'description'
+  | 'error';
 
 export type ZodPrimitiveType =
   | 'string'
@@ -196,6 +197,6 @@ export interface ExtendedWriteFieldOptions extends WriteFieldOptions {
 
 export interface ContentWriterOptions {
   fileWriter: CreateFileOptions;
-  dmmf: ExtendedDMMF;
+  // dmmf: ExtendedDMMF;
   getSingleFileContent?: boolean;
 }

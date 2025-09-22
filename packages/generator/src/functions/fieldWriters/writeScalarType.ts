@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { globalConfig } from 'src/config';
+import { getConfig } from '../../config';
 import { WriteTypeFunction } from '../../types';
 
 /////////////////////////////////////////////////
@@ -31,7 +31,7 @@ export const writeScalarType: WriteTypeFunction = (
   const zodType = inputType.getZodScalarType();
   if (!zodType) return;
 
-  const { addInputTypeValidation, coerceDate } = globalConfig.getConfig();
+  const { addInputTypeValidation, coerceDate } = getConfig();
 
   if (zodCustomValidatorString) {
     if (zodType === 'date') {

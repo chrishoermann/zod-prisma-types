@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { globalConfig } from 'src/config';
+import { getConfig } from '../../config';
 import { WriteTypeFunction, WriteTypeOptions } from '../../types';
 
 /////////////////////////////////////////////////
@@ -33,7 +33,7 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
     decimalJSInstalled,
     isPrismaClientGenerator,
     prismaVersion,
-  } = globalConfig.getConfig();
+  } = getConfig();
 
   if (zodCustomValidatorString && addInputTypeValidation) {
     return writer

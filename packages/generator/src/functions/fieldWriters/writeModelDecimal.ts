@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { writeFieldAdditions } from '.';
 import { ExtendedWriteFieldOptions } from '../../types';
-import { globalConfig } from '../../config';
+import { getConfig } from '../../config';
 
 export const writeDecimal = ({
   writer,
@@ -9,7 +9,7 @@ export const writeDecimal = ({
   model,
   writeOptionalDefaults = false,
 }: ExtendedWriteFieldOptions) => {
-  const { isPrismaClientGenerator } = globalConfig.getConfig();
+  const { isPrismaClientGenerator } = getConfig();
 
   const decimalTypeName = isPrismaClientGenerator
     ? 'PrismaDecimal'

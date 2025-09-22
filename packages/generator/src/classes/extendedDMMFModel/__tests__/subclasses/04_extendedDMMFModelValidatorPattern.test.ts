@@ -1,7 +1,7 @@
 import type DMMF from '@prisma/dmmf';
 import { it, expect, describe, afterAll } from 'vitest';
 
-import { MODEL_BASE } from '../setup';
+import { getModelBase } from '../setup';
 import {
   ALLOWED_TYPES_REGEX_PATTERN,
   ExtendedDMMFModelValidatorPattern,
@@ -18,7 +18,7 @@ export function testExtendedDMMFFieldValidatorPattern<
 >(classConstructor: new (model: DMMF.Model) => T) {
   const getModel = (model?: Partial<DMMF.Model>) =>
     new classConstructor({
-      ...MODEL_BASE,
+      ...getModelBase(),
       ...model,
     });
 

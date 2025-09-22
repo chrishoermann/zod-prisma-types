@@ -1,7 +1,7 @@
 import type DMMF from '@prisma/dmmf';
 
 import { FormattedNames } from '../formattedNames';
-import { getConfig } from 'src/config';
+import { getConfig } from '../../config';
 
 /////////////////////////////////////////////////
 // CLASS

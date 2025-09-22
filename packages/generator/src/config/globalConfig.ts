@@ -7,20 +7,16 @@ class GlobalConfigStore {
   private config: GeneratorConfig | null = null;
   private initialized = false;
 
-  /**
-   * Initialize the global config (should only be called once)
-   */
-  initialize(config: GeneratorConfig): void {
+  initialize(config: GeneratorConfig) {
     if (this.initialized) {
       throw new Error('Global config has already been initialized');
     }
     this.config = config;
     this.initialized = true;
+
+    return this.config;
   }
 
-  /**
-   * Get the current config
-   */
   getConfig(): GeneratorConfig {
     if (!this.initialized || !this.config) {
       throw new Error(
@@ -30,9 +26,6 @@ class GlobalConfigStore {
     return this.config;
   }
 
-  /**
-   * Check if config is initialized
-   */
   isInitialized(): boolean {
     return this.initialized;
   }
@@ -46,8 +39,8 @@ class GlobalConfigStore {
   }
 }
 
-// Export singleton instance
+// Singleton instance
 export const globalConfig = new GlobalConfigStore();
 
 // Convenience function for accessing config
-export const getConfig = (): GeneratorConfig => globalConfig.getConfig();
+export const getConfig = () => globalConfig.getConfig();

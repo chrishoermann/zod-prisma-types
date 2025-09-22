@@ -1,33 +1,33 @@
-import { FileWriter } from '../classes';
-import { CreateFiles } from '../types';
+import { FileWriter, getExtendedDMMF } from '../classes';
 import {
   writeArgs,
   writeCountArgs,
   writeCountSelect,
   writeOutputObjectType,
 } from './contentWriters';
-import { globalConfig } from '../config';
+import { getConfig } from '../config';
 
 /////////////////////////////////////////////////
 // FUNCTION
 /////////////////////////////////////////////////
 
-export const writeArgTypeFiles: CreateFiles = ({ path, dmmf }) => {
-  const config = globalConfig.getConfig();
+export const writeArgTypeFiles = () => {
+  const config = getConfig();
+  const dmmf = getExtendedDMMF();
 
   if (!config.createInputTypes) return;
-
-  const { outputTypePath, writeBarrelFiles } = config;
 
   // WRITE INDEX FILE
   // ------------------------------------------------------------
 
   const indexFileWriter = new FileWriter();
 
-  const folderPath = indexFileWriter.createPath(`${path}/${outputTypePath}`);
+  const folderPath = indexFileWriter.createPath(
+    `${config.outputPath}/${config.outputTypePath}`,
+  );
 
   if (folderPath) {
-    if (writeBarrelFiles) {
+    if (config.writeBarrelFiles) {
       indexFileWriter.createFile(
         `${folderPath}/index.ts`,
         ({ writeExport }) => {
@@ -60,19 +60,19 @@ export const writeArgTypeFiles: CreateFiles = ({ path, dmmf }) => {
       if (model.writeIncludeArgs()) {
         new FileWriter().createFile(
           `${folderPath}/${model.name}ArgsSchema.ts`,
-          (fileWriter) => writeArgs({ fileWriter, dmmf }, model),
+          (fileWriter) => writeArgs({ fileWriter }, model),
         );
       }
 
       if (model.writeCountArgs()) {
         new FileWriter().createFile(
           `${folderPath}/${model.name}CountOutputTypeArgsSchema.ts`,
-          (fileWriter) => writeCountArgs({ fileWriter, dmmf }, model),
+          (fileWriter) => writeCountArgs({ fileWriter }, model),
         );
 
         new FileWriter().createFile(
           `${folderPath}/${model.name}CountOutputTypeSelectSchema.ts`,
-          (fileWriter) => writeCountSelect({ fileWriter, dmmf }, model),
+          (fileWriter) => writeCountSelect({ fileWriter }, model),
         );
       }
     });
@@ -85,7 +85,7 @@ export const writeArgTypeFiles: CreateFiles = ({ path, dmmf }) => {
       outputType.prismaActionFields.forEach((field) => {
         new FileWriter().createFile(
           `${folderPath}/${field.argName}Schema.ts`,
-          (fileWriter) => writeOutputObjectType({ fileWriter, dmmf }, field),
+          (fileWriter) => writeOutputObjectType({ fileWriter }, field),
         );
       });
     });

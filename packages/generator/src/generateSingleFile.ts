@@ -9,17 +9,19 @@ import {
   writeSingleFileInputTypeStatements,
   writeSingleFileArgTypeStatements,
 } from './functions';
-import { CreateOptions } from './types';
+import { getConfig } from './config';
 
-export const generateSingleFile = ({ dmmf, path }: CreateOptions) => {
-  new FileWriter().createFile(`${path}/index.ts`, (fileWriter) => {
-    writeSingleFileImportStatements(dmmf, fileWriter);
-    writeSingleFileHelperStatements(dmmf, fileWriter);
-    writeSingleFileEnumStatements(dmmf, fileWriter);
-    writeSingleFileModelStatements(dmmf, fileWriter);
-    writeSingleFileTypeStatements(dmmf, fileWriter);
-    writeSingleFileIncludeSelectStatements(dmmf, fileWriter);
-    writeSingleFileInputTypeStatements(dmmf, fileWriter);
-    writeSingleFileArgTypeStatements(dmmf, fileWriter);
+export const generateSingleFile = () => {
+  const { outputPath } = getConfig();
+
+  new FileWriter().createFile(`${outputPath}/index.ts`, (fileWriter) => {
+    writeSingleFileImportStatements(fileWriter);
+    writeSingleFileHelperStatements(fileWriter);
+    writeSingleFileEnumStatements(fileWriter);
+    writeSingleFileModelStatements(fileWriter);
+    writeSingleFileTypeStatements(fileWriter);
+    writeSingleFileIncludeSelectStatements(fileWriter);
+    writeSingleFileInputTypeStatements(fileWriter);
+    writeSingleFileArgTypeStatements(fileWriter);
   });
 };

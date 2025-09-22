@@ -1,14 +1,15 @@
 import { writeNonScalarType, writeScalarType, writeSpecialType } from '..';
-import { ExtendedDMMFSchemaField } from '../../classes';
+import { ExtendedDMMFSchemaField, getExtendedDMMF } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
 import { writeSelect } from './writeSelect';
-import { globalConfig } from '../../config';
+import { getConfig } from '../../config';
 
 export const writeOutputObjectType = (
-  { fileWriter, dmmf, getSingleFileContent = false }: ContentWriterOptions,
+  { fileWriter, getSingleFileContent = false }: ContentWriterOptions,
   field: ExtendedDMMFSchemaField,
 ) => {
   const { writer, writeImportSet, writeImport, writeHeading } = fileWriter;
+  const dmmf = getExtendedDMMF();
 
   const {
     useMultipleFiles,
@@ -16,7 +17,7 @@ export const writeOutputObjectType = (
     useTypeAssertions,
     inputTypePath,
     addSelectType,
-  } = globalConfig.getConfig();
+  } = getConfig();
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImportSet(field.argTypeImports);
@@ -58,7 +59,7 @@ export const writeOutputObjectType = (
         );
 
         writeSelect(
-          { fileWriter, dmmf, getSingleFileContent: true },
+          { fileWriter, getSingleFileContent: true },
           modelWithSelect,
         );
       }

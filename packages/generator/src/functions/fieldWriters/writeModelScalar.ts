@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { writeFieldAdditions } from '.';
 import { WriteFieldOptions } from '../../types';
-import { globalConfig } from '../../config';
+import { getConfig } from '../../config';
 
 export const writeScalar = ({
   writer,
   field,
   writeOptionalDefaults = false,
 }: WriteFieldOptions) => {
-  const { coerceDate } = globalConfig.getConfig();
+  const { coerceDate } = getConfig();
   if (field.type === 'DateTime') {
     writer
       .write(`${field.name}: `)

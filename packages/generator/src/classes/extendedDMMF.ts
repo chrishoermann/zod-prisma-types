@@ -47,3 +47,45 @@ export class ExtendedDMMF implements DMMF.Document {
     return new ExtendedDMMFMappings(dmmf.mappings);
   }
 }
+
+/////////////////////////////////////////////////
+// SINGLETON
+/////////////////////////////////////////////////
+
+export class ExtendedDMMFSingleton {
+  private static instance: ExtendedDMMF | null = null;
+
+  private constructor() {
+    throw new Error(
+      'ExtendedDMMFSingleton is a singleton - use initialize() instead',
+    );
+  }
+
+  public static initialize(dmmf: DMMF.Document): void {
+    if (this.instance) {
+      throw new Error('ExtendedDMMF already initialized');
+    }
+    this.instance = new ExtendedDMMF(dmmf);
+  }
+
+  public static getInstance(): ExtendedDMMF {
+    if (!this.instance) {
+      throw new Error('ExtendedDMMF not initialized');
+    }
+    return this.instance;
+  }
+
+  public static isInitialized(): boolean {
+    return this.instance !== null;
+  }
+
+  public static reset(): void {
+    this.instance = null;
+  }
+}
+
+/////////////////////////////////////////////////
+// CONVENIENCE FUNCTIONS
+/////////////////////////////////////////////////
+
+export const getExtendedDMMF = () => ExtendedDMMFSingleton.getInstance();

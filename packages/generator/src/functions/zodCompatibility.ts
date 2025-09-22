@@ -1,4 +1,4 @@
-import { CreateFileOptions } from 'src/classes/fileWriter';
+import { CreateFileOptions } from '../classes/fileWriter';
 
 /**
  * Zod v4 compatibility helpers for generated output.
@@ -14,6 +14,7 @@ export type ZodScalarPrimitiveType =
 
 /**
  * Write the canonical Zod import using the provided writeImport function.
+ * @deprecated Use writeZodImport from writeZodImport.ts instead.
  */
 export function writeZodImport(
   writeImport: CreateFileOptions['writeImport'],

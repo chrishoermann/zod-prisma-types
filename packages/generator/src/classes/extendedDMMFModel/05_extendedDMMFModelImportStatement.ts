@@ -2,7 +2,7 @@ import type DMMF from '@prisma/dmmf';
 import { ExtendedDMMFModelValidatorPattern } from './04_extendedDMMFModelValidatorPattern';
 import { transformImportStringToList } from '../../utils/transformImportStringToList';
 import { validateImportStatement } from '../../utils/validateImportStatements';
-import { globalConfig } from 'src/config';
+import { getConfig } from '../../config';
 
 /////////////////////////////////////////////////
 // CLASS
@@ -52,7 +52,7 @@ export class ExtendedDMMFModelImportStatement extends ExtendedDMMFModelValidator
       prismaClientPath,
       prismaLibraryPath,
       isPrismaClientGenerator,
-    } = globalConfig.getConfig();
+    } = getConfig();
 
     if (this.fields.some((field) => field.isJsonType)) {
       statements.push(

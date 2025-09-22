@@ -1,9 +1,9 @@
-import { globalConfig } from 'src/config';
+import { getConfig } from '../../config';
 import { writeModelFields } from '.';
-import { ExtendedDMMFModel } from '../../classes';
+import { ExtendedDMMFModel, getExtendedDMMF } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
 import { writeRelation } from '../fieldWriters';
-import { writeZodImport } from '../zodCompatibility';
+import { writeZodImport } from '..';
 
 //// NEEDS REFACTORING ////
 // This function is a mess and needs to be refactored into smaller, more manageable pieces.
@@ -17,13 +17,12 @@ export const writeModelOrType = (
       writeJSDoc,
       writeHeading,
     },
-    dmmf,
     getSingleFileContent = false,
   }: ContentWriterOptions,
   model: ExtendedDMMFModel,
 ) => {
-  const { useMultipleFiles, createRelationValuesTypes } =
-    globalConfig.getConfig();
+  const { useMultipleFiles, createRelationValuesTypes } = getConfig();
+  const dmmf = getExtendedDMMF();
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeZodImport(writeImport);

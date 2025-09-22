@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { WriteFieldOptions } from '../../types';
-import { globalConfig } from '../../config';
+import { getConfig } from '../../config';
 
 /**
  * Writes all relevant additional zod modifiers like`.nullish().array().optional()` to a field
@@ -10,7 +10,7 @@ export const writeFieldAdditions = ({
   field,
   writeOptionalDefaults = false,
 }: WriteFieldOptions) => {
-  const { writeNullishInModelTypes } = globalConfig.getConfig();
+  const { writeNullishInModelTypes } = getConfig();
 
   writer
     .conditionalWrite(field.isList, `.array()`)

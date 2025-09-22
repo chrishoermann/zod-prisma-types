@@ -1,7 +1,7 @@
 import { ExtendedDMMFOutputType } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
-import { writeZodImport } from '../zodCompatibility';
-import { globalConfig } from '../../config';
+import { writeZodImport } from '..';
+import { getConfig } from '../../config';
 
 /**
  * `[Model]CountOutputTypeSelectSchema` needs to be generated when the model has a _count field.
@@ -19,7 +19,7 @@ export const writeCountSelect = (
     useExactOptionalPropertyTypes,
     prismaClientPath,
     inputTypePath,
-  } = globalConfig.getConfig();
+  } = getConfig();
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeZodImport(writeImport);

@@ -1,7 +1,7 @@
 import { ExtendedDMMFOutputType } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
-import { writeZodImport } from '../zodCompatibility';
-import { globalConfig } from '../../config';
+import { writeZodImport } from '..';
+import { getConfig } from '../../config';
 
 /**
  * The args schema is used in "include" and "select" schemas
@@ -9,7 +9,6 @@ import { globalConfig } from '../../config';
 export const writeArgs = (
   {
     fileWriter: { writer, writeImport },
-
     getSingleFileContent = false,
   }: ContentWriterOptions,
   model: ExtendedDMMFOutputType,
@@ -20,7 +19,7 @@ export const writeArgs = (
     prismaClientPath,
     inputTypePath,
     prismaVersion,
-  } = globalConfig.getConfig();
+  } = getConfig();
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeZodImport(writeImport);

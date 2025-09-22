@@ -2,7 +2,7 @@ import type DMMF from '@prisma/dmmf';
 
 import { ExtendedDMMFFieldClass } from '../../extendedDMMFField';
 
-export const MODEL_BASE: DMMF.Model = {
+export const getModelBase = (): DMMF.Model => ({
   name: 'User',
   dbName: null,
   schema: null,
@@ -50,9 +50,9 @@ export const MODEL_BASE: DMMF.Model = {
   uniqueFields: [],
   uniqueIndexes: [],
   isGenerated: false,
-};
+});
 
-export const MODEL_WITH_AUTO_IMPORT_FILDS: DMMF.Model = {
+export const getModelWithAutoImportFields = (): DMMF.Model => ({
   name: 'User',
   dbName: null,
   schema: null,
@@ -121,7 +121,7 @@ export const MODEL_WITH_AUTO_IMPORT_FILDS: DMMF.Model = {
   uniqueFields: [],
   uniqueIndexes: [],
   isGenerated: false,
-};
+});
 
 export const FIELD_BASE: DMMF.Field = {
   kind: 'scalar',

@@ -1,6 +1,6 @@
 import type DMMF from '@prisma/dmmf';
 import { ExtendedDMMFModelBase } from './01_extendedDMMFModelBase';
-import { globalConfig } from 'src/config';
+import { getConfig } from '../../config';
 
 export class ExtendedDMMFModelFlags extends ExtendedDMMFModelBase {
   readonly hasRelationFields: boolean;
@@ -63,15 +63,12 @@ export class ExtendedDMMFModelFlags extends ExtendedDMMFModelBase {
       // Do NOT check for "this.hasOptionalDefaultFields"
       // A [model type]OptionalDefaultValues schema needs to be created for each model
       // so the schema can be imported even when no optional default values are present
-      globalConfig.getConfig().createOptionalDefaultValuesTypes
+      getConfig().createOptionalDefaultValuesTypes
     );
   }
 
   private _setWriteRelationValueTypes() {
-    return (
-      this.hasRelationFields &&
-      globalConfig.getConfig().createRelationValuesTypes
-    );
+    return this.hasRelationFields && getConfig().createRelationValuesTypes;
   }
 
   private _setWriteOptionalDefaultsRelationValueTypes() {
@@ -79,7 +76,7 @@ export class ExtendedDMMFModelFlags extends ExtendedDMMFModelBase {
   }
 
   private _setWritePartialTypes() {
-    return globalConfig.getConfig().createPartialTypes;
+    return getConfig().createPartialTypes;
   }
 
   private _writePartialRelationValueTypes() {

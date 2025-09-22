@@ -1,7 +1,7 @@
 import type DMMF from '@prisma/dmmf';
 import { it, expect, describe, afterAll } from 'vitest';
 
-import { MODEL_BASE, MODEL_WITH_AUTO_IMPORT_FILDS } from '../setup';
+import { getModelBase, getModelWithAutoImportFields } from '../setup';
 import { ExtendedDMMFModelImportStatement } from '../../05_extendedDMMFModelImportStatement';
 import { globalConfig } from '../../../../config';
 import { DEFAULT_GENERATOR_CONFIG } from '../../../../__tests__/setup';
@@ -15,7 +15,7 @@ export function testExtendedDMMFFieldImportStatement<
 >(classConstructor: new (model: DMMF.Model) => T) {
   const getModel = (model?: Partial<DMMF.Model>) =>
     new classConstructor({
-      ...MODEL_BASE,
+      ...getModelBase(),
       ...model,
     });
 
@@ -98,7 +98,7 @@ export function testExtendedDMMFFieldImportStatement<
     });
 
     it(`should load a class with automatic imports`, async () => {
-      const model = getModel(MODEL_WITH_AUTO_IMPORT_FILDS);
+      const model = getModel(getModelWithAutoImportFields());
 
       expect(model?.['_automaticImports']).toEqual([
         `import { JsonValueSchema } from '../${DEFAULT_GENERATOR_CONFIG.inputTypePath}/JsonValueSchema'`,
@@ -109,7 +109,7 @@ export function testExtendedDMMFFieldImportStatement<
 
     it(`should load a class with automatic and custom imports`, async () => {
       const model = getModel({
-        ...MODEL_WITH_AUTO_IMPORT_FILDS,
+        ...getModelWithAutoImportFields(),
         documentation:
           '@zod.import(["import { myFunction } from "../../../../utils/myFunction";", "import validator from "validator";"])',
       });
@@ -129,7 +129,7 @@ export function testExtendedDMMFFieldImportStatement<
       const model = getModel({
         fields: [
           {
-            ...MODEL_BASE.fields[0],
+            ...getModelBase().fields[0],
             documentation:
               '@zod.import(["import { myFunction } from "../../../../utils/myFunction";", "import validator from "validator";"]).number.gt(0)',
           },

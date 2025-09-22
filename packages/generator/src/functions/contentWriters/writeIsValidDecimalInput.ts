@@ -1,5 +1,5 @@
 import { type ContentWriterOptions } from '../../types';
-import { globalConfig } from '../../config';
+import { getConfig } from '../../config';
 
 export const writeIsValidDecimalInput = ({
   fileWriter: { writer, writeImport },
@@ -10,7 +10,7 @@ export const writeIsValidDecimalInput = ({
     prismaClientPath,
     prismaLibraryPath,
     isPrismaClientGenerator,
-  } = globalConfig.getConfig();
+  } = getConfig();
 
   if (useMultipleFiles && !getSingleFileContent) {
     if (isPrismaClientGenerator) {

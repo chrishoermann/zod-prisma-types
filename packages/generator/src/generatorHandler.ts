@@ -1,21 +1,11 @@
 import { generatorHandler } from '@prisma/generator-helper';
-import { z } from 'zod';
 
-import { DirectoryHelper, ExtendedDMMF } from './classes';
+import { DirectoryHelper, ExtendedDMMFSingleton } from './classes';
 import { generateMultipleFiles } from './generateMultipleFiles';
 import { generateSingleFile } from './generateSingleFile';
 import { skipGenerator } from './utils';
 import { parseGeneratorConfig } from './utils/parseGeneratorConfig';
 import { globalConfig } from './config/globalConfig';
-
-/////////////////////////////////////////
-// SCHEMAS
-/////////////////////////////////////////
-
-const outputSchema = z.object({
-  fromEnvVar: z.string().nullable(),
-  value: z.string({ message: 'No output path specified' }),
-});
 
 /////////////////////////////////////////
 // GENERATOR
@@ -36,31 +26,25 @@ generatorHandler({
     const config = parseGeneratorConfig(generatorOptions);
 
     // Initialize global config so it can be accessed anywhere
-    globalConfig.initialize(config);
+    const { outputPath, useMultipleFiles, zodVersion } =
+      globalConfig.initialize(config);
 
-    // validate that the output path is present
-    const output = outputSchema.parse(generatorOptions.generator.output);
+    console.log('zodVersion', zodVersion);
 
-    // extend the DMMF with custom functionality - see "classes" folder
-    const extendedDMMF = new ExtendedDMMF(generatorOptions.dmmf);
+    // initialize the ExtendedDMMF singleton to be able to access it anywhere
+    ExtendedDMMFSingleton.initialize(generatorOptions.dmmf);
 
     // If data is present in the output directory, delete it.
-    DirectoryHelper.removeDir(output.value);
+    DirectoryHelper.removeDir(outputPath);
 
     // Create the output directory
-    DirectoryHelper.createDir(output.value);
+    DirectoryHelper.createDir(outputPath);
 
     // generate single or multiple files
-    if (globalConfig.getConfig().useMultipleFiles) {
-      return generateMultipleFiles({
-        dmmf: extendedDMMF,
-        path: output.value,
-      });
+    if (useMultipleFiles) {
+      return generateMultipleFiles();
     }
 
-    return generateSingleFile({
-      dmmf: extendedDMMF,
-      path: output.value,
-    });
+    return generateSingleFile();
   },
 });

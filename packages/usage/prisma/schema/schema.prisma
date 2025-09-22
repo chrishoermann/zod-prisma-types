@@ -80,7 +80,7 @@ model ModelWithOmitFields {
 model ModelWithComments {
   id           String  @id @default(uuid())
   /// comment before validator @zod.string.min(4).max(10)
-  /// comment after validator
+  // Does currently not work to comment after validator
   string       String?
   omitField    String? /// @zod.custom.omit([model, input])
   omitRequired String /// @zod.custom.omit([model, input])
@@ -98,7 +98,9 @@ model ModelWithComments {
 /// @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).refine((v) => myFunction(v))
 /// comment line two
 model MyPrismaScalarsType {
-  /// @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]|", required_error: "some other", description: "some description" }).cuid()
+  // zod v3 Variant - @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]|", required_error: "some other", description: "some description" }).cuid()
+
+  /// @zod.string({ error: (issue) => issue.input === undefined ? "This field is required" : "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]|"   }).cuid()
   id                 String    @id @default(cuid())
   /// Some comment about string @zod.string.min(3, { message: "min error " }).max(10, { message: "max error" })
   string             String?
@@ -114,8 +116,8 @@ model MyPrismaScalarsType {
   decimal            Decimal
   decimalOpt         Decimal?
   date               DateTime  @default(now())
-  dateOpt            DateTime? /// @zod.date({ invalid_type_error: "wrong date type" })
-  bigInt             BigInt /// @zod.bigint({ invalid_type_error: "error" }).gt(5n, { message: "gt error" })
+  dateOpt            DateTime? /// @zod.date({ error: "wrong date type" })
+  bigInt             BigInt /// @zod.bigint({ error: "error" }).gt(5n, { message: "gt error" })
   bigIntOpt          BigInt?
   json               Json
   jsonOpt            Json?
@@ -128,7 +130,7 @@ model MyPrismaScalarsType {
   /// Some Comment before
   excludeWithComment String? /// @zod.custom.omit(["model", "input"]) And some comment after
 
-  specialEuropeanChars String? /// @zod.string({ invalid_type_error: "ÁÀȦÂÄǞǍĂĀÃÅǺǼǢĆĊĈČĎḌḐḒÉÈĖÊËĚĔĒẼE̊ẸǴĠĜǦĞG̃ĢĤḤáàȧâäǟǎăāãåǻǽǣćċĉčďḍḑḓéèėêëěĕēẽe̊ẹǵġĝǧğg̃ģĥḥÍÌİÎÏǏĬĪĨỊĴĶǨĹĻĽĿḼM̂M̄ʼNŃN̂ṄN̈ŇN̄ÑŅṊÓÒȮȰÔÖȪǑŎŌÕȬŐỌǾƠíìiîïǐĭīĩịĵķǩĺļľŀḽm̂m̄ŉńn̂ṅn̈ňn̄ñņṋóòôȯȱöȫǒŏōõȭőọǿơP̄ŔŘŖŚŜṠŠȘṢŤȚṬṰÚÙÛÜǓŬŪŨŰŮỤẂẀŴẄÝỲŶŸȲỸŹŻŽẒǮp̄ŕřŗśŝṡšşṣťțṭṱúùûüǔŭūũűůụẃẁŵẅýỳŷÿȳỹźżžẓǯßœŒçÇ" })
+  specialEuropeanChars String? /// @zod.string({ error: "ÁÀȦÂÄǞǍĂĀÃÅǺǼǢĆĊĈČĎḌḐḒÉÈĖÊËĚĔĒẼE̊ẸǴĠĜǦĞG̃ĢĤḤáàȧâäǟǎăāãåǻǽǣćċĉčďḍḑḓéèėêëěĕēẽe̊ẹǵġĝǧğg̃ģĥḥÍÌİÎÏǏĬĪĨỊĴĶǨĹĻĽĿḼM̂M̄ʼNŃN̂ṄN̈ŇN̄ÑŅṊÓÒȮȰÔÖȪǑŎŌÕȬŐỌǾƠíìiîïǐĭīĩịĵķǩĺļľŀḽm̂m̄ŉńn̂ṅn̈ňn̄ñņṋóòôȯȱöȫǒŏōõȭőọǿơP̄ŔŘŖŚŜṠŠȘṢŤȚṬṰÚÙÛÜǓŬŪŨŰŮỤẂẀŴẄÝỲŶŸȲỸŹŻŽẒǮp̄ŕřŗśŝṡšşṣťțṭṱúùûüǔŭūũűůụẃẁŵẅýỳŷÿȳỹźżžẓǯßœŒçÇ" })
 
   /// @zod.string.regex(/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-]+)(\.[a-zA-Z]{2,5}){1,2}$/)
   customEmailRegex String
@@ -172,7 +174,7 @@ model User {
   id         String      @id @default(cuid()) /// @zod.string.cuid()
   email      String      @unique /// @zod.string.email({ message: "Invalid email address" })
   /// some other comment
-  /// @zod.string.min(1).max(100) some message after
+  /// @zod.string.min(1).max(100) 
   name       String?
   /// @zod.object.array(.length(2, { message: "error" }).min(1).max(2).nonempty({ message: "error" }))
   posts      Post[]
@@ -341,14 +343,14 @@ model SelfReference {
 
 model JapaneseChars {
   id     Int    @id @default(autoincrement())
-  ///@zod.string({ invalid_type_error: "ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。", required_error: "ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。", description: "ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。" }).min(5, { message: "ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。" })
+  ///@zod.string({ error: "ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。" })
   string String
 }
 
 // MODEL VALIDATION
 // -----------------------------------------------
 
-/// @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).error({ required_error: "error", invalid_type_error: "error" , description: "error"}).refine((val) => myFunction(val), { message: 'Is not valid' }).strict()
+/// @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).error({ error: "error" }).refine((val) => myFunction(val), { message: 'Is not valid' }).strict()
 model ModelWithOptions {
   id     Int    @id @default(autoincrement())
   string String

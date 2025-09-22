@@ -1,23 +1,23 @@
 import { type WriteStatements } from '../types';
 import { writeInputObjectType } from './contentWriters';
-import { globalConfig } from '../config';
+import { getConfig } from '../config';
+import { getExtendedDMMF } from '../classes';
 
 /////////////////////////////////////////////////
 // FUNCTION
 /////////////////////////////////////////////////
 
 export const writeSingleFileInputTypeStatements: WriteStatements = (
-  dmmf,
   fileWriter,
 ) => {
-  if (!globalConfig.getConfig().createInputTypes) return;
-
+  if (!getConfig().createInputTypes) return;
+  const dmmf = getExtendedDMMF();
   fileWriter.writer.blankLine();
 
   fileWriter.writeHeading(`INPUT TYPES`, 'FAT');
 
   dmmf.schema.inputObjectTypes.prisma.forEach((inputType) => {
-    writeInputObjectType({ dmmf, fileWriter }, inputType);
+    writeInputObjectType({ fileWriter }, inputType);
     fileWriter.writer.newLine();
   });
 };

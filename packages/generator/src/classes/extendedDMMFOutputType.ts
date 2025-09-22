@@ -6,7 +6,7 @@ import { PRISMA_ACTION_ARRAY } from '../constants/objectMaps';
 import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
 import { ExtendedDMMFSchemaField } from './extendedDMMFSchemaField';
 import { FormattedNames } from './formattedNames';
-import { globalConfig } from 'src/config';
+import { getConfig } from '../config';
 
 /////////////////////////////////////////////////
 // CLASS
@@ -100,7 +100,7 @@ export class ExtendedDMMFOutputType
 
   private _setSelectImports() {
     const imports = new Set<string>();
-    const { outputTypePath } = globalConfig.getConfig();
+    const { outputTypePath } = getConfig();
 
     this.fields.forEach((field) => {
       if (field.writeSelectFindManyField) {
@@ -123,7 +123,7 @@ export class ExtendedDMMFOutputType
 
   private _setIncludeImports() {
     const imports = new Set<string>();
-    const { outputTypePath } = globalConfig.getConfig();
+    const { outputTypePath } = getConfig();
 
     this.fields.forEach((field) => {
       if (field.writeIncludeFindManyField) {
@@ -167,7 +167,7 @@ export class ExtendedDMMFOutputType
   // only write the include statement if the type is a prisma model
   writeMongoDbInclude() {
     return (
-      globalConfig.getConfig().isMongoDb &&
+      getConfig().isMongoDb &&
       this.fields.some((field) => field.isObjectOutputType())
     );
   }
@@ -177,7 +177,7 @@ export class ExtendedDMMFOutputType
   }
 
   writeIncludeArgs() {
-    return this.hasRelationField() || globalConfig.getConfig().isMongoDb;
+    return this.hasRelationField() || getConfig().isMongoDb;
   }
 
   writeCountArgs() {

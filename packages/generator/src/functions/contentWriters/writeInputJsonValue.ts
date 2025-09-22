@@ -1,6 +1,6 @@
 import { type ContentWriterOptions } from '../../types';
-import { writeZodImport } from '../zodCompatibility';
-import { globalConfig } from '../../config';
+import { writeZodImport } from '..';
+import { getConfig } from '../../config';
 
 export const writeInputJsonValue = ({
   fileWriter: { writer, writeImport },
@@ -11,7 +11,7 @@ export const writeInputJsonValue = ({
     prismaClientPath,
     prismaLibraryPath,
     isPrismaClientGenerator,
-  } = globalConfig.getConfig();
+  } = getConfig();
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeZodImport(writeImport);

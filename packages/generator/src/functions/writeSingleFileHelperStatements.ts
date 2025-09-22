@@ -9,16 +9,18 @@ import {
 } from '.';
 import { type WriteStatements } from '../types';
 import { writeRemoveUndefined } from './contentWriters/writeRemoveUndefined';
-import { globalConfig } from '../config';
+import { getConfig } from '../config';
+import { getExtendedDMMF } from '../classes';
 
 /////////////////////////////////////////////////
 // FUNCTION
 /////////////////////////////////////////////////
 
 export const writeSingleFileHelperStatements: WriteStatements = (
-  dmmf,
   fileWriter,
 ) => {
+  const dmmf = getExtendedDMMF();
+
   fileWriter.writer.blankLine();
   fileWriter.writeHeading('HELPER FUNCTIONS', 'FAT');
   fileWriter.writer.blankLine();
@@ -26,10 +28,10 @@ export const writeSingleFileHelperStatements: WriteStatements = (
   // EXACT OPTIONAL PROPERTY TYPES
   // ------------------------------------------------------------
 
-  if (globalConfig.getConfig().useExactOptionalPropertyTypes) {
+  if (getConfig().useExactOptionalPropertyTypes) {
     fileWriter.writeHeading(`EXACT OPTIONAL PROPERTY TYPES`, 'SLIM');
 
-    writeRemoveUndefined({ fileWriter, dmmf });
+    writeRemoveUndefined({ fileWriter });
 
     fileWriter.writer.newLine();
   }
@@ -40,10 +42,10 @@ export const writeSingleFileHelperStatements: WriteStatements = (
   if (dmmf.schema.hasJsonTypes) {
     fileWriter.writeHeading(`JSON`, 'SLIM');
 
-    writeTransformJsonNull({ fileWriter, dmmf });
-    writeJsonValue({ fileWriter, dmmf });
-    writeNullableJsonValue({ fileWriter, dmmf });
-    writeInputJsonValue({ fileWriter, dmmf });
+    writeTransformJsonNull({ fileWriter });
+    writeJsonValue({ fileWriter });
+    writeNullableJsonValue({ fileWriter });
+    writeInputJsonValue({ fileWriter });
 
     fileWriter.writer.newLine();
   }
@@ -54,9 +56,9 @@ export const writeSingleFileHelperStatements: WriteStatements = (
   if (dmmf.schema.hasDecimalTypes) {
     fileWriter.writeHeading(`DECIMAL`, 'SLIM');
 
-    writeDecimalJsLike({ fileWriter, dmmf });
+    writeDecimalJsLike({ fileWriter });
     // writeDecimalJsLikeList({ fileWriter, dmmf });
-    writeIsValidDecimalInput({ fileWriter, dmmf });
+    writeIsValidDecimalInput({ fileWriter });
 
     fileWriter.writer.newLine();
   }

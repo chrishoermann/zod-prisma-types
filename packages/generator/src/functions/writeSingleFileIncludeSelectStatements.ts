@@ -6,17 +6,18 @@ import {
   writeInclude,
   writeSelect,
 } from './contentWriters';
-import { globalConfig } from '../config';
+import { getConfig } from '../config';
+import { getExtendedDMMF } from '../classes';
 
 /////////////////////////////////////////////////
 // FUNCTION
 /////////////////////////////////////////////////
 
 export const writeSingleFileIncludeSelectStatements: WriteStatements = (
-  dmmf,
   fileWriter,
 ) => {
-  if (!globalConfig.getConfig().createInputTypes) return;
+  if (!getConfig().createInputTypes) return;
+  const dmmf = getExtendedDMMF();
   fileWriter.writer.blankLine();
 
   fileWriter.writeHeading(`SELECT & INCLUDE`, 'FAT');
@@ -27,19 +28,19 @@ export const writeSingleFileIncludeSelectStatements: WriteStatements = (
     fileWriter.writeHeading(`${model.formattedNames.upperCaseSpace}`, 'SLIM');
 
     if (model.writeInclude()) {
-      writeInclude({ fileWriter, dmmf }, model);
+      writeInclude({ fileWriter }, model);
     }
 
     if (model.writeIncludeArgs()) {
-      writeArgs({ fileWriter, dmmf }, model);
+      writeArgs({ fileWriter }, model);
     }
 
     if (model.writeCountArgs()) {
-      writeCountArgs({ fileWriter, dmmf }, model);
-      writeCountSelect({ fileWriter, dmmf }, model);
+      writeCountArgs({ fileWriter }, model);
+      writeCountSelect({ fileWriter }, model);
     }
 
-    writeSelect({ fileWriter, dmmf }, model);
+    writeSelect({ fileWriter }, model);
 
     fileWriter.writer.blankLine();
   });

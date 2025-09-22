@@ -1,4 +1,3 @@
-import { globalConfig } from 'src/config';
 import {
   writeCustomEnum,
   writeDecimalJsLike,
@@ -10,26 +9,28 @@ import {
   writePrismaEnum,
   writeSelect,
 } from '.';
-import { FileWriter } from '../classes';
-import { CreateFiles } from '../types';
+import { FileWriter, getExtendedDMMF } from '../classes';
 import { writeRemoveUndefined } from './contentWriters/writeRemoveUndefined';
+import { getConfig } from '../config';
 
 /////////////////////////////////////////////////
 // FUNCTION
 /////////////////////////////////////////////////
 
-export const writeInputTypeFiles: CreateFiles = ({ path, dmmf }) => {
-  const config = globalConfig.getConfig();
-  const { inputTypePath, writeBarrelFiles } = config;
+export const writeInputTypeFiles = () => {
+  const config = getConfig();
+  const dmmf = getExtendedDMMF();
 
   // WRITE INDEX FILE
   // ------------------------------------------------------------
   const indexFileWriter = new FileWriter();
 
-  const folderPath = indexFileWriter.createPath(`${path}/${inputTypePath}`);
+  const folderPath = indexFileWriter.createPath(
+    `${config.outputPath}/${config.inputTypePath}`,
+  );
 
   if (folderPath) {
-    if (writeBarrelFiles) {
+    if (config.writeBarrelFiles) {
       indexFileWriter.createFile(
         `${folderPath}/index.ts`,
         ({ writeExport }) => {
@@ -80,7 +81,7 @@ export const writeInputTypeFiles: CreateFiles = ({ path, dmmf }) => {
     if (config.useExactOptionalPropertyTypes) {
       new FileWriter().createFile(
         `${folderPath}/RemoveUndefined.ts`,
-        (fileWriter) => writeRemoveUndefined({ fileWriter, dmmf }),
+        (fileWriter) => writeRemoveUndefined({ fileWriter }),
       );
     }
 
@@ -90,12 +91,12 @@ export const writeInputTypeFiles: CreateFiles = ({ path, dmmf }) => {
     if (dmmf.schema.hasJsonTypes) {
       new FileWriter().createFile(
         `${folderPath}/JsonValueSchema.ts`,
-        (fileWriter) => writeJsonValue({ fileWriter, dmmf }),
+        (fileWriter) => writeJsonValue({ fileWriter }),
       );
 
       new FileWriter().createFile(
         `${folderPath}/InputJsonValueSchema.ts`,
-        (fileWriter) => writeInputJsonValue({ fileWriter, dmmf }),
+        (fileWriter) => writeInputJsonValue({ fileWriter }),
       );
     }
 
@@ -105,12 +106,12 @@ export const writeInputTypeFiles: CreateFiles = ({ path, dmmf }) => {
     if (dmmf.schema.hasDecimalTypes) {
       new FileWriter().createFile(
         `${folderPath}/DecimalJsLikeSchema.ts`,
-        (fileWriter) => writeDecimalJsLike({ fileWriter, dmmf }),
+        (fileWriter) => writeDecimalJsLike({ fileWriter }),
       );
 
       new FileWriter().createFile(
         `${folderPath}/isValidDecimalInput.ts`,
-        (fileWriter) => writeIsValidDecimalInput({ fileWriter, dmmf }),
+        (fileWriter) => writeIsValidDecimalInput({ fileWriter }),
       );
     }
 
@@ -121,14 +122,14 @@ export const writeInputTypeFiles: CreateFiles = ({ path, dmmf }) => {
     dmmf.schema.enumTypes.prisma.forEach((enumData) => {
       new FileWriter().createFile(
         `${folderPath}/${enumData.name}Schema.ts`,
-        (fileWriter) => writePrismaEnum({ fileWriter, dmmf }, enumData),
+        (fileWriter) => writePrismaEnum({ fileWriter }, enumData),
       );
     });
 
     dmmf.datamodel.enums.forEach((enumData) => {
       new FileWriter().createFile(
         `${folderPath}/${enumData.name}Schema.ts`,
-        (fileWriter) => writeCustomEnum({ fileWriter, dmmf }, enumData),
+        (fileWriter) => writeCustomEnum({ fileWriter }, enumData),
       );
     });
 
@@ -146,13 +147,13 @@ export const writeInputTypeFiles: CreateFiles = ({ path, dmmf }) => {
       if (model.hasRelationField()) {
         new FileWriter().createFile(
           `${folderPath}/${model.name}IncludeSchema.ts`,
-          (fileWriter) => writeInclude({ fileWriter, dmmf }, model),
+          (fileWriter) => writeInclude({ fileWriter }, model),
         );
       }
 
       new FileWriter().createFile(
         `${folderPath}/${model.name}SelectSchema.ts`,
-        (fileWriter) => writeSelect({ fileWriter, dmmf }, model),
+        (fileWriter) => writeSelect({ fileWriter }, model),
       );
     });
 
@@ -163,7 +164,7 @@ export const writeInputTypeFiles: CreateFiles = ({ path, dmmf }) => {
     dmmf.schema.inputObjectTypes.prisma.forEach((inputType) => {
       new FileWriter().createFile(
         `${folderPath}/${inputType.name}Schema.ts`,
-        (fileWriter) => writeInputObjectType({ fileWriter, dmmf }, inputType),
+        (fileWriter) => writeInputObjectType({ fileWriter }, inputType),
       );
     });
   }

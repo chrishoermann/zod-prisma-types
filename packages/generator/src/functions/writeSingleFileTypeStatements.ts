@@ -1,19 +1,15 @@
 import { type WriteStatements } from '../types';
 import { writeModelOrType } from './contentWriters';
-import { globalConfig } from '../config';
+import { getConfig } from '../config';
+import { getExtendedDMMF } from '../classes';
 
 /////////////////////////////////////////////////
 // FUNCTION
 /////////////////////////////////////////////////
 
-export const writeSingleFileTypeStatements: WriteStatements = (
-  dmmf,
-  fileWriter,
-) => {
-  if (
-    !globalConfig.getConfig().createModelTypes ||
-    dmmf.datamodel.types.length === 0
-  )
+export const writeSingleFileTypeStatements: WriteStatements = (fileWriter) => {
+  const dmmf = getExtendedDMMF();
+  if (!getConfig().createModelTypes || dmmf.datamodel.types.length === 0)
     return;
 
   fileWriter.writer.blankLine();
@@ -23,7 +19,7 @@ export const writeSingleFileTypeStatements: WriteStatements = (
   dmmf.datamodel.types.forEach((type) => {
     fileWriter.writeHeading(`${type.formattedNames.upperCaseSpace}`, 'SLIM');
     fileWriter.writer.newLine();
-    writeModelOrType({ fileWriter, dmmf }, type);
+    writeModelOrType({ fileWriter }, type);
     fileWriter.writer.newLine();
   });
 };

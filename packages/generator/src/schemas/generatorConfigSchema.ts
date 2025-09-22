@@ -1,4 +1,4 @@
-import { PrismaVersionSchema } from '../utils';
+import { PrismaVersionSchema, ZodVersionSchema } from '../utils';
 import { z } from 'zod';
 
 ////////////////////////////////////////////////
@@ -96,15 +96,38 @@ export const configSchema = z.object({
     .optional()
     .default('false')
     .transform((val) => val === 'true'),
+
+  /**
+   * SubPath for the input type schemas in multiple file mode.
+   * `inputTypeSchemas`
+   */
   inputTypePath: z.string().optional().default('inputTypeSchemas'), // currently only used internally
+
+  /**
+   * SubPath for the output type schemas in multiple file mode.
+   *`outputTypeSchemas`
+   */
   outputTypePath: z.string().optional().default('outputTypeSchemas'), // currently only used internally
   prismaVersion: PrismaVersionSchema.optional(),
+  zodVersion: ZodVersionSchema.optional(),
   decimalJSInstalled: z.boolean().default(false),
   isPrismaClientGenerator: z.boolean().default(false),
   prismaLibraryPath: z
     .string()
     .optional()
     .default('@prisma/client/runtime/library'),
+
+  /**
+   * Path where the generated schemas will be stored.
+   * This is read from the generator options where it is specified via the `output` option.
+   * e.g. `./generated/zod`
+   */
+  outputPath: z
+    .object({
+      fromEnvVar: z.string().nullable(),
+      value: z.string({ message: 'No output path specified' }),
+    })
+    .transform((val) => val.value),
 });
 
 export type GeneratorConfig = z.infer<typeof configSchema>;

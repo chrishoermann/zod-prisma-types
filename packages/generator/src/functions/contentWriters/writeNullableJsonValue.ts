@@ -1,12 +1,12 @@
 import { type ContentWriterOptions } from '../../types';
-import { writeZodImport } from '../zodCompatibility';
-import { globalConfig } from '../../config';
+import { writeZodImport } from '..';
+import { getConfig } from '../../config';
 
 export const writeNullableJsonValue = ({
   fileWriter: { writer, writeImport },
   getSingleFileContent = false,
 }: ContentWriterOptions) => {
-  const { useMultipleFiles } = globalConfig.getConfig();
+  const { useMultipleFiles } = getConfig();
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeZodImport(writeImport);

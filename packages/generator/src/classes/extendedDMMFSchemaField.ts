@@ -11,7 +11,7 @@ import {
   PRISMA_ACTION_ARG_MAP,
   PRISMA_ACTION_MATCHER_ARRAY,
 } from '../constants/objectMaps';
-import { globalConfig } from 'src/config';
+import { getConfig } from '../config';
 
 /////////////////////////////////////////////////
 // REGEX
@@ -183,7 +183,7 @@ export class ExtendedDMMFSchemaField
   }
 
   private _setArgTypeImports() {
-    const { prismaClientPath } = globalConfig.getConfig();
+    const { prismaClientPath, inputTypePath } = getConfig();
     const prismaImport = `import type { Prisma } from '${prismaClientPath}';`;
 
     const imports: string[] = ["import { z } from 'zod';", prismaImport];
@@ -194,7 +194,7 @@ export class ExtendedDMMFSchemaField
           ? this.modelType
           : this.modelType.name;
       imports.push(
-        `import { ${modelTypeName}IncludeSchema } from '../${globalConfig.getConfig().inputTypePath}/${modelTypeName}IncludeSchema'`,
+        `import { ${modelTypeName}IncludeSchema } from '../${inputTypePath}/${modelTypeName}IncludeSchema'`,
       );
     }
 
@@ -202,13 +202,13 @@ export class ExtendedDMMFSchemaField
       if (arg.hasMultipleTypes) {
         return arg.inputTypes.forEach((inputType) => {
           imports.push(
-            `import { ${inputType.type}Schema } from '../${globalConfig.getConfig().inputTypePath}/${inputType.type}Schema'`,
+            `import { ${inputType.type}Schema } from '../${inputTypePath}/${inputType.type}Schema'`,
           );
         });
       }
 
       return imports.push(
-        `import { ${arg.inputTypes[0].type}Schema } from '../${globalConfig.getConfig().inputTypePath}/${arg.inputTypes[0].type}Schema'`,
+        `import { ${arg.inputTypes[0].type}Schema } from '../${inputTypePath}/${arg.inputTypes[0].type}Schema'`,
       );
     });
 
@@ -225,7 +225,7 @@ export class ExtendedDMMFSchemaField
     return (
       this.isObjectOutputType() &&
       this.isListOutputType() &&
-      !globalConfig.getConfig().isMongoDb
+      !getConfig().isMongoDb
     );
   }
 
@@ -238,7 +238,7 @@ export class ExtendedDMMFSchemaField
     return (
       this.isObjectOutputType() &&
       this.isListOutputType() &&
-      !globalConfig.getConfig().isMongoDb
+      !getConfig().isMongoDb
     );
   }
 
@@ -248,7 +248,7 @@ export class ExtendedDMMFSchemaField
    * @returns `true` if the field is an object type and the provider is not `mongodb`
    */
   private _setWriteIncludeField() {
-    return this.isObjectOutputType() && !globalConfig.getConfig().isMongoDb;
+    return this.isObjectOutputType() && !getConfig().isMongoDb;
   }
 
   /**
@@ -265,10 +265,7 @@ export class ExtendedDMMFSchemaField
    * Checks if the `select` field should be written in the arg types schema.
    */
   private _setWriteSelectArg() {
-    return (
-      this._setWriteSelectAndIncludeArgs() &&
-      globalConfig.getConfig().addSelectType
-    );
+    return this._setWriteSelectAndIncludeArgs() && getConfig().addSelectType;
   }
 
   /**
@@ -278,7 +275,7 @@ export class ExtendedDMMFSchemaField
     return (
       this._setWriteSelectAndIncludeArgs() &&
       Boolean(this.linkedModel?.hasRelationFields) &&
-      globalConfig.getConfig().addIncludeType
+      getConfig().addIncludeType
     );
   }
 
@@ -299,9 +296,9 @@ export class ExtendedDMMFSchemaField
       // "include" or "select" should be added to omit union when they match the regex pattern
       this._setWriteSelectAndIncludeArgs() &&
       // "include" should be added to omit union when it is set to be omitted via generator config
-      (!globalConfig.getConfig().addIncludeType ||
+      (!getConfig().addIncludeType ||
         // "select" should be added to omit union when it is set to be omitted via generator config
-        !globalConfig.getConfig().addSelectType)
+        !getConfig().addSelectType)
     );
   }
 
@@ -312,7 +309,7 @@ export class ExtendedDMMFSchemaField
       // "include" should be added to omit union when field is of type "outputObjectType"
       this._setWriteIncludeField() &&
       // "include" should be added to omit union when it is set to be omitted via generator config
-      !globalConfig.getConfig().addIncludeType &&
+      !getConfig().addIncludeType &&
       // "include" should be added to omit union when it has relation fields
       this.linkedModel?.hasRelationFields
     );
@@ -325,7 +322,7 @@ export class ExtendedDMMFSchemaField
       // "select" should be added to omit union when field is of type "outputObjectType"
       this._setWriteSelectField() &&
       // "select" should be added to omit union when it is set to be omitted via generator config
-      !globalConfig.getConfig().addSelectType
+      !getConfig().addSelectType
     );
   }
 

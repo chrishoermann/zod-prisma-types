@@ -1,7 +1,7 @@
 import type DMMF from '@prisma/dmmf';
 import { it, expect, describe, afterAll } from 'vitest';
 
-import { MODEL_BASE } from '../setup';
+import { getModelBase } from '../setup';
 import {
   ExtendedDMMFModelValidatorMatch,
   IMPORT_STATEMENT_REGEX_PATTERN,
@@ -16,12 +16,6 @@ import { DEFAULT_GENERATOR_CONFIG } from '../../../../__tests__/setup';
 export function testExtendedDMMFFieldValidatorMatch<
   T extends ExtendedDMMFModelValidatorMatch,
 >(classConstructor: new (model: DMMF.Model) => T) {
-  const getModel = (model?: Partial<DMMF.Model>) =>
-    new classConstructor({
-      ...MODEL_BASE,
-      ...model,
-    });
-
   if (!globalConfig.isInitialized()) {
     globalConfig.initialize(DEFAULT_GENERATOR_CONFIG);
   }
@@ -31,6 +25,12 @@ export function testExtendedDMMFFieldValidatorMatch<
       globalConfig.reset();
     }
   });
+
+  const getModel = (model?: Partial<DMMF.Model>) =>
+    new classConstructor({
+      ...getModelBase(),
+      ...model,
+    });
 
   describe(`ExtendedDMMFModelValidatorMatch`, () => {
     it('should test the regex with a matching string', () => {

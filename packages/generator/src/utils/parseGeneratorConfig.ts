@@ -5,6 +5,7 @@ import { getPrismaClientProvider } from './getPrismaDbProvider';
 import { configSchema } from '../schemas';
 import { getPrismaVersion } from './getPrismaVersion';
 import { getDecimalJSInstalled } from './getDecimalJSInstalled';
+import { getZodVersion } from './getZodVersion';
 
 export const parseGeneratorConfig = (generatorOptions: GeneratorOptions) => {
   // Merge the generator config with the prisma client output path
@@ -15,6 +16,8 @@ export const parseGeneratorConfig = (generatorOptions: GeneratorOptions) => {
     ...getPrismaClientGeneratorConfig(generatorOptions),
     ...getPrismaClientProvider(generatorOptions),
     prismaVersion: getPrismaVersion(),
+    zodVersion: getZodVersion(),
     decimalJSInstalled: getDecimalJSInstalled(),
+    outputPath: generatorOptions.generator.output,
   });
 };

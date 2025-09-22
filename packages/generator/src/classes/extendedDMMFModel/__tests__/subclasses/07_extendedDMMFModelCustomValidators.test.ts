@@ -1,7 +1,7 @@
 import type DMMF from '@prisma/dmmf';
 import { it, expect, describe, afterAll } from 'vitest';
 
-import { MODEL_BASE } from '../setup';
+import { getModelBase } from '../setup';
 import { ExtendedDMMFModelCustomValidators } from '../../07_extendedDMMFModelCustomValidators';
 import { globalConfig } from '../../../../config';
 import { DEFAULT_GENERATOR_CONFIG } from '../../../../__tests__/setup';
@@ -15,7 +15,7 @@ export function testExtendedDMMFFieldCustomValidators<
 >(classConstructor: new (model: DMMF.Model) => T) {
   const getModel = (model?: Partial<DMMF.Model>) =>
     new classConstructor({
-      ...MODEL_BASE,
+      ...getModelBase(),
       ...model,
     });
 

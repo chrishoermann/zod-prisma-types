@@ -1,3 +1,5 @@
+import { getConfig } from '../config';
+
 /////////////////////////////////////////////////
 // TYPES
 /////////////////////////////////////////////////
@@ -26,11 +28,17 @@ export const VALIDATOR_CUSTOM_ERROR_SPLIT_KEYS_REGEX = /[\w]+(?=:)/gu;
 // CONSTANTS
 /////////////////////////////////////////////////
 
-export const ZOD_VALID_ERROR_KEYS: ZodCustomErrorKey[] = [
-  'invalid_type_error', // deprecated in zod v4
-  'required_error', // deprecated in zod v4
-  'error', // new in zod v4
-  'description', // new in zod v4
+export const ZOD_V4_VALID_ERROR_KEYS: ZodCustomErrorKey[] = ['error'];
+
+export const ZOD_V3_VALID_ERROR_KEYS: ZodCustomErrorKey[] = [
+  'invalid_type_error',
+  'required_error',
+  'description',
+];
+
+export const ZOD_VALID_ERROR_KEYS = [
+  ...ZOD_V4_VALID_ERROR_KEYS,
+  ...ZOD_V3_VALID_ERROR_KEYS,
 ];
 
 /////////////////////////////////////////////////
@@ -48,6 +56,7 @@ export const validateCustomError = (
   customError: string,
   errorLocation: string,
 ) => {
+  const { zodVersion } = getConfig();
   const match = customError.match(VALIDATOR_CUSTOM_ERROR_REGEX);
   const messages = match?.groups?.['messages'];
   const object = match?.groups?.['object'];
@@ -61,7 +70,29 @@ export const validateCustomError = (
     .match(VALIDATOR_CUSTOM_ERROR_SPLIT_KEYS_REGEX);
 
   const isValid = customErrorKeysArray?.every((key) => {
-    if (ZOD_VALID_ERROR_KEYS?.includes(key as ZodCustomErrorKey)) return true;
+    if (zodVersion?.major === 4) {
+      if (ZOD_V4_VALID_ERROR_KEYS?.includes(key as ZodCustomErrorKey)) {
+        return true;
+      }
+
+      if (ZOD_V3_VALID_ERROR_KEYS?.includes(key as ZodCustomErrorKey)) {
+        throw new Error(
+          `[@zod generator error]: Custom error key '${key}' is not valid for zod v4. Please use error key instead! ${errorLocation}`,
+        );
+      }
+    }
+
+    if (zodVersion?.major === 3) {
+      if (ZOD_V3_VALID_ERROR_KEYS?.includes(key as ZodCustomErrorKey)) {
+        return true;
+      }
+
+      if (ZOD_V4_VALID_ERROR_KEYS?.includes(key as ZodCustomErrorKey)) {
+        throw new Error(
+          `[@zod generator error]: Custom error key '${key}' is not valid for zod v3. Please upgrade to zod v4! ${errorLocation}`,
+        );
+      }
+    }
 
     throw new Error(
       `[@zod generator error]: Custom error key '${key}' is not valid. Please check for typos! ${errorLocation}`,

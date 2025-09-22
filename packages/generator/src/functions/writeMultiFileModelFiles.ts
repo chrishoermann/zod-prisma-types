@@ -1,23 +1,25 @@
-import { FileWriter } from '../classes';
-import { CreateFiles } from '../types';
+import { FileWriter, getExtendedDMMF } from '../classes';
 import { writeModelOrType } from './contentWriters';
-import { globalConfig } from '../config';
+import { getConfig } from '../config';
 
 /////////////////////////////////////////////////
 // FUNCTION
 /////////////////////////////////////////////////
 
-export const writeModelFiles: CreateFiles = ({ path, dmmf }) => {
-  const { createModelTypes, writeBarrelFiles } = globalConfig.getConfig();
+export const writeModelFiles = () => {
+  const config = getConfig();
+  const dmmf = getExtendedDMMF();
 
-  if (!createModelTypes) return;
+  if (!config.createModelTypes) return;
 
   const indexFileWriter = new FileWriter();
 
-  const folderPath = indexFileWriter.createPath(`${path}/modelSchema`);
+  const folderPath = indexFileWriter.createPath(
+    `${config.outputPath}/modelSchema`,
+  );
 
   if (folderPath) {
-    if (writeBarrelFiles) {
+    if (config.writeBarrelFiles) {
       indexFileWriter.createFile(
         `${folderPath}/index.ts`,
         ({ writeExport }) => {
@@ -26,6 +28,7 @@ export const writeModelFiles: CreateFiles = ({ path, dmmf }) => {
           dmmf.datamodel.models.forEach((model) => {
             writeExportSet.add(`${model.name}Schema`);
           });
+
           dmmf.datamodel.types.forEach((model) => {
             writeExportSet.add(`${model.name}Schema`);
           });
@@ -47,14 +50,14 @@ export const writeModelFiles: CreateFiles = ({ path, dmmf }) => {
     dmmf.datamodel.models.forEach((model) => {
       new FileWriter().createFile(
         `${folderPath}/${model.name}Schema.ts`,
-        (fileWriter) => writeModelOrType({ fileWriter, dmmf }, model),
+        (fileWriter) => writeModelOrType({ fileWriter }, model),
       );
     });
 
     dmmf.datamodel.types.forEach((model) => {
       new FileWriter().createFile(
         `${folderPath}/${model.name}Schema.ts`,
-        (fileWriter) => writeModelOrType({ fileWriter, dmmf }, model),
+        (fileWriter) => writeModelOrType({ fileWriter }, model),
       );
     });
   }

@@ -1,7 +1,7 @@
 import { ExtendedDMMFSchemaEnum } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
-import { writeZodImport } from '../zodCompatibility';
-import { globalConfig } from '../../config';
+import { writeZodImport } from '..';
+import { getConfig } from '../../config';
 
 export const writePrismaEnum = (
   {
@@ -15,7 +15,7 @@ export const writePrismaEnum = (
     prismaClientPath,
     prismaLibraryPath,
     isPrismaClientGenerator,
-  } = globalConfig.getConfig();
+  } = getConfig();
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeZodImport(writeImport);
