@@ -1,7 +1,5 @@
 import type DMMF from '@prisma/dmmf';
 
-import { GeneratorConfig } from '../schemas';
-
 /////////////////////////////////////////////////
 // CLASSES
 /////////////////////////////////////////////////
@@ -16,10 +14,7 @@ export class ExtendedDMMFIndex implements DMMF.Index {
   readonly clustered?: DMMF.Index['clustered'];
   readonly fields: DMMF.Index['fields'];
 
-  constructor(
-    readonly generatorConfig: GeneratorConfig,
-    index: DMMF.Index,
-  ) {
+  constructor(index: DMMF.Index) {
     this.model = index.model;
     this.type = index.type;
     this.isDefinedOnField = index.isDefinedOnField;

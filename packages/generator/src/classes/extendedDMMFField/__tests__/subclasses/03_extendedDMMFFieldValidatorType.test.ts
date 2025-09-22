@@ -1,9 +1,10 @@
 import type DMMF from '@prisma/dmmf';
-import { it, expect, describe } from 'vitest';
+import { it, expect, describe, afterAll } from 'vitest';
 
-import { DEFAULT_GENERATOR_CONFIG, FIELD_BASE } from '../setup';
+import { FIELD_BASE } from '../setup';
 import { ExtendedDMMFFieldValidatorType } from '../../03_extendedDMMFFieldValidatorType';
-import { GeneratorConfig } from '../../../../schemas/generatorConfigSchema';
+import { globalConfig } from '../../../../config';
+import { DEFAULT_GENERATOR_CONFIG } from '../../../../__tests__/setup';
 
 /////////////////////////////////////////////
 // TEST SUITE
@@ -11,19 +12,19 @@ import { GeneratorConfig } from '../../../../schemas/generatorConfigSchema';
 
 export function testExtendedDMMFFieldValidatorType<
   T extends ExtendedDMMFFieldValidatorType,
->(
-  classConstructor: new (
-    model: DMMF.Field,
-    generatorConfig: GeneratorConfig,
-    modelName: string,
-  ) => T,
-) {
+>(classConstructor: new (model: DMMF.Field, modelName: string) => T) {
   const getField = (field?: Partial<DMMF.Field>) =>
-    new classConstructor(
-      { ...FIELD_BASE, ...field },
-      DEFAULT_GENERATOR_CONFIG,
-      'ModelName',
-    );
+    new classConstructor({ ...FIELD_BASE, ...field }, 'ModelName');
+
+  if (!globalConfig.isInitialized()) {
+    globalConfig.initialize(DEFAULT_GENERATOR_CONFIG);
+  }
+
+  afterAll(() => {
+    if (globalConfig.isInitialized()) {
+      globalConfig.reset();
+    }
+  });
 
   describe(`ExtendedDMMFFieldValidatorType`, () => {
     it(`should load a class without docs`, async () => {

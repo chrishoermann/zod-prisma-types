@@ -1,14 +1,14 @@
 import { writeFieldAdditions } from '.';
 import { ExtendedWriteFieldOptions } from '../../types';
+import { globalConfig } from '../../config';
 
 export const writeBytes = ({
   writer,
   field,
-  dmmf: {
-    generatorConfig: { prismaVersion },
-  },
   writeOptionalDefaults = false,
 }: ExtendedWriteFieldOptions) => {
+  const { prismaVersion } = globalConfig.getConfig();
+
   writer
     .conditionalWrite(field.omitInModel(), '// omitted: ')
     .write(`${field.formattedNames.original}: `)

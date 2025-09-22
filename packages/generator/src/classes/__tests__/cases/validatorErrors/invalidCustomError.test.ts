@@ -1,11 +1,23 @@
-import { it, expect } from 'vitest';
+import { it, expect, afterAll } from 'vitest';
 
-import { ExtendedDMMF } from '../../../ExtendedDMMF';
+import { ExtendedDMMF } from '../../../extendedDMMF';
 import { loadDMMF } from '../../utils/loadDMMF';
+import { globalConfig } from '../../../../config';
+import { DEFAULT_GENERATOR_CONFIG } from '../../../../__tests__/setup';
 
 it('should throw a custom error key is not valid', async () => {
+  if (!globalConfig.isInitialized()) {
+    globalConfig.initialize(DEFAULT_GENERATOR_CONFIG);
+  }
+
+  afterAll(() => {
+    if (globalConfig.isInitialized()) {
+      globalConfig.reset();
+    }
+  });
+
   const dmmf = await loadDMMF(`${__dirname}/invalidCustomError.prisma`);
-  expect(() => new ExtendedDMMF(dmmf, {})).toThrowError(
+  expect(() => new ExtendedDMMF(dmmf)).toThrowError(
     "[@zod generator error]: Custom error key 'invalid_type_errrror' is not valid. Please check for typos! [Error Location]: Model: 'MyModel', Field: 'string'.",
   );
 });

@@ -1,7 +1,6 @@
 import type DMMF from '@prisma/dmmf';
 
 import { ExtendedDMMFFieldBase } from './01_extendedDMMFFieldBase';
-import { GeneratorConfig } from '../../schemas';
 
 /////////////////////////////////////////////////
 // REGEX
@@ -32,12 +31,8 @@ export class ExtendedDMMFFieldValidatorMatch extends ExtendedDMMFFieldBase {
   protected _validatorMatch?: RegExpMatchArray;
   readonly clearedDocumentation?: string;
 
-  constructor(
-    field: DMMF.Field,
-    generatorConfig: GeneratorConfig,
-    modelName: string,
-  ) {
-    super(field, generatorConfig, modelName);
+  constructor(field: DMMF.Field, modelName: string) {
+    super(field, modelName);
 
     this._validatorMatch = this._getValidatorMatchArray();
     this.clearedDocumentation = this._getClearedDocumentation();

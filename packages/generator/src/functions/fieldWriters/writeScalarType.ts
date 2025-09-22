@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { globalConfig } from 'src/config';
 import { WriteTypeFunction } from '../../types';
 
 /////////////////////////////////////////////////
@@ -30,21 +31,18 @@ export const writeScalarType: WriteTypeFunction = (
   const zodType = inputType.getZodScalarType();
   if (!zodType) return;
 
+  const { addInputTypeValidation, coerceDate } = globalConfig.getConfig();
+
   if (zodCustomValidatorString) {
     if (zodType === 'date') {
       return writer
+        .conditionalWrite(addInputTypeValidation, zodCustomValidatorString)
         .conditionalWrite(
-          inputType.generatorConfig.addInputTypeValidation,
-          zodCustomValidatorString,
-        )
-        .conditionalWrite(
-          !inputType.generatorConfig.addInputTypeValidation &&
-            !inputType.generatorConfig.coerceDate,
+          !addInputTypeValidation && !coerceDate,
           `z.${zodType}()`,
         )
         .conditionalWrite(
-          !inputType.generatorConfig.addInputTypeValidation &&
-            inputType.generatorConfig.coerceDate,
+          !addInputTypeValidation && coerceDate,
           `z.coerce.${zodType}()`,
         )
         .conditionalWrite(inputType.isList, `.array()`)
@@ -55,14 +53,8 @@ export const writeScalarType: WriteTypeFunction = (
 
     // only writes the validator string if the user has not disabled input type validation
     return writer
-      .conditionalWrite(
-        inputType.generatorConfig.addInputTypeValidation,
-        zodCustomValidatorString,
-      )
-      .conditionalWrite(
-        !inputType.generatorConfig.addInputTypeValidation,
-        `z.${zodType}()`,
-      )
+      .conditionalWrite(addInputTypeValidation, zodCustomValidatorString)
+      .conditionalWrite(!addInputTypeValidation, `z.${zodType}()`)
       .conditionalWrite(inputType.isList, `.array()`)
       .conditionalWrite(isOptional, `.optional()`)
       .conditionalWrite(isNullable, `.nullable()`)
@@ -71,11 +63,8 @@ export const writeScalarType: WriteTypeFunction = (
 
   if (zodType === 'date') {
     return writer
-      .conditionalWrite(!inputType.generatorConfig.coerceDate, `z.${zodType}(`)
-      .conditionalWrite(
-        inputType.generatorConfig.coerceDate,
-        `z.coerce.${zodType}(`,
-      )
+      .conditionalWrite(!coerceDate, `z.${zodType}(`)
+      .conditionalWrite(coerceDate, `z.coerce.${zodType}(`)
       .conditionalWrite(writeValidation && !!zodCustomErrors, zodCustomErrors!)
       .write(`)`)
       .conditionalWrite(

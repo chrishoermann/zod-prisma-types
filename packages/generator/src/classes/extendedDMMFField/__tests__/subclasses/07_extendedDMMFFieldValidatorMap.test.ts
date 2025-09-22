@@ -1,7 +1,8 @@
 import type DMMF from '@prisma/dmmf';
-import { it, expect, describe } from 'vitest';
+import { it, expect, describe, afterAll } from 'vitest';
 
-import { DEFAULT_GENERATOR_CONFIG, FIELD_BASE } from '../setup';
+import { FIELD_BASE } from '../setup';
+import { DEFAULT_GENERATOR_CONFIG } from '../../../../__tests__/setup';
 import {
   // ARRAY_VALIDATOR_MESSAGE_REGEX,
   BIGINT_VALIDATOR_MESSAGE_REGEX,
@@ -16,7 +17,7 @@ import {
   STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
   STRING_VALIDATOR_STRING_AND_MESSAGE_REGEX,
 } from '../../07_extendedDMMFFieldValidatorMap';
-import { GeneratorConfig } from '../../../../schemas/generatorConfigSchema';
+import { globalConfig } from '../../../../config';
 
 /////////////////////////////////////////////
 // TEST SUITE
@@ -24,22 +25,23 @@ import { GeneratorConfig } from '../../../../schemas/generatorConfigSchema';
 
 export function testExtendedDMMFFieldValidatorMap<
   T extends ExtendedDMMFFieldValidatorMap,
->(
-  classConstructor: new (
-    model: DMMF.Field,
-    generatorConfig: GeneratorConfig,
-    modelName: string,
-  ) => T,
-) {
+>(classConstructor: new (model: DMMF.Field, modelName: string) => T) {
   const getField = (field?: Partial<DMMF.Field>) =>
-    new classConstructor(
-      { ...FIELD_BASE, ...field },
-      DEFAULT_GENERATOR_CONFIG,
-      'ModelName',
-    );
+    new classConstructor({ ...FIELD_BASE, ...field }, 'ModelName');
+
   /////////////////////////////////////////////
   // REGEX TESTS
   /////////////////////////////////////////////
+
+  if (!globalConfig.isInitialized()) {
+    globalConfig.initialize(DEFAULT_GENERATOR_CONFIG);
+  }
+
+  afterAll(() => {
+    if (globalConfig.isInitialized()) {
+      globalConfig.reset();
+    }
+  });
 
   describe("ExtendedDMMFFieldValidatorMap's regex with japanese chars", () => {
     it(`string validator number should return match for regex with japanese chars`, async () => {

@@ -13,7 +13,7 @@ import {
   PRISMA_FUNCTION_TYPES_WITH_VALIDATORS,
   PRISMA_FUNCTION_TYPES_WITH_VALIDATORS_WHERE_UNIQUE,
 } from '../constants/regex';
-import { GeneratorConfig } from '../schemas';
+import { getConfig } from '../config/globalConfig';
 
 const SPLIT_NAME_REGEX =
   /Unchecked|Create|Update|CreateMany|CreateManyAndReturn|UpdateMany|UpdateManyAndReturn|Upsert|Where|WhereUnique|OrderBy|ScalarWhere|Aggregate|GroupBy/g;
@@ -41,13 +41,8 @@ export class ExtendedDMMFInputType
   readonly isWhereUniqueInput?: boolean;
   readonly extendedWhereUniqueFields?: ExtendedDMMFSchemaArg[][];
 
-  constructor(
-    readonly generatorConfig: GeneratorConfig,
-    type: DMMF.InputType,
-    datamodel: ExtendedDMMFDatamodel,
-  ) {
+  constructor(type: DMMF.InputType, datamodel: ExtendedDMMFDatamodel) {
     super(type.name);
-    this.generatorConfig = generatorConfig;
     this.name = type.name;
     this.linkedModel = this._setLinkedModel(datamodel);
     this.constraints = type.constraints;
@@ -116,7 +111,6 @@ export class ExtendedDMMFInputType
           : undefined;
 
       return new ExtendedDMMFSchemaArg(
-        this.generatorConfig,
         { ...field, ...optionalValidators },
         linkedField,
       );
@@ -124,10 +118,8 @@ export class ExtendedDMMFInputType
   }
 
   private _fieldIsPrismaFunctionType() {
-    if (
-      !this.generatorConfig.useMultipleFiles ||
-      this.generatorConfig.validateWhereUniqueInput
-    ) {
+    const config = getConfig();
+    if (!config.useMultipleFiles || config.validateWhereUniqueInput) {
       return PRISMA_FUNCTION_TYPES_WITH_VALIDATORS_WHERE_UNIQUE.test(this.name);
     }
     return PRISMA_FUNCTION_TYPES_WITH_VALIDATORS.test(this.name);
@@ -187,7 +179,7 @@ export class ExtendedDMMFInputType
       prismaLibraryPath,
       isPrismaClientGenerator,
       decimalJSInstalled,
-    } = this.generatorConfig;
+    } = getConfig();
 
     const prismaImports = [];
 

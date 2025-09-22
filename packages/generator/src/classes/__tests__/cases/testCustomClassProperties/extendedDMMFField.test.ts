@@ -1,44 +1,28 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterAll } from 'vitest';
 
-import { configSchema, GeneratorConfig } from '../../../../schemas';
 import { getStringVariants } from '../../../../utils/getStringVariants';
 import { ExtendedDMMF } from '../../../extendedDMMF';
 import { loadDMMF } from '../../utils/loadDMMF';
-
-export const DEFAULT_GENERATOR_CONFIG: GeneratorConfig = {
-  useMultipleFiles: false,
-  createInputTypes: true,
-  createModelTypes: true,
-  createOptionalDefaultValuesTypes: false,
-  createRelationValuesTypes: false,
-  createPartialTypes: false,
-  addIncludeType: true,
-  addSelectType: true,
-  addInputTypeValidation: true,
-  useDefaultValidators: true,
-  prismaClientPath: '@prisma/client',
-  coerceDate: true,
-  writeNullishInModelTypes: false,
-  isMongoDb: false,
-  validateWhereUniqueInput: true,
-  inputTypePath: 'inputTypeSchemas',
-  outputTypePath: 'outputTypeSchemas',
-  writeBarrelFiles: true,
-  decimalJSInstalled: false,
-  useTypeAssertions: false,
-  isPrismaClientGenerator: false,
-  prismaLibraryPath: '@prisma/client/runtime/library',
-  useExactOptionalPropertyTypes: false,
-};
+import { globalConfig } from '../../../../config';
+import { DEFAULT_GENERATOR_CONFIG } from '../../../../__tests__/setup';
 
 describe('testSimpleModelNoValidators', async () => {
+  if (!globalConfig.isInitialized()) {
+    globalConfig.initialize(DEFAULT_GENERATOR_CONFIG);
+  }
+
+  afterAll(() => {
+    if (globalConfig.isInitialized()) {
+      globalConfig.reset();
+    }
+  });
+
   const dmmf = await loadDMMF(`${__dirname}/extendedDMMFField.prisma`);
-  const extendedDMMF = new ExtendedDMMF(dmmf, configSchema.parse({}));
+  const extendedDMMF = new ExtendedDMMF(dmmf);
 
   const fields = extendedDMMF.datamodel.models[0].fields;
 
   it(`should set expected values in field ${fields[0].name}`, () => {
-    expect(fields[0].generatorConfig).toEqual(DEFAULT_GENERATOR_CONFIG);
     expect(fields[0].formattedNames).toStrictEqual(
       getStringVariants(fields[0].name),
     );
@@ -77,7 +61,6 @@ describe('testSimpleModelNoValidators', async () => {
   });
 
   it(`should set expected values in field ${fields[1].name}`, () => {
-    expect(fields[1].generatorConfig).toEqual(DEFAULT_GENERATOR_CONFIG);
     expect(fields[1].formattedNames).toStrictEqual(
       getStringVariants(fields[1].name),
     );
@@ -116,7 +99,6 @@ describe('testSimpleModelNoValidators', async () => {
   });
 
   it(`should set expected values in field ${fields[2].name}`, () => {
-    expect(fields[2].generatorConfig).toEqual(DEFAULT_GENERATOR_CONFIG);
     expect(fields[2].formattedNames).toStrictEqual(
       getStringVariants(fields[2].name),
     );
@@ -155,7 +137,6 @@ describe('testSimpleModelNoValidators', async () => {
   });
 
   it(`should set expected values in field ${fields[3].name}`, () => {
-    expect(fields[3].generatorConfig).toEqual(DEFAULT_GENERATOR_CONFIG);
     expect(fields[3].formattedNames).toStrictEqual(
       getStringVariants(fields[3].name),
     );
@@ -194,7 +175,6 @@ describe('testSimpleModelNoValidators', async () => {
   });
 
   it(`should set expected values in field ${fields[4].name}`, () => {
-    expect(fields[4].generatorConfig).toEqual(DEFAULT_GENERATOR_CONFIG);
     expect(fields[4].formattedNames).toStrictEqual(
       getStringVariants(fields[4].name),
     );
@@ -229,7 +209,6 @@ describe('testSimpleModelNoValidators', async () => {
   });
 
   it(`should set expected values in field ${fields[5].name}`, () => {
-    expect(fields[5].generatorConfig).toEqual(DEFAULT_GENERATOR_CONFIG);
     expect(fields[5].formattedNames).toStrictEqual(
       getStringVariants(fields[5].name),
     );
@@ -268,7 +247,6 @@ describe('testSimpleModelNoValidators', async () => {
   });
 
   it(`should set expected values in field ${fields[6].name}`, () => {
-    expect(fields[6].generatorConfig).toEqual(DEFAULT_GENERATOR_CONFIG);
     expect(fields[6].formattedNames).toStrictEqual(
       getStringVariants(fields[6].name),
     );
@@ -303,7 +281,6 @@ describe('testSimpleModelNoValidators', async () => {
   });
 
   it(`should set expected values in field ${fields[7].name}`, () => {
-    expect(fields[7].generatorConfig).toEqual(DEFAULT_GENERATOR_CONFIG);
     expect(fields[7].formattedNames).toStrictEqual(
       getStringVariants(fields[7].name),
     );
@@ -338,7 +315,6 @@ describe('testSimpleModelNoValidators', async () => {
   });
 
   it(`should set expected values in field ${fields[8].name}`, () => {
-    expect(fields[8].generatorConfig).toEqual(DEFAULT_GENERATOR_CONFIG);
     expect(fields[8].formattedNames).toStrictEqual(
       getStringVariants(fields[8].name),
     );
@@ -373,7 +349,6 @@ describe('testSimpleModelNoValidators', async () => {
   });
 
   it(`should set expected values in field ${fields[9].name}`, () => {
-    expect(fields[9].generatorConfig).toEqual(DEFAULT_GENERATOR_CONFIG);
     expect(fields[9].formattedNames).toStrictEqual(
       getStringVariants(fields[9].name),
     );

@@ -2,17 +2,13 @@ import type DMMF from '@prisma/dmmf';
 import type { ReadonlyDeep } from '@prisma/dmmf/dist/util';
 
 import { ExtendedDMMFFieldValidatorPattern } from './04_extendedDMMFFieldValidatorPattern';
-import { GeneratorConfig } from '../../schemas';
+import { getConfig } from '../../config/globalConfig';
 
 export class ExtendedDMMFFieldDefaultValidators extends ExtendedDMMFFieldValidatorPattern {
   protected _defaultValidatorString?: string;
 
-  constructor(
-    field: ReadonlyDeep<DMMF.Field>,
-    generatorConfig: GeneratorConfig,
-    modelName: string,
-  ) {
-    super(field, generatorConfig, modelName);
+  constructor(field: ReadonlyDeep<DMMF.Field>, modelName: string) {
+    super(field, modelName);
 
     this._defaultValidatorString = this._setZodDefaultValidator();
     this._validatorList = this._updateValidatorList();
@@ -22,7 +18,7 @@ export class ExtendedDMMFFieldDefaultValidators extends ExtendedDMMFFieldValidat
   // ----------------------------------------------
 
   private _setZodDefaultValidator() {
-    if (!this.generatorConfig.useDefaultValidators) return;
+    if (!getConfig().useDefaultValidators) return;
     if (this._validatorList?.includes('.noDefault()')) return;
     if (this._isCuid2()) return '.cuid2()';
     if (this._isCuid()) return '.cuid()';

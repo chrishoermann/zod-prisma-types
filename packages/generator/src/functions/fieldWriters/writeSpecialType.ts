@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { globalConfig } from 'src/config';
 import { WriteTypeFunction, WriteTypeOptions } from '../../types';
 
 /////////////////////////////////////////////////
@@ -26,10 +27,15 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
   },
 ) => {
   if (!inputType.isSpecialType()) return;
-  if (
-    zodCustomValidatorString &&
-    inputType.generatorConfig.addInputTypeValidation
-  ) {
+
+  const {
+    addInputTypeValidation,
+    decimalJSInstalled,
+    isPrismaClientGenerator,
+    prismaVersion,
+  } = globalConfig.getConfig();
+
+  if (zodCustomValidatorString && addInputTypeValidation) {
     return writer
       .write(zodCustomValidatorString)
       .conditionalWrite(inputType.isList, `.array()`)
@@ -44,16 +50,13 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
         .write(`z.union([`)
         .write(`z.number().array(),`)
         .write(`z.string().array(),`)
+        .conditionalWrite(decimalJSInstalled, `z.instanceof(Decimal).array(),`)
         .conditionalWrite(
-          inputType.generatorConfig.decimalJSInstalled,
-          `z.instanceof(Decimal).array(),`,
-        )
-        .conditionalWrite(
-          inputType.generatorConfig.isPrismaClientGenerator,
+          isPrismaClientGenerator,
           `z.instanceof(PrismaDecimal).array(),`,
         )
         .conditionalWrite(
-          !inputType.generatorConfig.isPrismaClientGenerator,
+          !isPrismaClientGenerator,
           `z.instanceof(Prisma.Decimal).array(),`,
         )
         .write(`DecimalJsLikeSchema.array(),`)
@@ -75,16 +78,10 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
       .write(`z.union([`)
       .write(`z.number(),`)
       .write(`z.string(),`)
+      .conditionalWrite(decimalJSInstalled, `z.instanceof(Decimal),`)
+      .conditionalWrite(isPrismaClientGenerator, `z.instanceof(PrismaDecimal),`)
       .conditionalWrite(
-        inputType.generatorConfig.decimalJSInstalled,
-        `z.instanceof(Decimal),`,
-      )
-      .conditionalWrite(
-        inputType.generatorConfig.isPrismaClientGenerator,
-        `z.instanceof(PrismaDecimal),`,
-      )
-      .conditionalWrite(
-        !inputType.generatorConfig.isPrismaClientGenerator,
+        !isPrismaClientGenerator,
         `z.instanceof(Prisma.Decimal),`,
       )
       .write(`DecimalJsLikeSchema,`)
@@ -111,7 +108,6 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
   }
 
   if (inputType.isBytesType) {
-    const prismaVersion = inputType.generatorConfig.prismaVersion;
     return writer
       .conditionalWrite(
         prismaVersion?.major === 6 || prismaVersion === undefined,

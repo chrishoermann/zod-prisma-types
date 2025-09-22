@@ -1,9 +1,9 @@
 import { type ContentWriterOptions } from '../../types';
 import { writeZodImport } from '../zodCompatibility';
+import { globalConfig } from '../../config';
 
 export const writeDecimalJsLikeList = ({
   fileWriter: { writer, writeImport },
-  dmmf,
   getSingleFileContent = false,
 }: ContentWriterOptions) => {
   const {
@@ -11,7 +11,7 @@ export const writeDecimalJsLikeList = ({
     prismaClientPath,
     prismaLibraryPath,
     isPrismaClientGenerator,
-  } = dmmf.generatorConfig;
+  } = globalConfig.getConfig();
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeZodImport(writeImport);

@@ -1,5 +1,6 @@
 import { type WriteStatements } from '../types';
 import { writeModelOrType } from './contentWriters';
+import { globalConfig } from '../config';
 
 /////////////////////////////////////////////////
 // FUNCTION
@@ -9,7 +10,7 @@ export const writeSingleFileModelStatements: WriteStatements = (
   dmmf,
   fileWriter,
 ) => {
-  if (!dmmf.generatorConfig.createModelTypes) return;
+  if (!globalConfig.getConfig().createModelTypes) return;
 
   fileWriter.writeHeading(`MODELS`, 'FAT');
 

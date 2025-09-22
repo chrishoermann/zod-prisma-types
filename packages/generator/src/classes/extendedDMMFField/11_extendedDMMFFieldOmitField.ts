@@ -3,7 +3,6 @@ import type DMMF from '@prisma/dmmf';
 import { ExtendedDMMFFieldArrayValidatorString } from './10_extendedDMMFFieldArrayValidatorString';
 import { CUSTOM_OMIT_VALIDATOR_MESSAGE_REGEX } from './07_extendedDMMFFieldValidatorMap';
 import { PRISMA_FUNCTION_TYPES_WITH_VALIDATORS } from '../../constants';
-import { GeneratorConfig } from '../../schemas';
 
 /////////////////////////////////////////////////
 // TYPES
@@ -24,12 +23,8 @@ export const CUSTOM_VALIDATOR_VALID_MODE_REGEX = /model|input/;
 export class ExtendedDMMFFieldOmitField extends ExtendedDMMFFieldArrayValidatorString {
   readonly zodOmitField: OmitFieldMode = 'none';
 
-  constructor(
-    field: DMMF.Field,
-    generatorConfig: GeneratorConfig,
-    modelName: string,
-  ) {
-    super(field, generatorConfig, modelName);
+  constructor(field: DMMF.Field, modelName: string) {
+    super(field, modelName);
 
     this.zodOmitField = this._getZodOmitFieldString();
   }

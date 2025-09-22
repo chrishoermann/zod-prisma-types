@@ -1,7 +1,6 @@
 import type DMMF from '@prisma/dmmf';
 import type { ReadonlyDeep } from '@prisma/dmmf/dist/util';
 
-import { GeneratorConfig } from '../schemas';
 import { FormattedNames } from './formattedNames';
 
 /////////////////////////////////////////////////
@@ -16,12 +15,8 @@ export class ExtendedDMMFSchemaEnum
   readonly values: DMMF.SchemaEnum['values'];
   readonly useNativeEnum: boolean;
 
-  constructor(
-    readonly generatorConfig: GeneratorConfig,
-    enumType: ReadonlyDeep<DMMF.SchemaEnum>,
-  ) {
+  constructor(enumType: ReadonlyDeep<DMMF.SchemaEnum>) {
     super(enumType.name);
-    this.generatorConfig = generatorConfig;
     this.name = enumType.name;
     this.values = enumType.values;
     this.useNativeEnum = this._setUseNativeEnum();

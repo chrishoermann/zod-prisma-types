@@ -6,6 +6,7 @@ import { generateMultipleFiles } from './generateMultipleFiles';
 import { generateSingleFile } from './generateSingleFile';
 import { skipGenerator } from './utils';
 import { parseGeneratorConfig } from './utils/parseGeneratorConfig';
+import { globalConfig } from './config/globalConfig';
 
 /////////////////////////////////////////
 // SCHEMAS
@@ -13,7 +14,7 @@ import { parseGeneratorConfig } from './utils/parseGeneratorConfig';
 
 const outputSchema = z.object({
   fromEnvVar: z.string().nullable(),
-  value: z.string({ required_error: 'No output path specified' }),
+  value: z.string({ message: 'No output path specified' }),
 });
 
 /////////////////////////////////////////
@@ -34,11 +35,14 @@ generatorHandler({
     // get all config options from schema.prisma
     const config = parseGeneratorConfig(generatorOptions);
 
+    // Initialize global config so it can be accessed anywhere
+    globalConfig.initialize(config);
+
     // validate that the output path is present
     const output = outputSchema.parse(generatorOptions.generator.output);
 
     // extend the DMMF with custom functionality - see "classes" folder
-    const extendedDMMF = new ExtendedDMMF(generatorOptions.dmmf, config);
+    const extendedDMMF = new ExtendedDMMF(generatorOptions.dmmf);
 
     // If data is present in the output directory, delete it.
     DirectoryHelper.removeDir(output.value);
@@ -47,7 +51,7 @@ generatorHandler({
     DirectoryHelper.createDir(output.value);
 
     // generate single or multiple files
-    if (extendedDMMF.generatorConfig.useMultipleFiles) {
+    if (globalConfig.getConfig().useMultipleFiles) {
       return generateMultipleFiles({
         dmmf: extendedDMMF,
         path: output.value,

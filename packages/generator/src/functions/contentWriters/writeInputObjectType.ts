@@ -3,6 +3,7 @@ import CodeBlockWriter from 'code-block-writer';
 import { writeNonScalarType, writeScalarType, writeSpecialType } from '..';
 import { ExtendedDMMFInputType, ExtendedDMMFSchemaArg } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
+import { globalConfig } from '../../config';
 
 /////////////////////////////////////////////
 // INTERFACE
@@ -109,7 +110,6 @@ const writeInputTypeField = ({
 export const writeInputObjectType = (
   {
     fileWriter: { writer, writeImportSet, writeImport },
-    dmmf,
     getSingleFileContent = false,
   }: ContentWriterOptions,
   inputType: ExtendedDMMFInputType,
@@ -119,7 +119,7 @@ export const writeInputObjectType = (
     useExactOptionalPropertyTypes,
     addInputTypeValidation,
     useTypeAssertions,
-  } = dmmf.generatorConfig;
+  } = globalConfig.getConfig();
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImportSet(inputType.imports);

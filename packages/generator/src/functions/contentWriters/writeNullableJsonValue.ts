@@ -1,12 +1,12 @@
 import { type ContentWriterOptions } from '../../types';
 import { writeZodImport } from '../zodCompatibility';
+import { globalConfig } from '../../config';
 
 export const writeNullableJsonValue = ({
   fileWriter: { writer, writeImport },
-  dmmf,
   getSingleFileContent = false,
 }: ContentWriterOptions) => {
-  const { useMultipleFiles } = dmmf.generatorConfig;
+  const { useMultipleFiles } = globalConfig.getConfig();
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeZodImport(writeImport);

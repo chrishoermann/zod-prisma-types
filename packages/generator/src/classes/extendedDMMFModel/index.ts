@@ -2,18 +2,12 @@ import type DMMF from '@prisma/dmmf';
 import { FormattedNames } from '../formattedNames';
 import { ExtendedDMMFModelFormatingHelpers } from './08_extendedDMMFModelFormatingHelpers';
 import { ExtendedDMMFField } from '../extendedDMMFField';
-import { GeneratorConfig } from '../../schemas/generatorConfigSchema';
 
 /////////////////////////////////////////////////
 // TYPES  INTERFACE
 /////////////////////////////////////////////////
 
 export interface ExtendedDMMFModel extends DMMF.Model, FormattedNames {
-  /**
-   * Config that is passed to the generator from prisma schema.
-   */
-  readonly generatorConfig: GeneratorConfig;
-
   /**
    * Fields of the model that are extended with additional properties and methods.
    */

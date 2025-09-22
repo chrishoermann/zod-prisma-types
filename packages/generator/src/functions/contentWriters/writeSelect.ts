@@ -1,11 +1,11 @@
 import { ExtendedDMMFOutputType } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
 import { writeZodImport } from '../zodCompatibility';
+import { globalConfig } from '../../config';
 
 export const writeSelect = (
   {
     fileWriter: { writer, writeImport, writeImportSet },
-    dmmf,
     getSingleFileContent = false,
   }: ContentWriterOptions,
   model: ExtendedDMMFOutputType,
@@ -15,7 +15,7 @@ export const writeSelect = (
     useExactOptionalPropertyTypes,
     prismaClientPath,
     inputTypePath,
-  } = dmmf.generatorConfig;
+  } = globalConfig.getConfig();
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeZodImport(writeImport);

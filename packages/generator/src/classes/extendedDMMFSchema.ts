@@ -8,12 +8,10 @@ import {
   ExtendedDMMFSchemaEnum,
   ExtendedDMMFSchemaField,
 } from '.';
-import { GeneratorConfig } from '../schemas';
 
 export interface ExtendedDMMFSchemaOptions {
   schema: DMMF.Schema;
   datamodel: ExtendedDMMFDatamodel;
-  generatorConfig: GeneratorConfig;
 }
 
 /////////////////////////////////////////////////
@@ -59,12 +57,7 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
   readonly hasBytesTypes: boolean;
   readonly hasDecimalTypes: boolean;
 
-  constructor(
-    readonly generatorConfig: GeneratorConfig,
-    schema: DMMF.Schema,
-    datamodel: ExtendedDMMFDatamodel,
-  ) {
-    this.generatorConfig = generatorConfig;
+  constructor(schema: DMMF.Schema, datamodel: ExtendedDMMFDatamodel) {
     this.rootQueryType = schema.rootQueryType;
     this.rootMutationType = schema.rootMutationType;
     this.enumTypes = this._setExtendedEnumTypes(schema);
@@ -89,8 +82,7 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
     return {
       ...schema.inputObjectTypes,
       prisma: schema.inputObjectTypes.prisma.map(
-        (type) =>
-          new ExtendedDMMFInputType(this.generatorConfig, type, datamodel),
+        (type) => new ExtendedDMMFInputType(type, datamodel),
       ),
     };
   }
@@ -108,11 +100,7 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
       // since 6.3.0 the it should only be exclude everything wiht "AndReturn" and not only "CreateManyAndReturn"
       .filter((type) => !type.name.includes('AndReturn'))
       .map((type) => {
-        return new ExtendedDMMFOutputType(
-          this.generatorConfig,
-          type,
-          datamodel,
-        );
+        return new ExtendedDMMFOutputType(type, datamodel);
       });
 
     return {
@@ -126,16 +114,10 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
             !type.name.includes('AffectedRows') &&
             !type.name.includes('RawAggregate'),
         )
-        .map(
-          (type) =>
-            new ExtendedDMMFOutputType(this.generatorConfig, type, datamodel),
-        ),
+        .map((type) => new ExtendedDMMFOutputType(type, datamodel)),
       argTypes: schema.outputObjectTypes.prisma
         .filter((type) => type.name === 'Query' || type.name === 'Mutation')
-        .map(
-          (type) =>
-            new ExtendedDMMFOutputType(this.generatorConfig, type, datamodel),
-        ),
+        .map((type) => new ExtendedDMMFOutputType(type, datamodel)),
     };
   }
 
@@ -143,7 +125,7 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
     return {
       ...schema.enumTypes,
       prisma: schema.enumTypes.prisma.map(
-        (type) => new ExtendedDMMFSchemaEnum(this.generatorConfig, type),
+        (type) => new ExtendedDMMFSchemaEnum(type),
       ),
     };
   }

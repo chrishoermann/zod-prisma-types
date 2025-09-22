@@ -1,7 +1,6 @@
 import type DMMF from '@prisma/dmmf';
 
 import { ExtendedDMMFFieldValidatorMap } from './07_extendedDMMFFieldValidatorMap';
-import { GeneratorConfig } from '../../schemas';
 
 /////////////////////////////////////////////////
 // CLASS
@@ -10,12 +9,8 @@ import { GeneratorConfig } from '../../schemas';
 export class ExtendedDMMFFieldValidatorString extends ExtendedDMMFFieldValidatorMap {
   readonly zodValidatorString?: string;
 
-  constructor(
-    field: DMMF.Field,
-    generatorConfig: GeneratorConfig,
-    modelName: string,
-  ) {
-    super(field, generatorConfig, modelName);
+  constructor(field: DMMF.Field, modelName: string) {
+    super(field, modelName);
 
     this.zodValidatorString = this._getZodValidatorString();
   }

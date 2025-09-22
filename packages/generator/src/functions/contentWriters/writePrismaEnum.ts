@@ -1,11 +1,11 @@
 import { ExtendedDMMFSchemaEnum } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
 import { writeZodImport } from '../zodCompatibility';
+import { globalConfig } from '../../config';
 
 export const writePrismaEnum = (
   {
     fileWriter: { writer, writeImport },
-    dmmf,
     getSingleFileContent = false,
   }: ContentWriterOptions,
   { useNativeEnum, values, name }: ExtendedDMMFSchemaEnum,
@@ -15,7 +15,7 @@ export const writePrismaEnum = (
     prismaClientPath,
     prismaLibraryPath,
     isPrismaClientGenerator,
-  } = dmmf.generatorConfig;
+  } = globalConfig.getConfig();
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeZodImport(writeImport);

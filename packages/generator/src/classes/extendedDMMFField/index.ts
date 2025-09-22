@@ -1,16 +1,10 @@
 import type DMMF from '@prisma/dmmf';
 
 import { OmitFieldMode } from './11_extendedDMMFFieldOmitField';
-import { GeneratorConfig } from '../../schemas';
 import { FormattedNames } from '../formattedNames';
 import { ExtendedDMMFFieldImportMatch } from './13_extendedDMMFFieldImportMatch';
 
 export interface ExtendedDMMFField extends DMMF.Field, FormattedNames {
-  /**
-   * Config that is passed to the generator from prisma schema.
-   */
-  readonly generatorConfig: GeneratorConfig;
-
   /**
    * Inverts the `isRequired` property.
    * Comes in handy when it is about readabilty.

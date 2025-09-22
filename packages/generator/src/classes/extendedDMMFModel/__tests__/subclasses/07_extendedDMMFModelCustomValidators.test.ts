@@ -1,9 +1,10 @@
 import type DMMF from '@prisma/dmmf';
-import { it, expect, describe } from 'vitest';
+import { it, expect, describe, afterAll } from 'vitest';
 
-import { DEFAULT_GENERATOR_CONFIG, MODEL_BASE } from '../setup';
+import { MODEL_BASE } from '../setup';
 import { ExtendedDMMFModelCustomValidators } from '../../07_extendedDMMFModelCustomValidators';
-import { GeneratorConfig } from '../../../../schemas/generatorConfigSchema';
+import { globalConfig } from '../../../../config';
+import { DEFAULT_GENERATOR_CONFIG } from '../../../../__tests__/setup';
 
 /////////////////////////////////////////////
 // TEST SUITE
@@ -11,17 +12,22 @@ import { GeneratorConfig } from '../../../../schemas/generatorConfigSchema';
 
 export function testExtendedDMMFFieldCustomValidators<
   T extends ExtendedDMMFModelCustomValidators,
->(
-  classConstructor: new (
-    generatorConfig: GeneratorConfig,
-    model: DMMF.Model,
-  ) => T,
-) {
+>(classConstructor: new (model: DMMF.Model) => T) {
   const getModel = (model?: Partial<DMMF.Model>) =>
-    new classConstructor(DEFAULT_GENERATOR_CONFIG, {
+    new classConstructor({
       ...MODEL_BASE,
       ...model,
     });
+
+  if (!globalConfig.isInitialized()) {
+    globalConfig.initialize(DEFAULT_GENERATOR_CONFIG);
+  }
+
+  afterAll(() => {
+    if (globalConfig.isInitialized()) {
+      globalConfig.reset();
+    }
+  });
 
   describe(`ExtendedDMMFFieldCustomValidators`, () => {
     it(`should filter error and import from validator list and write rest to zodCustomValidators property with strict at position 0`, async () => {

@@ -3,13 +3,7 @@ import type { ReadonlyDeep } from '@prisma/dmmf/dist/util';
 
 import { ExtendedDMMFEnum } from './extendedDMMFEnum';
 import { ExtendedDMMFModel, ExtendedDMMFModelClass } from './extendedDMMFModel';
-import { GeneratorConfig } from '../schemas';
 import { ExtendedDMMFIndex } from './extendedDMMFIndex';
-
-export interface ExtendedDMMFDatamodelOptions {
-  datamodel: DMMF.Datamodel;
-  config: GeneratorConfig;
-}
 
 /////////////////////////////////////////////////
 // CLASS
@@ -21,11 +15,7 @@ export class ExtendedDMMFDatamodel {
   readonly types: ExtendedDMMFModel[];
   readonly indexes: ExtendedDMMFIndex[];
 
-  constructor(
-    readonly generatorConfig: GeneratorConfig,
-    datamodel: ReadonlyDeep<DMMF.Datamodel>,
-  ) {
-    this.generatorConfig = generatorConfig;
+  constructor(datamodel: ReadonlyDeep<DMMF.Datamodel>) {
     this.enums = this._getExtendedEnums(datamodel.enums);
     this.models = this._getExtendedModels(datamodel.models);
     this.indexes = this._getExtendedIndexes(datamodel.indexes);
@@ -33,20 +23,14 @@ export class ExtendedDMMFDatamodel {
   }
 
   private _getExtendedModels(models: ReadonlyDeep<DMMF.Model[]>) {
-    return models.map(
-      (model) => new ExtendedDMMFModelClass(this.generatorConfig, model),
-    );
+    return models.map((model) => new ExtendedDMMFModelClass(model));
   }
 
   private _getExtendedEnums(enums: ReadonlyDeep<DMMF.DatamodelEnum[]>) {
-    return enums.map(
-      (elem) => new ExtendedDMMFEnum(this.generatorConfig, elem),
-    );
+    return enums.map((elem) => new ExtendedDMMFEnum(elem));
   }
 
   private _getExtendedIndexes(indexes: ReadonlyDeep<DMMF.Index[]>) {
-    return indexes.map(
-      (elem) => new ExtendedDMMFIndex(this.generatorConfig, elem),
-    );
+    return indexes.map((elem) => new ExtendedDMMFIndex(elem));
   }
 }

@@ -1,7 +1,6 @@
 import type DMMF from '@prisma/dmmf';
 
 import { ExtendedDMMFFieldOmitField } from './11_extendedDMMFFieldOmitField';
-import { GeneratorConfig } from '../../schemas';
 
 /////////////////////////////////////////////////
 // TYPES
@@ -69,12 +68,8 @@ export const PRISMA_TO_ZOD_TYPE_MAP: Record<
 export class ExtendedDMMFFieldZodType extends ExtendedDMMFFieldOmitField {
   readonly zodType: string;
 
-  constructor(
-    field: DMMF.Field,
-    generatorConfig: GeneratorConfig,
-    modelName: string,
-  ) {
-    super(field, generatorConfig, modelName);
+  constructor(field: DMMF.Field, modelName: string) {
+    super(field, modelName);
 
     this.zodType = this._setZodType();
   }

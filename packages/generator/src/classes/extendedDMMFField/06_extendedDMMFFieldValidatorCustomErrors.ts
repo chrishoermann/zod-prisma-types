@@ -1,7 +1,6 @@
 import type DMMF from '@prisma/dmmf';
 
 import { ExtendedDMMFFieldDefaultValidators } from './05_extendedDMMFFieldDefaultValidators';
-import { GeneratorConfig } from '../../schemas';
 import { validateCustomError } from '../../utils/validateCustomError';
 
 /////////////////////////////////////////////////
@@ -12,12 +11,8 @@ export class ExtendedDMMFFieldValidatorCustomErrors extends ExtendedDMMFFieldDef
   protected _validatorCustomError?: string;
   readonly zodCustomErrors?: string;
 
-  constructor(
-    field: DMMF.Field,
-    generatorConfig: GeneratorConfig,
-    modelName: string,
-  ) {
-    super(field, generatorConfig, modelName);
+  constructor(field: DMMF.Field, modelName: string) {
+    super(field, modelName);
 
     this._validatorCustomError = this._setValidatorCustomError();
     this.zodCustomErrors = this._setZodCustomErrors();

@@ -6,6 +6,7 @@ import {
   writeInclude,
   writeSelect,
 } from './contentWriters';
+import { globalConfig } from '../config';
 
 /////////////////////////////////////////////////
 // FUNCTION
@@ -15,7 +16,7 @@ export const writeSingleFileIncludeSelectStatements: WriteStatements = (
   dmmf,
   fileWriter,
 ) => {
-  if (!dmmf.generatorConfig.createInputTypes) return;
+  if (!globalConfig.getConfig().createInputTypes) return;
   fileWriter.writer.blankLine();
 
   fileWriter.writeHeading(`SELECT & INCLUDE`, 'FAT');

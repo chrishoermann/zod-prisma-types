@@ -6,15 +6,18 @@ import {
   writeCountSelect,
   writeOutputObjectType,
 } from './contentWriters';
+import { globalConfig } from '../config';
 
 /////////////////////////////////////////////////
 // FUNCTION
 /////////////////////////////////////////////////
 
 export const writeArgTypeFiles: CreateFiles = ({ path, dmmf }) => {
-  if (!dmmf.generatorConfig.createInputTypes) return;
+  const config = globalConfig.getConfig();
 
-  const { outputTypePath, writeBarrelFiles } = dmmf.generatorConfig;
+  if (!config.createInputTypes) return;
+
+  const { outputTypePath, writeBarrelFiles } = config;
 
   // WRITE INDEX FILE
   // ------------------------------------------------------------

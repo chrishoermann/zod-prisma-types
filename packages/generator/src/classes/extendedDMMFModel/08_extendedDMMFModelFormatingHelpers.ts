@@ -1,12 +1,11 @@
 import type DMMF from '@prisma/dmmf';
-import { GeneratorConfig } from '../../schemas';
 import { ExtendedDMMFModelCustomValidators } from './07_extendedDMMFModelCustomValidators';
 
 export class ExtendedDMMFModelFormatingHelpers extends ExtendedDMMFModelCustomValidators {
   readonly optionalJsonFieldUnion: string;
 
-  constructor(generatorConfig: GeneratorConfig, model: DMMF.Model) {
-    super(generatorConfig, model);
+  constructor(model: DMMF.Model) {
+    super(model);
 
     this.optionalJsonFieldUnion = this._setOptionalJsonFieldUnion();
   }

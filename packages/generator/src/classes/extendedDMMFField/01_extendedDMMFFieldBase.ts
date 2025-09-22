@@ -1,7 +1,7 @@
 import type DMMF from '@prisma/dmmf';
 
-import { GeneratorConfig } from '../../schemas';
 import { FormattedNames } from '../formattedNames';
+import { getConfig } from 'src/config';
 
 /////////////////////////////////////////////////
 // CLASS
@@ -13,8 +13,6 @@ export class ExtendedDMMFFieldBase
 {
   protected _modelName: string;
   protected _errorLocation: string;
-
-  readonly generatorConfig: GeneratorConfig;
 
   readonly kind: DMMF.Field['kind'];
   readonly name: DMMF.Field['name'];
@@ -43,14 +41,10 @@ export class ExtendedDMMFFieldBase
   readonly isOptionalOnDefaultValue: boolean;
   readonly isOptionalDefaultField: boolean;
 
-  constructor(
-    field: DMMF.Field,
-    generatorConfig: GeneratorConfig,
-    modelName: string,
-  ) {
+  constructor(field: DMMF.Field, modelName: string) {
     super(field.name);
 
-    this.generatorConfig = generatorConfig;
+    // instantiate the config in the class for ease of access
     this._modelName = modelName;
 
     this.kind = field.kind;
@@ -105,7 +99,7 @@ export class ExtendedDMMFFieldBase
   private _setDefaultValueOptional() {
     return (
       (this.hasDefaultValue || Boolean(this.isUpdatedAt)) &&
-      this.generatorConfig.createOptionalDefaultValuesTypes
+      getConfig().createOptionalDefaultValuesTypes
     );
   }
 

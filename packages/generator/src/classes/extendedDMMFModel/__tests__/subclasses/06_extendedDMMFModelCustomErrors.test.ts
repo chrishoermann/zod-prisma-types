@@ -1,9 +1,10 @@
 import type DMMF from '@prisma/dmmf';
-import { it, expect, describe } from 'vitest';
+import { it, expect, describe, afterAll } from 'vitest';
 
-import { DEFAULT_GENERATOR_CONFIG, MODEL_BASE } from '../setup';
+import { MODEL_BASE } from '../setup';
 import { ExtendedDMMFModelCustomErrors } from '../../06_extendedDMMFModelCustomErrors';
-import { GeneratorConfig } from '../../../../schemas/generatorConfigSchema';
+import { globalConfig } from '../../../../config';
+import { DEFAULT_GENERATOR_CONFIG } from '../../../../__tests__/setup';
 
 /////////////////////////////////////////////
 // TEST SUITE
@@ -11,17 +12,22 @@ import { GeneratorConfig } from '../../../../schemas/generatorConfigSchema';
 
 export function testExtendedDMMFModelCustomErrors<
   T extends ExtendedDMMFModelCustomErrors,
->(
-  classConstructor: new (
-    generatorConfig: GeneratorConfig,
-    model: DMMF.Model,
-  ) => T,
-) {
+>(classConstructor: new (model: DMMF.Model) => T) {
   const getModel = (model?: Partial<DMMF.Model>) =>
-    new classConstructor(DEFAULT_GENERATOR_CONFIG, {
+    new classConstructor({
       ...MODEL_BASE,
       ...model,
     });
+
+  if (!globalConfig.isInitialized()) {
+    globalConfig.initialize(DEFAULT_GENERATOR_CONFIG);
+  }
+
+  afterAll(() => {
+    if (globalConfig.isInitialized()) {
+      globalConfig.reset();
+    }
+  });
 
   describe(`ExtendedDMMFModelCustomErrors`, () => {
     it(`should load a class without docs`, async () => {

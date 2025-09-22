@@ -1,34 +1,11 @@
 import type DMMF from '@prisma/dmmf';
 
-import { GeneratorConfig } from '../../../schemas';
 import { ExtendedDMMFFieldClass } from '../../extendedDMMFField';
-
-export const DEFAULT_GENERATOR_CONFIG: GeneratorConfig = {
-  useMultipleFiles: false,
-  createInputTypes: true,
-  createModelTypes: true,
-  createOptionalDefaultValuesTypes: false,
-  createRelationValuesTypes: false,
-  createPartialTypes: false,
-  addIncludeType: true,
-  addSelectType: true,
-  addInputTypeValidation: true,
-  useDefaultValidators: true,
-  prismaClientPath: '@prisma/client',
-  coerceDate: true,
-  writeNullishInModelTypes: false,
-  isMongoDb: false,
-  validateWhereUniqueInput: false,
-  inputTypePath: 'inputTypeSchemas',
-  outputTypePath: 'outputTypeSchemas',
-  writeBarrelFiles: true,
-  decimalJSInstalled: true,
-  useTypeAssertions: false,
-};
 
 export const MODEL_BASE: DMMF.Model = {
   name: 'User',
   dbName: null,
+  schema: null,
   fields: [
     new ExtendedDMMFFieldClass(
       {
@@ -48,7 +25,7 @@ export const MODEL_BASE: DMMF.Model = {
         isGenerated: false,
         isUpdatedAt: false,
       },
-      DEFAULT_GENERATOR_CONFIG,
+
       'User',
     ),
     new ExtendedDMMFFieldClass(
@@ -65,7 +42,7 @@ export const MODEL_BASE: DMMF.Model = {
         isGenerated: false,
         isUpdatedAt: false,
       },
-      DEFAULT_GENERATOR_CONFIG,
+
       'User',
     ),
   ],
@@ -78,6 +55,7 @@ export const MODEL_BASE: DMMF.Model = {
 export const MODEL_WITH_AUTO_IMPORT_FILDS: DMMF.Model = {
   name: 'User',
   dbName: null,
+  schema: null,
   fields: [
     {
       name: 'id',

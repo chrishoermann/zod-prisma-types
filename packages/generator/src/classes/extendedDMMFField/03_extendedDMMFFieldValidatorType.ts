@@ -1,7 +1,6 @@
 import type DMMF from '@prisma/dmmf';
 
 import { ExtendedDMMFFieldValidatorMatch } from './02_extendedDMMFFieldValidatorMatch';
-import { GeneratorConfig } from '../../schemas';
 import { PrismaScalarType } from '../../types';
 
 /////////////////////////////////////////////////
@@ -67,12 +66,8 @@ export const PRISMA_SCALAR_TO_VALIDATOR_TYPE_MAP: Record<
 export class ExtendedDMMFFieldValidatorType extends ExtendedDMMFFieldValidatorMatch {
   protected _validatorType?: ZodValidatorType;
 
-  constructor(
-    field: DMMF.Field,
-    generatorConfig: GeneratorConfig,
-    modelName: string,
-  ) {
-    super(field, generatorConfig, modelName);
+  constructor(field: DMMF.Field, modelName: string) {
+    super(field, modelName);
 
     this._validatorType = this._setValidatorType();
   }

@@ -1,30 +1,5 @@
 import type DMMF from '@prisma/dmmf';
 
-import { GeneratorConfig } from '../../../schemas';
-
-export const DEFAULT_GENERATOR_CONFIG: GeneratorConfig = {
-  useMultipleFiles: false,
-  createInputTypes: true,
-  createModelTypes: true,
-  createOptionalDefaultValuesTypes: false,
-  createRelationValuesTypes: false,
-  createPartialTypes: false,
-  addIncludeType: true,
-  addSelectType: true,
-  addInputTypeValidation: true,
-  useDefaultValidators: true,
-  prismaClientPath: '@prisma/client',
-  coerceDate: true,
-  writeNullishInModelTypes: false,
-  isMongoDb: false,
-  validateWhereUniqueInput: false,
-  inputTypePath: 'inputTypeSchemas',
-  outputTypePath: 'outputTypeSchemas',
-  writeBarrelFiles: true,
-  decimalJSInstalled: true,
-  useTypeAssertions: false,
-};
-
 export const FIELD_BASE: DMMF.Field = {
   kind: 'scalar',
   name: 'test',

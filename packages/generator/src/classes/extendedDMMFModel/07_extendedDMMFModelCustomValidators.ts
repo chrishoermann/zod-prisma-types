@@ -1,5 +1,4 @@
 import type DMMF from '@prisma/dmmf';
-import { GeneratorConfig } from '../../schemas';
 import { ExtendedDMMFModelCustomErrors } from './06_extendedDMMFModelCustomErrors';
 
 /////////////////////////////////////////////////
@@ -9,8 +8,8 @@ import { ExtendedDMMFModelCustomErrors } from './06_extendedDMMFModelCustomError
 export class ExtendedDMMFModelCustomValidators extends ExtendedDMMFModelCustomErrors {
   readonly zodCustomValidators?: string[];
 
-  constructor(generatorConfig: GeneratorConfig, model: DMMF.Model) {
-    super(generatorConfig, model);
+  constructor(model: DMMF.Model) {
+    super(model);
 
     this.zodCustomValidators = this._setZodCustomValidators();
   }

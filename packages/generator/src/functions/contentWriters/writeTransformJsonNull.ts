@@ -1,8 +1,8 @@
 import { type ContentWriterOptions } from '../../types';
+import { globalConfig } from '../../config';
 
 export const writeTransformJsonNull = ({
   fileWriter: { writer, writeImport },
-  dmmf,
   getSingleFileContent = false,
 }: ContentWriterOptions) => {
   const {
@@ -10,7 +10,7 @@ export const writeTransformJsonNull = ({
     prismaClientPath,
     prismaLibraryPath,
     isPrismaClientGenerator,
-  } = dmmf.generatorConfig;
+  } = globalConfig.getConfig();
 
   // TODO: check how to get DbNUll and JsonNull from PrismaClient without importing the whole namespace
 

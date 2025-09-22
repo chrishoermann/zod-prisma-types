@@ -2,6 +2,7 @@ import { writeNonScalarType, writeScalarType, writeSpecialType } from '..';
 import { ExtendedDMMFSchemaField } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
 import { writeSelect } from './writeSelect';
+import { globalConfig } from '../../config';
 
 export const writeOutputObjectType = (
   { fileWriter, dmmf, getSingleFileContent = false }: ContentWriterOptions,
@@ -14,7 +15,8 @@ export const writeOutputObjectType = (
     useExactOptionalPropertyTypes,
     useTypeAssertions,
     inputTypePath,
-  } = dmmf.generatorConfig;
+    addSelectType,
+  } = globalConfig.getConfig();
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeImportSet(field.argTypeImports);
@@ -32,7 +34,7 @@ export const writeOutputObjectType = (
     // the model's args schema to prevent circular imports.
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    if (modelWithSelect && field.generatorConfig.addSelectType) {
+    if (modelWithSelect && addSelectType) {
       // if the outputType has a "select" or "include" field,
       // the schemas that are used in the type of the field
       // need to be imported

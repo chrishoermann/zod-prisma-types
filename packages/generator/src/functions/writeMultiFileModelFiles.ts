@@ -1,13 +1,14 @@
 import { FileWriter } from '../classes';
 import { CreateFiles } from '../types';
 import { writeModelOrType } from './contentWriters';
+import { globalConfig } from '../config';
 
 /////////////////////////////////////////////////
 // FUNCTION
 /////////////////////////////////////////////////
 
 export const writeModelFiles: CreateFiles = ({ path, dmmf }) => {
-  const { createModelTypes, writeBarrelFiles } = dmmf.generatorConfig;
+  const { createModelTypes, writeBarrelFiles } = globalConfig.getConfig();
 
   if (!createModelTypes) return;
 

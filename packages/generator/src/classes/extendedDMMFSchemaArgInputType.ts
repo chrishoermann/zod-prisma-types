@@ -1,7 +1,6 @@
 import type DMMF from '@prisma/dmmf';
 
 import { PRISMA_TO_ZOD_TYPE_MAP } from '../constants/objectMaps';
-import { GeneratorConfig } from '../schemas';
 import { ZodPrismaScalarType } from '../types';
 
 /////////////////////////////////////////////////
@@ -22,11 +21,7 @@ export class ExtendedDMMFSchemaArgInputType implements SchemaArgInputType {
   readonly location: SchemaArgInputType['location'];
   readonly namespace?: SchemaArgInputType['namespace'];
 
-  constructor(
-    readonly generatorConfig: GeneratorConfig,
-    arg: SchemaArgInputType,
-  ) {
-    this.generatorConfig = generatorConfig;
+  constructor(arg: SchemaArgInputType) {
     this.isJsonType = this._setIsJsonType(arg);
     this.isBytesType = this._setIsBytesType(arg);
     this.isDecimalType = this._setIsDecimalType(arg);

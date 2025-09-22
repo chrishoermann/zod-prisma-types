@@ -1,3 +1,4 @@
+import { globalConfig } from 'src/config';
 import { writeModelFields } from '.';
 import { ExtendedDMMFModel } from '../../classes';
 import { type ContentWriterOptions } from '../../types';
@@ -21,7 +22,8 @@ export const writeModelOrType = (
   }: ContentWriterOptions,
   model: ExtendedDMMFModel,
 ) => {
-  const { useMultipleFiles, createRelationValuesTypes } = dmmf.generatorConfig;
+  const { useMultipleFiles, createRelationValuesTypes } =
+    globalConfig.getConfig();
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeZodImport(writeImport);

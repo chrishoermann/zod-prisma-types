@@ -1,5 +1,4 @@
 import type DMMF from '@prisma/dmmf';
-import { GeneratorConfig } from '../../schemas';
 import { FormattedNames } from '../formattedNames';
 import {
   type ExtendedDMMFField,
@@ -10,8 +9,6 @@ export class ExtendedDMMFModelBase
   extends FormattedNames
   implements DMMF.Model
 {
-  readonly generatorConfig: GeneratorConfig;
-
   readonly name: DMMF.Model['name'];
   readonly dbName: DMMF.Model['dbName'];
   readonly schema: DMMF.Model['schema'];
@@ -30,10 +27,9 @@ export class ExtendedDMMFModelBase
 
   protected _errorLocation: string;
 
-  constructor(generatorConfig: GeneratorConfig, model: DMMF.Model) {
+  constructor(model: DMMF.Model) {
     super(model.name);
 
-    this.generatorConfig = generatorConfig;
     this.name = model.name;
     this.dbName = model.dbName;
     this.schema = model.schema;
@@ -54,8 +50,7 @@ export class ExtendedDMMFModelBase
 
   private _getExtendedFields(model: DMMF.Model) {
     return model.fields.map(
-      (field) =>
-        new ExtendedDMMFFieldClass(field, this.generatorConfig, this.name),
+      (field) => new ExtendedDMMFFieldClass(field, this.name),
     );
   }
 

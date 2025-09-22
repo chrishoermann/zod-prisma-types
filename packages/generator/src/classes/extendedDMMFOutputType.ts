@@ -3,10 +3,10 @@ import type { ReadonlyDeep } from '@prisma/dmmf/dist/util';
 
 import { ExtendedDMMFModel } from '.';
 import { PRISMA_ACTION_ARRAY } from '../constants/objectMaps';
-import { GeneratorConfig } from '../schemas';
 import { ExtendedDMMFDatamodel } from './extendedDMMFDatamodel';
 import { ExtendedDMMFSchemaField } from './extendedDMMFSchemaField';
 import { FormattedNames } from './formattedNames';
+import { globalConfig } from 'src/config';
 
 /////////////////////////////////////////////////
 // CLASS
@@ -24,13 +24,8 @@ export class ExtendedDMMFOutputType
   readonly selectImports: Set<string>;
   readonly includeImports: Set<string>;
 
-  constructor(
-    readonly generatorConfig: GeneratorConfig,
-    type: DMMF.OutputType,
-    datamodel: ExtendedDMMFDatamodel,
-  ) {
+  constructor(type: DMMF.OutputType, datamodel: ExtendedDMMFDatamodel) {
     super(type.name);
-    this.generatorConfig = generatorConfig;
     this.name = type.name;
     this.fields = this._setFields(type.fields, datamodel);
     this.prismaActionFields = this._setFields(
@@ -80,11 +75,7 @@ export class ExtendedDMMFOutputType
         )
         .map((field) => {
           // console.log('prisma fields', field.name);
-          return new ExtendedDMMFSchemaField(
-            this.generatorConfig,
-            field,
-            datamodel,
-          );
+          return new ExtendedDMMFSchemaField(field, datamodel);
         });
     }
 
@@ -98,26 +89,18 @@ export class ExtendedDMMFOutputType
         )
         .map((field) => {
           // console.log('other fields', field.name);
-          return new ExtendedDMMFSchemaField(
-            this.generatorConfig,
-            field,
-            datamodel,
-          );
+          return new ExtendedDMMFSchemaField(field, datamodel);
         });
     }
 
     return fields.map((field) => {
-      return new ExtendedDMMFSchemaField(
-        this.generatorConfig,
-        field,
-        datamodel,
-      );
+      return new ExtendedDMMFSchemaField(field, datamodel);
     });
   }
 
   private _setSelectImports() {
     const imports = new Set<string>();
-    const { outputTypePath } = this.generatorConfig;
+    const { outputTypePath } = globalConfig.getConfig();
 
     this.fields.forEach((field) => {
       if (field.writeSelectFindManyField) {
@@ -140,7 +123,7 @@ export class ExtendedDMMFOutputType
 
   private _setIncludeImports() {
     const imports = new Set<string>();
-    const { outputTypePath } = this.generatorConfig;
+    const { outputTypePath } = globalConfig.getConfig();
 
     this.fields.forEach((field) => {
       if (field.writeIncludeFindManyField) {
@@ -184,7 +167,7 @@ export class ExtendedDMMFOutputType
   // only write the include statement if the type is a prisma model
   writeMongoDbInclude() {
     return (
-      this.generatorConfig.isMongoDb &&
+      globalConfig.getConfig().isMongoDb &&
       this.fields.some((field) => field.isObjectOutputType())
     );
   }
@@ -194,7 +177,7 @@ export class ExtendedDMMFOutputType
   }
 
   writeIncludeArgs() {
-    return this.hasRelationField() || this.generatorConfig.isMongoDb;
+    return this.hasRelationField() || globalConfig.getConfig().isMongoDb;
   }
 
   writeCountArgs() {

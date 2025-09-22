@@ -1,5 +1,4 @@
 import type DMMF from '@prisma/dmmf';
-import { GeneratorConfig } from '../../schemas';
 import { ExtendedDMMFModelFlags } from './02_extendedDMMFModelFlags';
 
 /////////////////////////////////////////////////
@@ -17,8 +16,8 @@ export class ExtendedDMMFModelValidatorMatch extends ExtendedDMMFModelFlags {
   protected _validatorMatch?: RegExpMatchArray;
   readonly clearedDocumentation?: string;
 
-  constructor(generatorConfig: GeneratorConfig, model: DMMF.Model) {
-    super(generatorConfig, model);
+  constructor(model: DMMF.Model) {
+    super(model);
 
     this._validatorMatch = this._getValidatorMatchArray();
 

@@ -9,6 +9,7 @@ import {
 } from '.';
 import { type WriteStatements } from '../types';
 import { writeRemoveUndefined } from './contentWriters/writeRemoveUndefined';
+import { globalConfig } from '../config';
 
 /////////////////////////////////////////////////
 // FUNCTION
@@ -25,7 +26,7 @@ export const writeSingleFileHelperStatements: WriteStatements = (
   // EXACT OPTIONAL PROPERTY TYPES
   // ------------------------------------------------------------
 
-  if (dmmf.generatorConfig.useExactOptionalPropertyTypes) {
+  if (globalConfig.getConfig().useExactOptionalPropertyTypes) {
     fileWriter.writeHeading(`EXACT OPTIONAL PROPERTY TYPES`, 'SLIM');
 
     writeRemoveUndefined({ fileWriter, dmmf });

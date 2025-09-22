@@ -1,5 +1,6 @@
 import { type WriteStatements } from '../types';
 import { writeOutputObjectType } from './contentWriters';
+import { globalConfig } from '../config';
 
 /////////////////////////////////////////////////
 // FUNCTION
@@ -9,7 +10,7 @@ export const writeSingleFileArgTypeStatements: WriteStatements = (
   dmmf,
   fileWriter,
 ) => {
-  if (!dmmf.generatorConfig.createInputTypes) return;
+  if (!globalConfig.getConfig().createInputTypes) return;
 
   fileWriter.writer.blankLine();
 

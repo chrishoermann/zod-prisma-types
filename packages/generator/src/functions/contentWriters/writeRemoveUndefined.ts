@@ -1,11 +1,11 @@
 import { type ContentWriterOptions } from '../../types';
+import { globalConfig } from '../../config';
 
 export const writeRemoveUndefined = ({
   fileWriter: { writer },
-  dmmf,
   getSingleFileContent = false,
 }: ContentWriterOptions) => {
-  const { useMultipleFiles } = dmmf.generatorConfig;
+  const { useMultipleFiles } = globalConfig.getConfig();
 
   writer
     .newLine()

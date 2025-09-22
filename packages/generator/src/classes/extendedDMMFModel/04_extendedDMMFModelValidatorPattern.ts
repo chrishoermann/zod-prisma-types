@@ -1,5 +1,4 @@
 import type DMMF from '@prisma/dmmf';
-import { GeneratorConfig } from '../../schemas';
 import { getNestedValidatorList } from '../../utils/getNestedValidatorList';
 import { ExtendedDMMFModelValidatorMatch } from './03_extendedDMMFModelValidatorMatch';
 
@@ -28,8 +27,8 @@ export class ExtendedDMMFModelValidatorPattern extends ExtendedDMMFModelValidato
   protected _validatorPattern?: string;
   protected _validatorList?: string[];
 
-  constructor(generatorConfig: GeneratorConfig, model: DMMF.Model) {
-    super(generatorConfig, model);
+  constructor(model: DMMF.Model) {
+    super(model);
 
     this._validatorPattern = this._getValidatorPattern();
     this._validatorList = this._getValidatorList();

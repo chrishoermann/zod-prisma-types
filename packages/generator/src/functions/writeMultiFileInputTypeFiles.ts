@@ -1,3 +1,4 @@
+import { globalConfig } from 'src/config';
 import {
   writeCustomEnum,
   writeDecimalJsLike,
@@ -18,7 +19,8 @@ import { writeRemoveUndefined } from './contentWriters/writeRemoveUndefined';
 /////////////////////////////////////////////////
 
 export const writeInputTypeFiles: CreateFiles = ({ path, dmmf }) => {
-  const { inputTypePath, writeBarrelFiles } = dmmf.generatorConfig;
+  const config = globalConfig.getConfig();
+  const { inputTypePath, writeBarrelFiles } = config;
 
   // WRITE INDEX FILE
   // ------------------------------------------------------------
@@ -33,7 +35,7 @@ export const writeInputTypeFiles: CreateFiles = ({ path, dmmf }) => {
         ({ writeExport }) => {
           const writeExportSet = new Set<string>();
 
-          if (dmmf.generatorConfig.createInputTypes) {
+          if (config.createInputTypes) {
             dmmf.schema.inputObjectTypes.prisma.forEach((inputType) => {
               writeExportSet.add(`${inputType.name}Schema`);
             });
@@ -47,7 +49,7 @@ export const writeInputTypeFiles: CreateFiles = ({ path, dmmf }) => {
             writeExportSet.add(`${enumData.name}Schema`);
           });
 
-          if (dmmf.generatorConfig.useExactOptionalPropertyTypes) {
+          if (config.useExactOptionalPropertyTypes) {
             writeExportSet.add('RemoveUndefined');
           }
 
@@ -75,7 +77,7 @@ export const writeInputTypeFiles: CreateFiles = ({ path, dmmf }) => {
     // EXACT OPTIONAL PROPERTY TYPES
     // ------------------------------------------------------------
 
-    if (dmmf.generatorConfig.useExactOptionalPropertyTypes) {
+    if (config.useExactOptionalPropertyTypes) {
       new FileWriter().createFile(
         `${folderPath}/RemoveUndefined.ts`,
         (fileWriter) => writeRemoveUndefined({ fileWriter, dmmf }),
@@ -134,7 +136,7 @@ export const writeInputTypeFiles: CreateFiles = ({ path, dmmf }) => {
     // SKIP INPUT TYPES
     ////////////////////////////////////////////////////
 
-    if (!dmmf.generatorConfig.createInputTypes) return;
+    if (!config.createInputTypes) return;
 
     ////////////////////////////////////////////////////
     // WRITER INCLUDE & SELECT

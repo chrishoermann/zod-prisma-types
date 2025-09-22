@@ -1,5 +1,6 @@
 import { type WriteStatements } from '../types';
 import { writeModelOrType } from './contentWriters';
+import { globalConfig } from '../config';
 
 /////////////////////////////////////////////////
 // FUNCTION
@@ -10,7 +11,7 @@ export const writeSingleFileTypeStatements: WriteStatements = (
   fileWriter,
 ) => {
   if (
-    !dmmf.generatorConfig.createModelTypes ||
+    !globalConfig.getConfig().createModelTypes ||
     dmmf.datamodel.types.length === 0
   )
     return;

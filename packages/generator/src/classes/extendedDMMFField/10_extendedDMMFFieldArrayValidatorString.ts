@@ -5,7 +5,6 @@ import {
   ARRAY_VALIDATOR_MESSAGE_REGEX,
   ValidatorMap,
 } from './07_extendedDMMFFieldValidatorMap';
-import { GeneratorConfig } from '../../schemas';
 import { getNestedValidatorList } from '../../utils/getNestedValidatorList';
 import { removeUseContent } from '../../utils/removeUseContent';
 
@@ -46,12 +45,8 @@ export const ARRAY_VALIDATOR_REGEX_MAP: ValidatorMap<ZodArrayValidatorKeys> = {
 export class ExtendedDMMFFieldArrayValidatorString extends ExtendedDMMFFieldCustomValidatorString {
   readonly zodArrayValidatorString?: string;
 
-  constructor(
-    field: DMMF.Field,
-    generatorConfig: GeneratorConfig,
-    modelName: string,
-  ) {
-    super(field, generatorConfig, modelName);
+  constructor(field: DMMF.Field, modelName: string) {
+    super(field, modelName);
 
     this.zodArrayValidatorString = this._getZodArrayValidatorString();
   }

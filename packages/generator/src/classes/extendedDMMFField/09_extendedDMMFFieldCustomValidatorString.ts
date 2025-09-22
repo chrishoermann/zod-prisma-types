@@ -2,7 +2,6 @@ import type DMMF from '@prisma/dmmf';
 
 import { CUSTOM_VALIDATOR_MESSAGE_REGEX } from './07_extendedDMMFFieldValidatorMap';
 import { ExtendedDMMFFieldValidatorString } from './08_extendedDMMFFieldValidatorString';
-import { GeneratorConfig } from '../../schemas';
 
 /////////////////////////////////////////////////
 // CLASS
@@ -11,12 +10,8 @@ import { GeneratorConfig } from '../../schemas';
 export class ExtendedDMMFFieldCustomValidatorString extends ExtendedDMMFFieldValidatorString {
   readonly zodCustomValidatorString?: string;
 
-  constructor(
-    field: DMMF.Field,
-    generatorConfig: GeneratorConfig,
-    modelName: string,
-  ) {
-    super(field, generatorConfig, modelName);
+  constructor(field: DMMF.Field, modelName: string) {
+    super(field, modelName);
 
     this.zodCustomValidatorString = this._getZodCustomValidatorString();
   }
