@@ -52,6 +52,21 @@ export class ExtendedDMMF implements DMMF.Document {
 // SINGLETON
 /////////////////////////////////////////////////
 
+/**
+ * Singleton class to store the extended DMMF instance
+ * and make it accessible anywhere in the generator
+ * by using the getInstance() function.
+ *
+ * The singleton is initialized with the dmmf instance
+ * passed to the generator in the `generatorHandler` function.
+ *
+ * @class ExtendedDMMFSingleton
+ * @static
+ * @method initialize
+ * @method getInstance
+ * @method isInitialized
+ * @method reset
+ */
 export class ExtendedDMMFSingleton {
   private static instance: ExtendedDMMF | null = null;
 

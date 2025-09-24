@@ -4,7 +4,6 @@ import { DirectoryHelper, ExtendedDMMFSingleton } from './classes';
 import { generateMultipleFiles } from './generateMultipleFiles';
 import { generateSingleFile } from './generateSingleFile';
 import { skipGenerator } from './utils';
-import { parseGeneratorConfig } from './utils/parseGeneratorConfig';
 import { globalConfig } from './config/globalConfig';
 
 /////////////////////////////////////////
@@ -22,14 +21,9 @@ generatorHandler({
   onGenerate: async (generatorOptions) => {
     if (skipGenerator()) return;
 
-    // get all config options from schema.prisma
-    const config = parseGeneratorConfig(generatorOptions);
-
     // Initialize global config so it can be accessed anywhere
-    const { outputPath, useMultipleFiles, zodVersion } =
-      globalConfig.initialize(config);
-
-    console.log('zodVersion', zodVersion);
+    const { outputPath, useMultipleFiles } =
+      globalConfig.initialize(generatorOptions);
 
     // initialize the ExtendedDMMF singleton to be able to access it anywhere
     ExtendedDMMFSingleton.initialize(generatorOptions.dmmf);

@@ -1,33 +1,62 @@
+import type { GeneratorOptions } from '@prisma/generator-helper';
+import { parseGeneratorConfig } from '../utils';
 import type { GeneratorConfig } from '../schemas';
 
+/////////////////////////////////////////////////
+// CLASS
+/////////////////////////////////////////////////
+
 /**
- * Global config store
+ * Global config store that can be accessed anywhere in the generator
+ * by using the getConfig() function.
+ *
+ * The config is initialized with the config passed to the generator
+ * in the `generatorHandler` function.
+ *
+ * @class GlobalConfigStore
+ * @method initialize
+ * @method getConfig
+ * @method isInitialized
+ * @method reset
  */
 class GlobalConfigStore {
   private config: GeneratorConfig | null = null;
-  private initialized = false;
 
-  initialize(config: GeneratorConfig) {
-    if (this.initialized) {
+  /**
+   * Initialize the config with the parsed generator config from the schema.prisma file.
+   * This is mainly used for testing purposes.
+   * @param config
+   */
+  initializeWithConfig(config: GeneratorConfig) {
+    if (this.isInitialized()) {
       throw new Error('Global config has already been initialized');
     }
     this.config = config;
-    this.initialized = true;
+    return this.config;
+  }
 
+  /**
+   * Initialize the config with the raw generator options from the generatorHandler
+   * `onGenerate` function provided by the prisma generator helper library
+   * @param options
+   */
+  initialize(options: GeneratorOptions) {
+    if (this.isInitialized()) {
+      throw new Error('Global config has already been initialized');
+    }
+    this.config = parseGeneratorConfig(options);
     return this.config;
   }
 
   getConfig(): GeneratorConfig {
-    if (!this.initialized || !this.config) {
-      throw new Error(
-        'Global config has not been initialized. Call initialize() first.',
-      );
+    if (!this.config) {
+      throw new Error('Global config has not been initialized.');
     }
     return this.config;
   }
 
   isInitialized(): boolean {
-    return this.initialized;
+    return this.config !== null;
   }
 
   /**
@@ -35,7 +64,6 @@ class GlobalConfigStore {
    */
   reset(): void {
     this.config = null;
-    this.initialized = false;
   }
 }
 

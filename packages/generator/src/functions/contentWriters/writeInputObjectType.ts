@@ -16,9 +16,35 @@ interface WriteInputTypeFieldOptions {
   writeValidation?: boolean;
 }
 
+const isNonScalarType = (field: ExtendedDMMFSchemaArg) => {
+  const zodTypeNonScalar = field.inputTypes[0].getZodNonScalarType();
+  return !!zodTypeNonScalar;
+};
+
 /////////////////////////////////////////////
 // WRITER FUNCTION
 /////////////////////////////////////////////
+
+const writeScalarInputTypeField = (
+  writer: CodeBlockWriter,
+  field: ExtendedDMMFSchemaArgInputType,
+) => {
+  const { zodVersion } = getConfig();
+
+  if (zodVersion?.major === 4) {
+    writer.write(`get ${field.name}() { `);
+    writer.write(`return `);
+  }
+
+  if (zodVersion?.major !== 4) {
+    writer.write(`${field.name}: `);
+  }
+
+  writeScalarType(writer, {
+    inputType: field.inputTypes[0],
+    writeComma: false,
+  });
+};
 
 const writeInputTypeField = ({
   writer,
@@ -34,70 +60,124 @@ const writeInputTypeField = ({
     zodCustomValidatorString,
   } = field;
 
+  const { zodVersion } = getConfig();
+
   if (field.zodOmitField) {
     writer.write(`// omitted: `);
   }
 
-  writer.write(`${field.name}: `);
+  const isNonScalarTypeField = isNonScalarType(field);
 
-  if (field.hasMultipleTypes) {
-    writer.write(`z.union([ `);
+  // if zod version is 4, we need to use getters to return the zod type
+  // because zod does not support recursive types without a type annotation or z.lazy
+  if (zodVersion?.major === 4) {
+    const zodTypeNonScalar = field.inputTypes[0].getZodNonScalarType();
 
-    field.inputTypes.forEach((inputType, idx) => {
-      const writeComma = idx !== field.inputTypes.length - 1;
-      writeScalarType(writer, {
-        inputType,
-        zodCustomErrors,
-        zodValidatorString,
-        zodCustomValidatorString,
-        writeComma,
-        writeValidation,
-      });
-      writeNonScalarType(writer, {
-        inputType,
-        writeComma,
-      });
-      writeSpecialType(writer, {
-        inputType,
-        zodCustomErrors,
-        zodCustomValidatorString,
-        writeComma,
-        writeValidation,
-      });
-    });
+    if (zodTypeNonScalar) {
+      writer.write(`${field.name}: `);
+    } else {
+      writer.write(`get ${field.name}() { `);
+      writer.write(`return `);
+    }
+  }
 
-    writer
-      .write(` ])`)
-      .conditionalWrite(!field.isRequired, `.optional()`)
-      .conditionalWrite(field.isNullable, `.nullable()`)
-      .write(`,`);
-  } else {
-    const inputType = field.inputTypes[0];
+  if (zodVersion?.major !== 4) {
+    writer.write(`${field.name}: `);
+  }
+
+  writer.conditionalWrite(field.hasMultipleTypes, `z.union([ `);
+
+  field.inputTypes.forEach((inputType, idx) => {
+    const writeComma = idx !== field.inputTypes.length - 1;
     writeScalarType(writer, {
       inputType,
-      isNullable,
-      isOptional,
       zodCustomErrors,
       zodValidatorString,
       zodCustomValidatorString,
-      writeValidation,
       writeComma,
+      writeValidation,
     });
     writeNonScalarType(writer, {
       inputType,
-      isNullable,
-      isOptional,
       writeComma,
     });
     writeSpecialType(writer, {
       inputType,
       zodCustomErrors,
       zodCustomValidatorString,
-      isNullable,
-      isOptional,
-      writeValidation,
       writeComma,
+      writeValidation,
     });
+  });
+
+  writer
+    .conditionalWrite(field.hasMultipleTypes, ` ])`)
+    .conditionalWrite(!field.isRequired, `.optional()`)
+    .conditionalWrite(field.isNullable, `.nullable()`)
+    .write(`,`);
+
+  // if (field.hasMultipleTypes) {
+  //   writer.write(`z.union([ `);
+
+  //   field.inputTypes.forEach((inputType, idx) => {
+  //     const writeComma = idx !== field.inputTypes.length - 1;
+  //     writeScalarType(writer, {
+  //       inputType,
+  //       zodCustomErrors,
+  //       zodValidatorString,
+  //       zodCustomValidatorString,
+  //       writeComma,
+  //       writeValidation,
+  //     });
+  //     writeNonScalarType(writer, {
+  //       inputType,
+  //       writeComma,
+  //     });
+  //     writeSpecialType(writer, {
+  //       inputType,
+  //       zodCustomErrors,
+  //       zodCustomValidatorString,
+  //       writeComma,
+  //       writeValidation,
+  //     });
+  //   });
+
+  //   writer
+  //     .write(` ])`)
+  //     .conditionalWrite(!field.isRequired, `.optional()`)
+  //     .conditionalWrite(field.isNullable, `.nullable()`)
+  //     .write(`,`);
+  // } else {
+  //   const inputType = field.inputTypes[0];
+  //   writeScalarType(writer, {
+  //     inputType,
+  //     isNullable,
+  //     isOptional,
+  //     zodCustomErrors,
+  //     zodValidatorString,
+  //     zodCustomValidatorString,
+  //     writeValidation,
+  //     writeComma,
+  //   });
+  //   writeNonScalarType(writer, {
+  //     inputType,
+  //     isNullable,
+  //     isOptional,
+  //     writeComma,
+  //   });
+  //   writeSpecialType(writer, {
+  //     inputType,
+  //     zodCustomErrors,
+  //     zodCustomValidatorString,
+  //     isNullable,
+  //     isOptional,
+  //     writeValidation,
+  //     writeComma,
+  //   });
+  // }
+
+  if (zodVersion?.major === 4) {
+    writer.write(` },`);
   }
 
   writer.newLine();
@@ -108,6 +188,142 @@ const writeInputTypeField = ({
 /////////////////////////////////////////////
 
 export const writeInputObjectType = (
+  options: ContentWriterOptions,
+  inputType: ExtendedDMMFInputType,
+) => {
+  const { zodVersion } = getConfig();
+
+  if (zodVersion?.major !== 4) {
+    console.warn('upgrade to zod v4 to use native recursive types');
+    return writeInputObjectTypeLegacy(options, inputType);
+  }
+
+  if (zodVersion?.major === 4) {
+    return writeInputObjectTypeZodV4(options, inputType);
+  }
+};
+
+/////////////////////////////////////////////
+// CURRENT
+/////////////////////////////////////////////
+
+/**
+ * This version should not be used anymore since zod v4 supports recursive types
+ * without the need of a type annotation or z.lazy.
+ */
+const writeInputObjectTypeZodV4 = (
+  {
+    fileWriter: { writer, writeImportSet, writeImport },
+    getSingleFileContent = false,
+  }: ContentWriterOptions,
+  inputType: ExtendedDMMFInputType,
+) => {
+  const {
+    useMultipleFiles,
+    useExactOptionalPropertyTypes,
+    addInputTypeValidation,
+  } = getConfig();
+
+  if (useMultipleFiles && !getSingleFileContent) {
+    writeImportSet(inputType.imports);
+    if (useExactOptionalPropertyTypes) {
+      writeImport('ru', `./RemoveUndefined`);
+    }
+  }
+
+  // // when an omit field is present, the type is not a native prism type
+  // // but a zod union of the native type and an omit type
+  // const type = inputType.hasOmitFields()
+  //   ? `z.ZodType<Omit<Prisma.${
+  //       inputType.name
+  //     }, ${inputType.getOmitFieldsUnion()}>>`
+  //   : `z.ZodType<Prisma.${inputType.name}>`;
+
+  writer.blankLine().write(`export const ${inputType.name}Schema = `);
+
+  const { extendedWhereUniqueFields } = inputType;
+
+  const writeExtendedWhereUniqueInput =
+    Array.isArray(extendedWhereUniqueFields) &&
+    extendedWhereUniqueFields.length !== 0;
+
+  if (writeExtendedWhereUniqueInput) {
+    // if only one element is present in the array,
+    // a z.object is used instead of a z.union
+    if (extendedWhereUniqueFields.length === 1) {
+      writer
+        .write(`z.strictObject(`)
+        .inlineBlock(() => {
+          extendedWhereUniqueFields[0].forEach((field, idx) => {
+            writeInputTypeField({
+              writer,
+              field,
+              writeComma: idx !== extendedWhereUniqueFields[0].length - 1,
+              writeValidation: addInputTypeValidation,
+            });
+          });
+        })
+        .write(`)`)
+        .newLine()
+        .write(`.and(`);
+    } else {
+      // now we need the union of z.objects
+      writer
+        .write(`z.union([`)
+        .newLine()
+        .withIndentationLevel(1, () => {
+          extendedWhereUniqueFields.forEach((field) => {
+            writer
+              .write(`z.object(`)
+              .inlineBlock(() => {
+                field.forEach((field, idx) => {
+                  writeInputTypeField({
+                    writer,
+                    field,
+                    writeComma: idx !== extendedWhereUniqueFields[0].length - 1,
+                    writeValidation: addInputTypeValidation,
+                  });
+                });
+              })
+              .write(`),`)
+              .newLine();
+          });
+        })
+        .writeLine(`])`)
+        .write(`.and(`);
+    }
+  }
+
+  writer
+    .write(`z.object(`)
+    .inlineBlock(() => {
+      inputType.fields.forEach((field) => {
+        writeInputTypeField({
+          writer,
+          field,
+          writeValidation: addInputTypeValidation,
+          writeComma: field !== inputType.fields[inputType.fields.length - 1],
+        });
+      });
+    })
+    .write(`)`)
+    .conditionalWrite(useExactOptionalPropertyTypes, '.transform(ru)')
+    .write(`;`);
+
+  if (useMultipleFiles && !getSingleFileContent) {
+    writer.blankLine().writeLine(`export default ${inputType.name}Schema;`);
+  }
+};
+
+/////////////////////////////////////////////
+// LEGACY FUNCTION (FOR ZOD V3)
+/////////////////////////////////////////////
+
+/**
+ * This version should not be used anymore since zod v4 supports recursive types
+ * without the need of a type annotation or z.lazy.
+ */
+const writeInputObjectTypeLegacy = (
   {
     fileWriter: { writer, writeImportSet, writeImport },
     getSingleFileContent = false,

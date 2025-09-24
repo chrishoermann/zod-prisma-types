@@ -11,6 +11,14 @@ type SchemaArgInputType = DMMF.TypeRef<
   'scalar' | 'inputObjectTypes' | 'enumTypes' | 'fieldRefTypes'
 >;
 
+/**
+ * The category of the schema arg input type.
+ * @description Scalar types are the basic types like string, number, boolean, etc.
+ * @description Non scalar types are the types that are not scalar like enums, objects, etc.
+ * @description Special types are the types that are special like Json, Bytes, Decimal, etc.
+ */
+export type SchemaArgTypeCategory = 'scalar' | 'nonScalar' | 'special';
+
 export class ExtendedDMMFSchemaArgInputType implements SchemaArgInputType {
   readonly isJsonType: boolean;
   readonly isBytesType: boolean;
@@ -20,6 +28,7 @@ export class ExtendedDMMFSchemaArgInputType implements SchemaArgInputType {
   readonly type: SchemaArgInputType['type'];
   readonly location: SchemaArgInputType['location'];
   readonly namespace?: SchemaArgInputType['namespace'];
+  readonly category: SchemaArgTypeCategory;
 
   constructor(arg: SchemaArgInputType) {
     this.isJsonType = this._setIsJsonType(arg);
@@ -30,6 +39,13 @@ export class ExtendedDMMFSchemaArgInputType implements SchemaArgInputType {
     this.type = arg.type;
     this.location = arg.location;
     this.namespace = arg.namespace;
+    this.category = this._setCategory();
+  }
+
+  private _setCategory() {
+    if (this.getZodScalarType()) return 'scalar';
+    if (this.getZodNonScalarType()) return 'nonScalar';
+    return 'special';
   }
 
   private _setIsJsonType(arg: SchemaArgInputType) {
@@ -72,6 +88,7 @@ export class ExtendedDMMFSchemaArgInputType implements SchemaArgInputType {
 
   /**
    * Checks if the type is a null type and returns the corresponding zod null type string
+   * @deprecated This method is deprecated and is currently not used anywhere
    * @returns zodNullType or undefined
    */
   getZodNullType = () => {

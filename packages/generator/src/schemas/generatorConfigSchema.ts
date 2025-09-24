@@ -1,9 +1,5 @@
-import { PrismaVersionSchema, ZodVersionSchema } from '../utils';
+import { VersionSchema } from '../utils/getPackageVersion';
 import { z } from 'zod';
-
-////////////////////////////////////////////////
-// SCHEMA
-/////////////////////////////////////////////////
 
 export const configSchema = z.object({
   useMultipleFiles: z
@@ -108,10 +104,32 @@ export const configSchema = z.object({
    *`outputTypeSchemas`
    */
   outputTypePath: z.string().optional().default('outputTypeSchemas'), // currently only used internally
-  prismaVersion: PrismaVersionSchema.optional(),
-  zodVersion: ZodVersionSchema.optional(),
+
+  /**
+   * Version of prisma client to determine certain implementation details
+   */
+  prismaVersion: VersionSchema.optional(),
+
+  /**
+   * Version of zod to determine certain implementation details
+   */
+  zodVersion: VersionSchema.optional(),
+
+  /**
+   * Whether decimal.js is installed to determine certain implementation details
+   */
   decimalJSInstalled: z.boolean().default(false),
+
   isPrismaClientGenerator: z.boolean().default(false),
+
+  /**
+   * Path to the prisma client runtime library
+   *
+   * !!!!
+   * needs to be updated for prisma client version 6.0.0 and later
+   * because the client is not generated into node modules by default anymore
+   * !!!!
+   */
   prismaLibraryPath: z
     .string()
     .optional()
