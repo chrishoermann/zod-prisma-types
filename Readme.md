@@ -126,7 +126,7 @@ strictNullChecks: true,
 
 > Supports prisma 4.x - 5.x
 
-Add the following code to your `prisma.schema` file:
+Add the following code to your `schema.prisma` file:
 
 ```prisma
 generator zod {
