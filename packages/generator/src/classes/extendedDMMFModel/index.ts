@@ -54,7 +54,7 @@ export interface ExtendedDMMFModel extends DMMF.Model, FormattedNames {
   readonly hasOptionalJsonFields: boolean;
 
   /**
-   * Flag to indicate if the model has decimal fields.
+   * Flag to indicate if the model has omitted fields.
    */
   readonly hasOmitFields: boolean;
 

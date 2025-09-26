@@ -1,7 +1,11 @@
 import CodeBlockWriter from 'code-block-writer';
 
 import { writeNonScalarType, writeScalarType, writeSpecialType } from '..';
-import { ExtendedDMMFInputType, ExtendedDMMFSchemaArg } from '../../classes';
+import {
+  ExtendedDMMFInputType,
+  ExtendedDMMFSchemaArg,
+  ExtendedDMMFSchemaArgInputType,
+} from '../../classes';
 import { type ContentWriterOptions } from '../../types';
 import { getConfig } from '../../config';
 
@@ -22,27 +26,51 @@ const isNonScalarType = (field: ExtendedDMMFSchemaArg) => {
 };
 
 /////////////////////////////////////////////
-// WRITER FUNCTION
+// MAIN FUNCTION
 /////////////////////////////////////////////
 
-const writeScalarInputTypeField = (
-  writer: CodeBlockWriter,
-  field: ExtendedDMMFSchemaArgInputType,
+export const writeInputObjectType = (
+  options: ContentWriterOptions,
+  inputType: ExtendedDMMFInputType,
 ) => {
   const { zodVersion } = getConfig();
 
-  if (zodVersion?.major === 4) {
-    writer.write(`get ${field.name}() { `);
-    writer.write(`return `);
-  }
-
   if (zodVersion?.major !== 4) {
-    writer.write(`${field.name}: `);
+    console.warn('upgrade to zod v4 to use native recursive types');
+    return writeInputObjectTypeLegacy(options, inputType);
   }
 
-  writeScalarType(writer, {
-    inputType: field.inputTypes[0],
-    writeComma: false,
+  if (zodVersion?.major === 4) {
+    return writeInputObjectTypeZodV4(options, inputType);
+  }
+};
+
+/////////////////////////////////////////////
+// WRITER FUNCTION
+/////////////////////////////////////////////
+
+/**
+ * Writes a scalar input type field. This function checks if the field is a scalar type
+ * and writes the corresponding zod type.
+ *
+ * @param writer
+ * @param field
+ */
+const writeScalarInputTypeField = (
+  writer: CodeBlockWriter,
+  field: ExtendedDMMFSchemaArg,
+) => {
+  if (!field.categories.has('scalar') || field.hasMultipleTypes) {
+    return;
+  }
+
+  writer.write(`${field.name}: `);
+
+  field.inputTypes.forEach((inputType, idx) => {
+    writeScalarType(writer, {
+      inputType,
+      writeComma: idx !== field.inputTypes.length - 1,
+    });
   });
 };
 
@@ -66,7 +94,19 @@ const writeInputTypeField = ({
     writer.write(`// omitted: `);
   }
 
-  const isNonScalarTypeField = isNonScalarType(field);
+  writeScalarInputTypeField(writer, field);
+
+  const isScalarTypeField = field.categories.has('scalar');
+
+  // console.log(
+  //   'isScalarTypeField',
+  //   isScalarTypeField,
+  //   field.name,
+  //   field.categories,
+  //   field.inputTypes.map(
+  //     (inputType) => inputType.type + ' - ' + inputType.category,
+  //   ),
+  // );
 
   // if zod version is 4, we need to use getters to return the zod type
   // because zod does not support recursive types without a type annotation or z.lazy
@@ -89,6 +129,7 @@ const writeInputTypeField = ({
 
   field.inputTypes.forEach((inputType, idx) => {
     const writeComma = idx !== field.inputTypes.length - 1;
+
     writeScalarType(writer, {
       inputType,
       zodCustomErrors,
@@ -116,91 +157,11 @@ const writeInputTypeField = ({
     .conditionalWrite(field.isNullable, `.nullable()`)
     .write(`,`);
 
-  // if (field.hasMultipleTypes) {
-  //   writer.write(`z.union([ `);
-
-  //   field.inputTypes.forEach((inputType, idx) => {
-  //     const writeComma = idx !== field.inputTypes.length - 1;
-  //     writeScalarType(writer, {
-  //       inputType,
-  //       zodCustomErrors,
-  //       zodValidatorString,
-  //       zodCustomValidatorString,
-  //       writeComma,
-  //       writeValidation,
-  //     });
-  //     writeNonScalarType(writer, {
-  //       inputType,
-  //       writeComma,
-  //     });
-  //     writeSpecialType(writer, {
-  //       inputType,
-  //       zodCustomErrors,
-  //       zodCustomValidatorString,
-  //       writeComma,
-  //       writeValidation,
-  //     });
-  //   });
-
-  //   writer
-  //     .write(` ])`)
-  //     .conditionalWrite(!field.isRequired, `.optional()`)
-  //     .conditionalWrite(field.isNullable, `.nullable()`)
-  //     .write(`,`);
-  // } else {
-  //   const inputType = field.inputTypes[0];
-  //   writeScalarType(writer, {
-  //     inputType,
-  //     isNullable,
-  //     isOptional,
-  //     zodCustomErrors,
-  //     zodValidatorString,
-  //     zodCustomValidatorString,
-  //     writeValidation,
-  //     writeComma,
-  //   });
-  //   writeNonScalarType(writer, {
-  //     inputType,
-  //     isNullable,
-  //     isOptional,
-  //     writeComma,
-  //   });
-  //   writeSpecialType(writer, {
-  //     inputType,
-  //     zodCustomErrors,
-  //     zodCustomValidatorString,
-  //     isNullable,
-  //     isOptional,
-  //     writeValidation,
-  //     writeComma,
-  //   });
-  // }
-
   if (zodVersion?.major === 4) {
     writer.write(` },`);
   }
 
   writer.newLine();
-};
-
-/////////////////////////////////////////////
-// MAIN FUNCTION
-/////////////////////////////////////////////
-
-export const writeInputObjectType = (
-  options: ContentWriterOptions,
-  inputType: ExtendedDMMFInputType,
-) => {
-  const { zodVersion } = getConfig();
-
-  if (zodVersion?.major !== 4) {
-    console.warn('upgrade to zod v4 to use native recursive types');
-    return writeInputObjectTypeLegacy(options, inputType);
-  }
-
-  if (zodVersion?.major === 4) {
-    return writeInputObjectTypeZodV4(options, inputType);
-  }
 };
 
 /////////////////////////////////////////////

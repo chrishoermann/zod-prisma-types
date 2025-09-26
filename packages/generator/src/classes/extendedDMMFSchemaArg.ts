@@ -40,6 +40,7 @@ export class ExtendedDMMFSchemaArg
   readonly isBytesType: boolean;
   readonly isDecimalType: boolean;
   readonly linkedField?: ExtendedDMMFField;
+  readonly categories: Set<ExtendedDMMFSchemaArgInputType['category']>;
 
   constructor(
     arg: ExtendedDMMFSchemaArgOptions,
@@ -63,6 +64,7 @@ export class ExtendedDMMFSchemaArg
     this.isBytesType = this._setIsBytesType();
     this.isDecimalType = this._setIsDecimalType();
     this.linkedField = linkedField;
+    this.categories = this._setFieldCategories();
   }
 
   private _setInputTypes = (inputTypes: ReadonlyDeep<DMMF.InputTypeRef[]>) => {
@@ -86,6 +88,10 @@ export class ExtendedDMMFSchemaArg
       return new ExtendedDMMFSchemaArgInputType(inputType);
     });
   };
+
+  private _setFieldCategories() {
+    return new Set(this.inputTypes.map((inputType) => inputType.category));
+  }
 
   private _setHasSingleType() {
     return this.inputTypes.length === 1;
