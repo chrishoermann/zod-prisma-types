@@ -11,41 +11,72 @@ export const VersionSchema = z.object({
 
 export type Version = z.infer<typeof VersionSchema>;
 
-export const getPackageVersion = (packageName: string) => {
+type Options = {
+  fallbackVersion?: Version;
+};
+
+export const getPackageVersion = (packageName: string, options?: Options) => {
   try {
     const rawData = fs.readFileSync(
       path.join(process.cwd(), 'package.json'),
       'utf-8',
     );
 
-    const jsonData = z
+    const parsedJsonData = z
       .object({ dependencies: z.record(z.string(), z.string()) })
       .parse(JSON.parse(rawData));
 
-    let version = jsonData.dependencies[packageName];
+    let version = parsedJsonData.dependencies[packageName];
+
+    // if version is not found, fall back to provided default version or throw an error
+    // this happens if the package is installed as a devDependency
+    // as we currently only look under dependencies to determine the version
+    if (!version) {
+      if (options?.fallbackVersion) {
+        console.log(
+          '\x1b[33m',
+          `[WARNING] Falling back to default ${options.fallbackVersion.major}.${options.fallbackVersion.minor}.${options.fallbackVersion.patch} because the version of the package ${packageName} could not be determined - make sure it is installed as a dependency and not a devDependency`,
+          '\x1b[37m',
+        );
+        return options.fallbackVersion;
+      }
+
+      throw new Error(
+        `The version of the package ${packageName} could not be determined - make sure it is installed as a dependency and not a devDependency`,
+      );
+    }
+
     version = version.replace(/^[\^=~<>*]/, '');
-
     const [major, minor, patch] = version.split('.').map(Number);
-
     const parsedVersion = VersionSchema.safeParse({ major, minor, patch });
 
-    // HACKY !!!
-    // default to v4.0.0 because every new project should use zod v4 now bc. I sayyyyy soooooooo!!!
-    // currently a workaround to support projects like pnpm monorepos
-    // that use 'catalog:' for zod where the version can not be determined via package.json
     if (!parsedVersion.success) {
-      console.log(
-        '\x1b[33m',
-        '[WARNING] Falling back to default zod version 4.0.0 because of invalid/unknown version in package.json',
-        '\x1b[37m',
-      );
+      if (options?.fallbackVersion) {
+        console.log(
+          '\x1b[33m',
+          `[WARNING] Falling back to default ${options.fallbackVersion.major}.${options.fallbackVersion.minor}.${options.fallbackVersion.patch} because of invalid/unknown version of the package "${packageName}" in package.json`,
+          '\x1b[37m',
+        );
+        return options.fallbackVersion;
+      }
 
-      return { major: 4, minor: 0, patch: 0 };
+      throw new Error(
+        `The version of the package ${packageName} is invalid/unknown in package.json`,
+      );
     }
 
     return parsedVersion.data;
   } catch (error) {
-    console.error('Error reading package.json:', error);
+    if (error instanceof Error) {
+      console.log(
+        '\x1b[33m',
+        'Error reading package.json:',
+        error.message,
+        '\x1b[33m',
+      );
+    }
+    console.log('\x1b[33m', 'Error reading package.json', '\x1b[37m');
+
     return undefined;
   }
 };

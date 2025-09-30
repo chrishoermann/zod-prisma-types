@@ -15,7 +15,15 @@ export const parseGeneratorConfig = (generatorOptions: GeneratorOptions) => {
     ...getPrismaClientGeneratorConfig(generatorOptions),
     ...getPrismaClientProvider(generatorOptions),
     prismaVersion: getPackageVersion('@prisma/client'),
-    zodVersion: getPackageVersion('zod'),
+
+    // HACKY !!!
+    // default to v4.0.0 because every new project should use zod v4 now bc. I sayyyyy soooooooo!!!
+    // currently a workaround to support projects like pnpm monorepos
+    // that use 'catalog:' for zod where the version can not be determined via package.json
+    zodVersion: getPackageVersion('zod', {
+      fallbackVersion: { major: 4, minor: 0, patch: 0 },
+    }),
+
     decimalJSInstalled: getDecimalJSInstalled(),
     outputPath: generatorOptions.generator.output,
   });
