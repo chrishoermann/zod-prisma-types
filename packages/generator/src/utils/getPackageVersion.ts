@@ -27,7 +27,23 @@ export const getPackageVersion = (packageName: string) => {
 
     const [major, minor, patch] = version.split('.').map(Number);
 
-    return VersionSchema.parse({ major, minor, patch });
+    const parsedVersion = VersionSchema.safeParse({ major, minor, patch });
+
+    // HACKY !!!
+    // default to v4.0.0 because every new project should use zod v4 now bc. I sayyyyy soooooooo!!!
+    // currently a workaround to support projects like pnpm monorepos
+    // that use 'catalog:' for zod where the version can not be determined via package.json
+    if (!parsedVersion.success) {
+      console.log(
+        '\x1b[33m',
+        '[WARNING] Falling back to default zod version 4.0.0 because of invalid/unknown version in package.json',
+        '\x1b[37m',
+      );
+
+      return { major: 4, minor: 0, patch: 0 };
+    }
+
+    return parsedVersion.data;
   } catch (error) {
     console.error('Error reading package.json:', error);
     return undefined;
