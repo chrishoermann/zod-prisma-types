@@ -1,6 +1,6 @@
 {
   "name": "zod-prisma-types",
-  "version": "3.3.1",
+  "version": "3.3.2",
   "description": "Generates zod schemas from Prisma models with advanced validation",
   "author": "Chris Hörmann",
   "license": "MIT",
@@ -32,10 +32,10 @@
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\""
   },
   "devDependencies": {
-    "@prisma/internals": "^6.14.0",
+    "@prisma/internals": "^6.16.3",
     "@types/lodash": "^4.17.20",
-    "@typescript-eslint/eslint-plugin": "^8.39.1",
-    "@typescript-eslint/parser": "^8.39.1",
+    "@typescript-eslint/eslint-plugin": "^8.45.0",
+    "@typescript-eslint/parser": "^8.45.0",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.2",
     "eslint-config-universe": "^14.3.0",
@@ -46,11 +46,11 @@
     "vitest": "^3.2.4"
   },
   "dependencies": {
-    "@prisma/dmmf": "^6.14.0",
-    "@prisma/generator-helper": "^6.14.0",
+    "@prisma/dmmf": "^6.16.3",
+    "@prisma/generator-helper": "^6.16.3",
     "code-block-writer": "^13.0.3",
     "lodash": "^4.17.21",
-    "zod": "4.0.17"
+    "zod": "^4.1.11"
   },
   "peerDependencies": {
     "@prisma/client": "^4.x.x || ^5.x.x || ^6.x.x",
