@@ -15,7 +15,7 @@ Since I'm maintaining the generator in my spare time consider buying me a coffee
 ## ⚠️ Maintenance Notice & Recommendation
 
 > **🕐 Limited Maintenance Mode**  
-> Due to time constraints, this package will only receive critical bug fixes and essential updates. I no longer use Prisma as extensively in my projects, which means I don't personally benefit from new generator features that much.
+> Due to time constraints, this package will only receive critical bug fixes and essential updates. I no longer use Prisma as extensively in my projects, which means I don't personally benefit from new generator features that much anymore.
 
 > **🚀 Recommendation for New Projects**  
 > For new projects, please consider using [**prisma-zod-generator**](https://omar-dulaimi.github.io/prisma-zod-generator/) by Omar Dulaimi. Omar maintains multiple Prisma generators and, I believe, has much deeper expertise in this domain than I do. It also seems to have quite similar features.
@@ -114,7 +114,7 @@ Be aware that some generator options have been removed, a few new ones have been
 
 ## About this project
 
-For one of my projects I was in need of a generator that offers the possibility of adding `zod validators` directly in `prisma schema's` [rich-comments](https://www.prisma.io/docs/concepts/components/prisma-schema#comments) and generates `zod` schemas for all prisma models, enums, inputTypes, argTypes, filters and so on. I also wanted to be able to import these schemas in the frontend e.g. for form validation and make the generator as flexible as possible so it covers a large range of use cases. Since there were no generators out there that met my requirements or they weren't actively maintained anymore I decided to write `zod-prisma-type`.
+For one of my projects I was in need of a generator that offers the possibility of adding `zod validators` directly in `prisma schema's` [rich-comments](https://www.prisma.io/docs/concepts/components/prisma-schema#comments) and generates `zod` schemas for all prisma models, enums, inputTypes, argTypes, filters and so on. I also wanted to be able to import these schemas in the frontend e.g. for form validation and make the generator as flexible as possible so it covers a large range of use cases. Since there were no generators out there that met my requirements or they weren't actively maintained at that time I decided to write `zod-prisma-type`.
 
 ## Installation
 
