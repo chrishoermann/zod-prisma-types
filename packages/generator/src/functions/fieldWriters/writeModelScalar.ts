@@ -18,15 +18,24 @@ export const writeScalar = ({
       .write(`)`)
       .conditionalWrite(!!field.zodValidatorString, field.zodValidatorString!);
 
-    writeFieldAdditions({ writer, field, writeOptionalDefaults });
-  } else {
+    return writeFieldAdditions({ writer, field, writeOptionalDefaults });
+  }
+
+  if (field.isTopLevelValidator) {
     writer
       .write(`${field.name}: `)
-      .write(`z.${field.zodType}(`)
-      .conditionalWrite(!!field.zodCustomErrors, field.zodCustomErrors!)
-      .write(`)`)
+      .write(`z`)
       .conditionalWrite(!!field.zodValidatorString, field.zodValidatorString!);
 
-    writeFieldAdditions({ writer, field, writeOptionalDefaults });
+    return writeFieldAdditions({ writer, field, writeOptionalDefaults });
   }
+
+  writer
+    .write(`${field.name}: `)
+    .write(`z.${field.zodType}(`)
+    .conditionalWrite(!!field.zodCustomErrors, field.zodCustomErrors!)
+    .write(`)`)
+    .conditionalWrite(!!field.zodValidatorString, field.zodValidatorString!);
+
+  return writeFieldAdditions({ writer, field, writeOptionalDefaults });
 };

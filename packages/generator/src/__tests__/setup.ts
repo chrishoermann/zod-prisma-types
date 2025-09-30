@@ -26,6 +26,17 @@ export const DEFAULT_GENERATOR_CONFIG: GeneratorConfig = {
   useExactOptionalPropertyTypes: false,
   isPrismaClientGenerator: false,
   prismaLibraryPath: '@prisma/client/runtime/library',
+  outputPath: './generated/zod',
+  zodVersion: {
+    major: 4,
+    minor: 0,
+    patch: 0,
+  },
+  prismaVersion: {
+    major: 6,
+    minor: 0,
+    patch: 0,
+  },
 };
 
 export const FIELD_BASE: DMMF.Field = {

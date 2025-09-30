@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { WriteTypeFunction, WriteTypeOptions } from '../../types';
 
 /////////////////////////////////////////////////
@@ -29,5 +28,5 @@ export const writeNonScalarType: WriteTypeFunction<WriteTypeOptions> = (
     .conditionalWrite(inputType.isList, `.array()`)
     .conditionalWrite(isOptional, `.optional()`)
     .conditionalWrite(isNullable, `.nullable()`)
-    .conditionalWrite(writeComma, `,`);
+    .conditionalWrite(writeComma, `, `);
 };

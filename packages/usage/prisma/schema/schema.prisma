@@ -135,6 +135,9 @@ model MyPrismaScalarsType {
   /// @zod.string.regex(/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-]+)(\.[a-zA-Z]{2,5}){1,2}$/)
   customEmailRegex String
 
+  isoDate String? /// @zod.string.date({ message: "Invalid ISO date" })
+  isoDateTwo String? /// @zod.string.isoDate({ message: "Invalid ISO date" })
+
   updatedAt DateTime @updatedAt
 }
 

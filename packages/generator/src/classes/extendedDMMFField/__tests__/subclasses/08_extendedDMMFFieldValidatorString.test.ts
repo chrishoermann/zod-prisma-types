@@ -17,7 +17,7 @@ export function testExtendedDMMFFieldValidatorString<
     new classConstructor({ ...FIELD_BASE, ...field }, 'ModelName');
 
   if (!globalConfig.isInitialized()) {
-    globalConfig.initialize(DEFAULT_GENERATOR_CONFIG);
+    globalConfig.initializeWithConfig(DEFAULT_GENERATOR_CONFIG);
   }
 
   afterAll(() => {
@@ -79,28 +79,41 @@ export function testExtendedDMMFFieldValidatorString<
       expect(field.zodValidatorString).toBe(
         '.uuid({ message: "Invalid UUID" }).startsWith("user-", { message: "Must start with user-" }).endsWith("123", { message: "Must end with 123" })',
       );
+      expect(field.isTopLevelValidator).toBe(true);
     });
 
-    it(`should handle date/time validators correctly`, async () => {
+    it(`should handle date string format validator correctly`, async () => {
+      const field = getField({
+        type: 'String',
+        documentation: '@zod.string.date({ message: "Invalid date format" })',
+      });
+      expect(field.zodValidatorString).toBe(
+        '.iso.date({ message: "Invalid date format" })',
+      );
+      expect(field.isTopLevelValidator).toBe(true);
+    });
+
+    it(`should handle time string format validator correctly`, async () => {
+      const field = getField({
+        type: 'String',
+        documentation: '@zod.string.time({ message: "Invalid time format" })',
+      });
+      expect(field.zodValidatorString).toBe(
+        '.iso.time({ message: "Invalid time format" })',
+      );
+      expect(field.isTopLevelValidator).toBe(true);
+    });
+
+    it(`should handle datetime string format validator correctly`, async () => {
       const field = getField({
         type: 'String',
         documentation:
-          '@zod.string.date({ message: "Invalid date format" }).time({ message: "Invalid time format" }).datetime({ message: "Invalid datetime format" })',
+          '@zod.string.datetime({ message: "Invalid datetime format" })',
       });
       expect(field.zodValidatorString).toBe(
-        '.date({ message: "Invalid date format" }).time({ message: "Invalid time format" }).datetime({ message: "Invalid datetime format" })',
+        '.iso.datetime({ message: "Invalid datetime format" })',
       );
-    });
-
-    it(`should handle ISO validators correctly`, async () => {
-      const field = getField({
-        type: 'String',
-        documentation:
-          '@zod.string.isoDate({ message: "Invalid ISO date" }).isoTime({ message: "Invalid ISO time" }).isoDatetime({ message: "Invalid ISO datetime" }).isoDuration({ message: "Invalid ISO duration" })',
-      });
-      expect(field.zodValidatorString).toBe(
-        '.isoDate({ message: "Invalid ISO date" }).isoTime({ message: "Invalid ISO time" }).isoDatetime({ message: "Invalid ISO datetime" }).isoDuration({ message: "Invalid ISO duration" })',
-      );
+      expect(field.isTopLevelValidator).toBe(true);
     });
 
     // Complex number validator combinations
@@ -231,11 +244,57 @@ export function testExtendedDMMFFieldValidatorString<
       const field = getField({
         type: 'String',
         documentation:
-          '@zod.string({ invalid_type_error: "Must be string", required_error: "Required field", description: "User email" }).email({ message: "Invalid email format" }).min(5, { message: "Too short" })',
+          '@zod.string({ error: "Must be string" }).email({ message: "Invalid email format" }).min(5, { message: "Too short" })',
       });
       expect(field.zodValidatorString).toBe(
         '.email({ message: "Invalid email format" }).min(5, { message: "Too short" })',
       );
+    });
+
+    it(`should handle ISO date validator correctly`, async () => {
+      const field = getField({
+        type: 'String',
+        documentation: '@zod.string.isoDate({ message: "Invalid ISO date" })',
+      });
+      expect(field.zodValidatorString).toBe(
+        '.iso.date({ message: "Invalid ISO date" })',
+      );
+      expect(field.isTopLevelValidator).toBe(true);
+    });
+
+    it(`should handle ISO time validator correctly`, async () => {
+      const field = getField({
+        type: 'String',
+        documentation: '@zod.string.isoTime({ message: "Invalid ISO time" })',
+      });
+      expect(field.zodValidatorString).toBe(
+        '.iso.time({ message: "Invalid ISO time" })',
+      );
+      expect(field.isTopLevelValidator).toBe(true);
+    });
+
+    it(`should handle ISO datetime validator correctly`, async () => {
+      const field = getField({
+        type: 'String',
+        documentation:
+          '@zod.string.isoDatetime({ message: "Invalid ISO datetime" })',
+      });
+      expect(field.zodValidatorString).toBe(
+        '.iso.datetime({ message: "Invalid ISO datetime" })',
+      );
+      expect(field.isTopLevelValidator).toBe(true);
+    });
+
+    it(`should handle ISO duration validator correctly`, async () => {
+      const field = getField({
+        type: 'String',
+        documentation:
+          '@zod.string.isoDuration({ message: "Invalid ISO duration" })',
+      });
+      expect(field.zodValidatorString).toBe(
+        '.iso.duration({ message: "Invalid ISO duration" })',
+      );
+      expect(field.isTopLevelValidator).toBe(true);
     });
   });
 }

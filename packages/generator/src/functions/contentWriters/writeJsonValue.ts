@@ -41,7 +41,9 @@ export const writeJsonValue = ({
             .writeLine(`z.number(),`)
             .writeLine(`z.boolean(),`)
             .writeLine(`z.literal(null),`)
-            .writeLine(`z.record(z.lazy(() => JsonValueSchema.optional())),`)
+            .writeLine(
+              `z.record(z.string(), z.lazy(() => JsonValueSchema.optional())),`,
+            )
             .writeLine(`z.array(z.lazy(() => JsonValueSchema)),`);
         })
         .writeLine(`])`);

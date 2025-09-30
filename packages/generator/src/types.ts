@@ -173,6 +173,7 @@ export interface WriteTypeOptions extends ZodValidatorOptions {
   writeLazy?: boolean;
   writeComma?: boolean;
   writeValidation?: boolean;
+  isTopLevelValidator?: boolean;
 }
 
 export type WriteTypeFunction<

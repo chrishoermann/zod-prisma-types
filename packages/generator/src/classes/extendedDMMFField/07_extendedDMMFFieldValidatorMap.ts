@@ -30,15 +30,15 @@ export type ZodSharedStringFormatValidators =
   | 'cidrv4'
   | 'cidrv6'
   | 'hash'
-  | 'guid'
+  | 'guid';
 
+export type ZodSharedStringFormatValidatorsIso =
+  // ISO validators (aliases)
   // Date/Time validators (keeping existing ones)
   | 'date'
   | 'time'
   | 'duration'
   | 'datetime'
-
-  // ISO validators (aliases)
   | 'isoDate'
   | 'isoTime'
   | 'isoDatetime'
@@ -48,6 +48,7 @@ export type ZodStringValidatorKeys =
   | ZodSharedValidatorKeys
   | ZodDescribedValidatorKeys
   | ZodSharedStringFormatValidators
+  | ZodSharedStringFormatValidatorsIso
   | 'max'
   | 'min'
   | 'length'
@@ -141,6 +142,9 @@ export const STRING_VALIDATOR_MESSAGE_REGEX =
 export const STRING_FORMAT_VALIDATOR_MESSAGE_REGEX =
   /.(?<validator>email|uuid|url|httpUrl|hostname|emoji|base64|base64url|hex|jwt|nanoid|cuid|cuid2|ulid|ipv4|ipv6|cidrv4|cidrv6|hash|guid|date|time|duration|datetime|isoDate|isoTime|isoDatetime|isoDuration)(\((?<message>\{\s*(?:message|error):\s*['"][^'"]*['"]\s*\})?\))/u;
 
+export const STRING_FORMAT_VALIDATOR_ISO_MESSAGE_REGEX =
+  /.(?<validator>isoDate|isoTime|isoDatetime|isoDuration|date|time|datetime|duration)(\((?<message>\{\s*(?:message|error):\s*['"][^'"]*['"]\s*\})?\))/u;
+
 export const STRING_VALIDATOR_REGEX = /.(regex)(\((?<message>.*)\))/;
 
 export const STRING_VALIDATOR_DESCRIBE_REGEX =
@@ -195,8 +199,9 @@ export const ARRAY_VALIDATOR_MESSAGE_REGEX =
 
 /**
  * This is used to validate the string format validators.
- * it is extracted to a separate object in case we need to use it in the render functions
+ * it is extracted to a separate object in case we need to use it
  * to determine if a validator can be moved to the top level.
+ * see: https://zod.dev/v4/changelog?id=zstring-updates
  */
 export const STRING_FORMAT_VALIDATOR_REGEX_MAP: ValidatorMap<ZodSharedStringFormatValidators> =
   {
@@ -220,15 +225,32 @@ export const STRING_FORMAT_VALIDATOR_REGEX_MAP: ValidatorMap<ZodSharedStringForm
     cidrv6: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
     hash: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
     guid: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
-    date: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
-    time: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
-    duration: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
-    datetime: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+  };
+
+export const STRING_FORMAT_VALIDATOR_REGEX_MAP_KEYS = Object.keys(
+  STRING_FORMAT_VALIDATOR_REGEX_MAP,
+);
+
+/**
+ * This is used to validate the string format validators.
+ * it is extracted to a separate object to transform the ISO validators to the correct format.
+ * see: https://zod.dev/v4/changelog?id=zstring-updates
+ */
+export const STRING_FORMAT_VALIDATOR_ISO_REGEX_MAP: ValidatorMap<ZodSharedStringFormatValidatorsIso> =
+  {
     isoDate: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
     isoTime: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
     isoDatetime: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
     isoDuration: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    date: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    time: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    datetime: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
+    duration: STRING_FORMAT_VALIDATOR_MESSAGE_REGEX,
   };
+
+export const STRING_FORMAT_VALIDATOR_ISO_REGEX_MAP_KEYS = Object.keys(
+  STRING_FORMAT_VALIDATOR_ISO_REGEX_MAP,
+);
 
 /**
  * Maps the right regex to the right validator key.
@@ -241,7 +263,7 @@ export const STRING_VALIDATOR_REGEX_MAP: ValidatorMap<ZodStringValidatorKeys> =
   {
     // string format validators
     ...STRING_FORMAT_VALIDATOR_REGEX_MAP,
-
+    ...STRING_FORMAT_VALIDATOR_ISO_REGEX_MAP,
     // string validators
     max: STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,
     min: STRING_VALIDATOR_NUMBER_AND_MESSAGE_REGEX,

@@ -72,6 +72,14 @@ export interface ExtendedDMMFField extends DMMF.Field, FormattedNames {
   readonly zodCustomValidatorString?: string;
 
   /**
+   * Determins if the validator string should be written at the top level.
+   * see: https://zod.dev/v4/changelog?id=zstring-updates#zstring-updates
+   * @description `true` for `z.string.email().min(1).max(10)` on a `String` field
+   * @description `false` for `z.string.min(1).max(10).email()` on a `String` field
+   */
+  readonly isTopLevelValidator?: boolean;
+
+  /**
    * Contains validators that can be added to array fields.
    * @description `.nonempty()`, `.min(1)`, `.max(10)`, `.length(5)`
    */

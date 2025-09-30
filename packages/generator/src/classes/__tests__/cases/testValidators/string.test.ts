@@ -7,7 +7,7 @@ import { DEFAULT_GENERATOR_CONFIG } from '../../../../__tests__/setup';
 
 describe('test string validators', async () => {
   if (!globalConfig.isInitialized()) {
-    globalConfig.initialize(DEFAULT_GENERATOR_CONFIG);
+    globalConfig.initializeWithConfig(DEFAULT_GENERATOR_CONFIG);
   }
 
   afterAll(() => {
@@ -89,7 +89,7 @@ describe('test string validators', async () => {
     });
 
     it(`should add datetime validator to field "${fields.datetime.name}"`, () => {
-      expect(fields.datetime.zodValidatorString).toBe('.datetime()');
+      expect(fields.datetime.zodValidatorString).toBe('.iso.datetime()');
     });
 
     it(`should add chained validators to field "${fields.chained.name}"`, () => {
@@ -192,7 +192,7 @@ describe('test string validators', async () => {
 
     it(`should add custom error message to datetime validator for field "${fields.datetime.name}"`, () => {
       expect(fields.datetime.zodValidatorString).toBe(
-        '.datetime({ message: "Invalid datetime! string Must be UTC." })',
+        '.iso.datetime({ message: "Invalid datetime! string Must be UTC." })',
       );
     });
 

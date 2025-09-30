@@ -26,6 +26,7 @@ export const writeScalarType: WriteTypeFunction = (
     zodValidatorString,
     zodCustomValidatorString,
     writeValidation = true,
+    isTopLevelValidator = false,
   },
 ) => {
   const zodType = inputType.getZodScalarType();
@@ -48,7 +49,7 @@ export const writeScalarType: WriteTypeFunction = (
         .conditionalWrite(inputType.isList, `.array()`)
         .conditionalWrite(isOptional, `.optional()`)
         .conditionalWrite(isNullable, `.nullable()`)
-        .conditionalWrite(writeComma, `,`);
+        .conditionalWrite(writeComma, `, `);
     }
 
     // only writes the validator string if the user has not disabled input type validation
@@ -71,6 +72,16 @@ export const writeScalarType: WriteTypeFunction = (
         writeValidation && !!zodValidatorString,
         zodValidatorString!,
       )
+      .conditionalWrite(inputType.isList, `.array()`)
+      .conditionalWrite(isOptional, `.optional()`)
+      .conditionalWrite(isNullable, `.nullable()`)
+      .conditionalWrite(writeComma, `,`);
+  }
+
+  if (isTopLevelValidator) {
+    return writer
+      .write(`z`)
+      .write(zodValidatorString!)
       .conditionalWrite(inputType.isList, `.array()`)
       .conditionalWrite(isOptional, `.optional()`)
       .conditionalWrite(isNullable, `.nullable()`)

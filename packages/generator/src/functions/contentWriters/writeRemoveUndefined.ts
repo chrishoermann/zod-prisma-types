@@ -1,6 +1,9 @@
 import { type ContentWriterOptions } from '../../types';
 import { getConfig } from '../../config';
 
+// maybe needs some comments what the code is doing and
+// in which scenario it is meant to be used
+
 export const writeRemoveUndefined = ({
   fileWriter: { writer },
   getSingleFileContent = false,

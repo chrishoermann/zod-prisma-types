@@ -20,7 +20,14 @@ export function testExtendedDMMFModelCustomErrors<
     });
 
   if (!globalConfig.isInitialized()) {
-    globalConfig.initialize(DEFAULT_GENERATOR_CONFIG);
+    globalConfig.initializeWithConfig({
+      ...DEFAULT_GENERATOR_CONFIG,
+      zodVersion: {
+        major: 3,
+        minor: 0,
+        patch: 0,
+      },
+    });
   }
 
   afterAll(() => {

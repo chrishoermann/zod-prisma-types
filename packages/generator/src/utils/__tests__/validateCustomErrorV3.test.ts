@@ -1,12 +1,31 @@
 // Adjust the path
 
-import { it, expect, describe } from 'vitest';
+import { it, expect, describe, afterAll } from 'vitest';
 import {
   validateCustomError,
   VALIDATOR_CUSTOM_ERROR_MESSAGE_REGEX,
   VALIDATOR_CUSTOM_ERROR_REGEX,
   VALIDATOR_CUSTOM_ERROR_SPLIT_KEYS_REGEX,
 } from '../validateCustomError';
+import { globalConfig } from '../../config';
+import { DEFAULT_GENERATOR_CONFIG } from '../../__tests__/setup';
+
+if (!globalConfig.isInitialized()) {
+  globalConfig.initializeWithConfig({
+    ...DEFAULT_GENERATOR_CONFIG,
+    zodVersion: {
+      major: 3,
+      minor: 0,
+      patch: 0,
+    },
+  });
+}
+
+afterAll(() => {
+  if (globalConfig.isInitialized()) {
+    globalConfig.reset();
+  }
+});
 
 describe(`ExtendedDMMFFieldValidatorCustomErrors`, () => {
   it(`array validator number should return match for regex with japanese chars`, async () => {

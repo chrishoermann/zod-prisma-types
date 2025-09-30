@@ -20,7 +20,7 @@ export function testExtendedDMMFFieldImportStatement<
     });
 
   if (!globalConfig.isInitialized()) {
-    globalConfig.initialize(DEFAULT_GENERATOR_CONFIG);
+    globalConfig.initializeWithConfig(DEFAULT_GENERATOR_CONFIG);
   }
 
   afterAll(() => {

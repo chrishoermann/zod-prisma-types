@@ -29,7 +29,7 @@ model StringValidatorsWithMessage {
     id              String  @id @default(cuid())
     customTypeError String? /// @zod.string({ invalid_type_error: "my message", description: "my description" })
     min             String? /// @zod.string.min(3, { message: "Must be 3 or more characters long" })
-    max             String? /// @zod.string.max(10, { message: "Must be 10 or fewer characters long" })q
+    max             String? /// @zod.string.max(10, { message: "Must be 10 or fewer characters long" })
     length          String? /// @zod.string.length(5, { message: "Must be exactly 5 characters long" })
     email           String? /// @zod.string.email({ message: "Invalid email address" })
     url             String? /// @zod.string.url({ message: "Invalid url" })

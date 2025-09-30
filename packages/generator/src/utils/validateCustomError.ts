@@ -76,9 +76,13 @@ export const validateCustomError = (
       }
 
       if (ZOD_V3_VALID_ERROR_KEYS?.includes(key as ZodCustomErrorKey)) {
-        throw new Error(
-          `[@zod generator error]: Custom error key '${key}' is not valid for zod v4. Please use error key instead! ${errorLocation}`,
+        console.warn(
+          `[@zod generator warning]: Custom error key '${key}' is not valid for zod v4. Please use \`error\` key instead! ${errorLocation}`,
         );
+        return true;
+        // throw new Error(
+        //   `[@zod generator error]: Custom error key '${key}' is not valid for zod v4. Please use error key instead! ${errorLocation}`,
+        // );
       }
     }
 
@@ -88,9 +92,13 @@ export const validateCustomError = (
       }
 
       if (ZOD_V4_VALID_ERROR_KEYS?.includes(key as ZodCustomErrorKey)) {
-        throw new Error(
-          `[@zod generator error]: Custom error key '${key}' is not valid for zod v3. Please upgrade to zod v4! ${errorLocation}`,
+        console.warn(
+          `[@zod generator warning]: Custom error key '${key}' is not valid for zod v3. Please upgrade to zod v4! Please use \`error\` key instead! ${errorLocation}`,
         );
+        return true;
+        // throw new Error(
+        //   `[@zod generator error]: Custom error key '${key}' is not valid for zod v3. Please upgrade to zod v4! ${errorLocation}`,
+        // );
       }
     }
 

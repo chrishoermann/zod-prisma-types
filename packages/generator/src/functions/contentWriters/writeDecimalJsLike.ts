@@ -36,7 +36,7 @@ export const writeDecimalJsLike = ({
         .writeLine(`d: z.array(z.number()),`)
         .writeLine(`e: z.number(),`)
         .writeLine(`s: z.number(),`)
-        .writeLine(`toFixed: z.function(z.tuple([]), z.string()),`);
+        .writeLine(`toFixed: z.any(),`);
     })
     .writeLine(`})`);
 

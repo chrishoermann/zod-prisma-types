@@ -10,14 +10,14 @@ import { globalConfig } from '../../../../config';
 // TEST SUITE
 ///////////////////////////////////////////////
 
-export function testExtendedDMMFFieldValidatorCustomErrors<
+export function testExtendedDMMFFieldValidatorCustomErrorsV4<
   T extends ExtendedDMMFFieldValidatorCustomErrors,
 >(classConstructor: new (model: DMMF.Field, modelName: string) => T) {
   const getField = (field?: Partial<DMMF.Field>) =>
     new classConstructor({ ...FIELD_BASE, ...field }, 'ModelName');
 
   if (!globalConfig.isInitialized()) {
-    globalConfig.initialize(DEFAULT_GENERATOR_CONFIG);
+    globalConfig.initializeWithConfig(DEFAULT_GENERATOR_CONFIG);
   }
 
   afterAll(() => {
@@ -27,60 +27,15 @@ export function testExtendedDMMFFieldValidatorCustomErrors<
   });
 
   describe(`ExtendedDMMFFieldValidatorCustomErrors`, () => {
-    it(`should load a class without docs`, async () => {
-      const field = getField();
-      expect(field?.['_validatorCustomError']).toBeUndefined();
-      expect(field?.zodCustomErrors).toBeUndefined();
-    });
-
-    it(`should load a class with valid custom error messages`, async () => {
-      const field = getField({
-        documentation: `@zod.string({ required_error: "error", invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]|" , description: "error"})`,
-      });
-      expect(field?.['_validatorCustomError']).toBe(
-        `({ required_error: "error", invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]|" , description: "error"})`,
-      );
-      expect(field?.zodCustomErrors).toBe(
-        `{ required_error: "error", invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]|" , description: "error"}`,
-      );
-    });
-
-    it(`should load a class with valid custom error messages`, async () => {
-      const field = getField({
-        documentation:
-          '@zod.string({ required_error: "error", invalid_type_error: "error" , description: "error"})',
-      });
-      expect(field?.['_validatorCustomError']).toBe(
-        '({ required_error: "error", invalid_type_error: "error" , description: "error"})',
-      );
-      expect(field?.zodCustomErrors).toBe(
-        '{ required_error: "error", invalid_type_error: "error" , description: "error"}',
-      );
-    });
-
-    it(`should load a class with docs and invalid validator string`, async () => {
-      expect(() =>
-        getField({
-          documentation:
-            '@zod.string({ required_error: "error", invalid_type_errrror: "error"})',
-        }),
-      ).toThrowError(
-        "[@zod generator error]: Custom error key 'invalid_type_errrror' is not valid. Please check for typos! [Error Location]: Model: 'ModelName', Field: 'test'.",
-      );
-    });
-
     // Zod v4 new error paradigm tests
     it(`should load a class with the new 'error' key`, async () => {
       const field = getField({
-        documentation:
-          '@zod.string({ error: "Generic error message", description: "Field description"})',
+        documentation: '@zod.string({ error: "Generic error message"})',
       });
       expect(field?.['_validatorCustomError']).toBe(
-        '({ error: "Generic error message", description: "Field description"})',
+        '({ error: "Generic error message"})',
       );
-      expect(field?.zodCustomErrors).toBe(
-        '{ error: "Generic error message", description: "Field description"}',
-      );
+      expect(field?.zodCustomErrors).toBe('{ error: "Generic error message"}');
     });
 
     it(`should load a class with function-based error customization`, async () => {
@@ -111,15 +66,12 @@ export function testExtendedDMMFFieldValidatorCustomErrors<
 
     it(`should load a class with mixed error types`, async () => {
       const field = getField({
-        documentation:
-          '@zod.string({ error: "Default error", required_error: "Required error", description: "Field description"})',
+        documentation: '@zod.string({ error: "Default error"})',
       });
       expect(field?.['_validatorCustomError']).toBe(
-        '({ error: "Default error", required_error: "Required error", description: "Field description"})',
+        '({ error: "Default error"})',
       );
-      expect(field?.zodCustomErrors).toBe(
-        '{ error: "Default error", required_error: "Required error", description: "Field description"}',
-      );
+      expect(field?.zodCustomErrors).toBe('{ error: "Default error"}');
     });
 
     it(`should load a class with function-based error and validator-specific errors`, async () => {
@@ -318,6 +270,6 @@ export function testExtendedDMMFFieldValidatorCustomErrors<
 // TEST EXECUTION
 ///////////////////////////////////////////////
 
-testExtendedDMMFFieldValidatorCustomErrors(
+testExtendedDMMFFieldValidatorCustomErrorsV4(
   ExtendedDMMFFieldValidatorCustomErrors,
 );

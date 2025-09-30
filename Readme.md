@@ -12,6 +12,23 @@ Since I'm maintaining the generator in my spare time consider buying me a coffee
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/chrishoermann)
 
+## ⚠️ Maintenance Notice & Recommendation
+
+> **🕐 Limited Maintenance Mode**  
+> Due to time constraints, this package will only receive critical bug fixes and essential updates. I no longer use Prisma as extensively in my projects, which means I don't personally benefit from new generator features that much.
+
+> **🚀 Recommendation for New Projects**  
+> For new projects, please consider using [**prisma-zod-generator**](https://omar-dulaimi.github.io/prisma-zod-generator/) by Omar Dulaimi. Omar maintains multiple Prisma generators and, I believe, has much deeper expertise in this domain than I do. It also seems to have quite similar features.
+
+> **💡 Why the Alternative?**  
+> Omar's active involvement with multiple Prisma generators means better feature coverage, more frequent updates, and deeper integration with the Prisma ecosystem.
+
+---
+
+**📦 Current Status:** Maintenance mode - critical fixes only  
+**🔄 Recommended Alternative:** [prisma-zod-generator](https://github.com/omar-dulaimi/prisma-zod-generator)  
+**👤 Maintainer:** [Omar Dulaimi](https://github.com/omar-dulaimi)
+
 ## Supported versions
 
 Currently this package supports Prisma versions 4.x - 6.x.
@@ -37,6 +54,7 @@ Be aware that some generator options have been removed, a few new ones have been
 
 ## Table of contents<!-- omit from toc -->
 
+- [⚠️ Maintenance Notice \& Recommendation](#️-maintenance-notice--recommendation)
 - [Supported versions](#supported-versions)
 - [Known bugs](#known-bugs)
 - [About this project](#about-this-project)

@@ -7,7 +7,7 @@ import { DEFAULT_GENERATOR_CONFIG } from '../../../../__tests__/setup';
 
 it("should throw if the wrong validator is used for a type that doesn't support it", async () => {
   if (!globalConfig.isInitialized()) {
-    globalConfig.initialize(DEFAULT_GENERATOR_CONFIG);
+    globalConfig.initializeWithConfig(DEFAULT_GENERATOR_CONFIG);
   }
 
   afterAll(() => {

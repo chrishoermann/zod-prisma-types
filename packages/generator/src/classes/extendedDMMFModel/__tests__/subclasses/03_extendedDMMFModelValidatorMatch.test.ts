@@ -17,7 +17,7 @@ export function testExtendedDMMFFieldValidatorMatch<
   T extends ExtendedDMMFModelValidatorMatch,
 >(classConstructor: new (model: DMMF.Model) => T) {
   if (!globalConfig.isInitialized()) {
-    globalConfig.initialize(DEFAULT_GENERATOR_CONFIG);
+    globalConfig.initializeWithConfig(DEFAULT_GENERATOR_CONFIG);
   }
 
   afterAll(() => {

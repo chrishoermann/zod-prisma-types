@@ -7,7 +7,14 @@ import { DEFAULT_GENERATOR_CONFIG } from '../../../../__tests__/setup';
 
 it('should throw a custom error key is not valid', async () => {
   if (!globalConfig.isInitialized()) {
-    globalConfig.initialize(DEFAULT_GENERATOR_CONFIG);
+    globalConfig.initializeWithConfig({
+      ...DEFAULT_GENERATOR_CONFIG,
+      zodVersion: {
+        major: 3,
+        minor: 0,
+        patch: 0,
+      },
+    });
   }
 
   afterAll(() => {
