@@ -50,6 +50,8 @@ export const getPackageVersion = (packageName: string, options?: Options) => {
     const [major, minor, patch] = version.split('.').map(Number);
     const parsedVersion = VersionSchema.safeParse({ major, minor, patch });
 
+    // if the version is invalid/unknown, fall back to the provided default version or throw an error
+    // this happens if the version is not a valid semver or a catalog version
     if (!parsedVersion.success) {
       if (options?.fallbackVersion) {
         console.log(

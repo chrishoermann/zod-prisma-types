@@ -1355,6 +1355,13 @@ export function testExtendedDMMFFieldValidatorMap<
           pattern: '.array(.length(2))',
         }),
       ).toBe(true);
+
+      expect(
+        map({
+          key: 'describe',
+          pattern: '.describe("some")',
+        }),
+      ).toBe(true);
     });
 
     it(`should pass ivalid data to to validator map`, async () => {

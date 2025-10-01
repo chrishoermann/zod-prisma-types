@@ -114,6 +114,8 @@ export type ZodBigIntValidatorKeys =
 
 export type ZodCustomValidatorKeys = ZodSharedValidatorKeys | 'use' | 'omit';
 
+export type ZodEnumValidatorKeys = ZodSharedValidatorKeys | 'describe';
+
 export interface ScalarValidatorFnOpts {
   key: string;
   pattern: string;
@@ -366,8 +368,9 @@ export const CUSTOM_VALIDATOR_REGEX_MAP: ValidatorMap<ZodCustomValidatorKeys> =
     array: ARRAY_VALIDATOR_MESSAGE_REGEX,
   };
 
-export const ENUM_VALIDATOR_REGEX_MAP: ValidatorMap<ZodSharedValidatorKeys> = {
+export const ENUM_VALIDATOR_REGEX_MAP: ValidatorMap<ZodEnumValidatorKeys> = {
   array: ARRAY_VALIDATOR_MESSAGE_REGEX,
+  describe: STRING_VALIDATOR_DESCRIBE_REGEX,
 };
 
 export const OBJECT_VALIDATOR_REGEX_MAP: ValidatorMap<ZodSharedValidatorKeys> =
