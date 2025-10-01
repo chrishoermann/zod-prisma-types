@@ -12,15 +12,12 @@ import {
 
 export type WriteStatements = (writer: CreateFileOptions) => void;
 
-/**
- * @deprecated Use the `outputPath` from the global config and the extended DMMF singleton instead
- */
-export interface CreateOptions {
-  dmmf: ExtendedDMMF;
-  path: string;
-}
+// export interface CreateOptions {
+//   dmmf: ExtendedDMMF;
+//   path: string;
+// }
 
-export type CreateFiles = (options: CreateOptions) => void;
+// export type CreateFiles = (options: CreateOptions) => void;
 
 export interface ScalarValidatorFunctionOptions {
   key: string;

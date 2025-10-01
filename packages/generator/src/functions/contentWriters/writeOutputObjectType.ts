@@ -14,7 +14,7 @@ export const writeOutputObjectType = (
   const {
     useMultipleFiles,
     useExactOptionalPropertyTypes,
-    useTypeAssertions,
+    // useTypeAssertions,
     inputTypePath,
     addSelectType,
   } = getConfig();
@@ -150,8 +150,9 @@ export const writeOutputObjectType = (
     .write(`)`)
     .write(`.strict()`)
     .conditionalWrite(useExactOptionalPropertyTypes, '.transform(ru)')
-    .conditionalWrite(useTypeAssertions, `as ${field.customArgType};`)
-    .conditionalWrite(!useTypeAssertions, `;`);
+    .write(`;`);
+  // .conditionalWrite(useTypeAssertions, `as ${field.customArgType};`)
+  // .conditionalWrite(!useTypeAssertions, `;`);
 
   if (useMultipleFiles && !getSingleFileContent) {
     writer.blankLine().writeLine(`export default ${field.argName}Schema;`);

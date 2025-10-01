@@ -31,7 +31,7 @@ export const writeInputObjectType = (
     useMultipleFiles,
     useExactOptionalPropertyTypes,
     addInputTypeValidation,
-    useTypeAssertions,
+    // useTypeAssertions,
     zodVersion,
   } = getConfig();
 
@@ -122,8 +122,9 @@ export const writeInputObjectType = (
     .conditionalWrite(Number(zodVersion?.major) < 4, `.strict()`)
     .conditionalWrite(useExactOptionalPropertyTypes, '.transform(ru)')
     .conditionalWrite(writeExtendedWhereUniqueInput, `)`)
-    .conditionalWrite(useTypeAssertions, ` as ${type};`)
-    .conditionalWrite(!useTypeAssertions, `;`);
+    .write(`;`);
+  // .conditionalWrite(useTypeAssertions, ` as ${type};`)
+  // .conditionalWrite(!useTypeAssertions, `;`);
 
   if (useMultipleFiles && !getSingleFileContent) {
     writer.blankLine().writeLine(`export default ${inputType.name}Schema;`);
