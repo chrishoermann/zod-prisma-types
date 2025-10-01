@@ -10,9 +10,11 @@ datasource db {
 model EnumValidators {
     id          Int  @id @default(autoincrement())
     enum        TestEnum? /// @zod.enum.describe('test')
+    enumTwo     TestEnum ///@zod.custom.omit([input])
 }
 
 enum TestEnum {
     a
     b
 }
+

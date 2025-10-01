@@ -54,6 +54,8 @@ model MODELWithUpperCase {
   id      Int     @id @default(autoincrement())
   STRING  String
   MYValue MYValue
+  enumTwo MYValue /// @zod.custom.omit([input])
+
 }
 
 // OMITTED FIELDS

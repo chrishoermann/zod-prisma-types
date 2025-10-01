@@ -37,3 +37,9 @@ jobs:
 
       - name: Run linting
         run: pnpm --filter zod-prisma-types lint
+
+      - name: Run generator in usage package
+        run: pnpm --filter usage gen:prisma
+
+      - name: compile usage package
+        run: pnpm --filter usage tsc

@@ -60,6 +60,20 @@ export const PRISMA_SCALAR_TO_VALIDATOR_TYPE_MAP: Record<
 };
 
 /////////////////////////////////////////////////
+// CONSTANTS
+/////////////////////////////////////////////////
+
+/**
+ * Set of validator types that can be used on enum fields.
+ */
+export const ENUM_VALIDATOR_TYPES = new Set(['enum', 'custom']);
+
+/**
+ * Set of validator types that can be used on object fields.
+ */
+export const OBJECT_VALIDATOR_TYPES = new Set(['object']);
+
+/////////////////////////////////////////////////
 // CLASS
 /////////////////////////////////////////////////
 
@@ -123,11 +137,11 @@ export class ExtendedDMMFFieldValidatorType extends ExtendedDMMFFieldValidatorMa
   }
 
   private _isEnumValidatorType = (validatorType: ZodValidatorType) => {
-    return validatorType === 'enum' && this.kind === 'enum';
+    return ENUM_VALIDATOR_TYPES.has(validatorType) && this.kind === 'enum';
   };
 
   private _isObjectValidatorType = (validatorType: ZodValidatorType) => {
-    return validatorType === 'object' && this.kind === 'object';
+    return OBJECT_VALIDATOR_TYPES.has(validatorType) && this.kind === 'object';
   };
 
   private _isPrismaValidatorType(validatorType: ZodValidatorType) {
