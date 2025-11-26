@@ -179,14 +179,19 @@ export class ExtendedDMMFInputType
       prismaLibraryPath,
       isPrismaClientGenerator,
       decimalJSInstalled,
+      prismaVersion,
     } = getConfig();
 
     const prismaImports = [];
 
     if (this.isDecimalField) {
-      if (isPrismaClientGenerator) {
+      if (isPrismaClientGenerator && prismaVersion?.major === 6) {
         prismaImports.push(
           `import { Decimal as PrismaDecimal } from '${prismaLibraryPath}';`,
+        );
+      } else if (isPrismaClientGenerator && prismaVersion?.major === 7) {
+        prismaImports.push(
+          `import { Decimal as PrismaDecimal } from '${prismaClientPath}/runtime/library';`,
         );
       } else {
         prismaImports.push(`import { Prisma } from '${prismaClientPath}';`);

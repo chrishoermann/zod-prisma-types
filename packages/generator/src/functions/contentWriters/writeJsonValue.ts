@@ -19,6 +19,8 @@ export const writeJsonValue = ({
 
     if (isPrismaClientGenerator && prismaVersion?.major === 6) {
       writeImport('type { JsonValue }', prismaLibraryPath);
+    } else if (isPrismaClientGenerator && (prismaVersion?.major ?? 0) >= 7) {
+      writeImport('type { JsonValue }', `${prismaClientPath}/runtime/library`);
     } else {
       writeImport('type { Prisma }', prismaClientPath);
     }
@@ -27,6 +29,8 @@ export const writeJsonValue = ({
   let jsonValueTypeName = '';
 
   if (isPrismaClientGenerator && prismaVersion?.major === 6) {
+    jsonValueTypeName = 'JsonValue';
+  } else if (isPrismaClientGenerator && (prismaVersion?.major ?? 0) >= 7) {
     jsonValueTypeName = 'JsonValue';
   } else {
     jsonValueTypeName = 'Prisma.JsonValue';

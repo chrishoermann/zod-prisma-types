@@ -10,19 +10,31 @@ export const writeIsValidDecimalInput = ({
     prismaClientPath,
     prismaLibraryPath,
     isPrismaClientGenerator,
+    prismaVersion,
   } = getConfig();
 
   if (useMultipleFiles && !getSingleFileContent) {
-    if (isPrismaClientGenerator) {
+    if (isPrismaClientGenerator && prismaVersion?.major === 6) {
       writeImport('type { DecimalJsLike }', `${prismaLibraryPath}`);
+    } else if (isPrismaClientGenerator && (prismaVersion?.major ?? 0) >= 7) {
+      writeImport(
+        'type { DecimalJsLike }',
+        `${prismaClientPath}/runtime/library`,
+      );
     } else {
       writeImport('type { Prisma }', `${prismaClientPath}`);
     }
   }
 
-  const decimalJsLikeTypeName = isPrismaClientGenerator
-    ? 'DecimalJsLike'
-    : 'Prisma.DecimalJsLike';
+  let decimalJsLikeTypeName = '';
+
+  if (isPrismaClientGenerator && prismaVersion?.major === 6) {
+    decimalJsLikeTypeName = 'DecimalJsLike';
+  } else if (isPrismaClientGenerator && (prismaVersion?.major ?? 0) >= 7) {
+    decimalJsLikeTypeName = 'DecimalJsLike';
+  } else {
+    decimalJsLikeTypeName = 'Prisma.DecimalJsLike';
+  }
 
   writer
     .blankLine()

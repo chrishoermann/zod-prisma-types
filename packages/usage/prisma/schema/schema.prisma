@@ -45,104 +45,104 @@ generator zod {
 
 // Check if EnumS and modelS with mixed casing work
 
-enum MYValue {
-  A
-  B
-  C
-}
+// enum MYValue {
+//   A
+//   B
+//   C
+// }
 
-model MODELWithUpperCase {
-  id      Int     @id @default(autoincrement())
-  STRING  String
-  MYValue MYValue
-  enumTwo MYValue /// @zod.custom.omit([input])
+// model MODELWithUpperCase {
+//   id      Int     @id @default(autoincrement())
+//   STRING  String
+//   MYValue MYValue
+//   enumTwo MYValue /// @zod.custom.omit([input])
 
-}
+// }
 
-// OMITTED FIELDS
-// -----------------------------------------------
+// // OMITTED FIELDS
+// // -----------------------------------------------
 
-// Omitted fields should not be included in the generated model or input schemas
-// Furthermore, for the required field the generated arg schema should have an updated z.ZodType<...> type
+// // Omitted fields should not be included in the generated model or input schemas
+// // Furthermore, for the required field the generated arg schema should have an updated z.ZodType<...> type
 
-model ModelWithOmitFields {
-  id           String  @id @default(cuid())
-  string       String? /// @zod.string.describe("Some description")
-  omitField    String? /// @zod.custom.omit([model, input])
-  omitRequired String /// @zod.custom.omit([model, input])
-}
+// model ModelWithOmitFields {
+//   id           String  @id @default(cuid())
+//   string       String? /// @zod.string.describe("Some description")
+//   omitField    String? /// @zod.custom.omit([model, input])
+//   omitRequired String /// @zod.custom.omit([model, input])
+// }
 
-// JS DOC COMMENTS
-// -----------------------------------------------
+// // JS DOC COMMENTS
+// // -----------------------------------------------
 
-// JSDoc comments should be included in the generated model and input schemas
-// The validator comments should be removed from the generated model and input schemas
+// // JSDoc comments should be included in the generated model and input schemas
+// // The validator comments should be removed from the generated model and input schemas
 
-/// comment line one
-/// comment line two
-model ModelWithComments {
-  id           String  @id @default(uuid())
-  /// comment before validator @zod.string.min(4).max(10)
-  // Does currently not work to comment after validator
-  string       String?
-  omitField    String? /// @zod.custom.omit([model, input])
-  omitRequired String /// @zod.custom.omit([model, input])
-}
+// /// comment line one
+// /// comment line two
+// model ModelWithComments {
+//   id           String  @id @default(uuid())
+//   /// comment before validator @zod.string.min(4).max(10)
+//   // Does currently not work to comment after validator
+//   string       String?
+//   omitField    String? /// @zod.custom.omit([model, input])
+//   omitRequired String /// @zod.custom.omit([model, input])
+// }
 
-// CUSTOM VALIDATORS ON SCALARS
-// -----------------------------------------------
+// // CUSTOM VALIDATORS ON SCALARS
+// // -----------------------------------------------
 
-// Custom validators should be included in the generated model and input schemas
-// It should not matter if the comments are above or next to the field
+// // Custom validators should be included in the generated model and input schemas
+// // It should not matter if the comments are above or next to the field
 
-// commented out for testing only @zod.import(["import { myFunction } from "../../../../utils/myFunction";", "import validator from 'validator';", "import some from "@my-package:withcolon";"])
+// // commented out for testing only @zod.import(["import { myFunction } from "../../../../utils/myFunction";", "import validator from 'validator';", "import some from "@my-package:withcolon";"])
 
-/// comment line one
-/// @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).refine((v) => myFunction(v))
-/// comment line two
-model MyPrismaScalarsType {
-  // zod v3 Variant - @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]|", required_error: "some other", description: "some description" }).cuid()
+// /// comment line one
+// /// @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).refine((v) => myFunction(v))
+// /// comment line two
+// model MyPrismaScalarsType {
+//   // zod v3 Variant - @zod.string({ invalid_type_error: "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]|", required_error: "some other", description: "some description" }).cuid()
 
-  /// @zod.string({ error: (issue) => issue.input === undefined ? "This field is required" : "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]|"   }).cuid()
-  id                 String    @id @default(cuid())
-  /// Some comment about string @zod.string.min(3, { message: "min error " }).max(10, { message: "max error" })
-  string             String?
-  /// @zod.import(["import validator from 'validator';"]).custom.use(z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }))
-  bic                String?
-  /// @zod.number.lt(10.3, { message: "lt error" }).gt(5.5, { message: "gt | error" })
-  float              Float
-  floatOpt           Float?
-  /// @zod.number.int({ message: "error" }).gt(5, { message: "ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。" })
-  int                Int
-  /// @zod.number.int({ message: "error" }).gt(-5, { message: "ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。" })
-  intOpt             Int?
-  decimal            Decimal
-  decimalOpt         Decimal?
-  date               DateTime  @default(now())
-  dateOpt            DateTime? /// @zod.date({ error: "wrong date type" })
-  bigInt             BigInt /// @zod.bigint({ error: "error" }).gt(5n, { message: "gt error" })
-  bigIntOpt          BigInt?
-  json               Json
-  jsonOpt            Json?
-  jsonCustom         Json? /// @zod.custom.use(z.object({contents: z.array(z.object({locale: z.string(), content: z.string()}))}))
-  bytes              Bytes /// @zod.custom.use(z.instanceof(Uint8Array<ArrayBuffer>).refine((val) => val ? true : false, { message: 'Value is not valid' }))
-  bytesOpt           Bytes?
-  /// @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).custom.use(z.string().refine((val) => myFunction(val), { message: 'Is not valid' }))
-  custom             String?
-  exclude            String? /// @zod.custom.omit(["model", "input"])
-  /// Some Comment before
-  excludeWithComment String? /// @zod.custom.omit(["model", "input"]) And some comment after
+//   /// @zod.string({ error: (issue) => issue.input === undefined ? "This field is required" : "some error with special chars: some + -*#'substring[]*#!§$%&/{}[]|"   }).cuid()
+//   id                 String    @id @default(cuid())
+//   /// Some comment about string @zod.string.min(3, { message: "min error " }).max(10, { message: "max error" })
+//   string             String?
+//   /// @zod.import(["import validator from 'validator';"]).custom.use(z.string().refine((val) => validator.isBIC(val), { message: 'BIC is not valid' }))
+//   bic                String?
+//   /// @zod.number.lt(10.3, { message: "lt error" }).gt(5.5, { message: "gt | error" })
+//   float              Float
+//   floatOpt           Float?
+//   /// @zod.number.int({ message: "error" }).gt(5, { message: "ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。" })
+//   int                Int
+//   /// @zod.number.int({ message: "error" }).gt(-5, { message: "ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。" })
+//   intOpt             Int?
+//   decimal            Decimal
+//   decimalOpt         Decimal?
+//   date               DateTime  @default(now())
+//   dateOpt            DateTime? /// @zod.date({ error: "wrong date type" })
+//   bigInt             BigInt /// @zod.bigint({ error: "error" }).gt(5n, { message: "gt error" })
+//   bigIntOpt          BigInt?
+//   json               Json
+//   jsonOpt            Json?
+//   jsonCustom         Json? /// @zod.custom.use(z.object({contents: z.array(z.object({locale: z.string(), content: z.string()}))}))
+//   bytes              Bytes /// @zod.custom.use(z.instanceof(Uint8Array<ArrayBuffer>).refine((val) => val ? true : false, { message: 'Value is not valid' }))
+//   bytesOpt           Bytes?
+//   /// @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).custom.use(z.string().refine((val) => myFunction(val), { message: 'Is not valid' }))
+//   custom             String?
+//   exclude            String? /// @zod.custom.omit(["model", "input"])
+//   /// Some Comment before
+//   excludeWithComment String? /// @zod.custom.omit(["model", "input"]) And some comment after
 
-  specialEuropeanChars String? /// @zod.string({ error: "ÁÀȦÂÄǞǍĂĀÃÅǺǼǢĆĊĈČĎḌḐḒÉÈĖÊËĚĔĒẼE̊ẸǴĠĜǦĞG̃ĢĤḤáàȧâäǟǎăāãåǻǽǣćċĉčďḍḑḓéèėêëěĕēẽe̊ẹǵġĝǧğg̃ģĥḥÍÌİÎÏǏĬĪĨỊĴĶǨĹĻĽĿḼM̂M̄ʼNŃN̂ṄN̈ŇN̄ÑŅṊÓÒȮȰÔÖȪǑŎŌÕȬŐỌǾƠíìiîïǐĭīĩịĵķǩĺļľŀḽm̂m̄ŉńn̂ṅn̈ňn̄ñņṋóòôȯȱöȫǒŏōõȭőọǿơP̄ŔŘŖŚŜṠŠȘṢŤȚṬṰÚÙÛÜǓŬŪŨŰŮỤẂẀŴẄÝỲŶŸȲỸŹŻŽẒǮp̄ŕřŗśŝṡšşṣťțṭṱúùûüǔŭūũűůụẃẁŵẅýỳŷÿȳỹźżžẓǯßœŒçÇ" })
+//   specialEuropeanChars String? /// @zod.string({ error: "ÁÀȦÂÄǞǍĂĀÃÅǺǼǢĆĊĈČĎḌḐḒÉÈĖÊËĚĔĒẼE̊ẸǴĠĜǦĞG̃ĢĤḤáàȧâäǟǎăāãåǻǽǣćċĉčďḍḑḓéèėêëěĕēẽe̊ẹǵġĝǧğg̃ģĥḥÍÌİÎÏǏĬĪĨỊĴĶǨĹĻĽĿḼM̂M̄ʼNŃN̂ṄN̈ŇN̄ÑŅṊÓÒȮȰÔÖȪǑŎŌÕȬŐỌǾƠíìiîïǐĭīĩịĵķǩĺļľŀḽm̂m̄ŉńn̂ṅn̈ňn̄ñņṋóòôȯȱöȫǒŏōõȭőọǿơP̄ŔŘŖŚŜṠŠȘṢŤȚṬṰÚÙÛÜǓŬŪŨŰŮỤẂẀŴẄÝỲŶŸȲỸŹŻŽẒǮp̄ŕřŗśŝṡšşṣťțṭṱúùûüǔŭūũűůụẃẁŵẅýỳŷÿȳỹźżžẓǯßœŒçÇ" })
 
-  /// @zod.string.regex(/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-]+)(\.[a-zA-Z]{2,5}){1,2}$/)
-  customEmailRegex String
+//   /// @zod.string.regex(/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-]+)(\.[a-zA-Z]{2,5}){1,2}$/)
+//   customEmailRegex String
 
-  isoDate String? /// @zod.string.date({ message: "Invalid ISO date" })
-  isoDateTwo String? /// @zod.string.isoDate({ message: "Invalid ISO date" })
+//   isoDate String? /// @zod.string.date({ message: "Invalid ISO date" })
+//   isoDateTwo String? /// @zod.string.isoDate({ message: "Invalid ISO date" })
 
-  updatedAt DateTime @updatedAt
-}
+//   updatedAt DateTime @updatedAt
+// }
 
 // JSON MODEL
 // -----------------------------------------------
@@ -155,214 +155,214 @@ model JsonModel {
   jsonOpt Json?
 }
 
-// STANDARD BLOG SCHEMA
-// -----------------------------------------------
+// // STANDARD BLOG SCHEMA
+// // -----------------------------------------------
 
-// This is the standard blog schema from the Prisma docs extended with some custom enums and models
-// https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-a-model
+// // This is the standard blog schema from the Prisma docs extended with some custom enums and models
+// // https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-a-model
 
-enum Role {
-  USER
-  ADMIN
-}
+// enum Role {
+//   USER
+//   ADMIN
+// }
 
-enum SecondEnum {
-  ONE
-  TWO
-}
+// enum SecondEnum {
+//   ONE
+//   TWO
+// }
 
-enum AnotherEnum {
-  ONE
-  TWO
-}
+// enum AnotherEnum {
+//   ONE
+//   TWO
+// }
 
-model User {
-  id         String      @id @default(cuid()) /// @zod.string.cuid()
-  email      String      @unique /// @zod.string.email({ message: "Invalid email address" })
-  /// some other comment
-  /// @zod.string.min(1).max(100) 
-  name       String?
-  /// @zod.object.array(.length(2, { message: "error" }).min(1).max(2).nonempty({ message: "error" }))
-  posts      Post[]
-  profile    Profile?
-  role       Role[]      @default([USER, ADMIN])
-  enum       AnotherEnum @default(ONE)
-  scalarList String[]
+// model User {
+//   id         String      @id @default(cuid()) /// @zod.string.cuid()
+//   email      String      @unique /// @zod.string.email({ message: "Invalid email address" })
+//   /// some other comment
+//   /// @zod.string.min(1).max(100) 
+//   name       String?
+//   /// @zod.object.array(.length(2, { message: "error" }).min(1).max(2).nonempty({ message: "error" }))
+//   posts      Post[]
+//   profile    Profile?
+//   role       Role[]      @default([USER, ADMIN])
+//   enum       AnotherEnum @default(ONE)
+//   scalarList String[]
 
-  lat Float
-  lng Float
+//   lat Float
+//   lng Float
 
-  location Location? @relation(fields: [lat, lng], references: [lat, lng])
-}
+//   location Location? @relation(fields: [lat, lng], references: [lat, lng])
+// }
 
-model Post {
-  id             Int           @id @default(autoincrement()) /// @zod.number.int()
-  title          String /// @zod.string.min(1)
-  content        String?
-  published      Boolean       @default(false)
-  author         User          @relation(fields: [authorId], references: [id])
-  authorId       String
-  jsonOpt        Json?
-  anotherJsonOpt Json?
-  anotherEnum    AnotherEnum[] /// @zod.enum.array(.length(2, { message: "error" }).min(1).max(10).nonempty({ message: "error" }))
-}
+// model Post {
+//   id             Int           @id @default(autoincrement()) /// @zod.number.int()
+//   title          String /// @zod.string.min(1)
+//   content        String?
+//   published      Boolean       @default(false)
+//   author         User          @relation(fields: [authorId], references: [id])
+//   authorId       String
+//   jsonOpt        Json?
+//   anotherJsonOpt Json?
+//   anotherEnum    AnotherEnum[] /// @zod.enum.array(.length(2, { message: "error" }).min(1).max(10).nonempty({ message: "error" }))
+// }
 
-model Profile {
-  id             Int             @id @default(autoincrement())
-  /// @zod.string.min(1).max(400)
-  bio            String
-  user           User            @relation(fields: [userId], references: [id])
-  userId         String          @unique
-  role           Role[]          @default([USER, ADMIN])
-  second         SecondEnum      @default(ONE)
-  profilePicture ProfilePicture?
-}
+// model Profile {
+//   id             Int             @id @default(autoincrement())
+//   /// @zod.string.min(1).max(400)
+//   bio            String
+//   user           User            @relation(fields: [userId], references: [id])
+//   userId         String          @unique
+//   role           Role[]          @default([USER, ADMIN])
+//   second         SecondEnum      @default(ONE)
+//   profilePicture ProfilePicture?
+// }
 
-// Model that contains name of another model
-// This is used to test if the generator correctly handles the case
-// when the model name contains the field of another model
-// but it is not a self refrencing model
+// // Model that contains name of another model
+// // This is used to test if the generator correctly handles the case
+// // when the model name contains the field of another model
+// // but it is not a self refrencing model
 
-model ProfilePicture {
-  id        Int     @id @default(autoincrement())
-  url       String
-  profile   Profile @relation(fields: [profileId], references: [id])
-  profileId Int     @unique
-}
+// model ProfilePicture {
+//   id        Int     @id @default(autoincrement())
+//   url       String
+//   profile   Profile @relation(fields: [profileId], references: [id])
+//   profileId Int     @unique
+// }
 
-model Location {
-  lat  Float /// @zod.number.min(14.345)
-  lng  Float /// @zod.number.max(14.12314).step(5)
-  User User[]
+// model Location {
+//   lat  Float /// @zod.number.min(14.345)
+//   lng  Float /// @zod.number.max(14.12314).step(5)
+//   User User[]
 
-  @@id([lat, lng])
-}
+//   @@id([lat, lng])
+// }
 
-model NonDefaultModel {
-  id     Int    @id
-  string String
-}
+// model NonDefaultModel {
+//   id     Int    @id
+//   string String
+// }
 
-model WithDefaultValidators {
-  id      String @id @default(cuid())
-  idTwo   String @default(uuid()) /// @zod.string.noDefault()
-  integer Int
-}
+// model WithDefaultValidators {
+//   id      String @id @default(cuid())
+//   idTwo   String @default(uuid()) /// @zod.string.noDefault()
+//   integer Int
+// }
 
-model DecimalModel {
-  id         Int      @id @default(autoincrement())
-  decimal    Decimal
-  decimalOpt Decimal?
-}
+// model DecimalModel {
+//   id         Int      @id @default(autoincrement())
+//   decimal    Decimal
+//   decimalOpt Decimal?
+// }
 
-model DateModel {
-  id      Int       @id @default(autoincrement())
-  date    DateTime
-  dateOpt DateTime?
-}
+// model DateModel {
+//   id      Int       @id @default(autoincrement())
+//   date    DateTime
+//   dateOpt DateTime?
+// }
 
-// STRING REGEX VALIDATOR
-// -----------------------------------------------
+// // STRING REGEX VALIDATOR
+// // -----------------------------------------------
 
-// Used for testing if the string regex validator is correctly transformed
+// // Used for testing if the string regex validator is correctly transformed
 
-// @zod.import(["import * as s from '$lib/schemas'"])
-model StringRegexModel {
-  id          Int    @id @default(autoincrement())
-  string      String /// @zod.string.regex(/^[a-z0-9]+$/i, { message: "error" })
-  stringTwo   String /// @zod.string.regex(/^\\d+\\s*\\d+|$/)
-  stringThree String /// @zod.string.regex(/^d+s*d+$/)
-  stringFour  String /// @zod.string.regex(/^3|4$/)
-}
+// // @zod.import(["import * as s from '$lib/schemas'"])
+// model StringRegexModel {
+//   id          Int    @id @default(autoincrement())
+//   string      String /// @zod.string.regex(/^[a-z0-9]+$/i, { message: "error" })
+//   stringTwo   String /// @zod.string.regex(/^\\d+\\s*\\d+|$/)
+//   stringThree String /// @zod.string.regex(/^d+s*d+$/)
+//   stringFour  String /// @zod.string.regex(/^3|4$/)
+// }
 
-// WRONG MODEL LINKED TO INPUT TYPES
-// -----------------------------------------------
+// // WRONG MODEL LINKED TO INPUT TYPES
+// // -----------------------------------------------
 
-// This model covers the following case:
-// input type: "UserUncheckedCreateWithoutPractice" should match model "User"
-// but matches model "Practice" because practice comes first in the models array.
+// // This model covers the following case:
+// // input type: "UserUncheckedCreateWithoutPractice" should match model "User"
+// // but matches model "Practice" because practice comes first in the models array.
 
-model Practice {
-  id           Int       @id @unique() @default(autoincrement())
-  profilePhoto Int?
-  user         UserTwo[]
-}
+// model Practice {
+//   id           Int       @id @unique() @default(autoincrement())
+//   profilePhoto Int?
+//   user         UserTwo[]
+// }
 
-model UserTwo {
-  id           Int       @id @unique() @default(autoincrement())
-  name         String?
-  profilePhoto String?   @db.Text
-  practiceId   Int?
-  practice     Practice? @relation(fields: [practiceId], references: [id])
-}
+// model UserTwo {
+//   id           Int       @id @unique() @default(autoincrement())
+//   name         String?
+//   profilePhoto String?   @db.Text
+//   practiceId   Int?
+//   practice     Practice? @relation(fields: [practiceId], references: [id])
+// }
 
-// EXTENDED WHERE UNIQUE INPUT
-// -----------------------------------------------
+// // EXTENDED WHERE UNIQUE INPUT
+// // -----------------------------------------------
 
-// The following models are used to test if the extended
-// where unique input gets created correctly even with
-// multiple unique fields.
+// // The following models are used to test if the extended
+// // where unique input gets created correctly even with
+// // multiple unique fields.
 
-model ExtendedWUOne {
-  id       Int    @id @default(autoincrement())
-  email    String
-  username String
-  name     String
-}
+// model ExtendedWUOne {
+//   id       Int    @id @default(autoincrement())
+//   email    String
+//   username String
+//   name     String
+// }
 
-model ExtendedWUTwo {
-  id       Int     @id @default(autoincrement())
-  title    String  @unique
-  content  String?
-  authorId Int
-}
+// model ExtendedWUTwo {
+//   id       Int     @id @default(autoincrement())
+//   title    String  @unique
+//   content  String?
+//   authorId Int
+// }
 
-model ExtendedWUThree {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  username String @unique
-  name     String
-}
+// model ExtendedWUThree {
+//   id       Int    @id @default(autoincrement())
+//   email    String @unique
+//   username String @unique
+//   name     String
+// }
 
-// SELF REFERENCING MODEL
-// -----------------------------------------------
+// // SELF REFERENCING MODEL
+// // -----------------------------------------------
 
-// The following model is used to test if the self referencing
-// model does not import itself.
+// // The following model is used to test if the self referencing
+// // model does not import itself.
 
-model SelfReference {
-  id    Int    @id @default(autoincrement())
-  email String @unique
-  name  String
+// model SelfReference {
+//   id    Int    @id @default(autoincrement())
+//   email String @unique
+//   name  String
 
-  // recursive user
-  parent   SelfReference? @relation("SelfReferenceToSelfReference", fields: [parentId], references: [id])
-  parentId Int?
+//   // recursive user
+//   parent   SelfReference? @relation("SelfReferenceToSelfReference", fields: [parentId], references: [id])
+//   parentId Int?
 
-  children SelfReference[] @relation("SelfReferenceToSelfReference")
-}
+//   children SelfReference[] @relation("SelfReferenceToSelfReference")
+// }
 
-// JAPANESE CHARS
-// -----------------------------------------------
+// // JAPANESE CHARS
+// // -----------------------------------------------
 
-// Japanese chars should be included in the generated model and input schemas
+// // Japanese chars should be included in the generated model and input schemas
 
-model JapaneseChars {
-  id     Int    @id @default(autoincrement())
-  ///@zod.string({ error: "ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。" })
-  string String
-}
+// model JapaneseChars {
+//   id     Int    @id @default(autoincrement())
+//   ///@zod.string({ error: "ひらがな、カタカナ、漢字、長音符ーが少なくとも1つずつ含まれる必要があります。" })
+//   string String
+// }
 
-// MODEL VALIDATION
-// -----------------------------------------------
+// // MODEL VALIDATION
+// // -----------------------------------------------
 
-/// @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).error({ error: "error" }).refine((val) => myFunction(val), { message: 'Is not valid' }).strict()
-model ModelWithOptions {
-  id     Int    @id @default(autoincrement())
-  string String
-}
+// /// @zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).error({ error: "error" }).refine((val) => myFunction(val), { message: 'Is not valid' }).strict()
+// model ModelWithOptions {
+//   id     Int    @id @default(autoincrement())
+//   string String
+// }
 
-model ModelWithFieldLevelImport {
-  id     Int    @id @default(autoincrement())
-  string String ///@zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).custom.use(z.string().refine((val) => myFunction(val), { message: 'Is not valid' }))
-}
+// model ModelWithFieldLevelImport {
+//   id     Int    @id @default(autoincrement())
+//   string String ///@zod.import(["import { myFunction } from "../../../../utils/myFunction";"]).custom.use(z.string().refine((val) => myFunction(val), { message: 'Is not valid' }))
+// }

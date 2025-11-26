@@ -11,20 +11,32 @@ export const writeInputJsonValue = ({
     prismaClientPath,
     prismaLibraryPath,
     isPrismaClientGenerator,
+    prismaVersion,
   } = getConfig();
 
   if (useMultipleFiles && !getSingleFileContent) {
     writeZodImport(writeImport);
-    if (isPrismaClientGenerator) {
+    if (isPrismaClientGenerator && prismaVersion?.major === 6) {
       writeImport('type { InputJsonValue }', prismaLibraryPath);
+    } else if (isPrismaClientGenerator && (prismaVersion?.major ?? 0) >= 7) {
+      writeImport(
+        'type { InputJsonValue }',
+        `${prismaClientPath}/runtime/library`,
+      );
     } else {
       writeImport('{ Prisma }', prismaClientPath);
     }
   }
 
-  const inputJsonValueTypeName = isPrismaClientGenerator
-    ? 'InputJsonValue'
-    : 'Prisma.InputJsonValue';
+  let inputJsonValueTypeName = '';
+
+  if (isPrismaClientGenerator && prismaVersion?.major === 6) {
+    inputJsonValueTypeName = 'InputJsonValue';
+  } else if (isPrismaClientGenerator && (prismaVersion?.major ?? 0) >= 7) {
+    inputJsonValueTypeName = 'InputJsonValue';
+  } else {
+    inputJsonValueTypeName = 'Prisma.InputJsonValue';
+  }
 
   writer
     .blankLine()
