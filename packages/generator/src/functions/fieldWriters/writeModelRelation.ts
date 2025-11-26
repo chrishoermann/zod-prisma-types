@@ -21,7 +21,6 @@ export const writeRelation = ({
     // fields are optional.
     .conditionalWrite(isPartial, 'Partial')
     .conditionalWrite(isOptionalDefaults, 'OptionalDefaults')
-    .conditionalWrite(!field.isCompositeType, 'WithRelations')
     .write('Schema)');
   writeFieldAdditions({ writer, field, writeOptionalDefaults });
 };
