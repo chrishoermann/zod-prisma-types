@@ -8,7 +8,7 @@ export const writeScalar = ({
   field,
   writeOptionalDefaults = false,
 }: WriteFieldOptions) => {
-  const { coerceDate } = getConfig();
+  const { coerceDate, zodVersion } = getConfig();
   if (field.type === 'DateTime') {
     writer
       .write(`${field.name}: `)
@@ -21,7 +21,7 @@ export const writeScalar = ({
     return writeFieldAdditions({ writer, field, writeOptionalDefaults });
   }
 
-  if (field.isTopLevelValidator) {
+  if (field.isTopLevelValidator && zodVersion?.major === 4 ) {
     writer
       .write(`${field.name}: `)
       .write(`z`)
