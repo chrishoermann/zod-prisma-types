@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider        = "prisma-client-js"
+  provider        = "prisma-client"
   output          = "../generated/client"
   previewFeatures = ["views"]
   // previewFeatures = ["views"]
@@ -37,6 +37,7 @@ generator zod {
   // prismaClientPath                 = "./generated/client" // optional
   useTypeAssertions                = false // default is false
   useExactOptionalPropertyTypes    = true // default is false
+  // prismaClientPath                 = "@acme/db" // optional
 }
 
 // MIXED CASE ENUMS AND MODELS
