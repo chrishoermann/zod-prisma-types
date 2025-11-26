@@ -9,13 +9,13 @@ import { FormattedNames } from './formattedNames';
 
 export class ExtendedDMMFSchemaEnum
   extends FormattedNames
-  implements DMMF.SchemaEnum
+  implements DMMF.DatamodelSchemaEnum
 {
-  readonly name: DMMF.SchemaEnum['name'];
-  readonly values: DMMF.SchemaEnum['values'];
+  readonly name: DMMF.DatamodelSchemaEnum['name'];
+  readonly values: DMMF.DatamodelSchemaEnum['values'];
   readonly useNativeEnum: boolean;
 
-  constructor(enumType: ReadonlyDeep<DMMF.SchemaEnum>) {
+  constructor(enumType: ReadonlyDeep<DMMF.DatamodelSchemaEnum>) {
     super(enumType.name);
     this.name = enumType.name;
     this.values = enumType.values;

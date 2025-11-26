@@ -47,7 +47,7 @@ export class ExtendedDMMFSchema implements DMMF.Schema {
     readonly argTypes: ExtendedDMMFOutputType[];
   };
   readonly enumTypes: {
-    readonly model?: ReadonlyDeep<DMMF.SchemaEnum[]>;
+    readonly model?: ReadonlyDeep<DMMF.DatamodelSchemaEnum[]>;
     readonly prisma: ExtendedDMMFSchemaEnum[];
   };
   readonly fieldRefTypes: {

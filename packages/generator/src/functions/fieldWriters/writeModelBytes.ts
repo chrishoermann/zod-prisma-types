@@ -13,8 +13,9 @@ export const writeBytes = ({
     .conditionalWrite(field.omitInModel(), '// omitted: ')
     .write(`${field.formattedNames.original}: `)
     .conditionalWrite(
-      prismaVersion?.major === 6 || prismaVersion === undefined,
-      `z.instanceof(Uint8Array<ArrayBufferLike>)`,
+      (prismaVersion?.major && prismaVersion.major >= 6) ||
+        prismaVersion === undefined,
+      `z.instanceof(Uint8Array<ArrayBuffer>)`,
     )
     .conditionalWrite(
       prismaVersion?.major === 5 || prismaVersion?.major === 4,

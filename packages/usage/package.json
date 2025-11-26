@@ -18,13 +18,13 @@
     "@types/node": "^22.18.7",
     "chai": "^5.3.3",
     "local-pkg": "^1.1.2",
-    "prisma": "^6.16.3",
+    "prisma": "^7.0.1",
     "source-map": "^0.7.6",
     "tinyspy": "^3.0.2",
     "typescript": "^5.9.2"
   },
   "dependencies": {
-    "@prisma/client": "^6.16.3",
+    "@prisma/client": "^7.0.1",
     "@trpc/client": "^10.45.2",
     "@trpc/server": "^10.45.2",
     "@types/validator": "^13.15.3",

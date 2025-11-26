@@ -110,8 +110,9 @@ export const writeSpecialType: WriteTypeFunction<WriteTypeOptions> = (
   if (inputType.isBytesType) {
     return writer
       .conditionalWrite(
-        prismaVersion?.major === 6 || prismaVersion === undefined,
-        `z.instanceof(Uint8Array<ArrayBufferLike>)`,
+        (prismaVersion?.major && prismaVersion.major >= 6) ||
+          prismaVersion === undefined,
+        `z.instanceof(Uint8Array<ArrayBuffer>)`,
       )
       .conditionalWrite(
         prismaVersion?.major === 5 || prismaVersion?.major === 4,
