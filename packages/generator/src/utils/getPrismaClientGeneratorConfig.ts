@@ -27,7 +27,10 @@ export const getPrismaClientGeneratorConfig = (options: GeneratorOptions) => {
 
   let prismaLibraryPath = '';
 
-  if (prismaClientOptions?.previewFeatures.includes('queryCompiler')) {
+  if (
+    prismaClientOptions?.previewFeatures.includes('queryCompiler') ||
+    (prismaVersion?.major ?? 0) >= 7
+  ) {
     prismaLibraryPath = '@prisma/client/runtime/client';
   } else {
     prismaLibraryPath = '@prisma/client/runtime/library';

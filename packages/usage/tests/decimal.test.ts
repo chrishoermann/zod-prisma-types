@@ -8,7 +8,8 @@ import {
   isValidDecimalInput,
   DecimalJsLikeSchema,
 } from '../prisma/generated/zod';
-import { DecimalJsLike } from '../prisma/generated/client/runtime/library';
+import { Prisma as PrismaRuntime } from '../prisma/generated/client';
+type DecimalJsLike = PrismaRuntime.DecimalJsLike;
 import { it, expect, beforeAll, afterAll } from 'vitest';
 import { DECIMAL_STRING_REGEX } from '../prisma/generated/zod/inputTypeSchemas/isValidDecimalInput';
 
