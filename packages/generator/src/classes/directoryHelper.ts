@@ -45,7 +45,10 @@ export class DirectoryHelper {
     if (!path) throw new Error('No path specified');
     if (!this.pathOrDirExists(path)) return;
     try {
-      fs.rmdirSync(path, { recursive: true });
+      // fs.rmdirSync with `recursive: true` was deprecated in Node 14.14.0
+      // and removed in Node 22 (https://github.com/nodejs/node/pull/58616).
+      // Use fs.rmSync, the documented replacement.
+      fs.rmSync(path, { recursive: true, force: true });
     } catch (err) {
       if (err instanceof Error)
         throw new Error(
