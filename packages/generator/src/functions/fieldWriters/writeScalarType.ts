@@ -32,7 +32,7 @@ export const writeScalarType: WriteTypeFunction = (
   const zodType = inputType.getZodScalarType();
   if (!zodType) return;
 
-  const { addInputTypeValidation, coerceDate } = getConfig();
+  const { addInputTypeValidation, coerceDate, zodVersion } = getConfig();
 
   if (zodCustomValidatorString) {
     if (zodType === 'date') {
@@ -78,7 +78,7 @@ export const writeScalarType: WriteTypeFunction = (
       .conditionalWrite(writeComma, `,`);
   }
 
-  if (isTopLevelValidator) {
+  if (isTopLevelValidator && zodVersion?.major === 4) {
     return writer
       .write(`z`)
       .write(zodValidatorString!)
