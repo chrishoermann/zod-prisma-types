@@ -12,9 +12,10 @@ const getPrismaClientPath = (
   return prismaClientPath?.join('/');
 };
 
-export const getPrismaClientGeneratorConfig = (options: GeneratorOptions) => {
-  const prismaVersion = getPackageVersion('@prisma/client');
-
+export const getPrismaClientGeneratorConfig = (
+  options: GeneratorOptions,
+  prismaVersion = getPackageVersion('@prisma/client'),
+) => {
   // find the prisma client config
   const prismaClientOptions = options.otherGenerators.find(
     (g) =>
@@ -27,7 +28,11 @@ export const getPrismaClientGeneratorConfig = (options: GeneratorOptions) => {
 
   let prismaLibraryPath = '';
 
-  if (prismaClientOptions?.previewFeatures.includes('queryCompiler')) {
+  // prisma 7 made the query compiler the default and removed `runtime/library`
+  if (
+    (prismaVersion?.major ?? 0) >= 7 ||
+    prismaClientOptions?.previewFeatures.includes('queryCompiler')
+  ) {
     prismaLibraryPath = '@prisma/client/runtime/client';
   } else {
     prismaLibraryPath = '@prisma/client/runtime/library';
@@ -83,7 +88,8 @@ export const getPrismaClientGeneratorConfig = (options: GeneratorOptions) => {
 
   // if multiple files are used the path needs to add one level up
   // because the schemas are generated in subfolders of the output path
-  if (options.generator.config?.['useMultipleFiles']) {
+  // generator config values are strings, so `useMultipleFiles = false` arrives as "false"
+  if (options.generator.config?.['useMultipleFiles'] === 'true') {
     return {
       ...baseOptions,
       prismaClientPath: `../${prismaClientPath}`,
