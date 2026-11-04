@@ -16,15 +16,28 @@ export const writeSingleFileImportStatements: WriteStatements = ({
     prismaLibraryPath,
     decimalJSInstalled,
     isPrismaClientGenerator,
+    prismaVersion,
   } = getConfig();
 
   const dmmf = getExtendedDMMF();
 
   writeZodImport(writeImport);
 
-  // If using the "prisma-client" compiler, we can import directly from the
-  // runtime library to avoid importing the entire client.
-  if (isPrismaClientGenerator) {
+  // Prisma 7 no longer exports `objectEnumValues`, so the json null values
+  // are read off the Prisma namespace at runtime, like the multi-file output does.
+  if (isPrismaClientGenerator && (prismaVersion?.major ?? 0) >= 7) {
+    if (dmmf.schema.hasDecimalTypes) {
+      writeImport(`{ Decimal as PrismaDecimal }`, `${prismaLibraryPath}`);
+    }
+
+    if (dmmf.schema.hasJsonTypes || dmmf.schema.hasDecimalTypes) {
+      writeImport(`{ Prisma }`, `${prismaClientPath}`);
+    } else {
+      writeImport(`type { Prisma }`, `${prismaClientPath}`);
+    }
+  } else if (isPrismaClientGenerator) {
+    // If using the "prisma-client" compiler, we can import directly from the
+    // runtime library to avoid importing the entire client.
     const namesToImport = [];
 
     if (dmmf.schema.hasJsonTypes) {
