@@ -45,7 +45,7 @@ export class DirectoryHelper {
     if (!path) throw new Error('No path specified');
     if (!this.pathOrDirExists(path)) return;
     try {
-      fs.rmdirSync(path, { recursive: true });
+      fs.rmSync(path, { recursive: true, force: true });
     } catch (err) {
       if (err instanceof Error)
         throw new Error(
